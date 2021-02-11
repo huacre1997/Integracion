@@ -1,0 +1,148 @@
+{% extends 'Web/base.html' %}
+{% load static %}
+{% load base_extras %}
+{% load l10n %}
+{% block content %}  
+<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
+<link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
+<style>
+  table.dataTable tbody th, table.dataTable tbody td {
+      padding: 3px 3px; /* e.g. change 8x to 4px here */
+  }
+  </style>  
+<div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Vehiculos</h6>
+            </div>
+            <div class="card-body">
+
+                <form method="GET" action="" id="frmlist">
+                {% csrf_token %}
+                  <div class="row">     
+                    <div class="col-lg-3">
+                      <label>Marca/Modelo</label>
+                      <select id="modelo" name="modelo" class="select2" style="width: 100%;">
+                      <option value=""> --------- </option>
+                      {% for m in marcas %}
+                      {% if m.modelos.all %}
+                      <optgroup label="{{m.descripcion}}">
+                        {% for mo in m.modelos.all %}
+                          {% if not mo.eliminado %}
+                            {% if request.GET.modelo|add:0 == mo.pk %}
+                              <option value="{{mo.pk}}" selected>{{mo.descripcion}}</option>
+                            {% else %}
+                              <option value="{{mo.pk}}">{{mo.descripcion}}</option>
+                            {% endif %}
+                          {% endif %}
+                        {% endfor %}
+                      </optgroup>
+                      {% endif %}
+                      {% endfor %}
+                    </select>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Placa</label>
+                      <input type="text" class="form-control" name="placa" value="{{request.GET.placa}}"/>
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Fecha Registro Inicial</label>
+                      <input type="date" class="form-control" name="fecha_inicio" 
+                      value="{% if request.GET.fecha_inicio %}{{request.GET.fecha_inicio}}{% else %}{% now "Y-m-d" %}{% endif %}" />
+                    </div>
+                    <div class="col-lg-2">
+                      <label>Fecha Registro Final</label>
+                      <input type="date" class="form-control" name="fecha_fin" 
+                      value="{% if request.GET.fecha_fin %}{{request.GET.fecha_fin}}{% else %}{% now "Y-m-d" %}{% endif %}" />
+                    </div>
+                    <div class="col-lg-2">
+                        <label>&nbsp;</label></br>
+                        <button class="btn btn-primary" id="btnBuscar">
+                          <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          <i class="fa fa-search"></i>Buscar
+                        </button>
+                    </div>
+                    <div class="col-lg-3">
+                      <label>&nbsp;</label></br>
+                      <a href="{% url 'Web:vehiculo' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nuevo Vehiculo</a>
+                    </div>
+
+                </div>
+                <br>                  
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Placa</th>
+                      <th>Marca</th>
+                      <th>Modelo</th>
+                      <th>Año</th>
+                      <th>Nro de Lantas</th>
+                      <th>KM</th>
+                      <th>F. Registro</th>
+                      <th style="width: 18%;"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for obj in objetos %}
+                    <tr>
+                      {% number_page forloop.counter page_obj.number pages as pag %}
+                      <td>{{pag}}</td>
+                      <td>{{obj.placa}}</td>
+                      <td>{{obj.modelo_vehiculo.marca_vehiculo}}</td>
+                      <td>{{obj.modelo_vehiculo}}</td>
+                      <td>{{obj.ano}}</td>
+                      <!--td>{{obj.ubicacion}} {% if obj.almacen %} / {{obj.almacen}} {% endif %}</td-->
+                      <td>{{obj.nro_llantas}}</td>
+                      <td>{{obj.km|unlocalize}}</td>
+                      <td>{{obj.created_at|date:'d/m/Y'}}</td>
+                      <td>
+                        <a href="{% url 'Web:ver-vehiculo' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-tools"></i>Operaciones</a>
+                        <a href="{% url 'Web:vehiculo' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
+                        <a href="#" class="btn btn-danger btn-sm"
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
+                        {% include 'Web/fragments/eliminar_vehiculo.html' %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                </div>
+                {% include 'Common/paginacion.html' %}
+              </form>
+
+            </div>
+          </div>
+        </div>
+  </div>
+  <!-- End of Page Wrapper -->
+  {% endblock %}
+  {% block bottom_scripts %}
+  <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
+  <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
+  <script src="{% static "vendor/select2/select2.min.js" %}"></script>
+  <script>
+    $(document).ready(function() {
+      $('.select2').select2();
+      $('#dataTable').DataTable({
+            responsive: true,
+						"searching": false,
+						"paging":   false,
+						"ordering": true,
+						"info":     false
+      });
+
+      $("#btnBuscar").click(function() {
+        $('#frmlist').submit();
+        let spinner = $(this.currentTarget).find('span')
+        spinner.removeClass('d-none')
+        setTimeout(_ => spinner.addClass('d-none'), 2000)
+        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
+        $(this).prop("disabled", true);
+      });
+    });
+  </script>
+  {% endblock %}
+  

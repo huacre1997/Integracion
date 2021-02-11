@@ -1,0 +1,115 @@
+{% extends 'Web/base.html' %}
+{% load static %}
+{% load base_extras %}
+{% load l10n %}
+{% block content %}  
+<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
+<link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
+<style>
+  table.dataTable tbody th, table.dataTable tbody td {
+      padding: 3px 3px; /* e.g. change 8x to 4px here */
+  }
+  </style>
+  <style>
+    .table-llanta{
+        background:#8ba987 url('{{obj.tipo_vehiculo.croquis.url}}') no-repeat center center;
+        background-size:100% 100%;
+    }
+    </style>  
+<div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Operaciones</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr class="bg-primary text-white">
+                          <th>Placa</th>
+                          <th>Marca</th>
+                          <th>Modelo</th>
+                          <th>Año</th>
+                          <th>Nro de Lantas</th>
+                          <th>KM</th>
+                          <th>F. Registro</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{{obj.placa}}</td>
+                          <td>{{obj.modelo_vehiculo.marca_vehiculo}}</td>
+                          <td>{{obj.modelo_vehiculo}}</td>
+                          <td>{{obj.ano}}</td>
+                          <td>{{obj.nro_llantas}}</td>
+                          <td>{{obj.km|unlocalize}}</td>
+                          <td>{{obj.created_at|date:'d/m/Y'}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-8">
+                  <table style="width: 80%; height: 400px;" class="table table-hover table-llanta">
+                    <tr>
+                      <td></td>
+                      <td></td>
+                    <tr>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                    <tr>
+                  </table>
+                </div>
+                <div class="col-lg-4">
+                  <a href="{% url 'Web:agregar-llanta' obj.pk %}" class="btn btn-success"><i class="fa fa-edit"></i>Agragrar Llanta</a>
+                  <br /><br />
+                  <div class="alert alert-info">
+                    <ul>
+                      {% for l in obj.llantas.all %}
+                        <li>Codigo de llanta  : <a href="{% url 'Web:llanta' l.pk %}" class="">
+                          <i class="fa fa-search"></i>{{l.codigo}}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+  </div>
+  <!-- End of Page Wrapper -->
+  {% endblock %}
+  {% block bottom_scripts %}
+  <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
+  <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
+  <script src="{% static "vendor/select2/select2.min.js" %}"></script>
+  <script>
+    $(document).ready(function() {
+      $('.select2').select2();
+      $('#dataTable').DataTable({
+            responsive: true,
+						"searching": false,
+						"paging":   false,
+						"ordering": true,
+						"info":     false
+      });
+
+      $("#btnBuscar").click(function() {
+        $('#frmlist').submit();
+        let spinner = $(this.currentTarget).find('span')
+        spinner.removeClass('d-none')
+        setTimeout(_ => spinner.addClass('d-none'), 2000)
+        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
+        $(this).prop("disabled", true);
+      });
+    });
+  </script>
+  {% endblock %}
+  

@@ -1,0 +1,86 @@
+{% extends 'Web/base.html' %}
+{% load static %}
+{% block content %}  
+
+<!-- Latest compiled and minified CSS -->
+<link href="{% static "vendor/bootstrap-select-1.13.14/dist/css/bootstrap-select.min.css" %}" rel="stylesheet" type="text/css">
+
+<div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+            	<div class="row">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
+                  {% if update %} Editar Usuario {% else %} Crear Nuevo Usuario {% endif %}</h6>
+            	</div>
+            </div>
+            
+            {% if usuario %}
+            <form method="post" action="{% url 'Web:Usuario' usuario.pk %}" enctype="multipart/form-data" >
+
+            {% else %}
+            <form method="post" enctype="multipart/form-data" >
+
+            {% endif %}
+              
+            {% csrf_token %}
+            <div class="card-body">
+              <div class="row">
+              	<div class="col-lg-2">Tipo Documento</div>
+                <div class="col-lg-2">{{formPersona.tip_doc}}</div>
+                <div class="col-lg-2">Nro Documento</div>
+                <div class="col-lg-2">{{formPersona.nro_doc}}</div>
+              </div>
+              <br>
+              <div class="row">
+              	<div class="col-lg-2">Nombre</div>
+                <div class="col-lg-2">{{formPersona.nom}}</div>
+                <div class="col-lg-2">Ape. Paterno</div>
+                <div class="col-lg-2">{{formPersona.apep}}</div>
+                <div class="col-lg-2">Ape. Materno</div>
+                <div class="col-lg-2">{{formPersona.apem}}</div>
+              </div>
+              <br>
+              <div class="row">
+              	<div class="col-lg-2">Usuario</div>
+                <div class="col-lg-2">{{formUsuario.username}}</div>
+                <div class="col-lg-2">Correo</div>
+                <div class="col-lg-2">{{formUsuario.email}}</div>
+              </div>
+              <br>
+              <div class="row">
+              	<div class="col-lg-2">Clave</div>
+                <div class="col-lg-2">{{formUsuario.password}}</div>
+                <div class="col-lg-2">Repita la Clave</div>
+              </div>
+              <br>
+              <div class="row">
+              	<div class="col-lg-2">Perfil</div>
+                <div class="col-lg-10">{{formUsuario.groups}}</div>
+                
+              </div>
+              
+			
+            </div>
+            <div class="card-footer text-muted">
+                <button type="submit" class="btn btn-primary">Grabar</button>
+                <a href="{% url 'Web:Usuarios' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+          	</form>
+          </div>				
+        </div>
+</div>
+
+{% endblock %}
+{% block bottom_scripts %}
+
+<script src="{% static "vendor/bootstrap-select-1.13.14/dist/js/bootstrap-select.min.js" %}"></script>
+
+<script>
+  $('.btn_x').on('click', function() {
+    var $this = $(this);
+    archivo = $('#id_solicitud').val()
+    if (archivo!='') { $this.button('loading');}
+  });
+  </script>
+{% endblock %}

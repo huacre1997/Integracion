@@ -1,0 +1,41 @@
+<!-- Heading -->
+{% if perfil %}
+{% for f in folders %}
+{% if f.pk in urls %}
+    <div class="sidebar-heading" style="color:#FFF">
+    {{f.name}}
+    </div>
+    {% if f.children.all %}
+        {% for hpn in f.children.all %}
+        {% if hpn.pk in urls %}
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+            {% if hpn.url == '#' %}
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" 
+            data-target="#collapse{{hpn.pk}}" aria-expanded="true" aria-controls="collapse{{hpn.pk}}">
+            {% else %}
+            <a class="nav-link collapsed" href="{{hpn.url}}">
+            {% endif  %}
+              <i class="{{hpn.icon_begin}}"></i>
+              <span>{{hpn.name}}</span>
+            </a>
+            {% if hpn.children.all %}
+            <div id="collapse{{hpn.pk}}" class="collapse" aria-labelledby="heading{{hpn.pk}}" data-parent="#accordionSidebar">
+              <div class="bg-white py-2 collapse-inner rounded">
+                {% for hsn in hpn.children.all %}
+                {% if hsn.pk in urls %}
+                    <!--h6 class="collapse-header">Custom Components:</h6-->
+                    <a class="collapse-item" href="{{hsn.url}}">{{hsn.name}}</a>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+            </li>
+        {% endif %}    
+        {% endfor %}
+    {% endif %}
+    <br />
+{% endif %}
+{% endfor %}
+{% endif %}

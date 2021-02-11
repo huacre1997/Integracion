@@ -1,0 +1,109 @@
+from django.urls import include, path
+
+from . import views
+from django import views as django_views
+
+app_name = 'Web'
+
+urlpatterns = [
+    # path('receta/api/', include(('apps.receta.api.urls', 'api'), namespace='receta_api')),
+    path('login/', views.LogueoView.as_view(), name='login'),
+    path('inicio/', views.HomePageView.as_view(), name='inicio'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('403/', views.Error403.as_view(), name='error403'),
+    # path('select_perfil/', views.SelectPerfilTemplateView.as_view(), name='select_perfil'),
+    path('Usuarios/', views.ListUsuariosListView.as_view(), name='Usuarios'),
+    path('Usuario/', views.UsuarioCreateView.as_view(), name='Usuario'),
+    path('Usuario/<int:pk>/', views.UsuarioUpdateView.as_view(), name='Usuario'),
+    path('jsi18n/', django_views.i18n.JavaScriptCatalog.as_view(), name='jsi18n'),
+
+    path('Perfiles/', views.PerfilesTemplateView.as_view(), name='Perfiles'),
+    path('Perfil/', views.PerfilCreateView.as_view(), name='Perfil'),
+    path('Perfil/<int:pk>/', views.PerfilUpdateView.as_view(), name='Perfil'),
+
+    path('Ubicaciones/', views.ListUbicacionesListView.as_view(), name='Ubicaciones'),
+    path('Ubicacion/', views.UbicacionCreateView.as_view(), name='Ubicacion'),
+    path('Ubicacion/<int:pk>/', views.UbicacionUpdateView.as_view(), name='Ubicacion'),
+    path('Ubicacion/<int:pk>/delete/', views.UbicacionDeleteView.as_view(), name='Ubicacion-delete'),
+
+    path('almacenes/', views.AlmacenesListView.as_view(), name='almacenes'),
+    path('almacen/', views.AlmacenCreateView.as_view(), name='almacen'),
+    path('almacen/<int:pk>/', views.AlmacenUpdateView.as_view(), name='almacen'),
+    path('almacen/<int:pk>/delete/', views.AlmacenDeleteView.as_view(), name='almacen-delete'),
+
+    path('lugares/', views.LugaresListView.as_view(), name='lugares'),
+    path('lugar/', views.LugarCreateView.as_view(), name='lugar'),
+    path('lugar/<int:pk>/', views.LugarUpdateView.as_view(), name='lugar'),
+    path('lugar/<int:pk>/delete/', views.LugarDeleteView.as_view(), name='lugar-delete'),
+
+    path('marca-renovaciones/', views.MarcaRenovacionesListView.as_view(), name='marca-renovaciones'),
+    path('marca-renovacion/', views.MarcaRenovacionCreateView.as_view(), name='marca-renovacion'),
+    path('marca-renovacion/<int:pk>/', views.MarcaRenovacionUpdateView.as_view(), name='marca-renovacion'),
+    path('marca-renovacion/<int:pk>/delete/', views.MarcaRenovacionDeleteView.as_view(), name='marca-renovacion-delete'),
+
+    path('modelo-renovaciones/', views.ModeloRenovacionesListView.as_view(), name='modelo-renovaciones'),
+    path('modelo-renovacion/', views.ModeloRenovacionCreateView.as_view(), name='modelo-renovacion'),
+    path('modelo-renovacion/<int:pk>/', views.ModeloRenovacionUpdateView.as_view(), name='modelo-renovacion'),
+    path('modelo-renovacion/<int:pk>/delete/', views.ModeloRenovacionDeleteView.as_view(), name='modelo-renovacion-delete'),
+
+    path('ancho-banda-renovaciones/', views.AnchoBandaRenovacionesListView.as_view(), name='ancho-banda-renovaciones'),
+    path('ancho-banda-renovacion/', views.AnchoBandaRenovacionCreateView.as_view(), name='ancho-banda-renovacion'),
+    path('ancho-banda-renovacion/<int:pk>/', views.AnchoBandaRenovacionUpdateView.as_view(), name='ancho-banda-renovacion'),
+    path('ancho-banda-renovacion/<int:pk>/delete/', views.AnchoBandaRenovacionDeleteView.as_view(), name='ancho-banda-renovacion-delete'),
+    path('render-option', views.RenderOption, name="render-option"),
+
+    path('marca-llantas/', views.MarcaLlantasListView.as_view(), name='marca-llantas'),
+    path('marca-llanta/', views.MarcaLlantaCreateView.as_view(), name='marca-llanta'),
+    path('marca-llanta/<int:pk>/', views.MarcaLlantaUpdateView.as_view(), name='marca-llanta'),
+    path('marca-llanta/<int:pk>/delete/', views.MarcaLlantaDeleteView.as_view(), name='marca-llanta-delete'),
+
+    path('modelo-llantas/', views.ModeloLlantasListView.as_view(), name='modelo-llantas'),
+    path('modelo-llanta/', views.ModeloLlantaCreateView.as_view(), name='modelo-llanta'),
+    path('modelo-llanta/<int:pk>/', views.ModeloLlantaUpdateView.as_view(), name='modelo-llanta'),
+    path('modelo-llanta/<int:pk>/delete/', views.ModeloLlantaDeleteView.as_view(), name='modelo-llanta-delete'),
+
+    path('medida-llantas/', views.MedidaLlantasListView.as_view(), name='medida-llantas'),
+    path('medida-llanta/', views.MedidaLlantaCreateView.as_view(), name='medida-llanta'),
+    path('medida-llanta/<int:pk>/', views.MedidaLlantaUpdateView.as_view(), name='medida-llanta'),
+    path('medida-llanta/<int:pk>/delete/', views.MedidaLlantaDeleteView.as_view(), name='medida-llanta-delete'),
+    path('render-option-llanta', views.RenderOptionLlanta, name="render-option-llanta"),
+
+    path('estado-llantas/', views.EstadoLlantasListView.as_view(), name='estado-llantas'),
+    path('estado-llanta/', views.EstadoLlantaCreateView.as_view(), name='estado-llanta'),
+    path('estado-llanta/<int:pk>/', views.EstadoLlantaUpdateView.as_view(), name='estado-llanta'),
+    path('estado-llanta/<int:pk>/delete/', views.EstadoLlantaDeleteView.as_view(), name='estado-llanta-delete'),
+
+    path('tipo-servicios/', views.TipoServiciosListView.as_view(), name='tipo-servicios'),
+    path('tipo-servicio/', views.TipoServicioCreateView.as_view(), name='tipo-servicio'),
+    path('tipo-servicio/<int:pk>/', views.TipoServicioUpdateView.as_view(), name='tipo-servicio'),
+    path('tipo-servicio/<int:pk>/delete/', views.TipoServicioDeleteView.as_view(), name='tipo-servicio-delete'),
+
+    path('tipo-pisos/', views.TipoPisosListView.as_view(), name='tipo-pisos'),
+    path('tipo-piso/', views.TipoPisoCreateView.as_view(), name='tipo-piso'),
+    path('tipo-piso/<int:pk>/', views.TipoPisoUpdateView.as_view(), name='tipo-piso'),
+    path('tipo-piso/<int:pk>/delete/', views.TipoPisoDeleteView.as_view(), name='tipo-piso-delete'),
+
+    path('marca-vehiculos/', views.MarcaVehiculosListView.as_view(), name='marca-vehiculos'),
+    path('marca-vehiculo/', views.MarcaVehiculoCreateView.as_view(), name='marca-vehiculo'),
+    path('marca-vehiculo/<int:pk>/', views.MarcaVehiculoUpdateView.as_view(), name='marca-vehiculo'),
+    path('marca-vehiculo/<int:pk>/delete/', views.MarcaVehiculoDeleteView.as_view(), name='marca-vehiculo-delete'),
+
+    path('modelo-vehiculos/', views.ModeloVehiculosListView.as_view(), name='modelo-vehiculos'),
+    path('modelo-vehiculo/', views.ModeloVehiculoCreateView.as_view(), name='modelo-vehiculo'),
+    path('modelo-vehiculo/<int:pk>/', views.ModeloVehiculoUpdateView.as_view(), name='modelo-vehiculo'),
+    path('modelo-vehiculo/<int:pk>/delete/', views.ModeloVehiculoDeleteView.as_view(), name='modelo-vehiculo-delete'),
+
+    path('llantas/', views.LlantasListView.as_view(), name='llantas'),
+    path('llanta/', views.LlantaCreateView.as_view(), name='llanta'),
+    path('llanta/<int:pk>/', views.LlantaUpdateView.as_view(), name='llanta'),
+    path('llanta/<int:pk>/delete/', views.LlantaDeleteView.as_view(), name='llanta-delete'),
+
+    path('vehiculos/', views.VehiculosListView.as_view(), name='vehiculos'),
+    path('vehiculo/', views.VehiculoCreateView.as_view(), name='vehiculo'),
+    path('vehiculo/<int:pk>/', views.VehiculoUpdateView.as_view(), name='vehiculo'),
+    path('vehiculo/<int:pk>/delete/', views.VehiculoDeleteView.as_view(), name='vehiculo-delete'),
+    path('render-option-vehiculo', views.RenderOptionVehiculo, name="render-option-vehiculo"),
+
+    path('ver-vehiculo/<int:pk>/', views.VerVehiculoView.as_view(), name='ver-vehiculo'),
+    path('agregar-llanta/<int:pk>/', views.AgregarLlantaCreateView.as_view(), name='agregar-llanta'),
+]

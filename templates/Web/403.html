@@ -1,0 +1,16 @@
+{% extends 'Web/base.html' %}
+{% block content %}
+<br>
+<div class="alert alert-danger">
+	<h1><i class="glyphicon glyphicon-ban-circle"></i></h1>
+    <p> No cuenta con permisos para acceder a esta opción.</p>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="btn-group">
+          <a class="btn btn-primary btn-lg" href="/Web"><i class="fa fa-home"></i> Inicio</a>
+          <a class="btn btn-danger btn-lg" href="{% url "Web:logout" %}"><i class="fa fa-sign-out"></i> Salir</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

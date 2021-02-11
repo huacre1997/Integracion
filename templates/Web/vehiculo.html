@@ -1,0 +1,97 @@
+{% extends 'Web/base.html' %}
+{% load static %}
+{% block content %}  
+<style>
+  input[type=checkbox] {
+      transform: scale(2.5);
+  }
+</style>  
+<div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+            	<div class="row">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
+                  {% if update %} Editar Vehiculo {% else %} Crear Vehiculo {% endif %}</h6>
+            	</div>
+            </div>
+            <form method="post" action="" enctype="multipart/form-data" >
+            {% csrf_token %}
+            <div class="card-body">
+              <div class="babge badge-info"> Datos Generales</div>
+              <div class="row">	
+                <div class="col-lg-4"><label>Tipo</label>{{form.tipo_vehiculo}}</div>
+                <div class="col-lg-4"><label>Propiedad</label>{{form.propiedad}}</div>
+                <div class="col-lg-4"><label>Placa</label>{{form.placa}}</div>
+              </div>
+              <div class="row">	
+                <div class="col-lg-4"><label>Marca</label>{{form.marca}}</div>
+                <div class="col-lg-4"><label>Modelo</label>{{form.modelo_vehiculo}}</div>
+                <div class="col-lg-4"><label>Año</label>{{form.ano}}</div>
+              </div>
+              <br>
+              <div class="babge badge-info"> Características</div>
+              <div class="row">	
+                <div class="col-lg-4"><label>Operación</label>{{form.operacion}}</div>
+                <div class="col-lg-4"><label>Ubicación</label>{{form.ubicacion}}</div>
+                <div id="valueAlmacen" class="col-lg-4" 
+                {% if form.ubicacion.value == 1 %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                <label>Almacen</label>{{form.almacen}}
+                </div>
+              </div>
+              <div class="row">	
+                <div class="col-lg-4"><label>Km Promedio</label>{{form.km}}</div>
+                <div class="col-lg-4"><label>Nro de Llantas</label>{{form.nro_llantas}}</div>
+                <div class="col-lg-4"><label>Nro de Llantas de Repuesto</label>{{form.nro_llantas_repuesto}}</div>
+              </div>
+              <br>
+              <div class="babge badge-info"> Observaciones </div>
+              <br>
+              <div class="row">
+                <div class="col-lg-12">{{form.obs}}</div>
+              </div>
+         
+			
+            </div>
+            <div class="card-footer text-muted">
+                <button type="submit" class="btn btn-primary">Grabar</button>
+                <a href="{% url 'Web:vehiculos' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+          	</form>
+          </div>				
+        </div>
+</div>
+{% endblock %}
+{% block bottom_scripts %}
+
+<script type="text/javascript" charset="utf-8">
+$('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').prop("selected", true);
+function actualizar_modelo(){
+    $('#id_modelo_vehiculo').empty();
+    $('#id_modelo_vehiculo').append($("<option>", {value: "",text: " --------- "}));              
+    $.ajax({
+      'url' : '/Web/render-option-vehiculo',
+      'type' : 'GET',
+      'async': false,
+      'data' : {'id_marca' : $('#id_marca').val()},
+      'success' : function(data) {
+       $.each(data, function( index, valuex ) {
+          $('#id_modelo_vehiculo').append($("<option>", {value: valuex.id ,text: valuex.descripcion}));              
+       });
+      },
+      'error' : function(request,error){
+        //alert("Request: "+JSON.stringify(request));
+      }
+    });
+}
+$('#id_ubicacion').change(function() {
+      //alert($(this).val());
+      if( $(this).val()==1 ){
+        $('#valueAlmacen').show();
+      }else{
+        $('#valueAlmacen').hide();
+      }
+    });
+
+</script>
+{% endblock %}
