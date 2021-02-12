@@ -26,6 +26,9 @@ from Web.constanst import ACCION_NUEVO, ACCION_EDITAR, ACCION_ELIMINAR
 from django.http import HttpResponse
 from django.http import JsonResponse
 import json
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.utils.decorators import method_decorator
+
 from .mixins import ValidateMixin,AdminPermission
 class LogueoView(FormView):
     form_class = LoginForm
@@ -759,22 +762,24 @@ def RenderOption(request):
 class MarcaLlantasListView(LoginView, ListView):
     template_name = 'Web/marca_llantas.html'
     model = MarcaLlanta
-    paginate_by = 10
-    context_object_name = 'objetos'
-
-    def get_queryset(self):
-        # import pdb; pdb.set_trace();
-        qs = super().get_queryset()
-        qs = qs.filter(eliminado=False)
-        q = self.request.GET.get('q','')
-        qs = qs.filter(descripcion__icontains=q)
-        return qs.order_by('descripcion')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
-        return context
-
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in MarcaLlanta.objects.filter(activo=True):
+                    data.append(i.toJSON())
+            else:
+                data["error"]="Ha ocurrido un error"
+        except Exception as e:
+            print(e)
+        return JsonResponse(data,safe=False)
+   
 
 class MarcaLlantaCreateView(LoginView, CreateView):
     form_class = MarcaLlantaForm
@@ -815,18 +820,24 @@ class MarcaLlantaUpdateView(LoginView, UpdateView):
         context['update'] = True
         return context
 
-
+import json
 class MarcaLlantaDeleteView(LoginView, View):
     action = ACCION_EDITAR
     
-    def get(self, request, *args, **kwargs):
-        id = self.kwargs['pk']
-        obj = MarcaLlanta.objects.get(pk=id)
-        obj.modified_by=request.user
-        obj.eliminado = True
-        obj.save()
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return HttpResponseRedirect(reverse('Web:marca-llantas',))
+    def post(self, request, *args, **kwargs):
+        id=self.kwargs["pk"]
+        existe = MarcaLlanta.objects.filter(pk=id)
+        if existe.exists():
+            obj=existe.first()
+            print(obj)
+            obj.modified_by=request.user
+            obj.eliminado = True
+            obj.activo=False
+            obj.save()
+            return JsonResponse({"status":200},safe=False)
+
+        else:
+            return JsonResponse({"status":500},safe=False)
 
 
 class ModeloLlantasListView(LoginView, ListView):

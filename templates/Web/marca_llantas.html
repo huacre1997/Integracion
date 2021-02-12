@@ -42,25 +42,24 @@
                       <th style="width: 20%;"></th>
                     </tr>
                   </thead>
+                  
+                  {% comment %}
                   <tbody>
-                    {% for obj in objetos %}
                     <tr>
-                      {% number_page forloop.counter page_obj.number pages as pag %}
-                      <td>{{pag}}</td>
                       <td>{{obj.descripcion}}</td>
                       <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
                       <td>
                         <a href="{% url 'Web:marca-llanta' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
-                        <a href="{% url 'Web:marca-llanta-delete' obj.pk %}" class="btn btn-danger btn-sm"
-                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
-                        {% include 'Web/fragments/eliminar_marcallanta.html' %}
+                        <button type="button" onclick='eliminateMarca("{% url 'Web:marca-llanta-delete' obj.pk %}")' data-id="{{obj.pk}}" class="btn btn-danger btn-sm btn-desactivate-marca"
+                      ><i class="fa fa-ban"></i></button>
                       </td>
                     </tr>
-                    {% endfor %}
                   </tbody>
+                  {% endcomment %}
+                    
+                 
                 </table>
                 </div>
-                {% include 'Common/paginacion.html' %}
               </form>
 
             </div>
@@ -70,17 +69,91 @@
   <!-- End of Page Wrapper -->
   {% endblock %}
   {% block bottom_scripts %}
-  <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
-  <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
+  <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js  "></script>
+  <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
   <script>
+    var tablaMarcas
     $(document).ready(function() {
-      $('#dataTable').DataTable({
-            responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
-      });
+      tablaMarcas = $("#dataTable").DataTable({
+     responsive:true,
+      ajax: {
+        url: "{% url 'Web:marca-llantas' %}",
+        type: "POST",
+        data: {
+          "action": "searchData"
+        },
+        dataSrc: ""
+      },
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+      "language": {
+        "sSearch": "Buscar",
+        "emptyTable": "No hay datos disponibles para esta tabla",
+        "lengthMenu": "Mostrando _MENU_ entradas",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "zeroRecords": "No se encontraron resultados",
+        "info": "Mostrando _START_ al _END_ de _TOTAL_ entradas",
+        "infoEmpty": "Mostrando 0 al 0 de 0 entradas",
+
+
+      },
+      "order": [
+        [0, 'asc']
+      ],
+      columns: [{
+          "data": 'id',className: "text-center middle",
+        },
+        {
+          "data": 'descripcion',className: "middle"
+        },
+        
+     
+        {
+          "data": 'activo',
+          className: "estado middle",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check text-success" aria-hidden="true"></i>';
+            } else {
+              return "Inactivo"
+            }
+          }
+        },
+        {
+          "data": 'estado',className:"text-center middle"
+        },
+
+
+      ],
+      columnDefs: [{
+          targets: [-1],
+
+          render: function (row, data, index) {
+            var buttons =
+              '<a href="../marca-llanta/'+index.id+'/" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>'+
+              '</a> <button type="button" onclick="eliminateMarca('+index.id+')" data-id="marca-llanta/'+index.id+'/delete/" class="btn btn-danger btn-sm btn-desactivate-marca"><i class="fa fa-ban"></i></button>';
+
+            return buttons;
+
+          },
+
+        },
+
+
+      ],
+      "createdRow": function (row, data, index) {
+        // if (!data["estado"]) {
+        //   $('.btn-success', row).eq(0).removeClass().addClass("btn btn-danger btn-circle")
+        //   $(".fa-thumbs-up", row).eq(0).removeClass().addClass("fas fa-thumbs-down")
+
+        // }
+      },
+
+    });
+
 
       $("#btnBuscar").click(function() {
         $('#frmlist').submit();
@@ -91,6 +164,8 @@
         $(this).prop("disabled", true);
       });
     });
+    
+
   </script>
   {% endblock %}
   

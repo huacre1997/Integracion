@@ -8,6 +8,7 @@ import uuid
 import os
 from datetime import datetime
 from django.contrib.auth.models import AbstractUser
+from django.forms import model_to_dict
 
 from django.conf import settings
 def _update_filename(instance, filename, path):
@@ -196,7 +197,9 @@ class MarcaLlanta(models.Model):
    def __str__(self):
       return self.descripcion
 
-
+   def toJSON(self):
+        item = model_to_dict(self)
+        return item
 class ModeloLlanta(models.Model):
    marca_llanta = models.ForeignKey(MarcaLlanta, on_delete=models.PROTECT, related_name="modelos")
    descripcion = models.CharField(max_length=100)
