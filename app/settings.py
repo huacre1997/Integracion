@@ -42,16 +42,21 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    'debug_toolbar',
+    'tempus_dominus',
+    'bootstrap_datepicker_plus'
 ]
 
 LOCAL_APPS = [
+ 
     'Web',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
 
-
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -60,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -82,7 +89,11 @@ TEMPLATES = [
         },
     },
 ]
-
+INTERNAL_IPS = [
+    # ...
+    '127.0.0.1',
+    # ...
+]
 WSGI_APPLICATION = 'app.wsgi.application'
 
 
@@ -142,7 +153,6 @@ USE_TZ = True
 #Location of static files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
-
 MEDIA_ROOT = ''
 MEDIA_URL = '/documentos/'
 
@@ -151,5 +161,11 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 AUTH_USER_MODEL="Web.Usuario"
-
-#AUTH_USER_MODEL = 'profiles.User'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  
+MAILER_EMAIL_BACKEND = EMAIL_BACKEND  
+EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_HOST_PASSWORD = 'Sonyw395'  
+EMAIL_HOST_USER = 'huacreenciso97@gmail.com'  
+EMAIL_PORT = 465  
+EMAIL_USE_SSL = True  
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

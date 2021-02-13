@@ -16,6 +16,8 @@
 
   <!-- Custom styles for this template-->
   <link href="{% static "css/sb-admin-2.min.css" %}" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
 <style>
   .bg-login-imagex{
     background:url({% static "img/logo_login.jpg" %});
@@ -64,20 +66,13 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-user btn-block">Ingresar</button>
                     <br/>
-                    {% if messages %}
-                      {% for message in messages %}
-                      <div class="alert alert-{{ message.tags }} alert-dismissable">
-                      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                      {{ message }}
-                      </div>
-                      {% endfor %}
-                    {% endif %}
+              
 
 
                   </form>
                   <hr>
                   <div class="text-center">   
-                    <a class="small" href="forgot-password.html">¿Restablecer contraseña?</a>
+                    <a class="small" href="{% url 'Web:password_reset' %}">¿Restablecer contraseña?</a>
                   </div>
                   
                 </div>
@@ -101,7 +96,34 @@
 
   <!-- Custom scripts for all pages-->
   <script src="{% static "js/sb-admin-2.min.js" %}"></script>
+  <script>
+           const notificacion=(time,title,type,message)=>   {
+    Swal.fire({
+        title: title,
+        timer: time,
+        timerProgressBar: true,
+        icon: type,
+        showConfirmButton: false,
+        text: message,
 
+    })
+  }
+    {% if messages %}
+    var html_message=""
+    var tipo=""
+        {% for mensaje in messages %}
+            html_message+="{{mensaje}}"
+            tipo+="{{mensaje.tags}}"
+        {%endfor%}
+        if(tipo=="success"){
+          notificacion(1500,"Genial!","success",html_message)
+
+        }else{
+        notificacion(1500,"Ha ocurrido un error!","error",html_message)
+        }
+    {%endif%}
+
+  </script>
 </body>
 
 </html>

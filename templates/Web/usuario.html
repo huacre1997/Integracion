@@ -25,41 +25,34 @@
               
             {% csrf_token %}
             <div class="card-body">
-              <div class="row">
-              	<div class="col-lg-2">Tipo Documento</div>
-                <div class="col-lg-2">{{formPersona.tip_doc}}</div>
-                <div class="col-lg-2">Nro Documento</div>
-                <div class="col-lg-2">{{formPersona.nro_doc}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Nombre</div>
-                <div class="col-lg-2">{{formPersona.nom}}</div>
-                <div class="col-lg-2">Ape. Paterno</div>
-                <div class="col-lg-2">{{formPersona.apep}}</div>
-                <div class="col-lg-2">Ape. Materno</div>
-                <div class="col-lg-2">{{formPersona.apem}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Usuario</div>
-                <div class="col-lg-2">{{formUsuario.username}}</div>
-                <div class="col-lg-2">Correo</div>
-                <div class="col-lg-2">{{formUsuario.email}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Clave</div>
-                <div class="col-lg-2">{{formUsuario.password}}</div>
-                <div class="col-lg-2">Repita la Clave</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Perfil</div>
-                <div class="col-lg-10">{{formUsuario.groups}}</div>
+              <div class="form-row">
+                <div class="form-group col-lg-4 offset-lg-4">
+                  <label for="">Usuario:</label>
+                  {{form.persona}}
+                </div>
                 
               </div>
-              
+              <div class="form-row">
+                <div class="form-group col-lg-4">
+                  <label for="">Usuario:</label>
+                  {{form.username}}
+                </div>
+                <div class="form-group col-lg-4">
+                  <label for="">Contraseña</label>
+                  {{form.password}}
+                </div>
+                <div class="form-group col-lg-4">
+                  <label for="">Repetir Contraseña</label>
+                  {{form.password2}}
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-lg-6">
+                  <label for="">Usuario:</label>
+                  {{form.groups}}
+                </div>
+             
+              </div>
 			
             </div>
             <div class="card-footer text-muted">

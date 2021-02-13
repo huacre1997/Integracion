@@ -17,7 +17,7 @@ from .common import LoginView, LoginSelectPerfilView
 from django.urls import reverse
 from .models import (Persona, Usuario, Ubicacion, MarcaRenova, ModeloRenova, AnchoBandaRenova,
     MarcaLlanta, ModeloLlanta, MedidaLlanta, Almacen, Lugar, EstadoLlanta, TipoServicio, TipoPiso, 
-    MarcaVehiculo, ModeloVehiculo, Vehiculo, Llanta)
+    MarcaVehiculo, ModeloVehiculo, Vehiculo, Llanta,Provincia,Distrito)
 from django.db import transaction	
 from datetime import datetime, timedelta
 from django.db.models import Q
@@ -30,6 +30,53 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.utils.decorators import method_decorator
 
 from .mixins import ValidateMixin,AdminPermission
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from six import text_type
+from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
+from django.core import serializers
+
+def ProvinciaComboBox(request):
+    if request.method=="POST":
+        post = json.loads(request.body.decode("utf-8"))
+        print(post)
+        qs=Provincia.objects.filter(departamento_id=post).only("descripcion","id")
+        qs_json = serializers.serialize('json', qs)
+        return HttpResponse(qs_json, content_type='application/json')
+def DistritoComboBox(request):
+    if request.method=="POST":
+        post = json.loads(request.body.decode("utf-8"))
+        qs=Distrito.objects.filter(provincia_id=post)
+        qs_json = serializers.serialize('json', qs)
+        return HttpResponse(qs_json, content_type='application/json')
+class PasswordReset(PasswordResetView):
+    email_template_name = 'Web/password_reset_email.html'
+
+    template_name="Web/password_reset_form.html"
+class PasswordResetDone(PasswordResetDoneView):
+    template_name="Web/password_reset_done.html"
+class PasswordResetConfirm(PasswordResetConfirmView):
+    # template_name="Web/password_reset_confirm.html"
+    success_url=reverse_lazy("Web:password_reset_complete")
+class PasswordResetComplete(PasswordResetCompleteView):
+    template_name="Web/password_reset_complete.html"
+class AccountActivationTokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (
+            text_type(user.pk) + text_type(timestamp) +
+            text_type(user.profile.email_confirmed)
+        )
+
+
+class PasswordResetToken(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (
+            text_type(user.pk) + text_type(timestamp) +
+            text_type(user.profile.reset_password)
+        )
+
+
+account_activation_token = AccountActivationTokenGenerator()
+password_reset_token = PasswordResetToken()
 class LogueoView(FormView):
     form_class = LoginForm
     template_name = "Web/login.html"
@@ -48,6 +95,8 @@ class LogueoView(FormView):
         if user is not None and user.is_active:
             print("if")
             auth.login(self.request, user)
+            messages.success(self.request,f"Bienvenido {self.request.user}",extra_tags="login")
+
             return redirect(self.success_url)
         else:
             print("else")
@@ -73,6 +122,7 @@ class LogoutView(LoginSelectPerfilView, View):
     def get(self, request):
         auth.logout(request)
         return render(request, self.template_name)
+
 
 
 class PerfilesTemplateView(LoginSelectPerfilView,AdminPermission ,TemplateView):
@@ -170,80 +220,148 @@ class ListUsuariosListView(LoginView, ValidateMixin,ListView):
                 ) for word in terms]
                 qs = qs.filter(*search)
         return qs
+class PersonaListView(LoginView,ListView):
+    template_name = 'Web/personas.html'
+    model = Persona
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Persona.objects.all():
+                    data.append(i.toJSON())
+            else:
+                data["error"]="Ha ocurrido un error"
+        except Exception as e:
+            print(e)
+        return JsonResponse(data,safe=False)
    
+class PersonaUpdateView(LoginView,UpdateView):
+    model = Persona
+    template_name="Web/persona.html"
+
+    context_object_name = "persona" 
+    form_class = PersonaForm
+    login_url = "Web:login"
+
+    def dispatch(self,request,*args, **kwargs):
+        self.object=self.get_object() 
+        return super().dispatch(request,*args,**kwargs)
+    
+    def post(self,request,*args, **kwargs):
+        data={}
+
+        try:
+            action=request.POST["action"]
+            if action=="edit":
+                form = self.get_form()
+
+                if form.is_valid():
+                    form.save()
+                    data = {
+                    'stat': 'ok',
+                   }
+                    return JsonResponse(data)
+                else:
+                    data = {
+                    "error":form.errors,
+                    'stat': False,
+                    }
+                    return JsonResponse(data)
+            else:
+                data["error"]="Nose ha ingresado nada"
+                return JsonResponse(data)
+
+        except Exception as e:
+            print(e)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["provincia"] = Provincia.objects.filter(departamento=self.object.departamento)
+        context["distrito"] = Distrito.objects.filter(provincia=self.object.provincia)
+ 
+        return context
+    
+class PersonaCreateView(LoginView,CreateView):
+    model=Persona
+    template_name = 'Web/persona.html'
+    form_class=PersonaForm
+    # success_url = reverse_lazy("Web:Personas")
+    action = ACCION_NUEVO
+    
+    def post(self,request,*args, **kwargs):
+        data={}
+        print(request.POST)
+        try:
+            action=request.POST["action"]
+            if action=="add":
+                form = self.get_form()
+                if form.is_valid():     
+                    form.save()    
+                    print("if form valid create")
+                    data = {  }
+                    return JsonResponse(data)
+                else:
+                    data = {
+                    "error":form.errors,
+                    'stat': False,
+                    }
+                    return JsonResponse(data)
+            else:
+                print("else")
+                data["error"]="Nose ha ingresado nadas"
+                return HttpResponse("error")
+        except Exception as e:
+            print(e)
 
 class UsuarioCreateView(LoginView, CreateView):
     model=Usuario
     template_name = 'Web/usuario.html'
     success_url = reverse_lazy("Web:Usuarios")
     action = ACCION_NUEVO
-
-    def post(self, *args,**kwargs):
+    form_class=UsuarioForm
+    def post(self,request,*args, **kwargs):
+        data={}
+        print(request.POST)
         try:
-            print(self.request.POST)
-            with transaction.atomic():
-                persona = Persona()
-                persona.tip_doc = self.request.POST["tip_doc"]
-                persona.nro_doc = self.request.POST["nro_doc"]
-                persona.nom = self.request.POST["nom"]
-                persona.apep = self.request.POST["apep"]
-                persona.apem = self.request.POST["apem"]
-                persona.created_by = self.request.user
-                persona.save()
+            action=request.POST["action"]
+            if action=="add":
+                form = self.get_form()
+                if form.is_valid():     
+                    form.save()    
+                    print("if form valid create")
+                    data = {  }
+                    return JsonResponse(data)
+                else:
+                    data = {
+                    "error":form.errors,
+                    'stat': False,
+                    }
+                    messages.success(self.request, 'Se ha guardado correctamente.')
 
-                user = Usuario()
-                print("set usuario")
+                    return JsonResponse(data)
+            else:
+                print("else")
+                data["error"]="Nose ha ingresado nadas"
 
-                user.username = self.request.POST["username"]
-                print("set username")
-
-                user.set_password(self.request.POST["password"])
-
-                print("set pass")
-                user.email = self.request.POST["email"]
-                print("email")
-                
-                user.created_by = self.request.user
-                
-                print("set created")
-
-                # user.save()
-
-                # usuario = Usuario()
-                # usuario.user = user
-                user.persona = persona
-                print("persona")
-
-                # usuario.created_by = self.request.user
-                 
-                user.save()
-                print("save")
-
-                user.groups.clear()
-                print("set clear")
-
-                user.groups.set(self.request.POST["groups"])  
-                print("set group")
-                # usuario.perfil.set(form.cleaned_data['usuario']['perfil'])
-                # usuario.save()
-
-                messages.success(self.request, 'Se ha guardado correctamente.')
-                #return super().form_valid(form)
-            
-        except Exception as identifier:
-            print(identifier)
-        return HttpResponseRedirect("/Web/Usuarios")        
+                return HttpResponse("error")
+        except Exception as e:
+            print(e)     
 
     # def form_invalid(self, form):
     #     messages.warning(self.request, form.errors)
     #     return super().form_invalid(form)
 
-    def get_context_data(self, **kwargs):
-        if 'formUsuario' not in kwargs:
-            kwargs['formUsuario'] = UsuarioForm()
-        if 'formPersona' not in kwargs:
-            kwargs['formPersona'] = PersonaForm()
-        return kwargs
+    # def get_context_data(self, **kwargs):
+    #     if 'formUsuario' not in kwargs:
+    #         kwargs['formUsuario'] = UsuarioForm()
+    #     if 'formPersona' not in kwargs:
+    #         kwargs['formPersona'] = PersonaForm()
+    #     return kwargs
 
 class UsuarioUpdateView(LoginView,AdminPermission, UpdateView):
 

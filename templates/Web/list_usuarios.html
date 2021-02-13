@@ -1,5 +1,8 @@
 {% extends 'Web/base.html' %}
 {% load static %}
+{% block blockAdmin %}nav-item active{% endblock  %}
+{% block collapseAdmin %}collapse show{% endblock  %}
+{% block usuarios %}collapse-item active{% endblock  %}
 {% block content %}  
 <link href='{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}' rel="stylesheet">
   <div id="wrapper">

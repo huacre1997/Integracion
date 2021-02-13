@@ -45,7 +45,7 @@ class Departamento(models.Model):
 	code = models.CharField(max_length=5)
 	descripcion = models.CharField(max_length=100)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.descripcion
 
 class Provincia(models.Model):
@@ -53,7 +53,7 @@ class Provincia(models.Model):
 	code = models.CharField(max_length=5)
 	descripcion = models.CharField(max_length=100)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.descripcion
 
 class Distrito(models.Model):
@@ -61,7 +61,7 @@ class Distrito(models.Model):
 	code = models.CharField(max_length=5)
 	descripcion = models.CharField(max_length=100)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.descripcion
 
 
@@ -72,7 +72,7 @@ class Persona(models.Model):
    nom=models.CharField(max_length=100)
    apep=models.CharField(max_length=100)
    apem=models.CharField(max_length=100, null=True, blank=True)
-   fech_nac=models.DateField(null=True, blank=True)
+   fech_nac=models.DateField()
    sexo=models.IntegerField(choices=CHOICES_SEXO, blank=True, null=True)
    departamento = models.ForeignKey(Departamento, on_delete=models.PROTECT, null=True, blank=True)
    provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, null=True, blank=True)
@@ -89,10 +89,19 @@ class Persona(models.Model):
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
-
+   class Meta:
+      ordering =["-created_at"]
+   def get_image(self):
+        if self.foto_nueva:
+            return '{}{}'.format(settings.MEDIA_URL,self.foto_nueva)
+        return '{}{}'.format(settings.STATIC_URL,"img/img_avatar1.png")
    def __str__(self):
       return self.apep + ' '  + self.apem + ' ' + self.nom
+   def toJSON(self):
+      item = model_to_dict(self)
+      item["foto_nueva"]=self.get_image()
 
+      return item
 
 class Usuario(AbstractUser):
    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True, blank=True)

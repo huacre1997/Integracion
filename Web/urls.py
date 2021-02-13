@@ -2,16 +2,25 @@ from django.urls import include, path
 
 from . import views
 from django import views as django_views
-
 app_name = 'Web'
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 urlpatterns = [
-    # path('receta/api/', include(('apps.receta.api.urls', 'api'), namespace='receta_api')),
+    path("password_reset", auth_views.PasswordResetView.as_view(success_url=reverse_lazy("Web:password_reset_done")), name="password_reset"),
+    path("password_reset/done/", auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
+    path("reset/<uidb64>/<token>", auth_views.PasswordResetConfirmView.as_view(success_url=reverse_lazy("Web:password_reset_complete")), name="password_reset_confirm"),
+    path("password-reset-complete/",auth_views.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
     path('login/', views.LogueoView.as_view(), name='login'),
     path('inicio/', views.HomePageView.as_view(), name='inicio'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('403/', views.Error403.as_view(), name='error403'),
     # path('select_perfil/', views.SelectPerfilTemplateView.as_view(), name='select_perfil'),
+    path('Personas/', views.PersonaListView.as_view(), name='Personas'),
+    path('Persona/', views.PersonaCreateView.as_view(), name='Persona'),
+    path('Persona/<int:pk>/', views.PersonaUpdateView.as_view(), name='Persona'),
+    path("Provincia/",views.ProvinciaComboBox,name="Provincia"),
+    path("Distrito/",views.DistritoComboBox,name="Distrito"),
     path('Usuarios/', views.ListUsuariosListView.as_view(), name='Usuarios'),
     path('Usuario/', views.UsuarioCreateView.as_view(), name='Usuario'),
     path('Usuario/<int:pk>/', views.UsuarioUpdateView.as_view(), name='Usuario'),

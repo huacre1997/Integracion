@@ -6,12 +6,55 @@ from .models import Usuario
 from Web.models import (Persona, Usuario, Ubicacion, ModeloRenova,
     MarcaRenova, AnchoBandaRenova, MarcaLlanta, ModeloLlanta, MedidaLlanta,
     Almacen, Lugar, EstadoLlanta, TipoServicio, TipoPiso, MarcaVehiculo, ModeloVehiculo, Vehiculo,
-    Llanta, TipoVehiculo)
+    Llanta, TipoVehiculo,Departamento,Provincia,Distrito)
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from django.contrib.auth.models import Group
 
+from django import forms
+from django.contrib.auth.forms import  PasswordResetForm, SetPasswordForm
+from bootstrap_datepicker_plus import DatePickerInput
 
+
+class UserPasswordResetForm(SetPasswordForm):
+    """Change password form."""
+    new_password1 = forms.CharField(label='Password',
+        help_text="<ul class='errorlist text-muted'><li>Your password can 't be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can 't be a commonly used password.</li> <li>Your password can 't be entirely numeric.<li></ul>",
+        max_length=100,
+        required=True,
+        widget=forms.PasswordInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'password',
+            'type': 'password',
+            'id': 'user_password',
+        }))
+
+    new_password2 = forms.CharField(label='Confirm password',
+        help_text=False,
+        max_length=100,
+        required=True,
+        widget=forms.PasswordInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'confirm password',
+            'type': 'password',
+            'id': 'user_password',
+        }))
+
+
+class UserForgotPasswordForm(PasswordResetForm):
+    """User forgot password, check via email form."""
+    email = forms.EmailField(label='Email address',
+        max_length=254,
+        required=True,
+        widget=forms.TextInput(
+        attrs={'class': 'form-control',
+                'placeholder': 'email address',
+                'type': 'text',
+                'id': 'email_address'
+                }
+        ))
 class LoginForm(forms.Form):
     usuario = forms.CharField(widget=forms.TextInput(
         attrs={
@@ -40,18 +83,20 @@ class LoginForm(forms.Form):
 
 
 class PersonaForm(forms.ModelForm):
+    departamento = forms.ModelChoiceField(queryset=Departamento.objects.all(), empty_label="Seleccione departamento...")
+
     class Meta:
         model = Persona
-        fields = ('tip_doc', 'nro_doc', 'nom', 'apep', 'apem', )
-        widgets = {
-            'tip_doc': forms.Select(attrs={'class': 'form-control'}),
-            'nro_doc': forms.TextInput(attrs={'class': 'form-control'}),
-            'nom': forms.TextInput(attrs={'class': 'form-control'}),
-            'apep': forms.TextInput(attrs={'class': 'form-control'}),
-            'apem': forms.TextInput(attrs={'class': 'form-control'}),
-        }
-
-
+        exclude = ["uuid","created_at","modified_at","created_by","modified_by","eliminado","uuid"]
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                "class": "form-control",
+            })
+       
+    
 class CalendarWidget(forms.TextInput):
     class Media:
         js = ('jQuery.js', 'calendar.js', 'noConflict.js',
@@ -86,20 +131,20 @@ class UserGroupForm(forms.ModelForm):
 
 
 class UsuarioForm(forms.ModelForm):
+
     class Meta:
         model = Usuario
-        fields = ["username","email","password","groups"]
+        fields = ["username","password","groups","persona"]
         # widgets = {
         # 	'perfil': forms.SelectMultiple( attrs={'class':'selectpicker',}),
         # }
         widgets = {
-      
-                'email': forms.EmailInput(attrs={
-                    
-                    "placeholder": "Ingrese un correo electrónico",
+                'password':forms.PasswordInput(render_value=True, attrs={
+                
+                    "placeholder": "Contraseña",
                     'class': 'form-control',
                 }),
-                'password':forms.PasswordInput(render_value=True, attrs={
+                'password2':forms.PasswordInput(render_value=True, attrs={
                 
                     "placeholder": "Contraseña",
                     'class': 'form-control',
@@ -110,10 +155,10 @@ class UsuarioForm(forms.ModelForm):
                     'class': 'form-control',
                 }),
                 'groups': FilteredSelectMultiple("Permission", False, attrs={'class':'form-control'}),
-
-
-
             }
+
+
+            
 
 
 # class UsuarioMultiForm(MultiModelForm):

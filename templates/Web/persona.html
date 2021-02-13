@@ -1,0 +1,352 @@
+<div class="container">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  {% if persona %}
+  <form method="POST" id="formPersona" action="{% url 'Web:Persona' persona.pk %}" class="needs-validation" novalidate enctype="multipart/form-data">
+
+
+    {% else %}
+    <form method="POST" id="formPersona" class="needs-validation" novalidate enctype="multipart/form-data">
+
+      {% endif %}
+
+      {% csrf_token %}
+      <input type="hidden" name="action" value="{% if persona %}edit{%else%}add{% endif %}">
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="id_nom">Nombres:</label>
+          <input type="text" value="{% if persona %}{{persona.nom}}{% endif %}" class="form-control" name="nom"
+            maxlength="100" required="" id="id_nom">
+        </div>
+        <div class="form-group col-md-4"> <label for="id_apep">Apellido paterno:</label>
+          <input type="text" class="form-control" value="{% if persona %}{{persona.apep}}{% endif %}" name="apep"
+            maxlength="100" required="" id="id_apep"></div>
+        <div class="form-group col-md-4"> <label for="id_apem">Apellido materno:</label>
+          <input type="text" class="form-control" value="{% if persona %}{{persona.apem}}{% endif %}" name="apem"
+            maxlength="100" id="id_apem"></div>
+      </div>
+
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="id_tip_doc">Tip doc:</label>
+          <select name="tip_doc" class="form-control" required="" id="id_tip_doc">
+            <option selected value=""> --- </option>
+
+            <option value="1" {% if persona.tip_doc == 1 %}selected{%endif%}>DNI</option>
+
+            <option value="2" {% if persona.tip_doc == 2 %}selected{%endif%}>Carnet Extranjería</option>
+
+            <option value="3" {% if persona.tip_doc == 3 %}selected{%endif%}>Pasaporte</option>
+
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="id_nro_doc">Nro documento:</label>
+          <input type="text" class="form-control" value="{% if persona %}{{persona.nro_doc}}{% endif %}" name="nro_doc"
+            maxlength="15" required="" id="id_nro_doc">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="id_fech_nac">Fecha nacimiento:</label>
+          {{form.fech_nac}}
+
+        </div>
+        <div class="col-md-1 " >
+          <label for="" style="visibility: hidden;">Calendario</label>
+          <button type="button" class="btn btn-circle btn-primary"  id="image_button"><i class="far fa-calendar-alt"></i> </button>
+
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="id_sexo">Sexo:</label>
+          <select name="sexo" class="form-control" id="id_sexo">
+            <option value="" selected="">---------</option>
+
+            <option value="1" {% if persona.sexo == 1 %}selected{%endif%}>Hombre</option>
+
+            <option value="2" {% if persona.sexo == 2 %}selected{%endif%}>Mujer</option>
+
+          </select></div>
+        <div class="form-group col-md-4">
+        </div>
+        <div class="form-group col-md-4">
+
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="id_departamento">Departamento:</label>
+
+          {{form.departamento}}
+        </div>
+        <div class="form-group col-md-4">
+          <label for="id_provincia">Provincia:</label>
+          
+          {% if provincia %}
+          
+          <select  class="form-control" name="provincia" id="id_provincia" data-url="{% url 'Web:Provincia' %}"
+            data-urldis="{% url 'Web:Distrito' %}">
+            <option value="0" selected>Seleccione provincia..</option>
+            
+            {% for i in  provincia %}
+            <option value="{{i.id}}" >{{i.descripcion}}</option>
+
+            {% endfor %}
+              
+          </select>
+            {%else%}
+            <select  class="form-control" name="provincia" id="id_provincia" data-url="{% url 'Web:Provincia' %}"
+            data-urldis="{% url 'Web:Distrito' %}">
+            <option value="0" selected>Seleccione provincia..</option>
+          </select>
+          {% endif %}
+            
+          </div>
+        <div class="form-group col-md-4">
+          <label for="id_provincia">Distrito:</label>
+
+          {% if distrito %}
+          <select  class="form-control" name="distrito" id="id_distrito">
+          <option value="0" selected>Seleccione provincia..</option>
+          
+          {% for i in  distrito %}
+          <option value="{{i.id}}" >{{i.descripcion}}</option>
+
+          {% endfor %}
+          </select>
+          {% else %}
+          <label for="id_distrito">Distrito:</label>
+          <select  class="form-control" name="distrito" id="id_distrito">
+            <option value="0" selected>Seleccione distrito..</option>
+          </select>
+          {% endif %}
+            
+        
+        </div>
+
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-8">
+          <label for="id_direccion">Direccion:</label>
+          <input type="text" class="form-control" value="{% if persona %}{{persona.direccion}}{% endif %}"
+            name="direccion" maxlength="100" id="id_direccion">
+        </div>
+        <div class="form-group col-md-4">
+
+          <label for="id_referencia">Referencia:</label>
+          <input type="text" class="form-control" value="{% if persona %}{{persona.referencia}}{% endif %}"
+            name="referencia" maxlength="300" id="id_referencia">
+        </div>
+      </div>
+
+
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="id_celular">Celular:</label>
+
+          <input type="text" class="form-control" name="celular" value="{% if persona %}{{persona.celular}}{% endif %}"
+            maxlength="15" id="id_celular">
+        
+        </div>
+        <div class="form-group col-md-4">
+          <label for="id_telefono">Telefono:</label>
+          <input type="text" class="form-control" name="telefono"
+            value="{% if persona %}{{persona.telefono}}{% endif %}" maxlength="15" id="id_telefono">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="id_correo">Correo:</label>
+          <input type="text" class="form-control" name="correo" value="{% if persona %}{{persona.correo}}{% endif %}"
+            maxlength="50" id="id_correo">
+        </div>
+      </div>
+
+
+      <div class="form-row">
+        <div class="form-group col-md-4 offset-md-2">
+          <label for="id_ruc">Subir imagen: </label>
+
+          {{form.foto_nueva}}
+        </div>
+        
+        <div class="form-group col-md-4">
+
+          <label for="id_ruc">Ruc:</label>
+          <input type="text" class="form-control" value="{% if persona %}{{persona.ruc}}{% endif %}" name="ruc"
+            maxlength="11" id="id_ruc">
+        </div>
+
+        <input type="hidden" value="{{persona.provincia.id}}" id="provinciaid">
+        <input type="hidden" value="{{persona.distrito.id}}" id="distritoid">
+      </div>
+      <input type="hidden" value="{% if persona %}{{persona.id}}{% endif %}" id="id">
+      <button type="submit" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
+
+    </form>
+
+</div>
+<style>
+  .xdsoft_datetimepicker {
+    z-index: 9999999999 !important;
+  }
+</style>
+{% block js_page %}
+<script>
+  $(document).ready(function () {
+    $(function () {
+      jQuery.datetimepicker.setLocale('es');
+      $("#id_fech_nac").datetimepicker({
+        
+
+        timepicker: false,
+        format: 'Y-m-d'
+      });
+    });
+    jQuery('#image_button').click(function(){
+  jQuery('#id_fech_nac').datetimepicker('show'); //support hide,show and destroy command
+});
+    selectDepart = document.getElementById("id_departamento")
+    selectProvince = document.getElementById("id_provincia")
+    selectDistrict = document.getElementById("id_distrito")
+
+    selectProvince.value = document.getElementById("provinciaid").value
+    selectDistrict.value = document.getElementById("distritoid").value
+
+
+
+
+
+    selectDepart.addEventListener("change", function (e) {
+
+
+      let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
+      console.log(id)
+      if (id != "") {
+        selectProvince.innerHTML = ""
+        selectProvince.disabled = false
+        let selectfirst = document.createElement("option")
+        selectfirst.innerText = "Seleccione provincia..."
+        selectProvince.appendChild(selectfirst)
+        selectDistrict.innerHTML = ""
+        let selectfirstd = document.createElement("option")
+        selectfirstd.innerText = "Seleccione distrito..."
+        selectDistrict.appendChild(selectfirstd)
+        selectDistrict.disabled = true
+        fetch("../Provincia/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+          },
+          body: JSON.stringify(id)
+        }).then(data => data.json()).then(response => {
+          selectProvince.innerHTML = ""
+          selectProvince.disabled = false
+          let selectfirst = document.createElement("option")
+          selectfirst.innerText = "Seleccione provincia..."
+          selectProvince.appendChild(selectfirst)
+
+          for (let index = 0; index < response.length; index++) {
+            let option = document.createElement("option")
+            option.innerText = response[index].fields.descripcion
+            option.setAttribute("value", response[index].pk)
+            selectProvince.appendChild(option)
+          }
+        })
+      } else {
+        console.log("else")
+
+        selectDistrict.disabled = true
+        selectProvince.disabled = true
+
+      }
+
+    })
+
+    //   selectDistrict = document.getElementById("id_distrito")
+    //   if (selectProvince != null) {
+    //     url = selectProvince.dataset.url
+
+    //     fetch(url).then(data => data.json()).then(response => {
+    //       selectProvince.disabled = false
+
+    //       for (let index = 0; index < response.length; index++) {
+    //         let option = document.createElement("option")
+    //         option.innerText = response[index].fields.name
+    //         option.setAttribute("value", response[index].pk)
+    //         selectProvince.appendChild(option)
+    //       }
+    //     })
+
+
+
+
+    selectProvince.addEventListener("change", function (e) {
+      selectDistrict.disabled = true
+
+      let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
+      selectDistrict.innerHTML = ""
+      selectDistrict.disabled = false
+      let selectfirst = document.createElement("option")
+      selectfirst.innerText = "Seleccione ditrito..."
+      selectDistrict.appendChild(selectfirst)
+      fetch("../Distrito/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify(id)
+      }).then(data => data.json()).then(response => {
+        selectDistrict.innerHTML = ""
+        selectDistrict.disabled = false
+        let selectfirst = document.createElement("option")
+        selectfirst.innerText = "Seleccione ditrito..."
+        selectDistrict.appendChild(selectfirst)
+
+        for (let index = 0; index < response.length; index++) {
+          let option = document.createElement("option")
+          option.innerText = response[index].fields.descripcion
+          option.setAttribute("value", response[index].pk)
+          selectDistrict.appendChild(option)
+        }
+      })
+    })
+
+
+    $("#btnEditUser").on("click", function (e) {
+      de.showLoading(true)
+      var id = $("#id").val()
+
+      var paramaters = new FormData($('.needs-validation')[0])
+      $.ajax({
+        type: "POST",
+        url: "../Persona/" + id + "/",
+        data: paramaters,
+        dataType: "json",
+        processData: false, // tell jQuery not to process the data
+        contentType: false,
+        success: function (data) {
+          console.log(data)
+          if (data["stat"] == "ok") {
+            de.close()
+            notificacion(1500, "Genial!", "success", "Persona guardada!")
+          } else {
+            $(":text").keypress(function (e) {
+              $(this).removeClass("is-invalid")
+            });
+          }
+          tablaPersonas.ajax.reload()
+        }
+      }).done(function (data) {}).fail(function (jqXHR, textStatus, errorThrown) {
+        alert("done:" + textStatus + ': ' + errorThrown);
+      }).always(function (data) {
+
+      });;
+      return false;
+    });
+  })
+</script>
+
+{% endblock js_page %}

@@ -1,0 +1,262 @@
+{% extends 'Web/base.html' %}
+{% load static %}
+{% load base_extras %}
+{% block blockAdmin %}nav-item active{% endblock  %}
+{% block collapseAdmin %}collapse show{% endblock  %}
+{% block personas %}collapse-item active{% endblock  %}
+{% block content %}  
+<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
+  <div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <div class="row align-items-center">  
+                <div class="col-lg-3 ">
+   
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Personas registradas</h6>
+              </div>
+
+                <div class="offset-lg-7 col-lg-2">
+                  <button id="btn-add-persona" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</button>
+                </div>
+
+            </div>
+            </div>
+            <div class="card-body">
+
+                <form method="GET" action="" id="frmlist">
+                {% csrf_token %}
+                 
+                <div class="table-responsive">               
+                  <table class="table  table-hover dt-responsive" id="TablaPersona" style="width: 100%;">
+                    <thead>
+                      <tr>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>N° Documento</th>
+                        <th>RUC</th>
+                        <th>Celular</th>
+                        <th>Correo</th>
+                        <th>Opciones</th>
+                      </tr>
+                    </thead>
+            
+            
+            
+                  </table>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+  </div>
+  <!-- End of Page Wrapper -->
+  {% endblock %}
+  {% block bottom_scripts %}
+  <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js  "></script>
+  <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+  <script>
+    var tablaPersonas
+    $(document).ready(function() {
+   
+      tablaPersonas = $("#TablaPersona").DataTable({
+     responsive:true,
+     "order": [],
+
+      ajax: {
+        url: "{% url 'Web:Personas' %}",
+        type: "POST",
+        data: {
+          "action": "searchData"
+        },
+        dataSrc: ""
+      },
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+      "language": {
+        "sSearch": "Buscar",
+        "emptyTable": "No hay datos disponibles para esta tabla",
+        "lengthMenu": "Mostrando _MENU_ entradas",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "zeroRecords": "No se encontraron resultados",
+        "info": "Mostrando _START_ al _END_ de _TOTAL_ entradas",
+        "infoEmpty": "Mostrando 0 al 0 de 0 entradas",
+
+
+      },
+   
+      columns: [
+        {
+          "data": 'nom',className: "middle"
+        },
+        {
+          "data":           null,
+       "defaultContent": '',
+          className: "text-center middle",
+          render: function ( data, type, row ) {
+                return data.apep+" "+data.apem
+            }
+        },
+        {
+          "data": 'nro_doc',className: "middle"
+        },
+        {
+          "data": 'ruc',className: "text-center middle",
+        },
+        {
+          "data": 'celular',className: "middle"
+        },
+        {
+          "data": 'correo',className: "middle"
+        },
+        
+        {
+          "data": 'estado',className:"text-center middle"
+        },
+
+
+      ],
+      columnDefs: [{
+          targets: [-1],
+
+          render: function (row, data, index) {
+            var buttons =
+            '<button class="btn btn-warning btn-circle btn-edit-persona mr-1"  role="button" data-url="Persona/' +
+            index.id +
+            '"><i class="far fa-edit" ></i></button><button class="btn btn-danger btn-circle"  target="reportes"><i class="fas fa-ban"></i></button>';
+
+            return buttons;
+
+          },
+
+        },
+        
+
+
+      ],
+      "createdRow": function (row, data, index) {
+        // if (!data["estado"]) {
+        //   $('.btn-success', row).eq(0).removeClass().addClass("btn btn-danger btn-circle")
+        //   $(".fa-thumbs-up", row).eq(0).removeClass().addClass("fas fa-thumbs-down")
+
+        // }
+      },
+
+    });
+
+
+      $("#btnBuscar").click(function() {
+        $('#frmlist').submit();
+        let spinner = $(this.currentTarget).find('span')
+        spinner.removeClass('d-none')
+        setTimeout(_ => spinner.addClass('d-none'), 2000)
+        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
+        $(this).prop("disabled", true);
+      });
+    document.getElementById('btn-add-persona').addEventListener("click", function (e) {  
+    e.preventDefault()
+    var template = e.target.dataset.url;
+    var jc = $.confirm({
+      title: "Nueva Persona",
+      content: "URL:{% url 'Web:Persona' %}",
+      columnClass: 'col-xl-12 col-lg-12 col-md-8 col-sm-10',
+      icon: "fa fa-plus-circle",
+      type: "blue",
+      animateFromElement: true,
+      buttons: {
+        formSubmit: {
+          text: 'Registrar persona',
+          btnClass: 'btn-blue',
+          action: function () {       
+            form = this.$content
+            // let name = form[0].ownerDocument.getElementById("id_name")
+            // let ruc = form[0].ownerDocument.getElementById("id_ruc")
+            // let invalid_ruc = form[0].ownerDocument.getElementById("invalid_ruc")
+            // let invalid_name = form[0].ownerDocument.getElementById("invalid_name")
+            let data= new FormData(form[0].ownerDocument.forms[2])
+            fetch("{% url 'Web:Persona' %}", {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+              body: data
+              
+            }).then(data => data.json()).then(response => {
+              console.log(response)
+              if(response.hasOwnProperty("error")){
+                console.log("if");
+                if(response.error.name){
+                  name.classList.add("is-invalid")
+                  invalid_name.innerHTML=response.error.name[0]
+                }
+                if(response.error.ruc){
+                  ruc.classList.add("is-invalid")
+                  invalid_ruc.innerHTML=response.error.ruc[0]                
+                }
+              }else{
+                  jc.showLoading(true)
+
+                    jc.close()
+                    notificacion(2000,"Éxito","success","Persona guardada")
+
+                    tablaPersonas.ajax.reload()            
+              }
+            })
+              return false;
+          }
+        },
+        cancel: function () {
+
+        },
+      },
+    });
+  });
+
+  $(document).on("click",'.btn-edit-persona', function (e) {
+      
+    e.preventDefault()
+    console.log("click");
+    var tr = tablaPersonas.cell($(this).closest("td")).index();
+    var data = tablaPersonas.row(tr.row).data();
+    console.log(data);
+    de = $.confirm({
+      title: "Editar Persona",
+      content: "URL:../Persona/" + data.id,
+      columnClass: 'col-xl-12 col-lg-12 col-md-8 col-sm-10',
+      icon: "fa fa-edit",
+      type: "orange",
+      scrollToPreviousElement: true,
+      scrollToPreviousElementAnimate: true,
+
+      buttons: {
+        Confirm: {
+          text: 'Guardar cambios',
+          btnClass: 'btn-blue',
+
+          action: function url(e) {
+
+            this.$content[0].ownerDocument.getElementById("btnEditUser").click()
+            return false;
+          }
+        },
+
+        cancel: function () {
+
+        },
+      },
+
+
+
+    });
+  
+
+    });
+    
+  });
+  </script>
+  {% endblock %}
+  
