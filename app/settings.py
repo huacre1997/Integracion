@@ -102,12 +102,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # DATABASES = {
 #     'default': {
-#         'HOST':env('DB_HOST'),
-#         'PORT':env('DB_PORT'),
+#         'HOST':"127.0.0.1"
+#         'PORT':"",
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': env('DB_NAME'),
-#         'USER':env('DB_USER'),
-#         'PASSWORD':env('DB_PASSWORD'),
+#         'NAME': "integracion"
+#         'USER':"root"
+#         'PASSWORD':""
 #         'OPTIONS': {
 #         },
 #     }

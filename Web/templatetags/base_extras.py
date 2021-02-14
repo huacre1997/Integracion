@@ -69,6 +69,6 @@ def relative_url(urlencode):
     return url
 
 
-# @register.simple_tag
-# def number_page(number, page, pages):
-#     return number + ((page - 1) * pages)
+@register.simple_tag
+def number_page(number, page, pages):
+    return number + ((page - 1) * pages)
