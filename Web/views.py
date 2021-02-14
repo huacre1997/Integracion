@@ -200,52 +200,6 @@ class PerfilUpdateView(LoginRequiredMixin, AdminPermission,UpdateView):
         return context
 
 
-
-
-class ListUsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/list_usuarios.html'
-    model = Usuario
-    context_object_name = 'usuarios'
-    permission_required=["Web.view_usuario"]
-    login_url=reverse_lazy("Web:login")
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self,request,*args, **kwargs):
-        return super().dispatch(request,*args,**kwargs)
- 
-
-    def post(self,request,*args, **kwargs):
-        data={}
-        try:
-            action=request.POST["action"]
-            if action=="searchData":
-                data=[]
-                for i in Usuario.objects.all():
-                    data.append(i.toJSON())
-                
-            else:
-                data["error"]="Ha ocurrido un error"
-        except Exception as e:
-            print(e)
-        return JsonResponse(data,safe=False)
-    # def get_queryset(self):
-    #     # import pdb; pdb.set_trace();
-    #     qs = super().get_queryset()
-    #     qs = qs.filter(eliminado=False)
-    #     q = self.request.GET.get('q', None)
-    #     print(q)
-    #     if q:
-    #         if q.isdigit():
-    #             qs = qs.filter(Q(persona__nro_doc__icontains=q))
-    #         else:
-    #             terms = q.split(" ")
-    #             search = [
-    #                 (Q(persona__nom__icontains=word) | 
-    #                 Q(persona__apep__icontains=word) | 
-    #                 Q(persona__apem__icontains=word)
-    #             ) for word in terms]
-    #             qs = qs.filter(*search)
-    #     return qs
 class PersonaListView(LoginRequiredMixin,ListView):
     template_name = 'Web/personas.html'
     model = Persona
@@ -346,6 +300,35 @@ class PersonaCreateView(LoginRequiredMixin,CreateView):
         except Exception as e:
             print(e)
 
+
+
+class ListUsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
+    template_name = 'Web/list_usuarios.html'
+    model = Usuario
+    context_object_name = 'usuarios'
+    permission_required=["Web.view_usuario"]
+    login_url=reverse_lazy("Web:login")
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Usuario.objects.all():
+                    data.append(i.toJSON())
+                
+            else:
+                data["error"]="Ha ocurrido un error"
+        except Exception as e:
+            print(e)
+        return JsonResponse(data,safe=False)
+
 class UsuarioCreateView(LoginRequiredMixin, CreateView):
     model=Usuario
     template_name = 'Web/usuario.html'
@@ -362,11 +345,10 @@ class UsuarioCreateView(LoginRequiredMixin, CreateView):
             if action=="add":
                 form = self.get_form()
                 if form.is_valid():   
-                    self.object.groups.clear()
-                    self.object.groups.add(form.cleaned_data["groups"])  
+         
                     form.save()    
                     print("if form valid create")
-                    data = {  }
+                    data = { "stat":"ok"}
                     return JsonResponse(data)
                 else:
                     data = {
@@ -460,7 +442,7 @@ class ListUbicacionesListView(LoginRequiredMixin,ValidateMixin, ListView):
 class UbicacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = UbicacionForm
     template_name = 'Web/ubicacion.html'
-    success_url = '/Web/Ubicaciones/'
+    success_url = reverse_lazy("Web:lugares")
     action = ACCION_NUEVO
     permission_required=["Web.add_ubicacion"]
     login_url=reverse_lazy("Web:login")
@@ -480,7 +462,7 @@ class UbicacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = UbicacionForm
     model = Ubicacion
     template_name = 'Web/ubicacion.html'
-    success_url = '/Web/Ubicaciones/'
+    success_url = reverse_lazy("Web:lugares")
     action = ACCION_EDITAR
 
     permission_required=["Web.change_ubicacion"]
@@ -540,7 +522,7 @@ class AlmacenesListView(LoginRequiredMixin, ListView):
 class AlmacenCreateView(LoginRequiredMixin, CreateView):
     form_class = AlmacenForm
     template_name = 'Web/almacen.html'
-    success_url = '/Web/almacenes/'
+    success_url = reverse_lazy("Web:almacenes")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -559,7 +541,7 @@ class AlmacenUpdateView(LoginRequiredMixin, UpdateView):
     form_class = AlmacenForm
     model = Almacen
     template_name = 'Web/almacen.html'
-    success_url = '/Web/almacenes/'
+    success_url = reverse_lazy("Web:almacenes")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -636,7 +618,7 @@ class LugarUpdateView(LoginRequiredMixin, UpdateView):
     form_class = LugarForm
     model = Lugar
     template_name = 'Web/lugar.html'
-    success_url = '/Web/lugares/'
+    success_url = reverse_lazy("Web:lugares")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -694,7 +676,7 @@ class MarcaRenovacionesListView(LoginRequiredMixin, ListView):
 class MarcaRenovacionCreateView(LoginRequiredMixin, CreateView):
     form_class = MarcaRenovaForm
     template_name = 'Web/marca_renovacion.html'
-    success_url = '/Web/marca-renovaciones/'
+    success_url = reverse_lazy("Web:marca-renovaciones")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -713,7 +695,7 @@ class MarcaRenovacionUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MarcaRenovaForm
     model = MarcaRenova
     template_name = 'Web/marca_renovacion.html'
-    success_url = '/Web/marca-renovaciones/'
+    success_url = reverse_lazy("Web:marca-renovaciones")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -771,7 +753,7 @@ class ModeloRenovacionesListView(LoginRequiredMixin, ListView):
 class ModeloRenovacionCreateView(LoginRequiredMixin, CreateView):
     form_class = ModeloRenovaForm
     template_name = 'Web/modelo_renovacion.html'
-    success_url = '/Web/modelo-renovaciones/'
+    success_url = reverse_lazy("Web:modelo-renovaciones")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -790,7 +772,7 @@ class ModeloRenovacionUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ModeloRenovaForm
     model = ModeloRenova
     template_name = 'Web/modelo_renovacion.html'
-    success_url = '/Web/modelo-renovaciones/'
+    success_url = reverse_lazy("Web:modelo-renovaciones")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -848,7 +830,7 @@ class AnchoBandaRenovacionesListView(LoginRequiredMixin, ListView):
 class AnchoBandaRenovacionCreateView(LoginRequiredMixin, CreateView):
     form_class = AnchoBandaRenovaForm
     template_name = 'Web/ancho_banda_renovacion.html'
-    success_url = '/Web/ancho-banda-renovaciones/'
+    success_url = reverse_lazy("Web:ancho-banda-renovaciones")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -867,7 +849,7 @@ class AnchoBandaRenovacionUpdateView(LoginRequiredMixin, UpdateView):
     form_class = AnchoBandaRenovaForm
     model = AnchoBandaRenova
     template_name = 'Web/ancho_banda_renovacion.html'
-    success_url = '/Web/ancho-banda-renovaciones/'
+    success_url = reverse_lazy("Web:ancho-banda-renovaciones")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -937,7 +919,7 @@ class MarcaLlantasListView(LoginRequiredMixin, ListView):
 class MarcaLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = MarcaLlantaForm
     template_name = 'Web/marca_llanta.html'
-    success_url = '/Web/marca-llantas/'
+    success_url = reverse_lazy("Web:marca-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -956,7 +938,7 @@ class MarcaLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MarcaLlantaForm
     model = MarcaLlanta
     template_name = 'Web/marca_llanta.html'
-    success_url = '/Web/marca-llantas/'
+    success_url = reverse_lazy("Web:marca-llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1020,7 +1002,7 @@ class ModeloLlantasListView(LoginRequiredMixin, ListView):
 class ModeloLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = ModeloLlantaForm
     template_name = 'Web/modelo_llanta.html'
-    success_url = '/Web/modelo-llantas/'
+    success_url = reverse_lazy("Web:modelo-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1039,7 +1021,7 @@ class ModeloLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ModeloLlantaForm
     model = ModeloLlanta
     template_name = 'Web/modelo_llanta.html'
-    success_url = '/Web/modelo-llantas/'
+    success_url = reverse_lazy("Web:modelo-llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1097,7 +1079,7 @@ class MedidaLlantasListView(LoginRequiredMixin, ListView):
 class MedidaLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = MedidaLlantaForm
     template_name = 'Web/medida_llanta.html'
-    success_url = '/Web/medida-llantas/'
+    success_url = reverse_lazy("Web:medida-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1116,7 +1098,7 @@ class MedidaLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MedidaLlantaForm
     model = MedidaLlanta
     template_name = 'Web/medida_llanta.html'
-    success_url = '/Web/medida-llantas/'
+    success_url = reverse_lazy("Web:medida-llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1183,7 +1165,7 @@ class EstadoLlantasListView(LoginRequiredMixin, ListView):
 class EstadoLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = EstadoLlantaForm
     template_name = 'Web/estado_llanta.html'
-    success_url = '/Web/estado-llantas/'
+    success_url = reverse_lazy("Web:estado-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1202,7 +1184,7 @@ class EstadoLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = EstadoLlantaForm
     model = EstadoLlanta
     template_name = 'Web/estado_llanta.html'
-    success_url = '/Web/estado-llantas/'
+    success_url = reverse_lazy("Web:estado-llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1260,7 +1242,7 @@ class TipoServiciosListView(LoginRequiredMixin, ListView):
 class TipoServicioCreateView(LoginRequiredMixin, CreateView):
     form_class = TipoServicioForm
     template_name = 'Web/tipo_servicio.html'
-    success_url = '/Web/tipo-servicios/'
+    success_url = reverse_lazy("Web:tipo-servicios")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1279,7 +1261,7 @@ class TipoServicioUpdateView(LoginRequiredMixin, UpdateView):
     form_class = TipoServicioForm
     model = TipoServicio
     template_name = 'Web/tipo_servicio.html'
-    success_url = '/Web/tipo-servicios/'
+    success_url = reverse_lazy("Web:tipo-servicios")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1337,7 +1319,7 @@ class TipoPisosListView(LoginRequiredMixin, ListView):
 class TipoPisoCreateView(LoginRequiredMixin, CreateView):
     form_class = TipoPisoForm
     template_name = 'Web/tipo_piso.html'
-    success_url = '/Web/tipo-pisos/'
+    success_url = reverse_lazy("Web:tipo-pisos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1356,7 +1338,7 @@ class TipoPisoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = TipoPisoForm
     model = TipoPiso
     template_name = 'Web/tipo_piso.html'
-    success_url = '/Web/tipo-pisos/'
+    success_url = reverse_lazy("Web:tipo-pisos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1414,7 +1396,7 @@ class MarcaVehiculosListView(LoginRequiredMixin, ListView):
 class MarcaVehiculoCreateView(LoginRequiredMixin, CreateView):
     form_class = MarcaVehiculoForm
     template_name = 'Web/marca_vehiculo.html'
-    success_url = '/Web/marca-vehiculos/'
+    success_url = reverse_lazy("Web:marca-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1433,7 +1415,7 @@ class MarcaVehiculoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MarcaVehiculoForm
     model = MarcaVehiculo
     template_name = 'Web/marca_vehiculo.html'
-    success_url = '/Web/marca-vehiculos/'
+    success_url = reverse_lazy("Web:marca-vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1491,7 +1473,7 @@ class ModeloVehiculosListView(LoginRequiredMixin, ListView):
 class ModeloVehiculoCreateView(LoginRequiredMixin, CreateView):
     form_class = ModeloVehiculoForm
     template_name = 'Web/modelo_vehiculo.html'
-    success_url = '/Web/modelo-vehiculos/'
+    success_url = reverse_lazy("Web:modelo-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1510,7 +1492,7 @@ class ModeloVehiculoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ModeloVehiculoForm
     model = ModeloVehiculo
     template_name = 'Web/modelo_vehiculo.html'
-    success_url = '/Web/modelo-vehiculos/'
+    success_url = reverse_lazy("Web:modelo-vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1584,7 +1566,7 @@ class LlantasListView(LoginRequiredMixin, ListView):
 class LlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = LlantaForm
     template_name = 'Web/llanta.html'
-    success_url = '/Web/llantas/'
+    success_url = reverse_lazy("Web:llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1604,7 +1586,7 @@ class LlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = LlantaForm
     model = Llanta
     template_name = 'Web/llanta.html'
-    success_url = '/Web/llantas/'
+    success_url = reverse_lazy("Web:llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 
@@ -1682,7 +1664,7 @@ class VehiculosListView(LoginRequiredMixin, ListView):
 class VehiculoCreateView(LoginRequiredMixin, CreateView):
     form_class = VehiculoForm
     template_name = 'Web/vehiculo.html'
-    success_url = '/Web/vehiculos/'
+    success_url = reverse_lazy("Web:vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
 
@@ -1701,7 +1683,7 @@ class VehiculoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = VehiculoForm
     model = Vehiculo
     template_name = 'Web/vehiculo.html'
-    success_url = '/Web/vehiculos/'
+    success_url = reverse_lazy("Web:vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
 

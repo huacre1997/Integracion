@@ -29,10 +29,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'pnfnh$12%rkgz*kf81$1jbzc$f-5)i5ago4f!#7si6m0jr5_(c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [".herokuapp.com"]
-# ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = [".herokuapp.com"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -101,25 +101,25 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'HOST':"127.0.0.1",
-#         'PORT':"",
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "integracion",
-#         'USER':"root",
-#         'PASSWORD':"",
-#         'OPTIONS': {
-#         },
-#     }
-# }
-import dj_database_url
-from decouple import config
-DATABASES={
-    "default":dj_database_url.config(
-        default=config("DATABASE_URL")
-    )
+DATABASES = {
+    'default': {
+        'HOST':"127.0.0.1",
+        'PORT':"",
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "integracion",
+        'USER':"root",
+        'PASSWORD':"",
+        'OPTIONS': {
+        },
+    }
 }
+# import dj_database_url
+# from decouple import config
+# DATABASES={
+#     "default":dj_database_url.config(
+#         default=config("DATABASE_URL")
+#     )
+# }
 
 
 # Password validation
@@ -155,21 +155,21 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#              'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+#         },
+#     },
+# }
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 #Location of static files
