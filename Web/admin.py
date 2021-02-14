@@ -33,8 +33,16 @@ class UsuariosAdmin(admin.ModelAdmin):
 	# raw_id_fields = ("user", "persona" ) 
 	pass
 admin.site.register(Usuario, UsuariosAdmin)
+class DepartamentoAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Departamento, DepartamentoAdmin)
 
-
+class ProvinciaAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Provincia, ProvinciaAdmin)
+class DistritoAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Distrito, DistritoAdmin)
 
 """"
 class PermisoPerfilMenuOpcionAdmin(admin.ModelAdmin):

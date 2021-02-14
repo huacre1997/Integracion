@@ -595,7 +595,7 @@ class LugaresListView(LoginView, ListView):
 class LugarCreateView(LoginView, CreateView):
     form_class = LugarForm
     template_name = 'Web/lugar.html'
-    success_url = '/Web/lugares/'
+    success_url = reverse_lazy("Web:Lugares")
     action = ACCION_NUEVO
 
     def form_valid(self, form):
