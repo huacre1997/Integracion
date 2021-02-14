@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 
 ]
 
@@ -84,7 +85,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processor.permission',
-                'whitenoise.middleware.WhiteNoiseMiddleware'
             ],
         },
     },
