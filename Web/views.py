@@ -157,6 +157,7 @@ class PerfilCreateView(LoginView, CreateView):
         print("if")
 
         instance = form.save(commit=False)
+        
         messages.success(self.request, 'Perfil guardado correctamente.')
         return super().form_valid(form)
 
@@ -202,24 +203,43 @@ class ListUsuariosListView(LoginView, ValidateMixin,ListView):
     model = Usuario
     context_object_name = 'usuarios'
     permission_required=["Web.view_usuario"]
-    def get_queryset(self):
-        # import pdb; pdb.set_trace();
-        qs = super().get_queryset()
-        qs = qs.filter(eliminado=False)
-        q = self.request.GET.get('q', None)
-        print(q)
-        if q:
-            if q.isdigit():
-                qs = qs.filter(Q(persona__nro_doc__icontains=q))
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Usuario.objects.all():
+                    data.append(i.toJSON())
+                
             else:
-                terms = q.split(" ")
-                search = [
-                    (Q(persona__nom__icontains=word) | 
-                    Q(persona__apep__icontains=word) | 
-                    Q(persona__apem__icontains=word)
-                ) for word in terms]
-                qs = qs.filter(*search)
-        return qs
+                data["error"]="Ha ocurrido un error"
+        except Exception as e:
+            print(e)
+        return JsonResponse(data,safe=False)
+    # def get_queryset(self):
+    #     # import pdb; pdb.set_trace();
+    #     qs = super().get_queryset()
+    #     qs = qs.filter(eliminado=False)
+    #     q = self.request.GET.get('q', None)
+    #     print(q)
+    #     if q:
+    #         if q.isdigit():
+    #             qs = qs.filter(Q(persona__nro_doc__icontains=q))
+    #         else:
+    #             terms = q.split(" ")
+    #             search = [
+    #                 (Q(persona__nom__icontains=word) | 
+    #                 Q(persona__apep__icontains=word) | 
+    #                 Q(persona__apem__icontains=word)
+    #             ) for word in terms]
+    #             qs = qs.filter(*search)
+    #     return qs
 class PersonaListView(LoginView,ListView):
     template_name = 'Web/personas.html'
     model = Persona
@@ -331,7 +351,9 @@ class UsuarioCreateView(LoginView, CreateView):
             action=request.POST["action"]
             if action=="add":
                 form = self.get_form()
-                if form.is_valid():     
+                if form.is_valid():   
+                    self.object.groups.clear()
+                    self.object.groups.add(form.cleaned_data["groups"])  
                     form.save()    
                     print("if form valid create")
                     data = {  }
@@ -363,70 +385,44 @@ class UsuarioCreateView(LoginView, CreateView):
     #         kwargs['formPersona'] = PersonaForm()
     #     return kwargs
 
-class UsuarioUpdateView(LoginView,AdminPermission, UpdateView):
+class UsuarioUpdateView(LoginView, UpdateView):
 
     model = Usuario
     template_name = 'Web/usuario.html'
-
-    success_url = reverse_lazy("Web:Usuarios")
-    action = ACCION_EDITAR
+    context_object_name="usuario"
+    form_class=UsuarioForm
+    def dispatch(self,request,*args, **kwargs):
+        self.object=self.get_object() 
+        return super().dispatch(request,*args,**kwargs)
     
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update(instance={
-            'persona': self.object.persona,
-            'usuario': self.object
-        })
-        return kwargs
+    def post(self,request,*args, **kwargs):
+        data={}
 
-    def form_valid(self, form):
         try:
-                
-            user = Usuario.objects.get(id=self.object.id)
-            user.username = form.cleaned_data['usuario']['username']
+            action=request.POST["action"]
+            if action=="edit":
+                form = self.get_form()
 
-            password=form.cleaned_data['usuario']['password']
-    
-            if user.password != password:
-                user.set_password(password)
+                if form.is_valid():
+                    self.object.groups.clear()
+                    self.object.groups.set(form.cleaned_data["groups"])  
+                    form.save()
+                    data = {
+                    'stat': 'ok',
+                   }
+                    return JsonResponse(data)
+                else:
+                    data = {
+                    "error":form.errors,
+                    'stat': False,
+                    }
+                    return JsonResponse(data)
+            else:
+                data["error"]="Nose ha ingresado nada"
+                return JsonResponse(data)
 
-            user.email = form.cleaned_data['usuario']['email']
-
-            user.created_by = self.request.user
-
-            user.groups.clear()
-
-            user.groups.set(form.cleaned_data['usuario']['groups']) 
-
-            user.save()
-            persona = Persona.objects.get(id=self.object.persona_id)
-                
-            persona.tip_doc = form.cleaned_data['persona']['tip_doc']
-            persona.nro_doc = form.cleaned_data['persona']['nro_doc']
-            persona.nom = form.cleaned_data['persona']['nom']
-            persona.apep = form.cleaned_data['persona']['apep']
-            persona.apem = form.cleaned_data['persona']['apem']
-            persona.created_by = self.request.user
-            persona.save()
-            messages.success(self.request, 'Se ha guardado correctamente.')
-                #return super().form_valid(form)
-            
-        except Exception as identifier:
-            print("entro al catch")
-            print(identifier)
-        return HttpResponseRedirect("/Web/Usuarios")        
-
-    def form_invalid(self, form):
-        messages.warning(self.request, form.errors)
-        return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs):
-        kwargs['usuario'] = self.get_object()
-        if 'usuario' not in kwargs:
-            kwargs['usuario'] = UsuarioForm()
-        if 'persona' not in kwargs:
-            kwargs['persona'] = PersonaForm()
-        return kwargs
+        except Exception as e:
+            print(e)
 
 class ListUbicacionesListView(LoginView,ValidateMixin, ListView):
     template_name = 'Web/ubicaciones.html'

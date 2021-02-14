@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 from django.contrib.auth.models import AbstractUser
 from django.forms import model_to_dict
-
+from django.contrib.auth.models import Group,Permission
 from django.conf import settings
 def _update_filename(instance, filename, path):
 	filename_aux=''
@@ -102,7 +102,6 @@ class Persona(models.Model):
       item["foto_nueva"]=self.get_image()
 
       return item
-
 class Usuario(AbstractUser):
    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True, blank=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -111,6 +110,12 @@ class Usuario(AbstractUser):
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
    
+   def toJSON(self):
+      item = model_to_dict(self)
+      item["created_at"]=self.created_at.strftime('%Y-%m-%d')
+      item["groups"]= item['groups'] = [{'id': g.id, 'name': g.name} for g in self.groups.all()]
+
+      return item
 
 
 class Ubicacion(models.Model):

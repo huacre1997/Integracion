@@ -221,7 +221,6 @@
 
 
       let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
-      console.log(id)
       if (id != "") {
         selectProvince.innerHTML = ""
         selectProvince.disabled = false
@@ -255,7 +254,6 @@
           }
         })
       } else {
-        console.log("else")
 
         selectDistrict.disabled = true
         selectProvince.disabled = true
@@ -328,7 +326,6 @@
         processData: false, // tell jQuery not to process the data
         contentType: false,
         success: function (data) {
-          console.log(data)
           if (data["stat"] == "ok") {
             de.close()
             notificacion(1500, "Genial!", "success", "Persona guardada!")

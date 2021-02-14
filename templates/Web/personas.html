@@ -40,7 +40,7 @@
                         <th>Opciones</th>
                       </tr>
                     </thead>
-            
+                  
             
             
                   </table>
@@ -50,6 +50,7 @@
             </div>
           </div>
         </div>
+        
   </div>
   <!-- End of Page Wrapper -->
   {% endblock %}
@@ -186,9 +187,7 @@
               body: data
               
             }).then(data => data.json()).then(response => {
-              console.log(response)
               if(response.hasOwnProperty("error")){
-                console.log("if");
                 if(response.error.name){
                   name.classList.add("is-invalid")
                   invalid_name.innerHTML=response.error.name[0]
@@ -219,10 +218,8 @@
   $(document).on("click",'.btn-edit-persona', function (e) {
       
     e.preventDefault()
-    console.log("click");
     var tr = tablaPersonas.cell($(this).closest("td")).index();
     var data = tablaPersonas.row(tr.row).data();
-    console.log(data);
     de = $.confirm({
       title: "Editar Persona",
       content: "URL:../Persona/" + data.id,

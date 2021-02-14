@@ -13,7 +13,6 @@ from django.contrib.auth.models import Group
 
 from django import forms
 from django.contrib.auth.forms import  PasswordResetForm, SetPasswordForm
-from bootstrap_datepicker_plus import DatePickerInput
 
 
 class UserPasswordResetForm(SetPasswordForm):
@@ -158,6 +157,29 @@ class UsuarioForm(forms.ModelForm):
             }
 
 
+    def save(self, commit=True):
+        data = {}
+        form = super()
+        try:
+            if form.is_valid():
+                print("us")
+                passwd=self.cleaned_data["password"]
+                print(passwd)
+                u = form.save(commit=False)
+                if u.pk is None:
+                    print("entro al if")
+                    u.set_password(passwd)
+                else:
+                    user = User.objects.get(pk=u.pk) 
+                    if user.password != passwd:
+                       u.set_password(passwd)
+                u.save()
+                self.save_m2m()
+            else:
+                data['error'] = form.errors
+        except Exception as e:
+            data['error'] = str(e)
+        return data
             
 
 

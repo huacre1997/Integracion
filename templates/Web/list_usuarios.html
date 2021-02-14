@@ -9,65 +9,39 @@
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Usuarios</h6>
+                <div class="row align-items-center">
+                  <div class="col-lg-3"><h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Usuarios</h6>
+               </div>
+                  <div class="offset-lg-7 col-lg-2">
+                    <button class="btn btn-success " id="btn-add-usuario"><i class="fa fa-file-o"></i>  Crear Nuevo Usuario</button>
+                  </div>
+                </div>
+
             </div>
             <div class="card-body">
 
                 <form method="GET" action="" id="frmlist">
                 {% csrf_token %}
-                  <div class="row">     
-                    <div class="col-lg-3">
-                      <label>Nombres / Documento</label>
-                      <input type="text" class="form-control" name="q" value="{{request.GET.q}}" />
-                    </div>
-                    <div class="col-lg-2">
-                        <label>&nbsp;</label></br>
-                        <button class="btn btn-primary" id="btnBuscar">
-                          <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                          <i class="fa fa-search"></i>Buscar
-                        </button>
-                    </div>
-                    <div class="col-lg-3">
-                      <label>&nbsp;</label></br>
-                      <a href="{% url 'Web:Usuario' %}" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo Usuario</a>
-                    </div>
-
-                </div>
+                 
                 <br>
                 <div class="table-responsive">                
-                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="TablaUsuarios" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Nombres</th>
                       <th>Usuario</th>
+                      
                       <th>Perfil</th>
+                      <th>Creado en</th>
                       <th>Activo</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for u in usuarios %}
-                    <tr>
-                      <td>{{forloop.counter}}</td>
-                      <td>{{u.persona}}</td>
-                      <td>{{u.username}}</td>
-                      <td>
-                        {% for p in u.groups.all %}
-                           {{p}}<br>
-                        {% endfor %}
-                      </td>
-                      <td>{% if u.is_active %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
-                      <td>
-                        <a href="{% url 'Web:Usuario' u.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
-                        <a href="{#% url 'Web:atender_solicitud' s.uuid %#}" class="btn btn-danger btn-sm"><i class="fa fa-ban"></i></a>
-                      </td>
-                    </tr>
-                    {% endfor %}
+                    
                   </tbody>
                 </table>
                 </div>
-                {% include 'Common/paginacion.html' %}
               </form>
 
             </div>
@@ -80,22 +54,204 @@
   <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
   <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
   <script>
+   var TablaUsuarios
     $(document).ready(function() {
-      $('#dataTable').DataTable({
-            responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
-      });
+     
+      TablaUsuarios = $("#TablaUsuarios").DataTable({
+     responsive:true,
+     "order": [],
 
-      $("#btnBuscar").click(function() {
-        $('#frmlist').submit();
-        let spinner = $(this.currentTarget).find('span')
-        spinner.removeClass('d-none')
-        setTimeout(_ => spinner.addClass('d-none'), 2000)
-        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
-        $(this).prop("disabled", true);
+      ajax: {
+        url: "{% url 'Web:Usuarios' %}",
+        type: "POST",
+        data: {
+          "action": "searchData"
+        },
+        dataSrc: ""
+      },
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+      "language": {
+        "sSearch": "Buscar",
+        "emptyTable": "No hay datos disponibles para esta tabla",
+        "lengthMenu": "Mostrando _MENU_ entradas",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "zeroRecords": "No se encontraron resultados",
+        "info": "Mostrando _START_ al _END_ de _TOTAL_ entradas",
+        "infoEmpty": "Mostrando 0 al 0 de 0 entradas",
+
+
+      },
+   
+      columns: [
+        {
+          "data": 'id',className: "middle"
+        },
+      
+        {
+          "data": 'username',className: "middle"
+        },
+        {
+          "data": 'groups',className: "text-center middle",
+        
+        },
+        {
+          "data": 'created_at',className:"text-center middle",
+      
+        },
+        {
+          "data": 'is_active',
+          className: "estado middle",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check text-success" aria-hidden="true"></i>';
+            } else {
+              return "Inactivo"
+            }
+          }
+        },
+      
+        {
+          "data": 'estado',className:"text-center middle"
+        },
+
+
+      ],
+      columnDefs: [{
+          targets: [-1],
+
+          render: function (row, data, index) {
+            var buttons =
+            '<button class="btn btn-warning btn-circle btn-edit-usuario mr-1"  role="button" data-url="Usuario/' +
+            index.id +
+            '"><i class="far fa-edit" ></i></button><button class="btn btn-danger btn-circle"  target="reportes"><i class="fas fa-ban"></i></button>';
+
+            return buttons;
+
+          },
+
+        },
+            {
+                targets: [-4],
+                class: 'text-center',
+                orderable: false,
+                render: function (data, type, row) {
+                    var html = '';
+                    $.each(row.groups, function (key, value) {
+                        html += '<span class="badge badge-success">' + value.name + '</span> ';
+                    });
+                    return html;
+                }
+            },
+        
+
+
+      ],
+      "createdRow": function (row, data, index) {
+        // if (!data["estado"]) {
+        //   $('.btn-success', row).eq(0).removeClass().addClass("btn btn-danger btn-circle")
+        //   $(".fa-thumbs-up", row).eq(0).removeClass().addClass("fas fa-thumbs-down")
+
+        // }
+      }
+
+      })
+         document.getElementById('btn-add-usuario').addEventListener("click", function (e) {  
+    e.preventDefault()
+    var template = e.target.dataset.url;
+    var jc = $.confirm({
+      title: "Nueva Persona",
+      content: "URL:{% url 'Web:Usuario' %}",
+      columnClass: 'col-xl-12 col-lg-12 col-md-8 col-sm-10',
+      icon: "fa fa-plus-circle",
+      type: "blue",
+      animateFromElement: true,
+      buttons: {
+        formSubmit: {
+          text: 'Registrar usuario',
+          btnClass: 'btn-blue',
+          action: function () {       
+            form = this.$content
+            // let name = form[0].ownerDocument.getElementById("id_name")
+            // let ruc = form[0].ownerDocument.getElementById("id_ruc")
+            // let invalid_ruc = form[0].ownerDocument.getElementById("invalid_ruc")
+            // let invalid_name = form[0].ownerDocument.getElementById("invalid_name")
+            let data= new FormData(form[0].ownerDocument.forms[2])
+            fetch("{% url 'Web:Usuario' %}", {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+              body: data
+              
+            }).then(data => data.json()).then(response => {
+              if(response.hasOwnProperty("error")){
+                if(response.error.name){
+                  name.classList.add("is-invalid")
+                  invalid_name.innerHTML=response.error.name[0]
+                }
+                if(response.error.ruc){
+                  ruc.classList.add("is-invalid")
+                  invalid_ruc.innerHTML=response.error.ruc[0]                
+                }
+              }else{
+                  jc.showLoading(true)
+
+                    jc.close()
+                    notificacion(2000,"Éxito","success","Usuario guardado!")
+
+                    TablaUsuarios.ajax.reload()            
+              }
+            })
+              return false;
+          }
+        },
+        cancel: function () {
+
+        },
+      },
+    });
+  });
+      $(document).on("click",'.btn-edit-usuario', function (e) {
+      
+      e.preventDefault()
+      console.log("click");
+      var tr = TablaUsuarios.cell($(this).closest("td")).index();
+      var data = TablaUsuarios.row(tr.row).data();
+      de = $.confirm({
+        title: "Editar Usuario",
+        content: "URL:../Usuario/" + data.id,
+        columnClass: 'col-xl-12 col-lg-12 col-md-8 col-sm-10',
+        icon: "fa fa-edit",
+        type: "orange",
+        scrollToPreviousElement: true,
+        scrollToPreviousElementAnimate: true,
+  
+        buttons: {
+          Confirm: {
+            text: 'Guardar cambios',
+            btnClass: 'btn-blue',
+  
+            action: function url(e) {
+  
+              this.$content[0].ownerDocument.getElementById("btnEditUser").click()
+              return false;
+            }
+          },
+  
+          cancel: function () {
+  
+          },
+        },
+  
+  
+  
+      });
+    
+  
       });
     });
   </script>

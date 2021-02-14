@@ -29,7 +29,7 @@ environ.Env.read_env(env_file=base('../../.env'))
 SECRET_KEY = 'pnfnh$12%rkgz*kf81$1jbzc$f-5)i5ago4f!#7si6m0jr5_(c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -43,8 +43,8 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-    'tempus_dominus',
-    'bootstrap_datepicker_plus'
+    # 'tempus_dominus',
+    # 'bootstrap_datepicker_plus'
 ]
 
 LOCAL_APPS = [
@@ -84,7 +84,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processor.permission',
-
+                'whitenoise.middleware.WhiteNoiseMiddleware'
             ],
         },
     },
@@ -100,17 +100,22 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'HOST':env('DB_HOST'),
-        'PORT':env('DB_PORT'),
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('DB_NAME'),
-        'USER':env('DB_USER'),
-        'PASSWORD':env('DB_PASSWORD'),
-        'OPTIONS': {
-        },
-    }
+# DATABASES = {
+#     'default': {
+#         'HOST':env('DB_HOST'),
+#         'PORT':env('DB_PORT'),
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': env('DB_NAME'),
+#         'USER':env('DB_USER'),
+#         'PASSWORD':env('DB_PASSWORD'),
+#         'OPTIONS': {
+#         },
+#     }
+# }
+import dj_database_url
+from decouple import config
+DATABASES={
+    "default"=config("DATABASE_URL")
 }
 
 
@@ -155,7 +160,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 MEDIA_ROOT = ''
 MEDIA_URL = '/documentos/'
-
+STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
