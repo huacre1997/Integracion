@@ -32,6 +32,7 @@ SECRET_KEY = 'pnfnh$12%rkgz*kf81$1jbzc$f-5)i5ago4f!#7si6m0jr5_(c'
 DEBUG = False
 
 ALLOWED_HOSTS = [".herokuapp.com"]
+# ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -102,12 +103,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # DATABASES = {
 #     'default': {
-#         'HOST':"127.0.0.1"
+#         'HOST':"127.0.0.1",
 #         'PORT':"",
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "integracion"
-#         'USER':"root"
-#         'PASSWORD':""
+#         'NAME': "integracion",
+#         'USER':"root",
+#         'PASSWORD':"",
 #         'OPTIONS': {
 #         },
 #     }

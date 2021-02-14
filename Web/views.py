@@ -34,7 +34,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from six import text_type
 from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
 from django.core import serializers
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 def ProvinciaComboBox(request):
     if request.method=="POST":
         post = json.loads(request.body.decode("utf-8"))
@@ -125,9 +125,10 @@ class LogoutView(LoginSelectPerfilView, View):
 
 
 
-class PerfilesTemplateView(LoginSelectPerfilView,AdminPermission ,TemplateView):
+class PerfilesTemplateView(LoginRequiredMixin,AdminPermission ,TemplateView):
     template_name = "Web/perfiles.html"
     context_object_name = 'perfiles'
+    login_url=reverse_lazy("Web:login")
     def post(self, request, *args, **kwargs):
         #import pdb; pdb.set_trace()
         try:
@@ -146,13 +147,14 @@ class PerfilesTemplateView(LoginSelectPerfilView,AdminPermission ,TemplateView):
         # context['perfiles'] = usuario.perfil.all()
         #context['url_foto'] = settings.URL_FOTO
         return context
-class PerfilCreateView(LoginView, CreateView):
+class PerfilCreateView(LoginRequiredMixin, CreateView):
     model=Group
     form_class = UserGroupForm
     template_name = 'Web/perfil.html'
     success_url = reverse_lazy("Web:Perfiles") 
     action = ACCION_NUEVO
-    
+    login_url=reverse_lazy("Web:login")
+
     def form_valid(self, form):
         print("if")
 
@@ -167,13 +169,15 @@ class PerfilCreateView(LoginView, CreateView):
         return super().form_invalid(form)     
 
 
-class PerfilUpdateView(LoginSelectPerfilView, AdminPermission,UpdateView):
+class PerfilUpdateView(LoginRequiredMixin, AdminPermission,UpdateView):
     form_class = UserGroupForm
     model = Group
     template_name = "Web/perfil.html"
     context_object_name="perfil"
     success_url = reverse_lazy("Web:Perfiles")
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
+
     # def get_form_kwargs(self):
     #     kwargs = super().get_form_kwargs()
     #     kwargs.update(instance={
@@ -198,11 +202,13 @@ class PerfilUpdateView(LoginSelectPerfilView, AdminPermission,UpdateView):
 
 
 
-class ListUsuariosListView(LoginView, ValidateMixin,ListView):
+class ListUsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/list_usuarios.html'
     model = Usuario
     context_object_name = 'usuarios'
     permission_required=["Web.view_usuario"]
+    login_url=reverse_lazy("Web:login")
+
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -240,9 +246,11 @@ class ListUsuariosListView(LoginView, ValidateMixin,ListView):
     #             ) for word in terms]
     #             qs = qs.filter(*search)
     #     return qs
-class PersonaListView(LoginView,ListView):
+class PersonaListView(LoginRequiredMixin,ListView):
     template_name = 'Web/personas.html'
     model = Persona
+    login_url=reverse_lazy("Web:login")
+
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -261,13 +269,13 @@ class PersonaListView(LoginView,ListView):
             print(e)
         return JsonResponse(data,safe=False)
    
-class PersonaUpdateView(LoginView,UpdateView):
+class PersonaUpdateView(LoginRequiredMixin,UpdateView):
     model = Persona
     template_name="Web/persona.html"
 
     context_object_name = "persona" 
     form_class = PersonaForm
-    login_url = "Web:login"
+    login_url=reverse_lazy("Web:login")
 
     def dispatch(self,request,*args, **kwargs):
         self.object=self.get_object() 
@@ -306,11 +314,11 @@ class PersonaUpdateView(LoginView,UpdateView):
  
         return context
     
-class PersonaCreateView(LoginView,CreateView):
+class PersonaCreateView(LoginRequiredMixin,CreateView):
     model=Persona
     template_name = 'Web/persona.html'
     form_class=PersonaForm
-    # success_url = reverse_lazy("Web:Personas")
+    login_url=reverse_lazy("Web:login")
     action = ACCION_NUEVO
     
     def post(self,request,*args, **kwargs):
@@ -338,12 +346,14 @@ class PersonaCreateView(LoginView,CreateView):
         except Exception as e:
             print(e)
 
-class UsuarioCreateView(LoginView, CreateView):
+class UsuarioCreateView(LoginRequiredMixin, CreateView):
     model=Usuario
     template_name = 'Web/usuario.html'
     success_url = reverse_lazy("Web:Usuarios")
     action = ACCION_NUEVO
     form_class=UsuarioForm
+    login_url=reverse_lazy("Web:login")
+
     def post(self,request,*args, **kwargs):
         data={}
         print(request.POST)
@@ -385,7 +395,8 @@ class UsuarioCreateView(LoginView, CreateView):
     #         kwargs['formPersona'] = PersonaForm()
     #     return kwargs
 
-class UsuarioUpdateView(LoginView, UpdateView):
+class UsuarioUpdateView(LoginRequiredMixin, UpdateView):
+    login_url=reverse_lazy("Web:login")
 
     model = Usuario
     template_name = 'Web/usuario.html'
@@ -424,12 +435,13 @@ class UsuarioUpdateView(LoginView, UpdateView):
         except Exception as e:
             print(e)
 
-class ListUbicacionesListView(LoginView,ValidateMixin, ListView):
+class ListUbicacionesListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/ubicaciones.html'
     model = Ubicacion
     paginate_by = 10
     context_object_name = 'ubicaciones'
     permission_required=["Web.view_ubicacion"]
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -445,12 +457,13 @@ class ListUbicacionesListView(LoginView,ValidateMixin, ListView):
         return context
 
 
-class UbicacionCreateView(LoginView,ValidateMixin, CreateView):
+class UbicacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = UbicacionForm
     template_name = 'Web/ubicacion.html'
     success_url = '/Web/Ubicaciones/'
     action = ACCION_NUEVO
     permission_required=["Web.add_ubicacion"]
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -463,13 +476,16 @@ class UbicacionCreateView(LoginView,ValidateMixin, CreateView):
         return super().form_invalid(form)
 
 
-class UbicacionUpdateView(LoginView,ValidateMixin, UpdateView):
+class UbicacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = UbicacionForm
     model = Ubicacion
     template_name = 'Web/ubicacion.html'
     success_url = '/Web/Ubicaciones/'
     action = ACCION_EDITAR
+
     permission_required=["Web.change_ubicacion"]
+    login_url=reverse_lazy("Web:login")
+
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -486,9 +502,10 @@ class UbicacionUpdateView(LoginView,ValidateMixin, UpdateView):
         return context
 
 
-class UbicacionDeleteView(LoginView, View):
+class UbicacionDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
-    
+    login_url=reverse_lazy("Web:login")
+   
     def get(self, request, *args, **kwargs):
         id_ubicacion = self.kwargs['pk']
         ubicacion = Ubicacion.objects.get(pk=id_ubicacion)
@@ -499,11 +516,12 @@ class UbicacionDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:Ubicaciones',))
 
 
-class AlmacenesListView(LoginView, ListView):
+class AlmacenesListView(LoginRequiredMixin, ListView):
     template_name = 'Web/almacenes.html'
     model = Almacen
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -519,11 +537,12 @@ class AlmacenesListView(LoginView, ListView):
         return context
 
 
-class AlmacenCreateView(LoginView, CreateView):
+class AlmacenCreateView(LoginRequiredMixin, CreateView):
     form_class = AlmacenForm
     template_name = 'Web/almacen.html'
     success_url = '/Web/almacenes/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -536,12 +555,13 @@ class AlmacenCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class AlmacenUpdateView(LoginView, UpdateView):
+class AlmacenUpdateView(LoginRequiredMixin, UpdateView):
     form_class = AlmacenForm
     model = Almacen
     template_name = 'Web/almacen.html'
     success_url = '/Web/almacenes/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -559,8 +579,9 @@ class AlmacenUpdateView(LoginView, UpdateView):
         return context
 
 
-class AlmacenDeleteView(LoginView, View):
+class AlmacenDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -572,11 +593,12 @@ class AlmacenDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:almacenes',))
 
 
-class LugaresListView(LoginView, ListView):
+class LugaresListView(LoginRequiredMixin, ListView):
     template_name = 'Web/lugares.html'
     model = Lugar
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -592,11 +614,12 @@ class LugaresListView(LoginView, ListView):
         return context
 
 
-class LugarCreateView(LoginView, CreateView):
+class LugarCreateView(LoginRequiredMixin, CreateView):
     form_class = LugarForm
     template_name = 'Web/lugar.html'
     success_url = reverse_lazy("Web:Lugares")
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -609,12 +632,13 @@ class LugarCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class LugarUpdateView(LoginView, UpdateView):
+class LugarUpdateView(LoginRequiredMixin, UpdateView):
     form_class = LugarForm
     model = Lugar
     template_name = 'Web/lugar.html'
     success_url = '/Web/lugares/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -632,9 +656,10 @@ class LugarUpdateView(LoginView, UpdateView):
         return context
 
 
-class LugarDeleteView(LoginView, View):
+class LugarDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
-    
+    login_url=reverse_lazy("Web:login")
+   
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         Lugar = Lugar.objects.get(pk=id)
@@ -645,11 +670,12 @@ class LugarDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:lugares',))
 
 
-class MarcaRenovacionesListView(LoginView, ListView):
+class MarcaRenovacionesListView(LoginRequiredMixin, ListView):
     template_name = 'Web/marca_renovaciones.html'
     model = MarcaRenova
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -665,11 +691,12 @@ class MarcaRenovacionesListView(LoginView, ListView):
         return context
 
 
-class MarcaRenovacionCreateView(LoginView, CreateView):
+class MarcaRenovacionCreateView(LoginRequiredMixin, CreateView):
     form_class = MarcaRenovaForm
     template_name = 'Web/marca_renovacion.html'
     success_url = '/Web/marca-renovaciones/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -682,12 +709,13 @@ class MarcaRenovacionCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class MarcaRenovacionUpdateView(LoginView, UpdateView):
+class MarcaRenovacionUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MarcaRenovaForm
     model = MarcaRenova
     template_name = 'Web/marca_renovacion.html'
     success_url = '/Web/marca-renovaciones/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -705,9 +733,10 @@ class MarcaRenovacionUpdateView(LoginView, UpdateView):
         return context
 
 
-class MarcaRenovacionDeleteView(LoginView, View):
+class MarcaRenovacionDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
-    
+    login_url=reverse_lazy("Web:login")
+   
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = MarcaRenova.objects.get(pk=id)
@@ -718,11 +747,12 @@ class MarcaRenovacionDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:marca-renovaciones',))
 
 
-class ModeloRenovacionesListView(LoginView, ListView):
+class ModeloRenovacionesListView(LoginRequiredMixin, ListView):
     template_name = 'Web/modelo_renovaciones.html'
     model = ModeloRenova
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -738,11 +768,12 @@ class ModeloRenovacionesListView(LoginView, ListView):
         return context
 
 
-class ModeloRenovacionCreateView(LoginView, CreateView):
+class ModeloRenovacionCreateView(LoginRequiredMixin, CreateView):
     form_class = ModeloRenovaForm
     template_name = 'Web/modelo_renovacion.html'
     success_url = '/Web/modelo-renovaciones/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -755,12 +786,13 @@ class ModeloRenovacionCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class ModeloRenovacionUpdateView(LoginView, UpdateView):
+class ModeloRenovacionUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ModeloRenovaForm
     model = ModeloRenova
     template_name = 'Web/modelo_renovacion.html'
     success_url = '/Web/modelo-renovaciones/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -778,8 +810,9 @@ class ModeloRenovacionUpdateView(LoginView, UpdateView):
         return context
 
 
-class ModeloRenovacionDeleteView(LoginView, View):
+class ModeloRenovacionDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -791,11 +824,12 @@ class ModeloRenovacionDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:modelo-renovaciones',))
 
 
-class AnchoBandaRenovacionesListView(LoginView, ListView):
+class AnchoBandaRenovacionesListView(LoginRequiredMixin, ListView):
     template_name = 'Web/ancho_banda_renovaciones.html'
     model = AnchoBandaRenova
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -811,11 +845,12 @@ class AnchoBandaRenovacionesListView(LoginView, ListView):
         return context
 
 
-class AnchoBandaRenovacionCreateView(LoginView, CreateView):
+class AnchoBandaRenovacionCreateView(LoginRequiredMixin, CreateView):
     form_class = AnchoBandaRenovaForm
     template_name = 'Web/ancho_banda_renovacion.html'
     success_url = '/Web/ancho-banda-renovaciones/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -828,12 +863,13 @@ class AnchoBandaRenovacionCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class AnchoBandaRenovacionUpdateView(LoginView, UpdateView):
+class AnchoBandaRenovacionUpdateView(LoginRequiredMixin, UpdateView):
     form_class = AnchoBandaRenovaForm
     model = AnchoBandaRenova
     template_name = 'Web/ancho_banda_renovacion.html'
     success_url = '/Web/ancho-banda-renovaciones/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -854,9 +890,10 @@ class AnchoBandaRenovacionUpdateView(LoginView, UpdateView):
         return context
 
 
-class AnchoBandaRenovacionDeleteView(LoginView, View):
+class AnchoBandaRenovacionDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
-    
+    login_url=reverse_lazy("Web:login")
+   
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = AnchoBandaRenova.objects.get(pk=id)
@@ -873,9 +910,11 @@ def RenderOption(request):
     return HttpResponse(json.dumps(list(modelos.values('id','descripcion'))), content_type="application/json")
 
 
-class MarcaLlantasListView(LoginView, ListView):
+class MarcaLlantasListView(LoginRequiredMixin, ListView):
     template_name = 'Web/marca_llantas.html'
     model = MarcaLlanta
+    login_url=reverse_lazy("Web:login")
+
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -895,11 +934,12 @@ class MarcaLlantasListView(LoginView, ListView):
         return JsonResponse(data,safe=False)
    
 
-class MarcaLlantaCreateView(LoginView, CreateView):
+class MarcaLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = MarcaLlantaForm
     template_name = 'Web/marca_llanta.html'
     success_url = '/Web/marca-llantas/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -912,12 +952,13 @@ class MarcaLlantaCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class MarcaLlantaUpdateView(LoginView, UpdateView):
+class MarcaLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MarcaLlantaForm
     model = MarcaLlanta
     template_name = 'Web/marca_llanta.html'
     success_url = '/Web/marca-llantas/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -935,9 +976,10 @@ class MarcaLlantaUpdateView(LoginView, UpdateView):
         return context
 
 import json
-class MarcaLlantaDeleteView(LoginView, View):
+class MarcaLlantaDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
-    
+    login_url=reverse_lazy("Web:login")
+   
     def post(self, request, *args, **kwargs):
         id=self.kwargs["pk"]
         existe = MarcaLlanta.objects.filter(pk=id)
@@ -954,11 +996,12 @@ class MarcaLlantaDeleteView(LoginView, View):
             return JsonResponse({"status":500},safe=False)
 
 
-class ModeloLlantasListView(LoginView, ListView):
+class ModeloLlantasListView(LoginRequiredMixin, ListView):
     template_name = 'Web/modelo_llantas.html'
     model = ModeloLlanta
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -974,11 +1017,12 @@ class ModeloLlantasListView(LoginView, ListView):
         return context
 
 
-class ModeloLlantaCreateView(LoginView, CreateView):
+class ModeloLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = ModeloLlantaForm
     template_name = 'Web/modelo_llanta.html'
     success_url = '/Web/modelo-llantas/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -991,12 +1035,13 @@ class ModeloLlantaCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class ModeloLlantaUpdateView(LoginView, UpdateView):
+class ModeloLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ModeloLlantaForm
     model = ModeloLlanta
     template_name = 'Web/modelo_llanta.html'
     success_url = '/Web/modelo-llantas/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1014,8 +1059,9 @@ class ModeloLlantaUpdateView(LoginView, UpdateView):
         return context
 
 
-class ModeloLlantaDeleteView(LoginView, View):
+class ModeloLlantaDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -1027,11 +1073,12 @@ class ModeloLlantaDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:modelo-llantas',))
 
 
-class MedidaLlantasListView(LoginView, ListView):
+class MedidaLlantasListView(LoginRequiredMixin, ListView):
     template_name = 'Web/medida_llantas.html'
     model = MedidaLlanta
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1047,11 +1094,12 @@ class MedidaLlantasListView(LoginView, ListView):
         return context
 
 
-class MedidaLlantaCreateView(LoginView, CreateView):
+class MedidaLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = MedidaLlantaForm
     template_name = 'Web/medida_llanta.html'
     success_url = '/Web/medida-llantas/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1064,12 +1112,13 @@ class MedidaLlantaCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class MedidaLlantaUpdateView(LoginView, UpdateView):
+class MedidaLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MedidaLlantaForm
     model = MedidaLlanta
     template_name = 'Web/medida_llanta.html'
     success_url = '/Web/medida-llantas/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1090,8 +1139,9 @@ class MedidaLlantaUpdateView(LoginView, UpdateView):
         return context
 
 
-class MedidaLlantaDeleteView(LoginView, View):
+class MedidaLlantaDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -1109,11 +1159,12 @@ def RenderOptionLlanta(request):
     return HttpResponse(json.dumps(list(modelos.values('id','descripcion'))), content_type="application/json")
 
 
-class EstadoLlantasListView(LoginView, ListView):
+class EstadoLlantasListView(LoginRequiredMixin, ListView):
     template_name = 'Web/estado_llantas.html'
     model = EstadoLlanta
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1129,11 +1180,12 @@ class EstadoLlantasListView(LoginView, ListView):
         return context
 
 
-class EstadoLlantaCreateView(LoginView, CreateView):
+class EstadoLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = EstadoLlantaForm
     template_name = 'Web/estado_llanta.html'
     success_url = '/Web/estado-llantas/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1146,12 +1198,13 @@ class EstadoLlantaCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class EstadoLlantaUpdateView(LoginView, UpdateView):
+class EstadoLlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = EstadoLlantaForm
     model = EstadoLlanta
     template_name = 'Web/estado_llanta.html'
     success_url = '/Web/estado-llantas/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1169,8 +1222,9 @@ class EstadoLlantaUpdateView(LoginView, UpdateView):
         return context
 
 
-class EstadoLlantaDeleteView(LoginView, View):
+class EstadoLlantaDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -1182,11 +1236,12 @@ class EstadoLlantaDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:estado-llantas',))
 
 
-class TipoServiciosListView(LoginView, ListView):
+class TipoServiciosListView(LoginRequiredMixin, ListView):
     template_name = 'Web/tipo_servicios.html'
     model = TipoServicio
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1202,11 +1257,12 @@ class TipoServiciosListView(LoginView, ListView):
         return context
 
 
-class TipoServicioCreateView(LoginView, CreateView):
+class TipoServicioCreateView(LoginRequiredMixin, CreateView):
     form_class = TipoServicioForm
     template_name = 'Web/tipo_servicio.html'
     success_url = '/Web/tipo-servicios/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1219,12 +1275,13 @@ class TipoServicioCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class TipoServicioUpdateView(LoginView, UpdateView):
+class TipoServicioUpdateView(LoginRequiredMixin, UpdateView):
     form_class = TipoServicioForm
     model = TipoServicio
     template_name = 'Web/tipo_servicio.html'
     success_url = '/Web/tipo-servicios/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1242,9 +1299,10 @@ class TipoServicioUpdateView(LoginView, UpdateView):
         return context
 
 
-class TipoServicioDeleteView(LoginView, View):
+class TipoServicioDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
-    
+    login_url=reverse_lazy("Web:login")
+   
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = TipoServicio.objects.get(pk=id)
@@ -1255,11 +1313,12 @@ class TipoServicioDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:tipo-servicios',))
 
 
-class TipoPisosListView(LoginView, ListView):
+class TipoPisosListView(LoginRequiredMixin, ListView):
     template_name = 'Web/tipo_pisos.html'
     model = TipoPiso
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1275,11 +1334,12 @@ class TipoPisosListView(LoginView, ListView):
         return context
 
 
-class TipoPisoCreateView(LoginView, CreateView):
+class TipoPisoCreateView(LoginRequiredMixin, CreateView):
     form_class = TipoPisoForm
     template_name = 'Web/tipo_piso.html'
     success_url = '/Web/tipo-pisos/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1292,12 +1352,13 @@ class TipoPisoCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class TipoPisoUpdateView(LoginView, UpdateView):
+class TipoPisoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = TipoPisoForm
     model = TipoPiso
     template_name = 'Web/tipo_piso.html'
     success_url = '/Web/tipo-pisos/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1315,9 +1376,10 @@ class TipoPisoUpdateView(LoginView, UpdateView):
         return context
 
 
-class TipoPisoDeleteView(LoginView, View):
+class TipoPisoDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
-    
+    login_url=reverse_lazy("Web:login")
+   
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = TipoPiso.objects.get(pk=id)
@@ -1328,11 +1390,12 @@ class TipoPisoDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:tipo-pisos',))
 
 
-class MarcaVehiculosListView(LoginView, ListView):
+class MarcaVehiculosListView(LoginRequiredMixin, ListView):
     template_name = 'Web/marca_vehiculos.html'
     model = MarcaVehiculo
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1348,11 +1411,12 @@ class MarcaVehiculosListView(LoginView, ListView):
         return context
 
 
-class MarcaVehiculoCreateView(LoginView, CreateView):
+class MarcaVehiculoCreateView(LoginRequiredMixin, CreateView):
     form_class = MarcaVehiculoForm
     template_name = 'Web/marca_vehiculo.html'
     success_url = '/Web/marca-vehiculos/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1365,12 +1429,13 @@ class MarcaVehiculoCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class MarcaVehiculoUpdateView(LoginView, UpdateView):
+class MarcaVehiculoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MarcaVehiculoForm
     model = MarcaVehiculo
     template_name = 'Web/marca_vehiculo.html'
     success_url = '/Web/marca-vehiculos/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1388,8 +1453,9 @@ class MarcaVehiculoUpdateView(LoginView, UpdateView):
         return context
 
 
-class MarcaVehiculoDeleteView(LoginView, View):
+class MarcaVehiculoDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -1401,11 +1467,12 @@ class MarcaVehiculoDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:marca-vehiculos',))
 
 
-class ModeloVehiculosListView(LoginView, ListView):
+class ModeloVehiculosListView(LoginRequiredMixin, ListView):
     template_name = 'Web/modelo_vehiculos.html'
     model = ModeloVehiculo
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1421,11 +1488,12 @@ class ModeloVehiculosListView(LoginView, ListView):
         return context
 
 
-class ModeloVehiculoCreateView(LoginView, CreateView):
+class ModeloVehiculoCreateView(LoginRequiredMixin, CreateView):
     form_class = ModeloVehiculoForm
     template_name = 'Web/modelo_vehiculo.html'
     success_url = '/Web/modelo-vehiculos/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1438,12 +1506,13 @@ class ModeloVehiculoCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class ModeloVehiculoUpdateView(LoginView, UpdateView):
+class ModeloVehiculoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ModeloVehiculoForm
     model = ModeloVehiculo
     template_name = 'Web/modelo_vehiculo.html'
     success_url = '/Web/modelo-vehiculos/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1461,8 +1530,9 @@ class ModeloVehiculoUpdateView(LoginView, UpdateView):
         return context
 
 
-class ModeloVehiculoDeleteView(LoginView, View):
+class ModeloVehiculoDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -1474,11 +1544,12 @@ class ModeloVehiculoDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:modelo-vehiculos',))
 
 
-class LlantasListView(LoginView, ListView):
+class LlantasListView(LoginRequiredMixin, ListView):
     template_name = 'Web/llantas.html'
     model = Llanta
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1510,11 +1581,12 @@ class LlantasListView(LoginView, ListView):
         return context
 
 
-class LlantaCreateView(LoginView, CreateView):
+class LlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = LlantaForm
     template_name = 'Web/llanta.html'
     success_url = '/Web/llantas/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1528,12 +1600,13 @@ class LlantaCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class LlantaUpdateView(LoginView, UpdateView):
+class LlantaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = LlantaForm
     model = Llanta
     template_name = 'Web/llanta.html'
     success_url = '/Web/llantas/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         # import pdb; pdb.set_trace()
@@ -1555,8 +1628,9 @@ class LlantaUpdateView(LoginView, UpdateView):
         return context
 
 
-class LlantaDeleteView(LoginView, View):
+class LlantaDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -1568,11 +1642,12 @@ class LlantaDeleteView(LoginView, View):
         return HttpResponseRedirect(reverse('Web:llantas',))
 
 
-class VehiculosListView(LoginView, ListView):
+class VehiculosListView(LoginRequiredMixin, ListView):
     template_name = 'Web/vehiculos.html'
     model = Vehiculo
     paginate_by = 10
     context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1604,11 +1679,12 @@ class VehiculosListView(LoginView, ListView):
         return context
 
 
-class VehiculoCreateView(LoginView, CreateView):
+class VehiculoCreateView(LoginRequiredMixin, CreateView):
     form_class = VehiculoForm
     template_name = 'Web/vehiculo.html'
     success_url = '/Web/vehiculos/'
     action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1621,12 +1697,13 @@ class VehiculoCreateView(LoginView, CreateView):
         return super().form_invalid(form)
 
 
-class VehiculoUpdateView(LoginView, UpdateView):
+class VehiculoUpdateView(LoginRequiredMixin, UpdateView):
     form_class = VehiculoForm
     model = Vehiculo
     template_name = 'Web/vehiculo.html'
     success_url = '/Web/vehiculos/'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def form_valid(self, form):
         # import pdb; pdb.set_trace()
@@ -1648,8 +1725,9 @@ class VehiculoUpdateView(LoginView, UpdateView):
         return context
 
 
-class VehiculoDeleteView(LoginView, View):
+class VehiculoDeleteView(LoginRequiredMixin, View):
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
     
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
@@ -1667,9 +1745,10 @@ def RenderOptionVehiculo(request):
     return HttpResponse(json.dumps(list(modelos.values('id','descripcion'))), content_type="application/json")
 
 
-class VerVehiculoView(LoginView, TemplateView):
+class VerVehiculoView(LoginRequiredMixin, TemplateView):
     template_name = 'Web/ver_vehiculo.html'
     action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
 
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -1682,11 +1761,12 @@ class VerVehiculoView(LoginView, TemplateView):
         return context
 
 
-class AgregarLlantaCreateView(LoginView, CreateView):
+class AgregarLlantaCreateView(LoginRequiredMixin, CreateView):
     form_class = LlantaForm
     template_name = 'Web/add_llanta.html'
     action = ACCION_NUEVO
     vehiculo = None
+    login_url=reverse_lazy("Web:login")
 
     def get_object(self, pk):
         try:
