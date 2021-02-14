@@ -17,9 +17,9 @@ import environ
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Leer variables 
-env = environ.Env(DEBUG=(bool, False))
-base = environ.Path(__file__)
-environ.Env.read_env(env_file=base('../../.env'))
+# env = environ.Env(DEBUG=(bool, False))
+# base = environ.Path(__file__)
+# environ.Env.read_env(env_file=base('../../.env'))
 
 
 # Quick-start development settings - unsuitable for production
