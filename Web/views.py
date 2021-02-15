@@ -289,7 +289,8 @@ class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
     def post(self,request,*args, **kwargs):
         data={}
         try:
-            action=request.POST["action"]
+            form = self.get_form()
+
             if form.is_valid():
                 form.save()
                 data = {
@@ -304,6 +305,7 @@ class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
                 return JsonResponse(data)
             
         except Exception as e:
+            print(e)
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
             return HttpResponseRedirect(self.success_url)
 

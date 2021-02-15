@@ -270,7 +270,7 @@ jQuery('#openCalendar3').click(function(){
       console.log(id);
       if (id != "") {
        
-        fetch("../Provincia/", {
+      fetch("{% url 'Web:Provincia' %}", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -334,7 +334,7 @@ jQuery('#openCalendar3').click(function(){
       let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
       if(id!=0){
    
-      fetch("../Distrito/", {
+      fetch("{% url 'Web:Distrito' %}", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

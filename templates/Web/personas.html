@@ -156,10 +156,10 @@
       });
     document.getElementById('btn-add-persona').addEventListener("click", function (e) {  
     e.preventDefault()
-    var template = e.target.dataset.url;
+    let url = "{% url 'Web:PersonaAdd' %}";
     var jc = $.confirm({
       title: "Nueva Persona",
-      content: "URL:{% url 'Web:Persona' %}",
+      content: "URL:{% url 'Web:PersonaAdd' %}",
       columnClass: 'col-xl-12 col-lg-12 col-md-8 col-sm-10',
       icon: "fa fa-plus-circle",
       type: "dark",
@@ -175,7 +175,7 @@
             // let invalid_ruc = form[0].ownerDocument.getElementById("invalid_ruc")
             // let invalid_name = form[0].ownerDocument.getElementById("invalid_name")
             let data= new FormData(form[0].ownerDocument.forms[2])
-            fetch("{% url 'Web:Persona' %}", {
+            fetch(url, {
               method: "POST",
               headers: {
                 'X-CSRFToken': csrftoken
