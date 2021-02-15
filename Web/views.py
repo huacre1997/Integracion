@@ -316,7 +316,7 @@ class UsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
     context_object_name = 'usuarios'
     permission_required=["Web.view_usuario"]
     login_url=reverse_lazy("Web:login")
-
+    success_url=reverse_lazy("Web:inicio")
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
