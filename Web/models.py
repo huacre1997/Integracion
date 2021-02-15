@@ -133,10 +133,11 @@ class Usuario(AbstractUser):
 
 @receiver(post_save, sender=Usuario)
 def update_user(sender, instance, **kwargs):
-   if instance.is_active:
-      instance.persona.eliminado=False
-   else:
-      instance.persona.eliminado=True
+   if instance.persona:
+      if instance.is_active:
+         instance.persona.eliminado=False
+      else:
+         instance.persona.eliminado=True
 
    instance.persona.save()
 class Ubicacion(models.Model):
