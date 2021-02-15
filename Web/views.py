@@ -161,15 +161,13 @@ class PerfilCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
             if form.is_valid():
                 form.save()
-                data = {
-                'stat': 200,
-                }
+                data={"stat":200,"url":self.success_url}
             else:
                 data = {
                 "form":form.errors,
                 'stat': 500,
                 }
-            return JsonResponse(data)
+            return JsonResponse(data,safe=False)
         
 
         except Exception as e:

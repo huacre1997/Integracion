@@ -138,7 +138,7 @@ def update_user(sender, instance, **kwargs):
          instance.persona.eliminado=False
       else:
          instance.persona.eliminado=True
-      instance.persona.save()
+         instance.persona.save()
 
 class Ubicacion(models.Model):
    descripcion = models.CharField(max_length=100)
