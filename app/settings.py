@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'pnfnh$12%rkgz*kf81$1jbzc$f-5)i5ago4f!#7si6m0jr5_(c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS = [".herokuapp.com"]
 ALLOWED_HOSTS = ["*",".herokuapp.com"]
@@ -100,26 +100,36 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "bdprueba",
+        "HOST": "localhost",
+        "USER": "root",
+        "PASSWORD": "",
+        "PORT": ""
+    }
+}
+
+
 
 # DATABASES = {
 #     'default': {
-#         'HOST':"127.0.0.1",
-#         'PORT':"",
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "integracion",
-#         'USER':"root",
-#         'PASSWORD':"",
-#         'OPTIONS': {
-#         },
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': "bdprueba",
+#         "HOST": "localhost",
+#         "USER": "postgres",
+#         "PASSWORD": "123",
+#         "PORT": 5432
 #     }
 # }
-import dj_database_url
-from decouple import config
-DATABASES={
-    "default":dj_database_url.config(
-        default=config("DATABASE_URL")
-    )
-}
+# import dj_database_url
+# from decouple import config
+# DATABASES={
+#     "default":dj_database_url.config(
+#         default=config("DATABASE_URL")
+#     )
+# }
 
 
 # Password validation
@@ -155,21 +165,21 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#              'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+#         },
+#     },
+# }
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 #Location of static files
@@ -187,7 +197,7 @@ AUTH_USER_MODEL="Web.Usuario"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  
 MAILER_EMAIL_BACKEND = EMAIL_BACKEND  
 EMAIL_HOST = 'smtp.gmail.com'  
-EMAIL_HOST_PASSWORD = 'Sonyw395'  
+EMAIL_HOST_PASSWORD = 'qskwjjelhrpkyyra'  
 EMAIL_HOST_USER = 'huacreenciso97@gmail.com'  
 EMAIL_PORT = 465  
 EMAIL_USE_SSL = True  

@@ -1,4 +1,7 @@
 {% extends 'Web/base.html' %}
+{% block blockAdmin %}nav-item active{% endblock  %}
+{% block collapseAdmin %}collapse show{% endblock  %}
+{% block perfiles %}collapse-item active{% endblock  %}
 {% load static %}
 {% block content %}  
 <link href='{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}' rel="stylesheet">
@@ -32,7 +35,7 @@
                 </div>
                 <br>
                 <div class="table-responsive">                
-                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                  <table class="table  table-hover  dt-responsive" id="TablaUsuarios" style="width: 100%;">
                   <thead>
                     <tr>
                       <th>#</th>
@@ -48,8 +51,8 @@
                       <td>{{u.name}}</td>
                       
                       <td>
-                        <a href="{% url 'Web:Perfil' u.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
-                        <a href="{#% url 'web:atender_solicitud' s.uuid %#}" class="btn btn-danger btn-sm"><i class="fa fa-ban"></i></a>
+                        <a href="{% url 'Web:Perfil' u.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a>
+                        {% comment %} <a href="{#% url 'web:atender_solicitud' s.uuid %#}" class="btn btn-danger btn-sm"><i class="fa fa-ban"></i></a> {% endcomment %}
                       </td>
                     </tr>
                     {% endfor %}

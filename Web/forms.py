@@ -16,32 +16,29 @@ from django.contrib.auth.forms import  PasswordResetForm, SetPasswordForm
 
 
 class UserPasswordResetForm(SetPasswordForm):
-    """Change password form."""
-    new_password1 = forms.CharField(label='Password',
-        help_text="<ul class='errorlist text-muted'><li>Your password can 't be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can 't be a commonly used password.</li> <li>Your password can 't be entirely numeric.<li></ul>",
-        max_length=100,
-        required=True,
-        widget=forms.PasswordInput(
-        attrs={
-            'class': 'form-control',
-            'placeholder': 'password',
-            'type': 'password',
-            'id': 'user_password',
-        }))
+    class Meta:
+        model = Usuario
+        fields="__all__"   
+    def __init__(self,user,*args, **kwargs):
 
-    new_password2 = forms.CharField(label='Confirm password',
-        help_text=False,
-        max_length=100,
-        required=True,
-        widget=forms.PasswordInput(
-        attrs={
-            'class': 'form-control',
-            'placeholder': 'confirm password',
-            'type': 'password',
-            'id': 'user_password',
-        }))
+        self.user = user
+     
+       
+       
+        super(UserPasswordResetForm, self).__init__(user,*args, **kwargs)
 
+    
+    def clean(self):
+        cleaned_data = super(UserPasswordResetForm,self).clean()
 
+        n_pass = cleaned_data.get("new_pass")
+        r_pass = cleaned_data.get("new_pass_repeat")
+       
+        if r_pass != n_pass:
+            raise ValidationError("Las contraseñas no coinciden.")
+
+   
+        return self.cleaned_data
 class UserForgotPasswordForm(PasswordResetForm):
     """User forgot password, check via email form."""
     email = forms.EmailField(label='Email address',
@@ -114,8 +111,21 @@ class UserGroupForm(forms.ModelForm):
         model = Group
         fields = '__all__'
       
-    
-
+        widgets = {
+            
+                'permissions': FilteredSelectMultiple("Permission", False,  attrs={'rows':'10'}),}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                "class": "form-control",
+            })
+                 
+    def clean_permissions(self):
+        data=self.cleaned_data["permissions"]
+        if not data:
+            raise forms.ValidationError("Debe asignar al menos un permiso.")
+        return data
 # class UserForm(forms.ModelForm):
 # 	# password2 = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control','type':'password'	}))
     
@@ -128,8 +138,19 @@ class UserGroupForm(forms.ModelForm):
 # 			'email': forms.TextInput( attrs={'class':'form-control','type':'email'}),
 # 		}
 
+from django.utils.translation import gettext_lazy as _
 
 class UsuarioForm(forms.ModelForm):
+    password2 = forms.CharField(label='Confirmar contraseña',
+       
+        widget=forms.PasswordInput(
+        attrs={
+            
+            'class': 'form-control',
+            'placeholder': 'Confirmar contraseña',
+            'type': 'password',
+            'id': 'id_password2',
+        }))
 
     class Meta:
         model = Usuario
@@ -137,52 +158,87 @@ class UsuarioForm(forms.ModelForm):
         # widgets = {
         # 	'perfil': forms.SelectMultiple( attrs={'class':'selectpicker',}),
         # }
+        error_messages = {
+            'persona': {
+                'unique': _("Esta Persona ya tiene asignada un Usuario"),
+            },
+        }
         widgets = {
                 'password':forms.PasswordInput(render_value=True, attrs={
                 
-                    "placeholder": "Contraseña",
                     'class': 'form-control',
                 }),
-                'password2':forms.PasswordInput(render_value=True, attrs={
-                
-                    "placeholder": "Contraseña",
-                    'class': 'form-control',
-                }),
+             
                 'username':forms.TextInput(attrs={
                 
                     "placeholder": "Usuario",
                     'class': 'form-control',
                 }),
-                'groups': FilteredSelectMultiple("Permission", False, attrs={'class':'form-control'}),
+                'groups': FilteredSelectMultiple("Permission", False,  attrs={'rows':'10'}),
+                'persona': forms.Select(attrs={'class': 'form-select'}),
+
             }
+    def clean_password2(self):
+        data=self.cleaned_data["password2"]
+        data2=self.cleaned_data["password"]
+        if data!=data2:
+            raise forms.ValidationError("Las constraseñas deben coincidir.")
 
+        return data    
+    def clean_groups(self):
+        data=self.cleaned_data["groups"]
+        if not data:
+            raise forms.ValidationError("Debe asignar al menos un permiso.")
 
+        return data    
+    def clean_persona(self):
+        data=self.cleaned_data["persona"]
+        if data=="":
+            raise forms.ValidationError("Este campo es obligatorio.")
+
+        return data 
     def save(self, commit=True):
         data = {}
         form = super()
         try:
             if form.is_valid():
-                print("us")
                 passwd=self.cleaned_data["password"]
-                print(passwd)
                 u = form.save(commit=False)
                 if u.pk is None:
-                    print("entro al if")
                     u.set_password(passwd)
                 else:
                     user = User.objects.get(pk=u.pk) 
                     if user.password != passwd:
                        u.set_password(passwd)
+
                 u.save()
                 self.save_m2m()
             else:
                 data['error'] = form.errors
         except Exception as e:
             data['error'] = str(e)
+            print(e)
         return data
             
+class  UsuarioEditForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ["username","groups"]
+        # widgets = {
+        # 	'perfil': forms.SelectMultiple( attrs={'class':'selectpicker',}),
+        # }
+      
+        widgets = {
+              
+                'groups': FilteredSelectMultiple("Permission", False,  attrs={'rows':'10'}),
 
+            }
+    def clean_groups(self):
+        data=self.cleaned_data["groups"]
+        if not data:
+            raise forms.ValidationError("Debe asignar al menos un permiso.")
 
+        return data 
 # class UsuarioMultiForm(MultiModelForm):
 #     form_classes = {
 #         'persona': PersonaForm,

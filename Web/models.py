@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from Web.constanst import (CHOICES_APP, APP_GESTION, CHOICES_TIPO_DOC, 
+from Web.constanst import (CHOICES_APP, APP_GESTION, CHOICES_TIPO_DOC2, 
    CHOICES_SEXO, TIPO_DOC_DNI, ESTADO_1, CHOICES_ESTADOS )  
 from functools import partial
 from .functions import letters
@@ -11,6 +11,9 @@ from django.contrib.auth.models import AbstractUser
 from django.forms import model_to_dict
 from django.contrib.auth.models import Group,Permission
 from django.conf import settings
+from django.db.models.signals import post_save,pre_save,post_delete
+from django.dispatch import receiver
+
 def _update_filename(instance, filename, path):
 	filename_aux=''
 	for c in filename:
@@ -67,23 +70,28 @@ class Distrito(models.Model):
 
 class Persona(models.Model):
    uuid=models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-   tip_doc = models.IntegerField(choices=CHOICES_TIPO_DOC, default=TIPO_DOC_DNI)
+   tip_doc = models.IntegerField(choices=CHOICES_TIPO_DOC2, default=TIPO_DOC_DNI)
    nro_doc=models.CharField(max_length=15)
    nom=models.CharField(max_length=100)
    apep=models.CharField(max_length=100)
    apem=models.CharField(max_length=100, null=True, blank=True)
-   fech_nac=models.DateField()
+   fech_nac=models.DateField(null=True,blank=True)
+   fech_inicio=models.DateField(null=True,blank=True)
+   fech_fin=models.DateField(null=True,blank=True)
+
    sexo=models.IntegerField(choices=CHOICES_SEXO, blank=True, null=True)
    departamento = models.ForeignKey(Departamento, on_delete=models.PROTECT, null=True, blank=True)
    provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, null=True, blank=True)
    distrito = models.ForeignKey(Distrito, on_delete=models.PROTECT, null=True, blank=True)
    direccion = models.CharField(max_length=100, null=True, blank=True)
    referencia = models.CharField(max_length=300, null=True, blank=True)
-   celular = models.CharField(max_length=15, null=True, blank=True)
-   telefono = models.CharField(max_length=15, null=True, blank=True)
+   celular = models.CharField(max_length=9, null=True, blank=True)
+   telefono = models.CharField(max_length=9, null=True, blank=True)
    correo = models.CharField(max_length=50, null=True, blank=True)
+   area=models.CharField( max_length=50,null=True,blank=True)
+   cargo=models.CharField( max_length=50,null=True,blank=True)
+
    foto_nueva = models.FileField(upload_to = upload_to('documentos/fotos/'), null=True, blank=True)
-   ruc = models.CharField(null=True, blank=True, max_length=11)
    created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
    modified_at = models.DateTimeField(auto_now=True, editable=False)
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
@@ -103,21 +111,34 @@ class Persona(models.Model):
 
       return item
 class Usuario(AbstractUser):
-   persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True, blank=True)
+   persona = models.OneToOneField(Persona, on_delete=models.CASCADE,null=True,blank=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
-   
+   def save(self, *args, **kwargs):
+      if self.persona:
+         self.email=self.persona.correo
+
+      super(Usuario, self).save(*args, **kwargs)
+    
+
    def toJSON(self):
       item = model_to_dict(self)
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')
       item["groups"]= item['groups'] = [{'id': g.id, 'name': g.name} for g in self.groups.all()]
-
+      item["persona"]=self.persona.toJSON()
       return item
 
+@receiver(post_save, sender=Usuario)
+def update_user(sender, instance, **kwargs):
+   if instance.is_active:
+      instance.persona.eliminado=False
+   else:
+      instance.persona.eliminado=True
 
+   instance.persona.save()
 class Ubicacion(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)

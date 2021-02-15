@@ -17,19 +17,14 @@ class ValidateMixin(object):
             return self.permission_required
     def get_url_redirect(self):
         if self.url_redirect is None:
-            print("get redirect")
             return reverse_lazy("Web:login")
         return self.url_redirect
     
     def dispatch(self, request, *args, **kwargs):
         if len(self.get_perms())==1:
-            print(self.get_perms()[0])
-            print(self.request.user.get_group_permissions())
             if self.get_perms()[0] in self.request.user.get_group_permissions():
-                print("if dispach aeaa")
                 return super().dispatch(request, *args, **kwargs)
             else:
-                print("messaje de error")
                 messages.error(request,"No tienes permisos para ese módulo")
                 return redirect(self.get_url_redirect())
             
@@ -58,7 +53,6 @@ class AdminPermission(object):
         return self.url_redirect
     
     def dispatch(self, request, *args, **kwargs):
-        print()
         if "Administrador" in (self.get_perms()):
             return super().dispatch(request, *args, **kwargs)
         messages.error(request,"No tienes permisos para ese módulo")

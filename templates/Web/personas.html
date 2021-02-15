@@ -17,7 +17,7 @@
               </div>
 
                 <div class="offset-lg-7 col-lg-2">
-                  <button id="btn-add-persona" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</button>
+                  <button id="btn-add-persona" class="btn btn-secondary"><i class="fa fa-file-o"></i>  Crear Nueva Persona</button>
                 </div>
 
             </div>
@@ -34,7 +34,6 @@
                         <th>Nombres</th>
                         <th>Apellidos</th>
                         <th>N° Documento</th>
-                        <th>RUC</th>
                         <th>Celular</th>
                         <th>Correo</th>
                         <th>Opciones</th>
@@ -55,8 +54,8 @@
   <!-- End of Page Wrapper -->
   {% endblock %}
   {% block bottom_scripts %}
-  <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js  "></script>
-  <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js "></script>
+  <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script>
   <script>
     var tablaPersonas
     $(document).ready(function() {
@@ -106,9 +105,6 @@
           "data": 'nro_doc',className: "middle"
         },
         {
-          "data": 'ruc',className: "text-center middle",
-        },
-        {
           "data": 'celular',className: "middle"
         },
         {
@@ -128,7 +124,7 @@
             var buttons =
             '<button class="btn btn-warning btn-circle btn-edit-persona mr-1"  role="button" data-url="Persona/' +
             index.id +
-            '"><i class="far fa-edit" ></i></button><button class="btn btn-danger btn-circle"  target="reportes"><i class="fas fa-ban"></i></button>';
+            '"><i class="far fa-edit" ></i>'
 
             return buttons;
 
@@ -166,12 +162,12 @@
       content: "URL:{% url 'Web:Persona' %}",
       columnClass: 'col-xl-12 col-lg-12 col-md-8 col-sm-10',
       icon: "fa fa-plus-circle",
-      type: "blue",
+      type: "dark",
       animateFromElement: true,
       buttons: {
         formSubmit: {
           text: 'Registrar persona',
-          btnClass: 'btn-blue',
+          btnClass: 'btn-dark',
           action: function () {       
             form = this.$content
             // let name = form[0].ownerDocument.getElementById("id_name")

@@ -7,9 +7,9 @@ from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 
 urlpatterns = [
-    path("password_reset", auth_views.PasswordResetView.as_view(success_url=reverse_lazy("Web:password_reset_done")), name="password_reset"),
+    path("password_reset/", auth_views.PasswordResetView.as_view(success_url=reverse_lazy("Web:password_reset_done")), name="password_reset"),
     path("password_reset/done/", auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
-    path("reset/<uidb64>/<token>", auth_views.PasswordResetConfirmView.as_view(success_url=reverse_lazy("Web:password_reset_complete")), name="password_reset_confirm"),
+    path("reset/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(success_url=reverse_lazy("Web:password_reset_complete")), name="password_reset_confirm"),
     path("password-reset-complete/",auth_views.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
     path('login/', views.LogueoView.as_view(), name='login'),
     path('inicio/', views.HomePageView.as_view(), name='inicio'),
@@ -21,8 +21,12 @@ urlpatterns = [
     path('Persona/<int:pk>/', views.PersonaUpdateView.as_view(), name='Persona'),
     path("Provincia/",views.ProvinciaComboBox,name="Provincia"),
     path("Distrito/",views.DistritoComboBox,name="Distrito"),
-    path('Usuarios/', views.ListUsuariosListView.as_view(), name='Usuarios'),
+    path('Usuarios/', views.UsuariosListView.as_view(), name='Usuarios'),
     path('Usuario/', views.UsuarioCreateView.as_view(), name='Usuario'),
+    path('Usuario/changepassword/<int:pk>/', views.UsuarioUpdatePasswordView.as_view(), name='UsuarioChangePassword'),
+    path('Usuario/desactivate/<int:pk>/', views.UsuarioDesactivate, name='UsuarioDesactivate'),
+    path('Usuario/activate/<int:pk>/', views.UsuarioActivate, name='UsuarioActivate'),
+
     path('Usuario/<int:pk>/', views.UsuarioUpdateView.as_view(), name='Usuario'),
     path('jsi18n/', django_views.i18n.JavaScriptCatalog.as_view(), name='jsi18n'),
 

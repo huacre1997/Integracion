@@ -29,7 +29,7 @@
       <div class="form-row">
         <div class="form-group col-md-4">
           <label for="id_tip_doc">Tip doc:</label>
-          <select name="tip_doc" class="form-control" required="" id="id_tip_doc">
+          <select name="tip_doc" class="form-select" required="" id="id_tip_doc">
             <option selected value=""> --- </option>
 
             <option value="1" {% if persona.tip_doc == 1 %}selected{%endif%}>DNI</option>
@@ -37,6 +37,7 @@
             <option value="2" {% if persona.tip_doc == 2 %}selected{%endif%}>Carnet Extranjería</option>
 
             <option value="3" {% if persona.tip_doc == 3 %}selected{%endif%}>Pasaporte</option>
+            <option value="4" {% if persona.tip_doc == 4 %}selected{%endif%}>RUC</option>
 
           </select>
         </div>
@@ -45,21 +46,23 @@
           <input type="text" class="form-control" value="{% if persona %}{{persona.nro_doc}}{% endif %}" name="nro_doc"
             maxlength="15" required="" id="id_nro_doc">
         </div>
-        <div class="form-group col-md-3">
-          <label for="id_fech_nac">Fecha nacimiento:</label>
-          {{form.fech_nac}}
+        <div class="form-group col-md-4">
+          <label for="id_fech_nac">Fecha de nacimiento:</label>
 
-        </div>
-        <div class="col-md-1 " >
-          <label for="" style="visibility: hidden;">Calendario</label>
-          <button type="button" class="btn btn-circle btn-primary"  id="image_button"><i class="far fa-calendar-alt"></i> </button>
+          <div class="input-group mb-3">
 
+            {{form.fech_nac}}
+             <div class="input-group-append">
+               <button id="openCalendar" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
+             </div>
+           </div>
         </div>
+     
       </div>
       <div class="form-row">
         <div class="form-group col-md-4">
           <label for="id_sexo">Sexo:</label>
-          <select name="sexo" class="form-control" id="id_sexo">
+          <select name="sexo" class="form-select" id="id_sexo">
             <option value="" selected="">---------</option>
 
             <option value="1" {% if persona.sexo == 1 %}selected{%endif%}>Hombre</option>
@@ -68,8 +71,27 @@
 
           </select></div>
         <div class="form-group col-md-4">
+          <label for="id_fech_nac">Fecha de inicio:</label>
+
+          <div class="input-group mb-3">
+
+            {{form.fech_inicio}}
+             <div class="input-group-append">
+               <button id="openCalendar2" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
+             </div>
+           </div>
+
         </div>
         <div class="form-group col-md-4">
+          <label for="id_fech_nac">Fecha de fin:</label>
+
+          <div class="input-group mb-3">
+
+            {{form.fech_fin}}
+             <div class="input-group-append">
+               <button id="openCalendar3" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
+             </div>
+           </div>
 
         </div>
       </div>
@@ -85,7 +107,7 @@
           
           {% if provincia %}
           
-          <select  class="form-control" name="provincia" id="id_provincia" data-url="{% url 'Web:Provincia' %}"
+          <select  class="form-select" name="provincia" id="id_provincia" data-url="{% url 'Web:Provincia' %}"
             data-urldis="{% url 'Web:Distrito' %}">
             <option value="0" selected>Seleccione provincia..</option>
             
@@ -96,7 +118,7 @@
               
           </select>
             {%else%}
-            <select  class="form-control" name="provincia" id="id_provincia" data-url="{% url 'Web:Provincia' %}"
+            <select  disabled class="form-select " name="provincia" id="id_provincia" data-url="{% url 'Web:Provincia' %}"
             data-urldis="{% url 'Web:Distrito' %}">
             <option value="0" selected>Seleccione provincia..</option>
           </select>
@@ -107,7 +129,7 @@
           <label for="id_provincia">Distrito:</label>
 
           {% if distrito %}
-          <select  class="form-control" name="distrito" id="id_distrito">
+          <select  class="form-select" name="distrito" id="id_distrito">
           <option value="0" selected>Seleccione provincia..</option>
           
           {% for i in  distrito %}
@@ -117,7 +139,7 @@
           </select>
           {% else %}
           <label for="id_distrito">Distrito:</label>
-          <select  class="form-control" name="distrito" id="id_distrito">
+          <select  disabled class="form-select" name="distrito" id="id_distrito">
             <option value="0" selected>Seleccione distrito..</option>
           </select>
           {% endif %}
@@ -164,7 +186,7 @@
 
 
       <div class="form-row">
-        <div class="form-group col-md-4 offset-md-2">
+        <div class="form-group col-md-4">
           <label for="id_ruc">Subir imagen: </label>
 
           {{form.foto_nueva}}
@@ -172,9 +194,13 @@
         
         <div class="form-group col-md-4">
 
-          <label for="id_ruc">Ruc:</label>
-          <input type="text" class="form-control" value="{% if persona %}{{persona.ruc}}{% endif %}" name="ruc"
-            maxlength="11" id="id_ruc">
+          <label for="id_ruc">Cargo:</label>
+         {{form.cargo}}
+        </div>
+        <div class="form-group col-md-4">
+
+          <label for="id_ruc">Área:</label>
+         {{form.area}}
         </div>
 
         <input type="hidden" value="{{persona.provincia.id}}" id="provinciaid">
@@ -202,17 +228,37 @@
         timepicker: false,
         format: 'Y-m-d'
       });
+      $("#id_fech_inicio").datetimepicker({
+        
+
+        timepicker: false,
+        format: 'Y-m-d'
+      });
+      $("#id_fech_fin").datetimepicker({
+        
+
+        timepicker: false,
+        format: 'Y-m-d'
+      });
     });
-    jQuery('#image_button').click(function(){
+    jQuery('#openCalendar').click(function(){
   jQuery('#id_fech_nac').datetimepicker('show'); //support hide,show and destroy command
+});
+jQuery('#openCalendar2').click(function(){
+  jQuery('#id_fech_inicio').datetimepicker('show'); //support hide,show and destroy command
+});
+jQuery('#openCalendar3').click(function(){
+  jQuery('#id_fech_fin').datetimepicker('show'); //support hide,show and destroy command
 });
     selectDepart = document.getElementById("id_departamento")
     selectProvince = document.getElementById("id_provincia")
     selectDistrict = document.getElementById("id_distrito")
+    
+    {% if persona %}
+        selectProvince.value = document.getElementById("provinciaid").value
+      selectDistrict.value = document.getElementById("distritoid").value
 
-    selectProvince.value = document.getElementById("provinciaid").value
-    selectDistrict.value = document.getElementById("distritoid").value
-
+    {% endif %}
 
 
 
@@ -221,17 +267,9 @@
 
 
       let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
+      console.log(id);
       if (id != "") {
-        selectProvince.innerHTML = ""
-        selectProvince.disabled = false
-        let selectfirst = document.createElement("option")
-        selectfirst.innerText = "Seleccione provincia..."
-        selectProvince.appendChild(selectfirst)
-        selectDistrict.innerHTML = ""
-        let selectfirstd = document.createElement("option")
-        selectfirstd.innerText = "Seleccione distrito..."
-        selectDistrict.appendChild(selectfirstd)
-        selectDistrict.disabled = true
+       
         fetch("../Provincia/", {
           method: "POST",
           headers: {
@@ -243,6 +281,7 @@
           selectProvince.innerHTML = ""
           selectProvince.disabled = false
           let selectfirst = document.createElement("option")
+          selectfirst.value=0
           selectfirst.innerText = "Seleccione provincia..."
           selectProvince.appendChild(selectfirst)
 
@@ -255,9 +294,20 @@
         })
       } else {
 
-        selectDistrict.disabled = true
-        selectProvince.disabled = true
+        selectProvince.innerHTML = ""
+        let selectfirst = document.createElement("option")
+        selectfirst.value=0
+        selectfirst.innerText = "Seleccione provincia..."
+        selectProvince.appendChild(selectfirst)
+        selectProvince.disabled=true
+        
+        selectDistrict.innerHTML = ""
+        let selectfirstd = document.createElement("option")
+        selectfirstd.value=0
 
+        selectfirstd.innerText = "Seleccione distrito..."
+        selectDistrict.appendChild(selectfirstd)
+        selectDistrict.disabled = true
       }
 
     })
@@ -281,14 +331,9 @@
 
 
     selectProvince.addEventListener("change", function (e) {
-      selectDistrict.disabled = true
-
       let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
-      selectDistrict.innerHTML = ""
-      selectDistrict.disabled = false
-      let selectfirst = document.createElement("option")
-      selectfirst.innerText = "Seleccione ditrito..."
-      selectDistrict.appendChild(selectfirst)
+      if(id!=0){
+   
       fetch("../Distrito/", {
         method: "POST",
         headers: {
@@ -310,6 +355,15 @@
           selectDistrict.appendChild(option)
         }
       })
+    }
+    else{
+      selectDistrict.innerHTML = ""
+      let selectfirst = document.createElement("option")
+      selectfirst.value=0
+      selectfirst.innerText = "Seleccione ditrito..."
+      selectDistrict.appendChild(selectfirst)
+      selectDistrict.disabled=true
+    }
     })
 
 
