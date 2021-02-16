@@ -28,11 +28,13 @@
                           <i class="fa fa-search"></i>Buscar
                         </button>
                     </div>
+                                                            {% if 'Web.add_almacen' in perm %}
+
                     <div class="col-lg-3">
                       <label>&nbsp;</label></br>
                       <a href="{% url 'Web:almacen' %}" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</a>
                     </div>
-
+{% endif %}
                 </div>
                 <br>
                 <div class="table-responsive">                  

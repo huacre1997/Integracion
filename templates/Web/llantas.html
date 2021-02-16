@@ -66,11 +66,13 @@
                           <i class="fa fa-search"></i>Buscar
                         </button>
                     </div>
+                                                              {% if 'Web.add_llanta' in perm %}
+
                     <div class="col-lg-3">
                       <label>&nbsp;</label></br>
                       <a href="{% url 'Web:llanta' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nueva Llanta</a>
                     </div>
-
+{% endif %}
                 </div>
                 <br>                  
                 <div class="table-responsive">
@@ -105,7 +107,7 @@
                       <td>{{obj.created_at|date:'d/m/Y'}}</td>
                       <td>{{obj.vehiculo|default_if_none:''}} </td>
                       <td>
-                                              {% if 'Web.add_llanta' in perm %}
+                                              {% if 'Web.change_llanta' in perm %}
 
                         <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
                                                {% if 'Web.delete_llanta' in perm %}
