@@ -136,11 +136,8 @@
           targets: [-1],
 
           render: function (row, data, index) {
-            var buttons =
-                   
- ' {% if 'Web.change_marcallanta' in perm %}<a href="../marca-llanta/'+index.id+'/" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>'+
-              '</a> {% endif %}   
-               {% if 'Web.delete_marcallanta' in perm %}<button type="button" onclick="eliminateMarca('+index.id+')" data-id="marca-llanta/'+index.id+'/delete/" class="btn btn-danger btn-sm btn-desactivate-marca"><i class="fa fa-ban"></i></button>{% endif %}';
+            var buttons ='{% if 'Web.change_marcallanta' in perm %}<a href="../marca-llanta/'+index.id+'/" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>'+
+              '</a> {% endif %}{% if 'Web.delete_marcallanta' in perm %}<button type="button" onclick="eliminateMarca('+index.id+')" data-id="marca-llanta/'+index.id+'/delete/" class="btn btn-danger btn-sm btn-desactivate-marca"><i class="fa fa-ban"></i></button>{% endif %}';
 
             return buttons;
 
