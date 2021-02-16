@@ -101,11 +101,7 @@ class CalendarWidget(forms.TextInput):
 
 class UserGroupForm(forms.ModelForm):
     
-    class Media:
-        css = {
-                'all': ('/static/admin/css/widgets.css',),
-            }
-        js = ('/admin/jsi18n',)    
+  
     class Meta:
         
         model = Group

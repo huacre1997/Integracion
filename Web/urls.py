@@ -1,7 +1,6 @@
 from django.urls import include, path
 
 from . import views
-from django import views as django_views
 app_name = 'Web'
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
@@ -28,7 +27,6 @@ urlpatterns = [
     path('Usuario/activate/<int:pk>/', views.UsuarioActivate, name='UsuarioActivate'),
 
     path('Usuario/<int:pk>/', views.UsuarioUpdateView.as_view(), name='Usuario'),
-    path('jsi18n/', django_views.i18n.JavaScriptCatalog.as_view(), name='jsi18n'),
 
     path('Perfiles/', views.PerfilesTemplateView.as_view(), name='Perfiles'),
     path('Perfil/', views.PerfilCreateView.as_view(), name='Perfil'),
