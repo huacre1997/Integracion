@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'pnfnh$12%rkgz*kf81$1jbzc$f-5)i5ago4f!#7si6m0jr5_(c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS = [".herokuapp.com"]
 ALLOWED_HOSTS = ["*",".herokuapp.com"]
@@ -99,16 +99,16 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "bdprueba",
-#         "HOST": "localhost",
-#         "USER": "root",
-#         "PASSWORD": "",
-#         "PORT": ""
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "bdprueba",
+        "HOST": "localhost",
+        "USER": "root",
+        "PASSWORD": "",
+        "PORT": ""
+    }
+}
 
 
 
@@ -126,13 +126,13 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # import mimetypes
 
 # mimetypes.add_type("text/javascript", ".js", True)
-import dj_database_url
-from decouple import config
-DATABASES={
-    "default":dj_database_url.config(
-        default=config("DATABASE_URL")
-    )
-}
+# import dj_database_url
+# from decouple import config
+# DATABASES={
+#     "default":dj_database_url.config(
+#         default=config("DATABASE_URL")
+#     )
+# }
 
 
 # Password validation

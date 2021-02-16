@@ -3,7 +3,7 @@ function eliminateMarca(params) {
     console.log(url);
     Swal.fire({
         title: 'Está seguro?',
-        text: "Esto no se podrá revertir!",
+        text: "Desea desactivar esta marca?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

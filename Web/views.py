@@ -1061,7 +1061,7 @@ import json
 class MarcaLlantaDeleteView(LoginRequiredMixin,ValidateMixin, View):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
-    permission_required=["Web.change_marcallanta"]
+    permission_required=["Web.delete_marcallanta"]
 
     def post(self, request, *args, **kwargs):
         id=self.kwargs["pk"]
