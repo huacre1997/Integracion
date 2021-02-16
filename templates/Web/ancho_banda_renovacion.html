@@ -1,4 +1,7 @@
 {% extends 'Web/base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block ancho-banda-renovaciones %}collapse-item active{% endblock  %}
 {% load static %}
 {% block content %}  
 <style>
@@ -45,10 +48,12 @@
               <br>            
 			
             </div>
+            {% if 'Web.add_anchobandarenova' in perm %}
             <div class="card-footer text-muted">
                 <button type="submit" class="btn btn-primary">Grabar</button>
                 <a href="{% url 'Web:ancho-banda-renovaciones' %}" class="btn btn-secondary">Cancelar</a>
             </div>
+            {% endif %}
           	</form>
           </div>				
         </div>

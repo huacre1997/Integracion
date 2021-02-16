@@ -134,11 +134,13 @@ class Usuario(AbstractUser):
 @receiver(post_save, sender=Usuario)
 def update_user(sender, instance, **kwargs):
    if instance.persona:
+      print(instance.is_active)
+
       if instance.is_active:
          instance.persona.eliminado=False
       else:
          instance.persona.eliminado=True
-         instance.persona.save()
+      instance.persona.save()
 
 class Ubicacion(models.Model):
    descripcion = models.CharField(max_length=100)

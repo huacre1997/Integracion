@@ -250,7 +250,10 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 form = self.get_form()
 
                 if form.is_valid():
+                    form.instance.modified_by = self.request.user
+
                     form.save()
+
                     data = {
                     'stat': 'ok',
                    }
@@ -290,6 +293,7 @@ class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
             form = self.get_form()
 
             if form.is_valid():
+                form.instance.created_by = self.request.user
                 form.save()
                 data = {
                     'stat': 'ok',
@@ -328,7 +332,7 @@ class UsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Usuario.objects.all():
+                for i in Usuario.objects.filter(is_superuser=False):
                     data.append(i.toJSON())
                 return JsonResponse(data,safe=False)
 
@@ -353,8 +357,9 @@ class UsuarioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         data={}
         try:
             form = self.get_form()
+
             if form.is_valid():   
-              
+                form.instance.created_by = self.request.user
                 form.save()    
                 return JsonResponse({"stat":200,"url":self.success_url})
             else:
@@ -399,6 +404,8 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
             if form.is_valid():
                 self.object.groups.clear()
                 self.object.groups.set(form.cleaned_data["groups"])  
+                form.instance.modified_by = self.request.user
+
                 form.save()
                 persona=Persona.objects.filter(id=self.object.persona.id)
                 if persona.exists():
@@ -406,6 +413,8 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
                     data.nom=self.request.POST["name"]
                     data.apep=self.request.POST["apep"]
                     data.apem=self.request.POST["apem"]
+                    data.modified_by=self.request.user
+                    
                     data.save()
                 return JsonResponse({"stat":200,"url":self.success_url})
 
@@ -458,6 +467,7 @@ def UsuarioDesactivate(request,pk):
         if user.exists():
             data=user.first()
             data.is_active=False
+            data.modified_by=request.user
             data.save()
             return JsonResponse({"status":200})
         else:
@@ -468,6 +478,8 @@ def UsuarioActivate(request,pk):
         if user.exists():
             data=user.first()
             data.is_active=True
+            data.modified_by=request.user
+
             data.save()
             return JsonResponse({"status":200})
         else:
@@ -501,7 +513,7 @@ class ListUbicacionesListView(LoginRequiredMixin,ValidateMixin, ListView):
 class UbicacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = UbicacionForm
     template_name = 'Web/ubicacion.html'
-    success_url = reverse_lazy("Web:lugares")
+    success_url = reverse_lazy("Web:Ubicaciones")
     action = ACCION_NUEVO
     permission_required=["Web.add_ubicacion"]
     login_url=reverse_lazy("Web:login")
@@ -910,7 +922,7 @@ class AnchoBandaRenovacionCreateView(LoginRequiredMixin, ValidateMixin,CreateVie
     success_url = reverse_lazy("Web:ancho-banda-renovaciones")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
-    permission_required=["Web.create_anchobandarenova"]
+    permission_required=["Web.add_anchobandarenova"]
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1003,7 +1015,7 @@ class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     success_url = reverse_lazy("Web:marca-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
-    permission_required=["Web.create_marcallanta"]
+    permission_required=["Web.add_marcallanta"]
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1090,7 +1102,7 @@ class ModeloLlantaCreateView(LoginRequiredMixin,ValidateMixin ,CreateView):
     success_url = reverse_lazy("Web:modelo-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
-    permission_required=["Web.create_modelollanta"]
+    permission_required=["Web.add_modelollanta"]
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1171,7 +1183,7 @@ class MedidaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     success_url = reverse_lazy("Web:medida-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
-    permission_required=["Web.create_medidallanta"]
+    permission_required=["Web.add_medidallanta"]
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1229,7 +1241,8 @@ class MedidaLlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
 def RenderOptionLlanta(request):
     id_marca = request.GET.get('id_marca')
-    modelos = ModeloLlanta.objects.filter(eliminado=False, marca_llanta__pk=id_marca)
+    print(id_marca  )
+    modelos = ModeloLlanta.objects.filter(eliminado=False, marca_llanta=id_marca)
     return HttpResponse(json.dumps(list(modelos.values('id','descripcion'))), content_type="application/json")
 
 
@@ -1342,7 +1355,7 @@ class TipoServicioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     success_url = reverse_lazy("Web:tipo-servicios")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
-    permission_required=["Web.create_tiposervicio"]
+    permission_required=["Web.add_tiposervicio"]
 
     def form_valid(self, form):
         instance = form.save(commit=False)

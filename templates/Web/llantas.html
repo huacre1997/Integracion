@@ -1,4 +1,7 @@
 {% extends 'Web/base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block llantas %}collapse-item active{% endblock  %}
 {% load static %}
 {% load base_extras %}
 {% load l10n %}
@@ -102,9 +105,12 @@
                       <td>{{obj.created_at|date:'d/m/Y'}}</td>
                       <td>{{obj.vehiculo|default_if_none:''}} </td>
                       <td>
-                        <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
-                        <a href="#" class="btn btn-danger btn-sm"
-                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
+                                              {% if 'Web.add_llanta' in perm %}
+
+                        <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
+                                               {% if 'Web.delete_llanta' in perm %}
+ <a href="#" class="btn btn-danger btn-sm"
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
                         {% include 'Web/fragments/eliminar_llanta.html' %}
                       </td>
                     </tr>

@@ -27,11 +27,13 @@
                           <i class="fa fa-search"></i>Buscar
                         </button>
                     </div>
+                                                         {% if 'auth.add_group' in perm %}
+
                     <div class="col-lg-3">
                       <label>&nbsp;</label></br>
                       <a href="{% url 'Web:Perfil' %}" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo Perfil</a>
                     </div>
-
+{% endif %}
                 </div>
                 <br>
                 <div class="table-responsive">                
@@ -51,7 +53,9 @@
                       <td>{{u.name}}</td>
                       
                       <td>
-                        <a href="{% url 'Web:Perfil' u.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a>
+                                                                         {% if 'auth.change_group' in perm %}
+
+                        <a href="{% url 'Web:Perfil' u.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
                         {% comment %} <a href="{#% url 'web:atender_solicitud' s.uuid %#}" class="btn btn-danger btn-sm"><i class="fa fa-ban"></i></a> {% endcomment %}
                       </td>
                     </tr>

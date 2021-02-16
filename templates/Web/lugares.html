@@ -1,4 +1,7 @@
 {% extends 'Web/base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block lugares %}collapse-item active{% endblock  %}
 {% load static %}
 {% load base_extras %}
 {% block content %}  
@@ -57,8 +60,10 @@
 
                         <a href="{% url 'Web:lugar' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
                         {%endif%}
+                                              {% if 'Web.delete_lugar' in perm %}
+
                         <a href="{% url 'Web:lugar' obj.pk %}" class="btn btn-danger btn-sm"
-                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
                         {% include 'Web/fragments/eliminar_lugar.html' %}
                       </td>
                     </tr>

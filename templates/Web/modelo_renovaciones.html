@@ -1,4 +1,7 @@
 {% extends 'Web/base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block modelo-renovaciones %}collapse-item active{% endblock  %}
 {% load static %}
 {% load base_extras %}
 {% block content %}  
@@ -25,11 +28,13 @@
                           <i class="fa fa-search"></i>Buscar
                         </button>
                     </div>
+                                             {% if 'Web.add_modelorenova' in perm %}
+
                     <div class="col-lg-3">
                       <label>&nbsp;</label></br>
                       <a href="{% url 'Web:modelo-renovacion' %}" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</a>
                     </div>
-
+    {% endif %}
                 </div>
                 <br>                  
                 <div class="table-responsive">
@@ -52,9 +57,13 @@
                       <td>{{obj.marca_renova}}</td>
                       <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
                       <td>
-                        <a href="{% url 'Web:modelo-renovacion' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
+                                                       {% if 'Web.change_modelorenova' in perm %}
+
+                        <a href="{% url 'Web:modelo-renovacion' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
+                                                     {% if 'Web.delete_modelorenova' in perm %}
+
                         <a href="{% url 'Web:modelo-renovacion-delete' obj.pk %}" class="btn btn-danger btn-sm"
-                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
                         {% include 'Web/fragments/eliminar_modelorenovacion.html' %}
                       </td>
                     </tr>

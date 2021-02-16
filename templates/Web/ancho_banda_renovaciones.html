@@ -1,4 +1,7 @@
 {% extends 'Web/base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block ancho-banda-renovaciones %}collapse-item active{% endblock  %}
 {% load static %}
 {% load base_extras %}
 {% load l10n %}
@@ -57,9 +60,11 @@
                       <td>{{obj.ancho_banda|unlocalize}}</td>
                       <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
                       <td>
-                        <a href="{% url 'Web:ancho-banda-renovacion' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
-                        <a href="{% url 'Web:ancho-banda-renovacion-delete' obj.pk %}" class="btn btn-danger btn-sm"
-                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
+                        {% if 'Web.change_anchobandarenova' in perm %}
+ <a href="{% url 'Web:ancho-banda-renovacion' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
+                                  {% if 'Web.delete_anchobandarenova' in perm %}
+  <a href="{% url 'Web:ancho-banda-renovacion-delete' obj.pk %}" class="btn btn-danger btn-sm"
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
                         {% include 'Web/fragments/eliminar_anchobandarenovacion.html' %}
                       </td>
                     </tr>

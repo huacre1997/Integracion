@@ -1,4 +1,7 @@
 {% extends 'Web/base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block almacenes %}collapse-item active{% endblock  %}
 {% load static %}
 {% block content %}  
 <style>
@@ -30,6 +33,7 @@
               <br>            
 			
             </div>
+
             <div class="card-footer text-muted">
                 <button type="submit" class="btn btn-primary">Grabar</button>
                 <a href="{% url 'Web:almacenes' %}" class="btn btn-secondary">Cancelar</a>
