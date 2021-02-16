@@ -64,14 +64,37 @@
          
 			
             </div>
-            <div class="card-footer text-muted">
-                <button type="submit" class="btn btn-primary">Grabar</button>
-                <a href="{% url 'Web:llantas' %}" class="btn btn-secondary">Cancelar</a>
+            <div class="card-header py-3">
+              <div class="row">
+                <div class="col-lg-6"> <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
+                  Informacion de la cubierta actual</h6></div>
+                <div class="col-lg-6"><button id="openModal" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i>Agregar</button></div>
+               
+            	</div>
             </div>
           	</form>
+            <form method="post" action="" enctype="multipart/form-data" >
+              {% csrf_token %}
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-2">Seleccionar Vehiculo</div>
+                  <div class="col-lg-4">{{form.vehiculo}}</div>
+                </div>
+                <br>
+          
+            
+           
+        
+              </div>
+              <div class="card-footer text-muted">
+                  <button type="submit" class="btn btn-primary">Grabar</button>
+                  <a href="{% url 'Web:llantas' %}" class="btn btn-secondary">Cancelar</a>
+              </div>
+              </form>
           </div>				
         </div>
 </div>
+
 {% endblock %}
 {% block bottom_scripts %}
 
@@ -81,7 +104,7 @@ function actualizar_modelo(){
     $('#id_modelo_llanta').empty();
     $('#id_modelo_llanta').append($("<option>", {value: "",text: " --------- "}));              
     $.ajax({
-      'url' : '/Web/render-option-llanta',
+      'url' : '/render-option-llanta',
       'type' : 'GET',
       'async': false,
       'data' : {'id_marca' : $('#id_marca').val()},
@@ -105,6 +128,43 @@ $('#id_ubicacion').change(function() {
         $('#valueAlmacen').hide();
       }
     });
-
+    $("#openModal").on("click", function () {
+      $.confirm({
+    title: 'Prompt!',
+    content: '' +
+    '<form action="" class="formName">' +
+    '<div class="form-group">' +
+    '<label>Enter something here</label>' +
+    '<input type="text" placeholder="Your name" class="name form-control" required />' +
+    '</div>' +
+    '</form>',
+    buttons: {
+        formSubmit: {
+            text: 'Submit',
+            btnClass: 'btn-blue',
+            action: function () {
+                var name = this.$content.find('.name').val();
+                if(!name){
+                    $.alert('provide a valid name');
+                    return false;
+                }
+                $.alert('Your name is ' + name);
+            }
+        },
+        cancel: function () {
+            //close
+        },
+    },
+    onContentReady: function () {
+        // bind to events
+        var jc = this;
+        this.$content.find('form').on('submit', function (e) {
+            // if the user submits the form by pressing enter in the field.
+            e.preventDefault();
+            jc.$$formSubmit.trigger('click'); // reference the button and click it
+        });
+    }
+});
+    });
 </script>
 {% endblock %}

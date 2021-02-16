@@ -108,7 +108,6 @@ class Persona(models.Model):
    def toJSON(self):
       item = model_to_dict(self)
       item["foto_nueva"]=self.get_image()
-
       return item
 class Usuario(AbstractUser):
    persona = models.OneToOneField(Persona, on_delete=models.CASCADE,null=True,blank=True)
@@ -120,7 +119,8 @@ class Usuario(AbstractUser):
    def save(self, *args, **kwargs):
       if self.persona:
          self.email=self.persona.correo
-
+      if("Administrador" in [i.name for i in self.groups.all()]):
+         self.is_staff=True
       super(Usuario, self).save(*args, **kwargs)
     
 
@@ -134,7 +134,6 @@ class Usuario(AbstractUser):
 @receiver(post_save, sender=Usuario)
 def update_user(sender, instance, **kwargs):
    if instance.persona:
-      print(instance.is_active)
 
       if instance.is_active:
          instance.persona.eliminado=False

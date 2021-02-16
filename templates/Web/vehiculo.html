@@ -73,7 +73,7 @@ function actualizar_modelo(){
     $('#id_modelo_vehiculo').empty();
     $('#id_modelo_vehiculo').append($("<option>", {value: "",text: " --------- "}));              
     $.ajax({
-      'url' : '/Web/render-option-vehiculo',
+      'url' : '/render-option-vehiculo',
       'type' : 'GET',
       'async': false,
       'data' : {'id_marca' : $('#id_marca').val()},

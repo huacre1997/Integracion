@@ -105,12 +105,15 @@
                       <td>{{obj.created_at|date:'d/m/Y'}}</td>
                       <td>
                         <a href="{% url 'Web:ver-vehiculo' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-tools"></i>Operaciones</a>
-                                                                                                 {% if 'Web.change_vehiculo' in perm %}
-             
-                        <a href="{% url 'Web:vehiculo' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
-                                                                                                            {% if 'Web.delete_vehiculo' in perm %}
-  <a href="#" class="btn btn-danger btn-sm"
-                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
+                      {% if 'Web.change_vehiculo' in perm %}
+                        <a href="{% url 'Web:vehiculo' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
+                      {% endif %}
+
+
+                    {% if 'Web.delete_vehiculo' in perm %}
+                        <a href="#" class="btn btn-danger btn-sm"   data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
+                        
+                      {% endif %}
                         {% include 'Web/fragments/eliminar_vehiculo.html' %}
                       </td>
                     </tr>

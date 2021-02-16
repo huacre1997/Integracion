@@ -121,6 +121,10 @@ textarea, .vTextField {
 
             <a class="{% block tipo-servicios %}collapse-item{% endblock %}" href="{% url 'Web:tipo-servicios' %}">Tipo de Servicios</a>
             {%endif%}
+             {% if 'Web.view_tipovehiculo' in perm %}
+
+            <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">TIpo Vehiculos</a>
+            {%endif%}
              {% if 'Web.view_marcavehiculo' in perm %}
 
             <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca Vehiculos</a>

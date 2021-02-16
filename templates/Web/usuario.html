@@ -49,6 +49,10 @@
       <button type="submit" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
 
     </form> {% endcomment %}
+    {% block blockAdmin %}nav-item active{% endblock  %}
+     {% load i18n %}
+{% block collapseAdmin %}collapse show{% endblock  %}
+{% block usuarios %}collapse-item active{% endblock  %}
     {% block content %}
     <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
     <link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css">
@@ -152,11 +156,8 @@
       <script type="text/javascript" src="/static/admin/js/core.js"></script>
       <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
       <script type="text/javascript" src="/static/admin/js/SelectBox.js"></script>
-      <script type="text/javascript" src="/static/admin/js/actions.js"></script>
       <script type="text/javascript" src="/static/admin/js/SelectFilter2.js"></script>
-      <script type="text/javascript" src="/static/admin/js/urlify.js"></script>
-      <script type="text/javascript" src="/static/admin/js/prepopulate.js"></script>
-      <script type="text/javascript" src="/static/admin/js/vendor/xregexp/xregexp.js"></script>
+     
     </div>
 
 

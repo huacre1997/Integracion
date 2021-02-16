@@ -10,14 +10,14 @@ from django.contrib.auth.models import Group,Permission
 from .forms import (UserGroupForm,UserPasswordResetForm,LoginForm, PersonaForm, UsuarioForm,
     UbicacionForm, MarcaRenovaForm, ModeloRenovaForm, AnchoBandaRenovaForm, 
     MarcaLlantaForm ,ModeloLlantaForm, MedidaLlantaForm, AlmacenForm, LugarForm, EstadoLlantaForm,
-    TipoPisoForm, TipoServicioForm, MarcaVehiculoForm, ModeloVehiculoForm, LlantaForm, VehiculoForm)
+    TipoPisoForm, TipoServicioForm, MarcaVehiculoForm, ModeloVehiculoForm, LlantaForm, VehiculoForm,TipoVehiculoForm)
 from django.http.response import HttpResponseRedirect
 from django.contrib import messages, auth
 from .common import LoginView, LoginSelectPerfilView
 from django.urls import reverse
 from .models import (Persona, Usuario, Ubicacion, MarcaRenova, ModeloRenova, AnchoBandaRenova,
     MarcaLlanta, ModeloLlanta, MedidaLlanta, Almacen, Lugar, EstadoLlanta, TipoServicio, TipoPiso, 
-    MarcaVehiculo, ModeloVehiculo, Vehiculo, Llanta,Provincia,Distrito)
+    MarcaVehiculo, ModeloVehiculo, Vehiculo, Llanta,Provincia,Distrito,TipoVehiculo)
 from django.db import transaction	
 from datetime import datetime, timedelta
 from django.db.models import Q
@@ -331,14 +331,18 @@ class UsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
         try:
             action=request.POST["action"]
             if action=="searchData":
+                
                 data=[]
-                for i in Usuario.objects.filter(is_superuser=False):
+                for i in Usuario.objects.all():
                     data.append(i.toJSON())
+                print("if")
                 return JsonResponse(data,safe=False)
 
             else:
+               
                 data["error"]="Ha ocurrido un error"
         except Exception as e:
+            print(e)
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
             return HttpResponseRedirect(self.success_url)
 
@@ -360,6 +364,7 @@ class UsuarioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
             if form.is_valid():   
                 form.instance.created_by = self.request.user
+                
                 form.save()    
                 return JsonResponse({"stat":200,"url":self.success_url})
             else:
@@ -1489,12 +1494,13 @@ class TipoPisoDeleteView(LoginRequiredMixin, ValidateMixin,View):
         return HttpResponseRedirect(reverse('Web:tipo-pisos',))
 
 
-class MarcaVehiculosListView(LoginRequiredMixin, ListView):
+class MarcaVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/marca_vehiculos.html'
     model = MarcaVehiculo
     paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
+    permission_required=["Web.view_marcavehiculo"]
 
     def get_queryset(self):
         # import pdb; pdb.set_trace();
@@ -1510,13 +1516,15 @@ class MarcaVehiculosListView(LoginRequiredMixin, ListView):
         return context
 
 
+
+
 class MarcaVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = MarcaVehiculoForm
     template_name = 'Web/marca_vehiculo.html'
     success_url = reverse_lazy("Web:marca-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
-    permission_required=["Web.view_marcavehiculo"]
+    permission_required=["Web.add_marcavehiculo"]
 
     def form_valid(self, form):
         instance = form.save(commit=False)
@@ -1567,6 +1575,82 @@ class MarcaVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
         return HttpResponseRedirect(reverse('Web:marca-vehiculos',))
+    
+class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
+    template_name = 'Web/tipo_vehiculos.html'
+    model = TipoVehiculo
+    paginate_by = 10
+    context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
+    permission_required=["Web.view_tipovehiculo"]
+
+    def get_queryset(self):
+        # import pdb; pdb.set_trace();
+        qs = super().get_queryset()
+        qs = qs.filter(eliminado=False)
+        q = self.request.GET.get('q','')
+        qs = qs.filter(descripcion__icontains=q)
+        return qs.order_by('descripcion')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pages'] = self.paginate_by
+        return context
+class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
+    form_class = TipoVehiculoForm
+    template_name = 'Web/tipo_vehiculo.html'
+    success_url = reverse_lazy("Web:tipo-vehiculos")
+    action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
+    permission_required=["Web.add_tipovehiculo"]
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.created_by = self.request.user
+        messages.success(self.request, 'Operación realizada correctamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.warning(self.request, form.errors)
+        return super().form_invalid(form)
+class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
+    form_class = TipoVehiculoForm
+    model = TipoVehiculo
+    template_name = 'Web/tipo_vehiculo.html'
+    success_url = reverse_lazy("Web:tipo-vehiculos")
+    action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
+    permission_required=["Web.change_tipovehiculo"]
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.modified_by = self.request.user
+        messages.success(self.request, 'Operación realizada correctamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.warning(self.request, form.errors)
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['update'] = True
+        return context
+
+
+class TipoVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
+    action = ACCION_EDITAR
+    login_url=reverse_lazy("Web:login")
+    permission_required=["Web.delete_tipovehiculo"]
+
+    def get(self, request, *args, **kwargs):
+        id = self.kwargs['pk']
+        obj = TipoVehiculo.objects.get(pk=id)
+        obj.modified_by=request.user
+        obj.eliminado = True
+        obj.save()
+        messages.success(self.request, 'Operación realizada correctamente.')
+        return HttpResponseRedirect(reverse('Web:tipo-vehiculos',))
 
 
 class ModeloVehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):

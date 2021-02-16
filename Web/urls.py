@@ -108,6 +108,12 @@ urlpatterns = [
     path('llanta/', views.LlantaCreateView.as_view(), name='llanta'),
     path('llanta/<int:pk>/', views.LlantaUpdateView.as_view(), name='llanta'),
     path('llanta/<int:pk>/delete/', views.LlantaDeleteView.as_view(), name='llanta-delete'),
+    
+    path('tipo-vehiculos/', views.TipoVehiculosListView.as_view(), name='tipo-vehiculos'),
+    path('tipo-vehiculo/', views.TipoVehiculoCreateView.as_view(), name='tipo-vehiculo'),
+    path('tipo-vehiculo/<int:pk>/', views.TipoVehiculoUpdateView.as_view(), name='tipo-vehiculo'),
+    path('tipo-vehiculo/<int:pk>/delete/', views.TipoVehiculoDeleteView.as_view(), name='tipo-vehiculo-delete'),
+
 
     path('vehiculos/', views.VehiculosListView.as_view(), name='vehiculos'),
     path('vehiculo/', views.VehiculoCreateView.as_view(), name='vehiculo'),

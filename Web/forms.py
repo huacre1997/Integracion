@@ -101,11 +101,7 @@ class CalendarWidget(forms.TextInput):
 
 class UserGroupForm(forms.ModelForm):
     
-    # class Media:
-    #     css = {
-    #             'all': ('/static/admin/css/widgets.css',),
-    #         }
-    #     js = ('/admin/jsi18n',)    
+   
     class Meta:
         
         model = Group
@@ -325,6 +321,15 @@ class MarcaLlantaForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
 
+
+class TipoVehiculoForm(forms.ModelForm):
+    class Meta:
+        model = TipoVehiculo
+        fields = ('descripcion', "croquis",'activo')
+        widgets = {
+            'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+
+        }
 
 class ModeloLlantaForm(forms.ModelForm):
 
