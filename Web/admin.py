@@ -3,7 +3,7 @@ from django.contrib import admin
 from Web.models import *
 from django import forms
 
-
+from django.contrib.auth.models import Permission
 # admin.site.register(User, UserAdmin)
 
 admin.site.register(Persona)
@@ -43,6 +43,9 @@ admin.site.register(Provincia, ProvinciaAdmin)
 class DistritoAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(Distrito, DistritoAdmin)
+class PermisosAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Permission, PermisosAdmin)
 
 """"
 class PermisoPerfilMenuOpcionAdmin(admin.ModelAdmin):
