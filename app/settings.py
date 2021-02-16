@@ -125,14 +125,14 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # import mimetypes
 
-# mimetypes.add_type("text/javascript", ".js", True)
-# import dj_database_url
-# from decouple import config
-# DATABASES={
-#     "default":dj_database_url.config(
-#         default=config("DATABASE_URL")
-#     )
-# }
+mimetypes.add_type("text/javascript", ".js", True)
+import dj_database_url
+from decouple import config
+DATABASES={
+    "default":dj_database_url.config(
+        default=config("DATABASE_URL")
+    )
+}
 
 
 # Password validation
