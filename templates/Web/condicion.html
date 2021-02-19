@@ -1,0 +1,33 @@
+<div class="container mb-3" id="formCondicion">
+<div class="form-row mb-3" >
+    <label for="">Condición</label>
+    <select class="form-select" name="" id="selectCondicion">
+    <option value="0">Nuevo</option>
+    <option value="1">Reencauchado</option>
+    </select>
+</div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#selectCondicion").on("change", function () {
+           if($(this).val()==1){
+            let div=document.createElement("div")
+               div.classList.add("form-row")
+               div.id="nroReencauchado"
+               let label=document.createElement("label")
+               label.textContent="Número de reencauchado"
+            
+               let input=document.createElement("input")
+               input.type="number"
+               input.classList.add("form-control","valReencauchado")
+               div.append(label)
+               div.append(input)
+               document.getElementById("formCondicion").append(div)
+           }else{
+                document.getElementById("nroReencauchado").parentNode.removeChild(document.getElementById("nroReencauchado"))
+           }
+        });
+    });
+</script>

@@ -210,6 +210,12 @@
 
         },
       },
+          onContentReady: function () {
+        // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
     });
   });
 
@@ -243,7 +249,12 @@
 
         },
       },
-
+    onContentReady: function () {
+        // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
 
 
     });

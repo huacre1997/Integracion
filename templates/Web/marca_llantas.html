@@ -5,7 +5,6 @@
 {% load static %}
 {% load base_extras %}
 {% block content %}  
-<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
   <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
@@ -31,7 +30,7 @@
                      {% if 'Web.add_marcallanta' in perm %}
                     <div class="col-lg-3">
                       <label>&nbsp;</label></br>
-                      <a href="{% url 'Web:marca-llanta' %}" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</a>
+                      <button id="btn-add-marca" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</button>
                     </div>
         {% endif %}
                 </div>
@@ -40,10 +39,10 @@
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Descripción</th>
-                      <th>Activo</th>
-                      <th style="width: 20%;"></th>
+                      <th></th>
+                      <th>N° de marca</th>
+                      <th>Nombre</th>
+                      <th style="width: 20%;">Acciones</th>
                     </tr>
                   </thead>
                   
@@ -107,15 +106,20 @@
       "order": [
         [0, 'asc']
       ],
-      columns: [{
-          "data": 'id',className: "text-center middle",
+      columns: [
+      {
+          "data": null,
         },
+        {
+          "data": 'id',className: "middle"
+        },
+        
         {
           "data": 'descripcion',className: "middle"
         },
         
      
-        {
+        {% comment %} {
           "data": 'activo',
           className: "estado middle",
           render: function (data, type, row) {
@@ -125,7 +129,7 @@
               return "Inactivo"
             }
           }
-        },
+        }, {% endcomment %}
         {
           "data": 'estado',className:"text-center middle"
         },
@@ -133,10 +137,11 @@
 
       ],
       columnDefs: [{
+               
           targets: [-1],
 
           render: function (row, data, index) {
-            var buttons ='{% if 'Web.change_marcallanta' in perm %}<a href="../marca-llanta/'+index.id+'/" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>'+
+            var buttons ='{% if 'Web.change_marcallanta' in perm %}<a href="../marca-llanta/'+index.id+'/" class="btn btn-warning btn-sm btn-edit-marca"><i class="fa fa-edit"></i>Editar</a>'+
               '</a> {% endif %}{% if 'Web.delete_marcallanta' in perm %}<button type="button" onclick="eliminateMarca('+index.id+')" data-id="marca-llanta/'+index.id+'/delete/" class="btn btn-danger btn-sm btn-desactivate-marca"><i class="fa fa-ban"></i></button>{% endif %}';
 
             return buttons;
@@ -156,7 +161,11 @@
       },
 
     });
-
+    tablaMarcas.on( 'order.dt search.dt', function () {
+        tablaMarcas.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i+1;
+        } );
+    } ).draw();
 
       $("#btnBuscar").click(function() {
         $('#frmlist').submit();
@@ -166,6 +175,104 @@
         $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
         $(this).prop("disabled", true);
       });
+        document.getElementById('btn-add-marca').addEventListener("click", function (e) {  
+    e.preventDefault()
+    let url = "{% url 'Web:marca-llanta' %}";
+    var jc = $.confirm({
+      title: "Nueva Marca de Llanta",
+      content: "URL:{% url 'Web:marca-llanta' %}",
+      columnClass: 'col-xl-4 col-lg-6 col-md-8 col-sm-12',
+      icon: "fa fa-plus-circle",
+      type: "dark",
+      animateFromElement: true,
+      buttons: {
+        btn: {
+          text: 'Registrar Marca',
+          btnClass: 'btn-dark',
+          action: function () {       
+            form = this.$content
+            let data= new FormData(form[0].ownerDocument.forms[2])
+            fetch(url, {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+              body: data
+              
+            }).then(data => data.json()).then(response => {
+              console.log(response)
+              if(response.status==500){
+                if(response.form.descripcion){
+                  document.getElementById("id_descripcion").classList.add("is-invalid")
+                  document.getElementById("invalid_descripcion").innerHTML=response.form.descripcion[0]
+                }
+              
+              }else{
+                  jc.showLoading(true)
+                    jc.close()
+                    notificacion(2000,"Éxito","success","Marca guardada")
+
+                    tablaMarcas.ajax.reload()            
+              }
+            })
+              return false;
+          }
+        },
+        cancel: function () {
+
+        },
+      },
+      onContentReady: function () {
+        // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
+    });
+  });
+
+    $(document).on("click",'.btn-edit-marca', function (e) {
+      
+    e.preventDefault()
+    var tr = tablaMarcas.cell($(this).closest("td")).index();
+    var data = tablaMarcas.row(tr.row).data();
+    de = $.confirm({
+      title: "Editar Marca Llanta",
+      content: "URL:../marca-llanta/" + data.id,
+      columnClass: 'col-xl-4 col-lg-6 col-md-8 col-sm-12',
+      icon: "fa fa-edit",
+      type: "orange",
+      scrollToPreviousElement: true,
+      scrollToPreviousElementAnimate: true,
+
+      buttons: {
+        Confirm: {
+          text: 'Guardar cambios',
+          btnClass: 'btn-orange',
+
+          action: function url(e) {
+
+            this.$content[0].ownerDocument.getElementById("btnEditUser").click()
+            return false;
+          }
+        },
+
+        cancel: function () {
+
+        },
+      },
+    onContentReady: function () {
+        // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
+
+
+    });
+  
+
+    });
     });
     
 

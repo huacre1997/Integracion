@@ -10,14 +10,12 @@ from django.contrib.auth.models import Group,Permission
 from .forms import (UserGroupForm,UserPasswordResetForm,LoginForm, PersonaForm, UsuarioForm,
     UbicacionForm, MarcaRenovaForm, ModeloRenovaForm, AnchoBandaRenovaForm, 
     MarcaLlantaForm ,ModeloLlantaForm, MedidaLlantaForm, AlmacenForm, LugarForm, EstadoLlantaForm,
-    TipoPisoForm, TipoServicioForm, MarcaVehiculoForm, ModeloVehiculoForm, LlantaForm, VehiculoForm,TipoVehiculoForm)
+    TipoPisoForm, TipoServicioForm, MarcaVehiculoForm, ModeloVehiculoForm, LlantaForm, VehiculoForm,TipoVehiculoForm,CubiertaForm)
 from django.http.response import HttpResponseRedirect
 from django.contrib import messages, auth
 from .common import LoginView, LoginSelectPerfilView
 from django.urls import reverse
-from .models import (Persona, Usuario, Ubicacion, MarcaRenova, ModeloRenova, AnchoBandaRenova,
-    MarcaLlanta, ModeloLlanta, MedidaLlanta, Almacen, Lugar, EstadoLlanta, TipoServicio, TipoPiso, 
-    MarcaVehiculo, ModeloVehiculo, Vehiculo, Llanta,Provincia,Distrito,TipoVehiculo)
+from .models import *
 from django.db import transaction	
 from datetime import datetime, timedelta
 from django.db.models import Q
@@ -994,7 +992,7 @@ class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     model = MarcaLlanta
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_marcallanta"]
-
+    success_url=reverse_lazy("Web:marca-llantas")
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -1005,14 +1003,16 @@ class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in MarcaLlanta.objects.filter(activo=True):
+                for i in MarcaLlanta.objects.filter(activo=True).order_by("created_at").reverse():
                     data.append(i.toJSON())
+                return JsonResponse(data,safe=False)
+
             else:
                 data["error"]="Ha ocurrido un error"
         except Exception as e:
-            print(e)
-        return JsonResponse(data,safe=False)
-   
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+
 
 class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     form_class = MarcaLlantaForm
@@ -1021,16 +1021,42 @@ class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.add_marcallanta"]
+    def get(self,*args, **kwargs):
+        form=self.get_form()
+        return render(self.request,self.template_name,{"form":form})
+    
+    
+    def post(self, request,*args, **kwargs):       
+        try:
+            form = self.get_form()
 
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.created_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
+            if form.is_valid():
 
-    def form_invalid(self, form):
-        messages.warning(self.request, form.errors)
-        return super().form_invalid(form)
+                instance=form.save(commit=False)
+                instance.created_by = self.request.user
+                instance.save()
+                data = {
+                'status': 200
+                }
+                return JsonResponse(data,safe=False)
+            else:
+                data = {
+                "form":form.errors,
+                'status': 500,
+                }
+                return JsonResponse(data)
+            
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+
+        # messages.success(self.request, 'Operación realizada correctamente.')
+    
+    # def form_invalid(self, form):
+    #     messages.warning(self.request, form.errors)
+    #     return super().form_invalid(form)
 
 
 class MarcaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
@@ -1039,23 +1065,41 @@ class MarcaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     template_name = 'Web/marca_llanta.html'
     success_url = reverse_lazy("Web:marca-llantas")
     action = ACCION_EDITAR
+    context_object_name="marcallanta"
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_marcallanta"]
 
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.modified_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
+    def dispatch(self,request,*args, **kwargs):
+        self.object=self.get_object() 
+        return super().dispatch(request,*args,**kwargs)
 
-    def form_invalid(self, form):
-        messages.warning(self.request, form.errors)
-        return super().form_invalid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['update'] = True
-        return context
+
+    def post(self, request,*args, **kwargs):       
+        try:
+            form = self.get_form()
+
+            if form.is_valid():
+
+                instance=form.save(commit=False)
+                instance.modified_by = self.request.user
+                instance.save()
+                data = {
+                'status': 200
+                }
+                return JsonResponse(data,safe=False)
+            else:
+                data = {
+                "form":form.errors,
+                'status': 500,
+                }
+                return JsonResponse(data)
+            
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
 
 import json
 class MarcaLlantaDeleteView(LoginRequiredMixin,ValidateMixin, View):
@@ -1958,8 +2002,22 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         obj = Vehiculo.objects.get(pk=id)
         context['obj'] = obj
         return context
+# @login_required(login_url="/login/")
+def AnchoBandaRenovaSearch(request):
+    template_name="Web/buscarrenova.html"
+    product=Renovadora.objects.all()
 
+    contexto={"obj":product}
+    return render(request,template_name,contexto)
+def view_condicion(request):
+    template_name="Web/condicion.html"
+    return render(request,template_name)
 
+def view_renova(request):
+    template_name="Web/reencauchado.html"
+    form=CubiertaForm()
+    context={"form":form}
+    return render(request,template_name,context)
 class AgregarLlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = LlantaForm
     template_name = 'Web/add_llanta.html'

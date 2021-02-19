@@ -1,0 +1,79 @@
+    <div class="container">
+    {% load base_extras %}
+{% load l10n %}
+            <div class="row no-gutters align-items-center">
+                <div class="col">
+                    <table class="table  table-hover" id="tablaSearch" style="width: 100%;">
+                        <thead>
+                            <th>#</th>
+                                 <th>Descripción</th>
+                               
+                                <th>Diseño</th>
+                            <th class="all">Acciones</th>
+                        </thead>
+                        <tbody>
+                            {% for item in obj %}
+                            <tr>
+                                <td class="id">{{item.id}}</td>
+                                 <td>{{item.nombre}}</td>
+                                <td>{{item.diseño}}</td>
+                        
+                                <td>
+                                    <button
+                                        onclick="seleccionarRenovadora({{item.id}},'{{item.nombre}}')"
+                                        class="btn btn-warning" id="btnselect"><i
+                                            class="far fa-hand-pointer"></i></button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+{% block bottom_scripts %}
+<script>
+    $(document).ready(function () {
+        $("#tablaSearch").DataTable({
+            "lengthMenu": [
+                [5, 10, 25, 50, -1],
+                [5, 10, 25, 50, "All"]
+            ],
+        })
+ 
+
+    $("tr>.id").each(function (index, element) {
+        if($(this).parent().find(".stock").text()!=0){   
+            for (const p in vent.items.products) {
+                if($(this).text()==vent.items.products[p].codigo){
+                    console.log( $(this).parent().find(".stock").text()+"-"+vent.items.products[p].cantidad )
+                    var stockactual = $(this).parent().find(".stock").text()
+                    if($("#action").val()=="editarFactura"){
+                        $(this).parent().find(".stock").text(vent.items.products[p].stock)
+
+                    }else{
+                    var stock = stockactual - vent.items.products[p].cantidad   
+                    $(this).parent().find(".stock").text(stock)
+                    }
+                }
+            }
+
+         }
+
+     });
+
+       });
+
+       
+    function seleccionarRenovadora(id,  descripcion) {
+        console.log("aea")
+        $("#id_renova_descripcion").val(descripcion)
+                $("#id_renova").val(id)
+
+        searchrenova.close()
+        
+
+    }
+</script>
+{% endblock bottom_scripts %}

@@ -3,168 +3,334 @@
 {% block collapseCatalogos %}collapse show{% endblock  %}
 {% block llantas %}collapse-item active{% endblock  %}
 {% load static %}
-{% block content %}  
+{% block content %}
 <style>
   input[type=checkbox] {
-      transform: scale(2.5);
+    transform: scale(2.5);
   }
-</style>  
+</style>
 <div id="wrapper">
-        <div class="container-fluid">
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-            	<div class="row">
-                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
-                  {% if update %} Editar Llanta {% else %} Crear Llanta {% endif %}</h6>
-            	</div>
-            </div>
-            <form method="post" action="" enctype="multipart/form-data" >
-            {% csrf_token %}
-            <div class="card-body">
-              <div class="row">
-              	<div class="col-lg-2">Seleccionar Vehiculo</div>
-                <div class="col-lg-4">{{form.vehiculo}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Marca de la Llanta</div>
-                <div class="col-lg-4">{{form.marca}}</div>
-                <div class="col-lg-2">Modelo de la Llanta</div>
-                <div class="col-lg-4">{{form.modelo_llanta}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Medida</div>
-                <div class="col-lg-4">{{form.medida_llanta}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Ubicación {{form.ubicacion.value}}</div>
-                <div class="col-lg-4">{{form.ubicacion}}</div>
-                <div id="labelAlmacen" class="col-lg-2" {% if form.ubicacion.value == 1 %} style="display: block;" {% else %} style="display: none;" {% endif %}>Almacen</div>
-                <div id="valueAlmacen" class="col-lg-4" {% if form.ubicacion.value == 1 %} style="display: block;" {% else %} style="display: none;" {% endif %}>{{form.almacen}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Costo</div>
-                <div class="col-lg-4">{{form.costo}}</div>
-                <div class="col-lg-2">Km</div>
-                <div class="col-lg-3">{{form.km}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Estado</div>
-                <div class="col-lg-4">{{form.estado}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Observaciones</div>
-                <div class="col-lg-10">{{form.obs}}</div>
-              </div>
-         
-			
-            </div>
-            <div class="card-header py-3">
-              <div class="row">
-                <div class="col-lg-6"> <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
-                  Informacion de la cubierta actual</h6></div>
-                <div class="col-lg-6"><button id="openModal" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i>Agregar</button></div>
-               
-            	</div>
-            </div>
-          	</form>
-            <form method="post" action="" enctype="multipart/form-data" >
-              {% csrf_token %}
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-lg-2">Seleccionar Vehiculo</div>
-                  <div class="col-lg-4">{{form.vehiculo}}</div>
-                </div>
-                <br>
-          
-            
-           
-        
-              </div>
-              <div class="card-footer text-muted">
-                  <button type="submit" class="btn btn-primary">Grabar</button>
-                  <a href="{% url 'Web:llantas' %}" class="btn btn-secondary">Cancelar</a>
-              </div>
-              </form>
-          </div>				
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <div class="row">
+          <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i>
+            {% if update %} Editar Llanta {% else %} Crear Llanta {% endif %}</h6>
         </div>
+      </div>
+      <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-2">Seleccionar Vehiculo</div>
+            <div class="col-lg-4">{{form.vehiculo}}</div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-lg-2">Marca de la Llanta</div>
+            <div class="col-lg-4">{{form.marca}}</div>
+            <div class="col-lg-2">Modelo de la Llanta</div>
+            <div class="col-lg-4">{{form.modelo_llanta}}</div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-lg-2">Medida</div>
+            <div class="col-lg-4">{{form.medida_llanta}}</div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-lg-2">Ubicación {{form.ubicacion.value}}</div>
+            <div class="col-lg-4">{{form.ubicacion}}</div>
+            <div id="labelAlmacen" class="col-lg-2" {% if form.ubicacion.value == 1 %} style="display: block;"
+              {% else %} style="display: none;" {% endif %}>Almacen</div>
+            <div id="valueAlmacen" class="col-lg-4" {% if form.ubicacion.value == 1 %} style="display: block;"
+              {% else %} style="display: none;" {% endif %}>{{form.almacen}}</div>
+          </div>
+          <br>
+          <!-- <div class="row">
+            <div class="col-lg-2">Costo</div>
+            <div class="col-lg-4">{{form.costo}}</div>
+            <div class="col-lg-2">Km</div>
+            <div class="col-lg-3">{{form.km}}</div>
+          </div> -->
+          <br>
+          <div class="row">
+            <div class="col-lg-2">Estado</div>
+            <div class="col-lg-4">{{form.estado}}</div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-lg-2">Observaciones</div>
+            <div class="col-lg-10">{{form.obs}}</div>
+          </div>
+
+
+        </div>
+        <div class="card-header py-3">
+          <div class="row">
+            <div class="col-lg-6">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i>
+                Informacion de la cubierta actual</h6>
+            </div>
+            <div class="col-lg-6"><button id="openModal" class="btn btn-primary"><i class="fa fa-plus-circle"
+                  aria-hidden="true"></i>&nbsp;Agregar</button></div>
+
+          </div>
+        </div>
+      </form>
+      <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card-body">
+
+          <div class="form-row">
+
+            <div class="col-lg-3 form-group">
+              <label for="">Cubierta:</label>
+
+              <select disabled name="" id="id_cubierta" class="form-select">
+                <option value="0">Original</option>
+                <option value="1">Reencauchado</option>
+
+              </select>
+            </div>
+            <div class="col-lg-3 form-group">
+              <label for="">Km. </label>
+              <input disabled type="text" id="id_km" class="form-control">
+            </div>
+            <div class="col-lg-3 form-group">
+              <label for="">Altura Inicial</label>
+              <input disabled type="text" id="id_altura_ini" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+
+            <div class="col-lg-3 form-group">
+              <label for="">Altura Final</label>
+              <input disabled type="text" id="id_altura_fin" class="form-control">
+            </div>
+            <div class="col-lg-3 form-group">
+              <label for="">Altura</label>
+              <input disabled type="text" id="id_altura" class="form-control">
+            </div>
+            <div class="col-lg-3 form-group">
+              <label for="">Fecha:</label>
+
+              <div class="input-group mb-3">
+
+                <input disabled type="text" class="form-control" id="id_fech">
+                <div class="input-group-append">
+                  <button disabled id="openCalendar" class="btn btn-outline-primary" type="button"><i
+                      class="fa fa-calendar"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+
+            <div class="col-lg-3 form-group" id="section">
+              <label for="">Costo</label>
+              <input disabled type="text" class="form-control" id="id_costo">
+            </div>
+            <div class="col-lg-3 form-group">
+              <label for="" style="visibility: hidden; width: 100%;">Costo</label>
+              <button type="button" class="btn btn-warning" id="openDetails">Detalles</button>
+            </div>
+          </div>
+
+
+            <input type="hidden" name="" id="idrenova" >
+            <input type="hidden" id="idmodelo">
+            <input type="hidden" id=idancho>
+        </div>
+        <div class="card-footer text-muted">
+          <button type="submit" class="btn btn-primary">Grabar</button>
+          <a href="{% url 'Web:llantas' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
 {% block bottom_scripts %}
 
 <script type="text/javascript" charset="utf-8">
-$('#id_marca  option[value="{{instance.modelo_llanta.marca_llanta.pk}}"]').prop("selected", true);
-function actualizar_modelo(){
+  jQuery.datetimepicker.setLocale('es');
+  $("#id_fech").datetimepicker({
+
+
+    timepicker: false,
+    format: 'Y-m-d'
+  });
+
+
+  jQuery('#openCalendar').click(function () {
+    jQuery('#id_fech').datetimepicker('show'); //support hide,show and destroy command
+  });
+
+  $('#id_marca  option[value="{{instance.modelo_llanta.marca_llanta.pk}}"]').prop("selected", true);
+
+  function actualizar_modelo() {
     $('#id_modelo_llanta').empty();
-    $('#id_modelo_llanta').append($("<option>", {value: "",text: " --------- "}));              
+    $('#id_modelo_llanta').append($("<option>", {
+      value: "",
+      text: " --------- "
+    }));
     $.ajax({
-      'url' : '/render-option-llanta',
-      'type' : 'GET',
+      'url': '/render-option-llanta',
+      'type': 'GET',
       'async': false,
-      'data' : {'id_marca' : $('#id_marca').val()},
-      'success' : function(data) {
-       $.each(data, function( index, valuex ) {
-          $('#id_modelo_llanta').append($("<option>", {value: valuex.id ,text: valuex.descripcion}));              
-       });
+      'data': {
+        'id_marca': $('#id_marca').val()
       },
-      'error' : function(request,error){
+      'success': function (data) {
+        $.each(data, function (index, valuex) {
+          $('#id_modelo_llanta').append($("<option>", {
+            value: valuex.id,
+            text: valuex.descripcion
+          }));
+        });
+      },
+      'error': function (request, error) {
         //alert("Request: "+JSON.stringify(request));
       }
     });
-}
-$('#id_ubicacion').change(function() {
-      //alert($(this).val());
-      if( $(this).val()==1 ){
-        $('#labelAlmacen').show();
-        $('#valueAlmacen').show();
-      }else{
-        $('#labelAlmacen').hide();
-        $('#valueAlmacen').hide();
-      }
-    });
-    $("#openModal").on("click", function () {
-      $.confirm({
-    title: 'Prompt!',
-    content: '' +
-    '<form action="" class="formName">' +
-    '<div class="form-group">' +
-    '<label>Enter something here</label>' +
-    '<input type="text" placeholder="Your name" class="name form-control" required />' +
-    '</div>' +
-    '</form>',
-    buttons: {
+  }
+  $('#id_ubicacion').change(function () {
+    //alert($(this).val());
+    if ($(this).val() == 1) {
+      $('#labelAlmacen').show();
+      $('#valueAlmacen').show();
+    } else {
+      $('#labelAlmacen').hide();
+      $('#valueAlmacen').hide();
+    }
+  });
+  var de
+  var updateForm
+  $("#openModal").on("click", function () {
+    $.confirm({
+      title: "",
+      content: 'URL:{% url "Web:view-condicion" %}',
+      buttons: {
         formSubmit: {
-            text: 'Submit',
-            btnClass: 'btn-blue',
-            action: function () {
-                var name = this.$content.find('.name').val();
-                if(!name){
-                    $.alert('provide a valid name');
-                    return false;
-                }
-                $.alert('Your name is ' + name);
+          text: 'Submit',
+          btnClass: 'btn-blue',
+          action: function () {
+            var name = this.$content.find('.form-select').val();
+            var nroReencauchado = this.$content.find('.valReencauchado').val();
+            console.log(name);
+            if (parseInt(name) == 1) {
+
+              if (!isNaN(parseInt(nroReencauchado)) && parseInt(nroReencauchado) < 4 && parseInt(
+                  nroReencauchado) != 0) {
+                console.log("if");
+               de= $.confirm({
+                  title: 'Reencauchado De Llantas',
+                  content: 'URL:{% url "Web:view-renova" %}',
+                  columnClass: 'col-md-12 col-lg-8',
+
+                  buttons: {
+                    formSubmit: {
+                      text: 'Submit',
+                      btnClass: 'btn-blue',
+                      action: function () {
+                        if (document.getElementById("nro")) {
+                          document.getElementById("nro").remove()
+                        }
+                        var form = this.$content.find('.formReencauchado')
+                        console.log(form);
+                        let div = document.createElement("div")
+                        div.classList.add("form-group", "col-lg-3")
+                        div.id = "nro"
+                        let label = document.createElement("label")
+                        label.textContent = "Nro Reencauchado"
+                        let nro = document.createElement("input")
+                        nro.type = "text"
+                        nro.classList.add("form-control", )
+                        nro.value = nroReencauchado
+                        div.append(label)
+                        div.append(nro)
+                        document.getElementById("section").after(div)
+                        $("#id_cubierta option[value=1]").attr('selected', 'selected');
+                        $("#id_km").val($(form)[0][9].value)
+                        $("#id_costo").val($(form)[0][8].value)
+                        $("#id_altura").val($(form)[0][7].value)
+                        $("#id_altura_fin").val($(form)[0][6].value)
+                        $("#id_altura_ini").val($(form)[0][5].value)
+                        $("#idmodelo").val($(form)[0][3].options[$(form)[0][3].options.selectedIndex].value)
+                        $("#idancho").val($(form)[0][4].options[$(form)[0][4].options.selectedIndex].value)
+
+                        $("#idrenova").val($(form)[0][0].value)
+
+                        $("#id_km").prop("disabled",false)
+                        $("#openCalendar").prop("disabled", false);
+
+                        $("#id_altura_fin").prop("disabled", false);
+                        $("#id_altura_ini").prop("disabled", false);
+                        $("#id_altura").prop("disabled", false);
+                        $("#id_fech").prop("disabled", false);
+                        $("#id_costo").prop("disabled", false);
+                        document.getElementById("openDetails").style.display="block"
+                        updateForm=this.$content.find('.formReencauchado').html()
+                      }
+                    },
+                    cancel: function () {
+                      //close
+                    },
+                  },
+                  onContentReady: function () {
+                    // bind to events
+                    var jc = this;
+                    this.$content.find('form').on('submit', function (e) {
+                      // if the user submits the form by pressing enter in the field.
+                      e.preventDefault();
+                    });
+                  }
+                });
+              } else {
+                $.alert('Ingrese un número válido');
+                return false;
+
+              }
+            } else
+            if (parseInt(name) == 0) {
+              $("#id_km").prop("disabled", false).prop("value","");
+              $("#id_cubierta option[value=0]").attr('selected', 'selected');
+              $("#openCalendar").prop("disabled", false);
+              $("#id_altura_fin").prop("disabled", false).prop("value","");
+              $("#id_altura_ini").prop("disabled", false).prop("value","");
+              $("#id_altura").prop("disabled", false).prop("value","");
+              $("#id_fech").prop("disabled", false).prop("value","");
+              $("#id_costo").prop("disabled", false).prop("value","");
+              if (document.getElementById("nro")) {
+                          document.getElementById("nro").remove()
+                      }
+                        if (document.getElementById("openDetails")) {
+                          document.getElementById("openDetails").style.display="none"
+                  }
             }
+          }
         },
         cancel: function () {
-            //close
+          //close
         },
-    },
-    onContentReady: function () {
+      },
+      onContentReady: function () {
         // bind to events
         var jc = this;
         this.$content.find('form').on('submit', function (e) {
-            // if the user submits the form by pressing enter in the field.
-            e.preventDefault();
-            jc.$$formSubmit.trigger('click'); // reference the button and click it
+          // if the user submits the form by pressing enter in the field.
+          e.preventDefault();
+          jc.$$formSubmit.trigger('click'); // reference the button and click it
         });
-    }
-});
+      }
     });
+  });
+  $("#openDetails").on("click",function(){
+      de.open()
+      console.log(de.$content);
+
+      })
 </script>
 {% endblock %}

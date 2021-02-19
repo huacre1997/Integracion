@@ -25,7 +25,6 @@ urlpatterns = [
     path('Usuario/changepassword/<int:pk>/', views.UsuarioUpdatePasswordView.as_view(), name='UsuarioChangePassword'),
     path('Usuario/desactivate/<int:pk>/', views.UsuarioDesactivate, name='UsuarioDesactivate'),
     path('Usuario/activate/<int:pk>/', views.UsuarioActivate, name='UsuarioActivate'),
-
     path('Usuario/<int:pk>/', views.UsuarioUpdateView.as_view(), name='Usuario'),
 
     path('Perfiles/', views.PerfilesTemplateView.as_view(), name='Perfiles'),
@@ -123,4 +122,9 @@ urlpatterns = [
 
     path('ver-vehiculo/<int:pk>/', views.VerVehiculoView.as_view(), name='ver-vehiculo'),
     path('agregar-llanta/<int:pk>/', views.AgregarLlantaCreateView.as_view(), name='agregar-llanta'),
+    path('searchRenovadora/', views.AnchoBandaRenovaSearch, name='search-renovadora'),
+    path('viewCondicion/', views.view_condicion, name='view-condicion'),
+    path('viewRenova/', views.view_renova, name='view-renova'),
+
 ]
+

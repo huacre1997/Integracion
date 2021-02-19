@@ -1,7 +1,7 @@
 from django.db import models
 import uuid
 from Web.constanst import (CHOICES_APP, APP_GESTION, CHOICES_TIPO_DOC2, 
-   CHOICES_SEXO, TIPO_DOC_DNI, ESTADO_1, CHOICES_ESTADOS )  
+   CHOICES_SEXO, TIPO_DOC_DNI, ESTADO_1, CHOICES_ESTADOS ,CHOICES_OBSERVACION,CHOICES_ACCION)  
 from functools import partial
 from .functions import letters
 import uuid
@@ -13,6 +13,7 @@ from django.contrib.auth.models import Group,Permission
 from django.conf import settings
 from django.db.models.signals import post_save,pre_save,post_delete
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 def _update_filename(instance, filename, path):
 	filename_aux=''
@@ -43,6 +44,17 @@ class Empresa(models.Model):
 
 
 
+class TipoServicio(models.Model):
+   descripcion = models.CharField(max_length=100)
+   activo = models.BooleanField(default=True)
+   created_at = models.DateTimeField(auto_now_add=True, null=True)
+   modified_at = models.DateTimeField(auto_now=True)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+   
+   def __str__(self):
+      return self.descripcion
 
 class Departamento(models.Model):
 	code = models.CharField(max_length=5)
@@ -66,8 +78,59 @@ class Distrito(models.Model):
 
 	def __str__(self):
 		return self.descripcion
+class Contacto(models.Model):
+   
+   first_name=models.CharField(_("Nombres"), max_length=50)
+   last_name=models.CharField(_("Apellidos"), max_length=50)
+   tel=models.CharField(_("telefono"), max_length=8)
+   cel=models.CharField(_("Celular"), max_length=9)
+   email=models.EmailField(_("Email"), max_length=100)
+   
+class Direccion(models.Model):
+   direccion=models.CharField(_("Direccion"), max_length=150)
+   referecias=models.CharField(_("Referencias"), max_length=150)
+   departa=models.ForeignKey(Departamento, verbose_name=_("departamento"), on_delete=models.PROTECT)
+   provincia=models.ForeignKey(Provincia, verbose_name=_("Provincia"), on_delete=models.PROTECT)
+   distrito=models.ForeignKey(Distrito, verbose_name=_("Provincia"), on_delete=models.PROTECT)
 
+   
 
+class Cliente(models.Model):
+   
+   tip_doc=models.CharField(choices=CHOICES_TIPO_DOC2, max_length=50)
+   nr_doc=models.CharField(_(""), max_length=20)
+   contacto=models.ForeignKey(Contacto, verbose_name=_("Contacto"), on_delete=models.PROTECT)
+   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+class Proveedor(models.Model):
+   ruc=models.CharField(_("ruc"), max_length=11)
+   rsocial=models.CharField(_("Razon Social"), max_length=100)
+   servicio=models.ForeignKey(TipoServicio, verbose_name=_("Servicio"), on_delete=models.PROTECT)
+   contacto=models.ForeignKey(Contacto, verbose_name=_("Contacto"), on_delete=models.PROTECT)
+   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+class ProveedorDireccion(models.Model):
+   prov=models.ForeignKey(Proveedor, on_delete=models.PROTECT,null=True,default=True)
+   direc=models.ForeignKey(Direccion,on_delete=models.PROTECT,null=True,default=True)
+   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+class ClienteDireccion(models.Model):
+   cliente=models.ForeignKey(Cliente, verbose_name=_("cliente"), on_delete=models.PROTECT)
+   direc=models.ForeignKey(Direccion, verbose_name=_("direccion"), on_delete=models.PROTECT)
+   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
 class Persona(models.Model):
    uuid=models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
    tip_doc = models.IntegerField(choices=CHOICES_TIPO_DOC2, default=TIPO_DOC_DNI)
@@ -270,6 +333,7 @@ class MedidaLlanta(models.Model):
 
 class EstadoLlanta(models.Model):
    descripcion = models.CharField(max_length=100)
+   
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
@@ -294,17 +358,6 @@ class TipoPiso(models.Model):
       return self.descripcion
 
 
-class TipoServicio(models.Model):
-   descripcion = models.CharField(max_length=100)
-   activo = models.BooleanField(default=True)
-   created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
-   
-   def __str__(self):
-      return self.descripcion
 
 
 class MarcaVehiculo(models.Model):
@@ -370,26 +423,62 @@ class Vehiculo(models.Model):
 
    def __str__(self):
       return self.placa
-
-
-class Llanta(models.Model):
-   modelo_llanta = models.ForeignKey(ModeloLlanta, on_delete=models.PROTECT)
-   vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True)
-   codigo = models.CharField(max_length=100, null=True, blank=True)
-   medida_llanta = models.ForeignKey(MedidaLlanta, on_delete=models.PROTECT)
-   ubicacion = models.ForeignKey(Ubicacion, on_delete=models.PROTECT)
-   almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT)
+class Renovadora(models.Model):
+   nombre=models.CharField(max_length=100,null=True,blank=True)
+   diseño=models.CharField(max_length=100, null=True,blank=True)
+   created_at = models.DateTimeField(auto_now_add=True, null=True)
+   modified_at = models.DateTimeField(auto_now=True)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+class  CubiertaLlanta(models.Model):
+   class TipoCubierta(models.TextChoices):
+        NUEVO = 1, _('Nuevo')
+        REENCAUCHADO = 2, _('Reencauchado')
+   nro_ren=models.CharField(max_length=2,null=True,blank=True)      
+   categoria=models.CharField(max_length=20, default=TipoCubierta.NUEVO,choices=TipoCubierta.choices)
    costo = models.DecimalField(max_digits=10, decimal_places=2)
    km = models.DecimalField(max_digits=10, decimal_places=2)
+   a_final = models.DecimalField(max_digits=10, decimal_places=2)
+   a_inicial=models.DecimalField(max_digits=10, decimal_places=2)
+   a_promedio=models.DecimalField(max_digits=10, decimal_places=2)
+   fech_ren=models.DateField(null=True)
+   modelo_renova=models.ForeignKey(ModeloRenova, on_delete=models.PROTECT)
+   ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.CASCADE)
+   renovadora=models.ForeignKey(Renovadora, verbose_name=_(""), on_delete=models.CASCADE)
+   
+   created_at = models.DateTimeField(auto_now_add=True, null=True)
+   modified_at = models.DateTimeField(auto_now=True)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+class Llanta(models.Model):
+   serie=models.CharField(max_length=50,blank=True,null=True)
+
+   marca_llanta = models.ForeignKey(MarcaLlanta, on_delete=models.PROTECT,null=True)
+
+   modelo_llanta = models.ForeignKey(ModeloLlanta, on_delete=models.PROTECT,null=True)
+   vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True,blank=True)
+   codigo = models.CharField(max_length=100, null=True, blank=True)
+   medida_llanta = models.ForeignKey(MedidaLlanta, on_delete=models.PROTECT)
+   ubicacion = models.ForeignKey(Ubicacion, on_delete=models.PROTECT,blank=True,null=True)
+   almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT,blank=True)
+   marca_llanta=models.ForeignKey(MarcaLlanta,on_delete=models.CASCADE,default=True,blank=True)
+   acciones=models.CharField(max_length=20,choices=CHOICES_ACCION,null=True)
    estado = models.ForeignKey(EstadoLlanta, on_delete=models.PROTECT, null=True)
-   obs = models.TextField(null=True)
+   posicion=models.CharField(max_length=50,blank=True,null=True)
+   obs = models.CharField(max_length=20,choices=CHOICES_OBSERVACION,null=True)
+
+   unidad=models.CharField( max_length=50,null=True,blank=True)
+
+   cubierta=models.ForeignKey(CubiertaLlanta, verbose_name=_("Cubierta"), on_delete=models.PROTECT,null=True,blank=True)
+
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
-
    def __str__(self):
       return self.codigo
    

@@ -42,9 +42,8 @@
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Descripción</th>
                       <th>Marca</th>
-                      <th>Activo</th>
+                      <th>Modelo</th>
                       <th style="width: 20%;"></th>
                     </tr>
                   </thead>
@@ -53,9 +52,10 @@
                     <tr>
                       {% number_page forloop.counter page_obj.number pages as pag %}
                       <td>{{pag}}</td>
+                                            <td>{{obj.marca_llanta}}</td>
+
                       <td>{{obj.descripcion}}</td>
-                      <td>{{obj.marca_llanta}}</td>
-                      <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
+                      {% comment %} <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td> {% endcomment %}
                       <td>
                                    {% if 'Web.change_modelollanta' in perm %}
 
@@ -64,6 +64,7 @@
 
          <a href="{% url 'Web:modelo-llanta-delete' obj.pk %}" class="btn btn-danger btn-sm"
                         data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
+                        
                         {% include 'Web/fragments/eliminar_modelollanta.html' %}
                       </td>
                     </tr>
@@ -81,14 +82,13 @@
   <!-- End of Page Wrapper -->
   {% endblock %}
   {% block bottom_scripts %}
-  <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
-  <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
+
   <script>
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
-						"searching": false,
-						"paging":   false,
+						{% comment %} "searching": false, {% endcomment %}
+						{% comment %} "paging":   false, {% endcomment %}
 						"ordering": true,
 						"info":     false
       });

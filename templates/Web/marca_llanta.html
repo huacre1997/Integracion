@@ -1,7 +1,7 @@
-{% extends 'Web/base.html' %}
+{% comment %} {% extends 'Web/base.html' %}
 {% block blockCatalogos%}nav-item active{% endblock  %}
 {% block collapseCatalogos %}collapse show{% endblock  %}
-{% block marca-llantas %}collapse-item active{% endblock  %}
+{% block marca-llantas %}collapse-item active{% endblock  %} {% endcomment %}
 {% load static %}
 {% block content %}  
 <style>
@@ -9,7 +9,7 @@
       transform: scale(2.5);
   }
 </style>  
-<div id="wrapper">
+{% comment %} <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -26,10 +26,7 @@
                 <div class="col-lg-4">{{form.descripcion}}</div>
               </div>
               <br>
-              <div class="row">
-              	<div class="col-lg-2">Activo</div>
-                <div class="col-lg-2">{{form.activo}}</div>
-              </div>
+       
               <br>            
 			
             </div>
@@ -40,8 +37,32 @@
           	</form>
           </div>				
         </div>
-</div>
+</div> {% endcomment %}
+          <div class="container">
+           {% if marcallanta %}
+  <form method="POST" id="formMarca" action="{% url 'Web:marca-llanta' marcallanta.pk %}" class="needs-validation" novalidate >
 
+
+    {% else %}
+    <form method="POST" id="formMarca" class="needs-validation" novalidate >
+
+      {% endif %}
+            {% csrf_token %}
+              <div class="form-row">
+              <div class="form-group col-lg-12">
+              	<label>Descripción</label>
+                {{form.descripcion}}
+                <div class="invalid-feedback" id="invalid_descripcion">Este campo es requerido.</div>
+
+              </div>
+              
+              </div>
+             
+			
+      <button type="submit" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
+                {% comment %} <a href="{% url 'Web:marca-llantas' %}" class="btn btn-secondary">Cancelar</a> {% endcomment %}
+          	</form>
+          </div>				
 {% endblock %}
 {% block bottom_scripts %}
 
@@ -52,5 +73,35 @@
     //if (archivo!='') { $this.button('loading');}
     $this.button('loading');
   });
+  
+    $("#btnEditUser").on("click", function (e) {
+
+      var paramaters = new FormData($('.needs-validation')[0])
+      $.ajax({
+        type: "POST",
+        url: $("#formMarca").attr("action"),
+        data: paramaters,
+        dataType: "json",
+        processData: false, // tell jQuery not to process the data
+        contentType: false,
+        success: function (data) {
+          if (data["status"] == 200) {
+            de.close()
+            notificacion(1500, "Genial!", "success", "Marca guardada!")
+          } else {
+                if(data.form.descripcion){
+                  document.getElementById("id_descripcion").classList.add("is-invalid")
+                  document.getElementById("invalid_descripcion").innerHTML=data.form.descripcion[0]
+                }
+          }
+          tablaMarcas.ajax.reload()
+        }
+      }).done(function (data) {}).fail(function (jqXHR, textStatus, errorThrown) {
+        alert("done:" + textStatus + ': ' + errorThrown);
+      }).always(function (data) {
+
+      });;
+      return false;
+    });
   </script>
 {% endblock %}

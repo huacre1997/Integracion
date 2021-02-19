@@ -1,0 +1,103 @@
+<div class="container mt-3">
+    <form action="" class="formReencauchado">
+        <div class="form-row mb-3">
+            <div class="col-lg-6">
+                <label for="">Nombre de la Reencauchadora</label>
+                <div class="input-group">
+                    <input type="hidden" id="id_renova">
+                    <input type="text" class="form-control" id="id_renova_descripcion" aria-label="Recipient's username"
+                        aria-describedby="btnSearch">
+                    <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+                </div>
+
+            </div>
+            <div class="col-lg-6">
+                <label for="">Modelo de la banda</label>
+    
+
+                  {{form.modelo_renova}}
+                       
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="col-lg-6">
+                <label for="">Ancho de banda</label>
+          
+                    {{form.ancho_banda}}
+            </div>
+            <div class="col-lg-6">
+                <label for="">Altura inicial</label>
+                {{form.a_inicial}}
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="col-lg-6">
+                <label for="">Altura final</label>
+                {{form.a_final}}
+            </div>
+            <div class="col-lg-6">
+                <label for="">Altura</label>
+                {{form.a_promedio}}
+
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="col-lg-6">
+                <label for="">Costo</label>
+                <div class="input-group">
+{{form.costo}}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="">Kilometros recorridos</label>
+                <div class="input-group">
+{{form.km}}
+                </div>
+            </div>
+        </div>
+        <input type="text" class="jola">
+    </form>
+</div>
+
+
+{% block bottom_scripts %}
+<script>
+    var searchrenova
+    $("#btnSearch").click(function (e) {
+
+        e.preventDefault();
+        searchrenova = $.confirm({
+            title: 'Buscar renovadora+',
+            icon: "fa fa-search-plus",
+            type: "blue",
+            containerFluid: true,
+            content: "URL:{% url 'Web:search-renovadora'%}",
+            theme: "material",
+            columnClass: 'col-md-12 col-lg-8',
+
+            containerFluid: true,
+            buttons: {
+                formSubmit: {
+                    text: 'Submit',
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        var name = this.$content.find('.form-select').val();
+                        console.log(name);
+                        console.log("if");
+                        if (!name) {
+                            $.alert('provide a valid name');
+                            return false;
+                        }
+                        $.alert('Your name is ' + name);
+                    }
+                },
+                cancel: function () {
+                    //close
+                },
+            }
+        });
+
+    });
+</script>
+{% endblock bottom_scripts %}

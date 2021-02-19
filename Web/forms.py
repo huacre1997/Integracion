@@ -6,7 +6,7 @@ from .models import Usuario
 from Web.models import (Persona, Usuario, Ubicacion, ModeloRenova,
     MarcaRenova, AnchoBandaRenova, MarcaLlanta, ModeloLlanta, MedidaLlanta,
     Almacen, Lugar, EstadoLlanta, TipoServicio, TipoPiso, MarcaVehiculo, ModeloVehiculo, Vehiculo,
-    Llanta, TipoVehiculo,Departamento,Provincia,Distrito)
+    Llanta, TipoVehiculo,Departamento,Provincia,Distrito,CubiertaLlanta)
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from django.contrib.auth.models import Group
@@ -316,12 +316,16 @@ class AnchoBandaRenovaForm(forms.ModelForm):
 class MarcaLlantaForm(forms.ModelForm):
     class Meta:
         model = MarcaLlanta
-        fields = ('descripcion', 'activo')
+        fields = ["descripcion"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
-
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if MarcaLlanta.objects.filter(descripcion=data).exists():
+                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+        return data
 class TipoVehiculoForm(forms.ModelForm):
     class Meta:
         model = TipoVehiculo
@@ -392,7 +396,11 @@ class TipoPisoForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
 
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if TipoPiso.objects.filter(descripcion=data).exists():
+            raise forms.ValidationError(f"El piso {data} ya se encuentra registrada .")
+        return data
 class MarcaVehiculoForm(forms.ModelForm):
     class Meta:
         model = MarcaVehiculo
@@ -401,7 +409,11 @@ class MarcaVehiculoForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
 
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if MarcaLlanta.objects.filter(descripcion=data).exists():
+            raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+        return data
 class ModeloVehiculoForm(forms.ModelForm):
 
     class Meta:
@@ -415,15 +427,44 @@ class ModeloVehiculoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['marca_vehiculo'].queryset = MarcaVehiculo.objects.filter(eliminado=False)
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if MarcaLlanta.objects.filter(descripcion=data).exists():
+            raise forms.ValidationError(f"El modelo {data} ya se encuentra registrada .")
+        return data
+class CubiertaForm(forms.ModelForm):
+    class Meta:
+        model=CubiertaLlanta
+        exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
+        widgets = {
+                'password':forms.PasswordInput(render_value=True, attrs={
+                
+                    'class': 'form-control',
+                }),
+             
+                'username':forms.TextInput(attrs={
+                
+                    "placeholder": "Usuario",
+                    'class': 'form-control',
+                }),
+                'ancho_banda': forms.Select(attrs={'class': 'form-select'}),
 
+                'modelo_renova': forms.Select(attrs={'class': 'form-select'}),
 
+            }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                "class": "form-control",
+            })
 class LlantaForm(forms.ModelForm):
     marca = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0), required=True,
         widget=forms.Select( attrs={'class':'form-control', 'onchange':'actualizar_modelo();'}) )
     
     class Meta:	
         model = Llanta
-        fields = ('vehiculo', 'modelo_llanta','ubicacion','almacen', 'estado', 'costo', 'km','obs', 'medida_llanta')
+        fields = ('vehiculo', 'modelo_llanta','ubicacion','almacen', 'estado','obs', 'medida_llanta')
         widgets = {
             'vehiculo': forms.Select(attrs={'class':'form-control'}),
             'modelo_llanta': forms.Select( attrs={'class':'form-control'}),
@@ -431,9 +472,9 @@ class LlantaForm(forms.ModelForm):
             'ubicacion': forms.Select( attrs={'class':'form-control'}),
             'almacen': forms.Select( attrs={'class':'form-control'}),
             'estado': forms.Select( attrs={'class':'form-control'}),
-            'costo': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
-            'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
-            'obs': forms.Textarea( attrs={'class':'form-control','rows':'3',}),
+            # 'costo': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
+            # 'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
+            'obs': forms.Select( attrs={'class':'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
