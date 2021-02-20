@@ -49,9 +49,7 @@ admin.site.register(Permission, PermisosAdmin)
 class EstadoLlantaAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
-class EstadoLlantaAdmin(admin.ModelAdmin):
-	pass
-admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
+
 class TipoPisoAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(TipoPiso, TipoPisoAdmin)
