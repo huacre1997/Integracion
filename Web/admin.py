@@ -46,7 +46,12 @@ admin.site.register(Distrito, DistritoAdmin)
 class PermisosAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(Permission, PermisosAdmin)
-
+class EstadoLlantaAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
+class EstadoLlantaAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
 """"
 class PermisoPerfilMenuOpcionAdmin(admin.ModelAdmin):
 	#form = UsuariosForm
