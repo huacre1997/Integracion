@@ -52,6 +52,27 @@ admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
 class EstadoLlantaAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
+class TipoPisoAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(TipoPiso, TipoPisoAdmin)
+class UbicacionADmin(admin.ModelAdmin):
+	pass
+admin.site.register(Ubicacion, UbicacionADmin)
+class AlmacenAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Almacen, AlmacenAdmin)
+class MarcaVehiculoAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(MarcaVehiculo, MarcaVehiculoAdmin)
+class RenovadoraAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Renovadora, RenovadoraAdmin)
+class TipoVehiculoAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(TipoVehiculo, TipoVehiculoAdmin)
+class TipoServicioAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(TipoServicio, TipoServicioAdmin)
 """"
 class PermisoPerfilMenuOpcionAdmin(admin.ModelAdmin):
 	#form = UsuariosForm

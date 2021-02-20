@@ -115,34 +115,31 @@ textarea, .vTextField {
         <div id="collapseUtilities" class="{% block collapseCatalogos %}collapse{% endblock %}" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Custom Utilities:</h6>
-            {% if 'Web.view_tipopiso' in perm %}
+            {% comment %} {% if 'Web.view_tipopiso' in perm %}
 
             <a class="{% block tipo-pisos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-pisos' %}">Tipo de pisos</a>
-            {%endif%}
-            {% if 'Web.view_tiposervicio' in perm %}
+            {%endif%} {% endcomment %}
+            {% comment %} {% if 'Web.view_tiposervicio' in perm %}
 
             <a class="{% block tipo-servicios %}collapse-item{% endblock %}" href="{% url 'Web:tipo-servicios' %}">Tipo de Servicios</a>
-            {%endif%}
-             {% if 'Web.view_tipovehiculo' in perm %}
+            {%endif%} {% endcomment %}
+             {% comment %} {% if 'Web.view_tipovehiculo' in perm %}
 
             <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">TIpo Vehiculos</a>
-            {%endif%}
-             {% if 'Web.view_marcavehiculo' in perm %}
+            {%endif%} {% endcomment %}
+             {% comment %} {% if 'Web.view_marcavehiculo' in perm %}
 
             <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca Vehiculos</a>
-            {%endif%}
-             {% if 'Web.view_modelovehiculo' in perm %}
+            {%endif%} {% endcomment %}
+             {% comment %} {% if 'Web.view_modelovehiculo' in perm %}
 
             <a class="{% block modelo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:modelo-vehiculos' %}">Modelo Vehiculos</a>
-            {%endif%}
-            {% if 'Web.view_vehiculo' in perm %}
-
-            <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Vehículos</a>
-            {%endif%}
-            {% if 'Web.view_ubicacion' in perm %}
+            {%endif%} {% endcomment %}
+  
+            {% comment %} {% if 'Web.view_ubicacion' in perm %}
 
             <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicaciones</a>
-            {%endif%}
+            {%endif%} {% endcomment %}
             {% if 'Web.view_marcarenova' in perm %}
 
             <a class="{% block marca-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:marca-renovaciones' %}">Marca renovación</a>
@@ -173,14 +170,18 @@ textarea, .vTextField {
 
             <a class="{% block medida-llantas %}collapse-item{% endblock %}" href="{% url 'Web:medida-llantas' %}">Medida  llantas</a>
             {% endif %}
-            {% if 'Web.view_almacen' in perm %}
+            {% if 'Web.view_vehiculo' in perm %}
+
+            <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Vehículos</a>
+            {%endif%}
+            {% comment %} {% if 'Web.view_almacen' in perm %}
 
             <a class="{% block almacenes %}collapse-item{% endblock %}" href="{% url 'Web:almacenes' %}">Almacenes</a>
             {% endif %}
             {% if 'Web.view_lugar' in perm %}
 
             <a class="{% block lugares %}collapse-item{% endblock %}" href="{% url 'Web:lugares' %}">Lugares</a>
-            {% endif %}
+            {% endif %} {% endcomment %}
 
           </div>
         </div>
