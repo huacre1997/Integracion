@@ -302,32 +302,7 @@
 
     // $('#id_marca_llanta option[value="{{instance.modelo_llanta.marca_llanta.pk}}"]').prop("selected", true);
 
-    function actualizar_modelo() {
-      $('#id_modelo_llanta').empty();
-      $('#id_modelo_llanta').append($("<option>", {
-        value: "",
-        text: " --------- "
-      }));
-      $.ajax({
-        'url': '/render-option-llanta',
-        'type': 'GET',
-        'async': false,
-        'data': {
-          'id_marca': $('#id_marca_llanta').val()
-        },
-        'success': function (data) {
-          $.each(data, function (index, valuex) {
-            $('#id_modelo_llanta').append($("<option>", {
-              value: valuex.id,
-              text: valuex.descripcion
-            }));
-          });
-        },
-        'error': function (request, error) {
-          //alert("Request: "+JSON.stringify(request));
-        }
-      });
-    }
+
     $('#id_ubicacion').change(function () {
       //alert($(this).val());
       if ($(this).val() == 1) {
@@ -628,5 +603,31 @@
       })
     })
   });
+  function actualizar_modelo() {
+      $('#id_modelo_llanta').empty();
+      $('#id_modelo_llanta').append($("<option>", {
+        value: "",
+        text: " --------- "
+      }));
+      $.ajax({
+        'url': '/render-option-llanta',
+        'type': 'GET',
+        'async': false,
+        'data': {
+          'id_marca': $('#id_marca_llanta').val()
+        },
+        'success': function (data) {
+          $.each(data, function (index, valuex) {
+            $('#id_modelo_llanta').append($("<option>", {
+              value: valuex.id,
+              text: valuex.descripcion
+            }));
+          });
+        },
+        'error': function (request, error) {
+          //alert("Request: "+JSON.stringify(request));
+        }
+      });
+    }
 </script>
 {% endblock %}
