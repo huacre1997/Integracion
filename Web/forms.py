@@ -92,7 +92,26 @@ class PersonaForm(forms.ModelForm):
                 "class": "form-control",
             })
        
-    
+        self.fields['correo'].required = True
+        self.fields['nom'].required = True
+        self.fields['celular'].required = True
+        self.fields['apep'].required = True
+        self.fields['apem'].required = True
+        self.fields['fech_inicio'].required =True
+        self.fields['fech_fin'].required = True
+        self.fields['direccion'].required =True
+        self.fields['provincia'].required = True
+        self.fields['distrito'].required = True
+
+        self.fields['area'].required =True
+        self.fields['cargo'].required =True
+    def clean_correo(self):
+        
+        data=self.cleaned_data["correo"]
+        if self.instance.correo!=data:
+            if Persona.objects.filter(correo=data).exists():
+                raise forms.ValidationError(f"El correo {data} ya se encuentra registrado .")
+        return data
 class CalendarWidget(forms.TextInput):
     class Media:
         js = ('jQuery.js', 'calendar.js', 'noConflict.js',
@@ -201,7 +220,10 @@ class UsuarioForm(forms.ModelForm):
                 passwd=self.cleaned_data["password"]
                 u = form.save(commit=False)
                 if u.pk is None:
+                    print("if")
                     u.set_password(passwd)
+                    if("Administrador" in [i.name for i in self.cleaned_data["groups"]]):
+                        u.is_staff=True
                 else:
                     user = User.objects.get(pk=u.pk) 
                     if user.password != passwd:

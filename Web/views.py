@@ -294,15 +294,15 @@ class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
                 form.instance.created_by = self.request.user
                 form.save()
                 data = {
-                    'stat': 'ok',
+                    'status': 200,
                    }
-                return JsonResponse(data)
+                return JsonResponse(data,safe=False)
             else:
                 data = {
                     "error":form.errors,
-                    'stat': False,
+                    'status': 500,
                     }
-                return JsonResponse(data)
+                return JsonResponse(data,safe=False)
             
         except Exception as e:
             print(e)
@@ -332,7 +332,8 @@ class UsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
                 
                 data=[]
                 for i in Usuario.objects.all():
-                    data.append(i.toJSON())
+                    if i.persona:
+                        data.append(i.toJSON())
                 print("if")
                 return JsonResponse(data,safe=False)
 
@@ -357,16 +358,16 @@ class UsuarioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def post(self,request,*args, **kwargs):
         data={}
+        print(request.POST)
         try:
             form = self.get_form()
 
             if form.is_valid(): 
-                instance=form.save(commit=False)
-                if("Administrador" in [i.name for i in instance.groups.all()]):
-                    instance.is_staff=True
-                instance.created_by = self.request.user
+           
+                form.created_by = self.request.user
+          
                 
-                instance.save()    
+                form.save()    
                 return JsonResponse({"status":200,"url":self.success_url})
             else:
                 return JsonResponse({"status":500,"form":form.errors})

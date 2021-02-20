@@ -16,13 +16,21 @@
           <label for="id_nom">Nombres:</label>
           <input type="text" value="{% if persona %}{{persona.nom}}{% endif %}" class="form-control" name="nom"
             maxlength="100" required="" id="id_nom">
+                    <div class="invalid-feedback" id="invalid_nom">Este campo es requerido.</div>
+
         </div>
         <div class="form-group col-md-4"> <label for="id_apep">Apellido paterno:</label>
           <input type="text" class="form-control" value="{% if persona %}{{persona.apep}}{% endif %}" name="apep"
-            maxlength="100" required="" id="id_apep"></div>
+            maxlength="100" required="" id="id_apep">
+                      <div class="invalid-feedback" id="invalid_apep">Este campo es requerido.</div>
+    
+            </div>
         <div class="form-group col-md-4"> <label for="id_apem">Apellido materno:</label>
           <input type="text" class="form-control" value="{% if persona %}{{persona.apem}}{% endif %}" name="apem"
-            maxlength="100" id="id_apem"></div>
+            maxlength="100" id="id_apem">
+                          <div class="invalid-feedback" id="invalid_apem">Este campo es requerido.</div>
+
+            </div>
       </div>
 
 
@@ -40,11 +48,15 @@
             <option value="4" {% if persona.tip_doc == 4 %}selected{%endif%}>RUC</option>
 
           </select>
+                          <div class="invalid-feedback" id="invalid_tip_doc">Este campo es requerido.</div>
+
         </div>
         <div class="form-group col-md-4">
           <label for="id_nro_doc">Nro documento:</label>
           <input type="text" class="form-control" value="{% if persona %}{{persona.nro_doc}}{% endif %}" name="nro_doc"
             maxlength="15" required="" id="id_nro_doc">
+                          <div class="invalid-feedback" id="invalid_doc">Este campo es requerido.</div>
+
         </div>
         <div class="form-group col-md-4">
           <label for="id_fech_nac">Fecha de nacimiento:</label>
@@ -55,6 +67,8 @@
              <div class="input-group-append">
                <button id="openCalendar" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
              </div>
+              <div class="invalid-feedback" id="invalid_fech_nac">Este campo es requerido.</div>
+
            </div>
         </div>
      
@@ -69,7 +83,9 @@
 
             <option value="2" {% if persona.sexo == 2 %}selected{%endif%}>Mujer</option>
 
-          </select></div>
+          </select>
+          
+          </div>
         <div class="form-group col-md-4">
           <label for="id_fech_nac">Fecha de inicio:</label>
 
@@ -79,6 +95,8 @@
              <div class="input-group-append">
                <button id="openCalendar2" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
              </div>
+              <div class="invalid-feedback" id="invalid_fech_inicio">Este campo es requerido.</div>
+
            </div>
 
         </div>
@@ -91,6 +109,8 @@
              <div class="input-group-append">
                <button id="openCalendar3" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
              </div>
+                <div class="invalid-feedback" id="invalid_fech_fin">Este campo es requerido.</div>
+
            </div>
 
         </div>
@@ -101,6 +121,8 @@
           <label for="id_departamento">Departamento:</label>
 
           {{form.departamento}}
+                        <div class="invalid-feedback" id="invalid_departamento">Este campo es requerido.</div>
+
         </div>
         <div class="form-group col-md-4">
           <label for="id_provincia">Provincia:</label>
@@ -117,11 +139,15 @@
             {% endfor %}
               
           </select>
+                        <div class="invalid-feedback" id="invalid_provincia">Este campo es requerido.</div>
+
             {%else%}
             <select  disabled class="form-select " name="provincia" id="id_provincia" data-url="{% url 'Web:Provincia' %}"
             data-urldis="{% url 'Web:Distrito' %}">
             <option value="0" selected>Seleccione provincia..</option>
           </select>
+                        <div class="invalid-feedback" id="invalid_provincia">Este campo es requerido.</div>
+
           {% endif %}
             
           </div>
@@ -137,11 +163,15 @@
 
           {% endfor %}
           </select>
+                        <div class="invalid-feedback" id="invalid_distrito">Este campo es requerido.</div>
+
           {% else %}
           <label for="id_distrito">Distrito:</label>
           <select  disabled class="form-select" name="distrito" id="id_distrito">
             <option value="0" selected>Seleccione distrito..</option>
           </select>
+                        <div class="invalid-feedback" id="invalid_distrito">Este campo es requerido.</div>
+
           {% endif %}
             
         
@@ -154,7 +184,10 @@
           <label for="id_direccion">Direccion:</label>
           <input type="text" class="form-control" value="{% if persona %}{{persona.direccion}}{% endif %}"
             name="direccion" maxlength="100" id="id_direccion">
+                                            <div class="invalid-feedback" id="invalid_direccion">Este campo es requerido.</div>
+
         </div>
+
         <div class="form-group col-md-4">
 
           <label for="id_referencia">Referencia:</label>
@@ -170,17 +203,22 @@
 
           <input type="text" class="form-control" name="celular" value="{% if persona %}{{persona.celular}}{% endif %}"
             maxlength="15" id="id_celular">
-        
+                      <div class="invalid-feedback" id="invalid_celular">Este campo es requerido.</div>
+
         </div>
         <div class="form-group col-md-4">
           <label for="id_telefono">Telefono:</label>
           <input type="text" class="form-control" name="telefono"
             value="{% if persona %}{{persona.telefono}}{% endif %}" maxlength="15" id="id_telefono">
+                          <div class="invalid-feedback" id="invalid_telefono">Este campo es requerido.</div>
+
         </div>
         <div class="form-group col-md-4">
           <label for="id_correo">Correo:</label>
           <input type="text" class="form-control" name="correo" value="{% if persona %}{{persona.correo}}{% endif %}"
             maxlength="50" id="id_correo">
+               <div class="invalid-feedback" id="invalid_correo">Este campo es requerido.</div>
+         
         </div>
       </div>
 
@@ -196,11 +234,15 @@
 
           <label for="id_ruc">Cargo:</label>
          {{form.cargo}}
+                        <div class="invalid-feedback" id="invalid_cargo">Este campo es requerido.</div>
+
         </div>
         <div class="form-group col-md-4">
 
           <label for="id_ruc">Área:</label>
          {{form.area}}
+                        <div class="invalid-feedback" id="invalid_area">Este campo es requerido.</div>
+
         </div>
 
         <input type="hidden" value="{{persona.provincia.id}}" id="provinciaid">
@@ -220,6 +262,68 @@
 {% block js_page %}
 <script>
   $(document).ready(function () {
+     let name = document.getElementById("id_nom")
+              let apem =document.getElementById("id_apem")
+              let apep = document.getElementById("id_apep")
+              let tip_doc = document.getElementById("id_tip_doc")
+              let nro_doc = document.getElementById("id_nro_doc")
+              let fech_nac = document.getElementById("id_fech_nac")
+              let fech_inicio = document.getElementById("id_fech_inicio")
+              let fech_fin = document.getElementById("id_fech_fin")
+              let departamento = document.getElementById("id_departamento")
+              let provincia = document.getElementById("id_provincia")
+              let distrito = document.getElementById("id_distrito")
+              let direccion = document.getElementById("id_direccion")
+              let celular = document.getElementById("id_celular")
+              let correo = document.getElementById("id_correo")
+              let area = document.getElementById("id_area")
+              let cargo = document.getElementById("id_cargo")
+    name.addEventListener("keyup", function () {
+       name.classList.remove("is-invalid")
+        })
+         apep.addEventListener("keyup", function () {
+       apep.classList.remove("is-invalid")
+        })
+         apem.addEventListener("keyup", function () {
+       apem.classList.remove("is-invalid")
+        })
+         tip_doc.addEventListener("change", function () {
+       tip_doc.classList.remove("is-invalid")
+        })
+         nro_doc.addEventListener("keyup", function () {
+       nro_doc.classList.remove("is-invalid")
+        })
+         fech_inicio.addEventListener("keyup", function () {
+       fech_inicio.classList.remove("is-invalid")
+        })
+         fech_fin.addEventListener("keyup", function () {
+       fech_fin.classList.remove("is-invalid")
+        })
+         departamento.addEventListener("change", function () {
+       departamento.classList.remove("is-invalid")
+        })
+         provincia.addEventListener("change", function () {
+       provincia.classList.remove("is-invalid")
+        })
+         distrito.addEventListener("change", function () {
+       distrito.classList.remove("is-invalid")
+        })
+           direccion.addEventListener("keyup", function () {
+       direccion.classList.remove("is-invalid")
+        })
+          celular.addEventListener("keyup", function () {
+       celular.classList.remove("is-invalid")
+        })
+         correo.addEventListener("keyup", function () {
+       correo.classList.remove("is-invalid")
+        })
+         area.addEventListener("keyup", function () {
+       area.classList.remove("is-invalid")
+        })
+         cargo.addEventListener("keyup", function () {
+       cargo.classList.remove("is-invalid")
+        })
+
     $(function () {
       jQuery.datetimepicker.setLocale('es');
       $("#id_fech_nac").datetimepicker({
@@ -267,7 +371,6 @@ jQuery('#openCalendar3').click(function(){
 
 
       let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
-      console.log(id);
       if (id != "") {
        
       fetch("{% url 'Web:Provincia' %}", {
