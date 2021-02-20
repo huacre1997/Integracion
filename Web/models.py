@@ -333,7 +333,6 @@ class MedidaLlanta(models.Model):
 
 class EstadoLlanta(models.Model):
    descripcion = models.CharField(max_length=100)
-   
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
@@ -431,21 +430,23 @@ class Renovadora(models.Model):
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
+   def __str__(self):
+      return self.nombre
 class  CubiertaLlanta(models.Model):
    class TipoCubierta(models.TextChoices):
-        NUEVO = 1, _('Nuevo')
-        REENCAUCHADO = 2, _('Reencauchado')
-   nro_ren=models.CharField(max_length=2,null=True,blank=True)      
+        NUEVO = "1", _('Nuevo')
+        REENCAUCHADO = "2", _('Reencauchado')
+   nro_ren=models.CharField(max_length=2,null=True,blank=True,default=None)      
    categoria=models.CharField(max_length=20, default=TipoCubierta.NUEVO,choices=TipoCubierta.choices)
    costo = models.DecimalField(max_digits=10, decimal_places=2)
    km = models.DecimalField(max_digits=10, decimal_places=2)
    a_final = models.DecimalField(max_digits=10, decimal_places=2)
    a_inicial=models.DecimalField(max_digits=10, decimal_places=2)
    a_promedio=models.DecimalField(max_digits=10, decimal_places=2)
-   fech_ren=models.DateField(null=True)
-   modelo_renova=models.ForeignKey(ModeloRenova, on_delete=models.PROTECT)
-   ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.CASCADE)
-   renovadora=models.ForeignKey(Renovadora, verbose_name=_(""), on_delete=models.CASCADE)
+   fech_ren=models.DateField()
+   modelo_renova=models.ForeignKey(ModeloRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
+   ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.CASCADE,blank=True,null=True,default=None)
+   renovadora=models.ForeignKey(Renovadora,on_delete=models.CASCADE,blank=True,null=True,default=None)
    
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
@@ -463,13 +464,11 @@ class Llanta(models.Model):
    medida_llanta = models.ForeignKey(MedidaLlanta, on_delete=models.PROTECT)
    ubicacion = models.ForeignKey(Ubicacion, on_delete=models.PROTECT,blank=True,null=True)
    almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT,blank=True)
-   marca_llanta=models.ForeignKey(MarcaLlanta,on_delete=models.CASCADE,default=True,blank=True)
    acciones=models.CharField(max_length=20,choices=CHOICES_ACCION,null=True)
    estado = models.ForeignKey(EstadoLlanta, on_delete=models.PROTECT, null=True)
    posicion=models.CharField(max_length=50,blank=True,null=True)
    obs = models.CharField(max_length=20,choices=CHOICES_OBSERVACION,null=True)
 
-   unidad=models.CharField( max_length=50,null=True,blank=True)
 
    cubierta=models.ForeignKey(CubiertaLlanta, verbose_name=_("Cubierta"), on_delete=models.PROTECT,null=True,blank=True)
 

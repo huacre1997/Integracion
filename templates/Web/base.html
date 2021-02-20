@@ -29,6 +29,7 @@
   <link href="{% static 'css/jquery.datetimepicker.min.css' %}" rel="stylesheet">
 <link href='https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap5.min.css' rel="stylesheet">
 
+
 </head>
 <style>
   {% comment %} input, textarea, select {
@@ -154,6 +155,8 @@ textarea, .vTextField {
 
             <a class="{% block ancho-banda-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:ancho-banda-renovaciones' %}">Ancho banda renovaciones</a>
             {% endif %}
+
+            <!-- <a class="" href="{% url 'Web:estado-llantas' %}">Estado llantas</a> -->
             {% if 'Web.view_llanta' in perm %}
 
             <a class="{% block llantas %}collapse-item{% endblock %}" href="{% url 'Web:llantas' %}">Llantas</a>

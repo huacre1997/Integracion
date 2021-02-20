@@ -5,114 +5,349 @@
 {% load static %}
 {% load base_extras %}
 {% load l10n %}
-{% block content %}  
+{% block content %}
 <link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
-<link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
-<style>
-  table.dataTable tbody th, table.dataTable tbody td {
-      padding: 3px 3px; /* e.g. change 8x to 4px here */
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /><style>
+  table.dataTable tbody th,
+  table.dataTable tbody td {
+    padding: 3px 3px;
+    /* e.g. change 8x to 4px here */
   }
-  </style>
-  <style>
-    .table-llanta{
-        background:#8ba987 url('{{obj.tipo_vehiculo.croquis.url}}') no-repeat center center;
-        background-size:100% 100%;
-    }
-    </style>  
-<div id="wrapper">
-        <div class="container-fluid">
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Operaciones</h6>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="table-responsive">
-                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                      <thead>
-                        <tr class="bg-primary text-white">
-                          <th>Placa</th>
-                          <th>Marca</th>
-                          <th>Modelo</th>
-                          <th>Año</th>
-                          <th>Nro de Lantas</th>
-                          <th>KM</th>
-                          <th>F. Registro</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{{obj.placa}}</td>
-                          <td>{{obj.modelo_vehiculo.marca_vehiculo}}</td>
-                          <td>{{obj.modelo_vehiculo}}</td>
-                          <td>{{obj.ano}}</td>
-                          <td>{{obj.nro_llantas}}</td>
-                          <td>{{obj.km|unlocalize}}</td>
-                          <td>{{obj.created_at|date:'d/m/Y'}}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-8">
-                  <table style="width: 80%; height: 400px;" class="table table-hover table-llanta">
-                    <tr>
-                      <td></td>
-                      <td></td>
-                    <tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                    <tr>
-                  </table>
-                </div>
-                <div class="col-lg-4">
-                  <a href="{% url 'Web:agregar-llanta' obj.pk %}" class="btn btn-success"><i class="fa fa-edit"></i>Agragrar Llanta</a>
-                  <br /><br />
-                  <div class="alert alert-info">
-                    <ul>
-                      {% for l in obj.llantas.all %}
-                        <li>Codigo de llanta  : <a href="{% url 'Web:llanta' l.pk %}" class="">
-                          <i class="fa fa-search"></i>{{l.codigo}}</a></li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                </div>
-              </div>
 
+  .sliders {
+    padding: 1.5em
+  }
+
+  #outer-dropzone {
+    height: 140px;
+  }
+
+  #inner-dropzone {
+    height: 60px;
+  }
+
+  .dropzone {
+    background-color: #29e;
+    border: solid 4px black;
+    font-size: 0.7em;
+    border-radius: 4px;
+    /* margin: 10px auto 30px; */
+    margin: 10px;
+    padding: 10px;
+    width: 60px;
+    transition: background-color 0.3s;
+  }
+
+  .drop-active {
+    border-color: #aaa;
+  }
+
+  .drop-target {
+    background-color: #29e;
+    border-color: #fff;
+    border-style: solid;
+  }
+
+  .drag-drop {
+    display: inline-block;
+    min-width: 30px;
+    padding: 1.5em;
+    /* margin: 1rem 0 0 1rem; */
+    height: 30px;
+    color: #fff;
+    background-color: #29e;
+    border: solid 2px #fff;
+    max-width: 30px;
+    touch-action: none;
+    -webkit-transform: translate(0px, 0px);
+    transform: translate(0px, 0px);
+
+    transition: background-color 0.3s;
+  }
+
+  .drag-drop.can-drop {
+    color: #000;
+    background-color: #4e4;
+  }
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(15,1fr);
+    grid-template-rows: repeat(7,1fr);
+  }
+</style>
+<style>
+  .table-llanta {
+    background:#8ba987 url("{% static 'img/imgTest.jpg' %}") no-repeat center center;
+    background-size: 100% 100%;
+  }
+  .img{
+    
+    background:transparent url("{% static 'img/imgTest.jpg' %}") no-repeat center center;
+    grid-column: 1 / 14;
+    grid-row: 2/6
+  }
+</style>
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Operaciones</h6>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr class="bg-primary text-white">
+                    <th>Placa</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Año</th>
+                    <th>Nro de Lantas</th>
+                    <th>KM</th>
+                    <th>F. Registro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{obj.placa}}</td>
+                    <td>{{obj.modelo_vehiculo.marca_vehiculo}}</td>
+                    <td>{{obj.modelo_vehiculo}}</td>
+                    <td>{{obj.ano}}</td>
+                    <td>{{obj.nro_llantas}}</td>
+                    <td>{{obj.km|unlocalize}}</td>
+                    <td>{{obj.created_at|date:'d/m/Y'}}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-  </div>
-  <!-- End of Page Wrapper -->
-  {% endblock %}
-  {% block bottom_scripts %}
-  <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
-  <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
-  <script src="{% static "vendor/select2/select2.min.js" %}"></script>
-  <script>
-    $(document).ready(function() {
-      $('.select2').select2();
-      $('#dataTable').DataTable({
-            responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
-      });
+        <div class="sliders">
 
-      $("#btnBuscar").click(function() {
-        $('#frmlist').submit();
-        let spinner = $(this.currentTarget).find('span')
-        spinner.removeClass('d-none')
-        setTimeout(_ => spinner.addClass('d-none'), 2000)
-        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
-        $(this).prop("disabled", true);
-      });
+        <div class="row">
+
+          <div class="col-lg-8" style="display: none;">
+            <!-- <table style="width: 80%; height: 400px;" class="table table-hover table-llanta">
+              <tr>
+                <td></td>
+                <td></td>
+              <tr>
+              <tr>
+                <td></td>
+                <td>
+
+
+                </td>
+              <tr>
+            </table> -->
+          </div>
+          <div class="col-lg-12">
+            <!-- <a href="{% url 'Web:agregar-llanta' obj.pk %}" class="btn btn-success"><i class="fa fa-edit"></i>Agragrar
+              Llanta</a>
+            <br /><br /> -->
+            <!-- <div class="alert alert-info">
+              <ul>
+                {% for l in obj.llantas.all %}
+                <li>Codigo de llanta : <a href="{% url 'Web:llanta' l.pk %}" class="">
+                    <i class="fa fa-search"></i>{{l.codigo}}</a></li>
+                {% endfor %}
+              </ul>
+            </div> -->
+            <style>
+              .grid>.drag-drop:nth-child(1) {
+                grid-column-start: 4;
+                grid-row-start: 2;
+              }
+               .drag-drop:nth-child(2) {
+                grid-column-start: 4;
+                grid-row-start: 5;
+              }
+              .drag-drop:nth-child(3) {
+                grid-column-start: 7;
+                grid-row-start: 2;
+              }
+              .drag-drop:nth-child(4) {
+                grid-column-start: 7;
+                grid-row-start: 3;
+              } 
+              .drag-drop:nth-child(5) {
+                grid-column-start: 7;
+                grid-row-start: 4;
+              }
+              .drag-drop:nth-child(6) {
+                grid-column-start: 7;
+                grid-row-start: 5;
+              } 
+              .grid>.drag-drop:nth-child(7) {
+                grid-column-start: 9;
+                grid-row-start: 2;
+              }
+               .drag-drop:nth-child(8) {
+                grid-column-start: 9;
+                grid-row-start: 3;
+              }
+              .drag-drop:nth-child(9) {
+                grid-column-start: 9;
+                grid-row-start: 4;
+              }
+              .drag-drop:nth-child(10) {
+                grid-column-start: 9;
+                grid-row-start: 5;
+              } 
+              .drag-drop:nth-child(11) {
+                grid-column-start: 11;
+                grid-row-start: 2;
+              }
+              .drag-drop:nth-child(12) {
+                grid-column-start: 11;
+                grid-row-start: 5;
+              } 
+            </style>
+            <div class="grid ">
+              {% load base_extras %}
+                
+               
+                {% for l in obj.llantas.all %}
+                <div  class="drag-drop yes-drop d-flex justify-content-center align-items-center"  data-id="{{forloop.counter}}">{{forloop.counter}}</div>
+                {% endfor %}
+               {% comment %}
+               {% for a in 24|make_list  %}
+                
+               {% for i in 25|make_list   %}
+               <div id="" class="drag-drop yes-drop " style="grid-row-start: {{a}}; grid-column-start:{{i}}"> LLanta {{i}}</div>
+               {% endfor %}
+                 
+               {% endfor %}
+               {% endcomment %}
+                 
+                
+               <div class="img"></div>
+
+              
+            
+             
+              
+
+                    
+        
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 1;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i> <div>Reencuache</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 2;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i> <div>Almacenes</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 3;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Reparaciones</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 4;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Reparaciones</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center " style="grid-column-start: 15;grid-row-start: 5;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Movimientos</div></div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Page Wrapper -->
+{% endblock %}
+{% block bottom_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/drag/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/auto-start/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/resize/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/modifiers/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/dev-tools/index.js"></script>
+<script src="{% static "vendor/select2/select2.min.js" %}"></script>
+<script>
+  $(document).ready(function () {
+    $('.select2').select2();
+    $('#dataTable').DataTable({
+      responsive: true,
+      "searching": false,
+      "paging": false,
+      "ordering": true,
+      "info": false
     });
-  </script>
-  {% endblock %}
-  
+
+    $("#btnBuscar").click(function () {
+      $('#frmlist').submit();
+      let spinner = $(this.currentTarget).find('span')
+      spinner.removeClass('d-none')
+      setTimeout(_ => spinner.addClass('d-none'), 2000)
+      $(this).html(
+        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...'
+        );
+      $(this).prop("disabled", true);
+    });
+
+    function dragMoveListener(event) {
+      var target = event.target
+      // keep the dragged position in the data-x/data-y attributes
+      var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+      var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+      // translate the element
+      target.style.webkitTransform =
+        target.style.transform =
+        'translate(' + x + 'px, ' + y + 'px)'
+
+      // update the posiion attributes
+      target.setAttribute('data-x', x)
+      target.setAttribute('data-y', y)
+    }
+    interact('.dropzone').dropzone({
+      // only accept elements matching this CSS selector
+      accept: '.yes-drop',
+      // Require a 75% element overlap for a drop to be possible
+      overlap: 0.75,
+
+      // listen for drop related events:
+
+      ondropactivate: function (event) {
+        // add active dropzone feedback
+        event.target.classList.add('drop-active')
+      },
+      ondragenter: function (event) {
+        var draggableElement = event.relatedTarget
+        var dropzoneElement = event.target
+
+        // feedback the possibility of a drop
+        dropzoneElement.classList.add('drop-target')
+        draggableElement.classList.add('can-drop')
+        draggableElement.textContent = 'Enviar'
+      },
+      ondragleave: function (event) {
+        // remove the drop feedback style
+        console.log(event);
+        event.target.classList.remove('drop-target')
+        event.relatedTarget.classList.remove('can-drop')
+        event.relatedTarget.textContent =event.relatedTarget.attributes[1].textContent
+        
+      },
+      ondrop: function (event) {
+        event.relatedTarget.textContent = 'Enviado'
+      },
+      ondropdeactivate: function (event) {
+        // remove active dropzone feedback
+        event.target.classList.remove('drop-active')
+        event.target.classList.remove('drop-target')
+      }
+    })
+
+    interact('.drag-drop')
+      .draggable({
+        inertia: true,
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+            endOnly: true
+          })
+        ],
+        autoScroll: true,
+        // dragMoveListener from the dragging demo above
+        listeners: {
+          move: dragMoveListener
+        }
+      })
+  });
+</script>
+{% endblock %}

@@ -1817,27 +1817,69 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 
 class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
-    form_class = LlantaForm
     template_name = 'Web/llanta.html'
     success_url = reverse_lazy("Web:llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.add_llanta"]
+    def get(self,*args, **kwargs):
+        Llanta=LlantaForm()
+        cubierta=CubiertaForm()
+        context={"form":Llanta,"cubierta":cubierta}
+        return render(self.request,self.template_name,context)
+    
+    def post(self,request,*args, **kwargs):
+        print(self.request.POST)
+        try:
+            form2=CubiertaForm(request.POST)
 
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.codigo = instance.code
-        instance.created_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
+            form1=LlantaForm(request.POST)
+            if form1.is_valid() and form2.is_valid():
+                instance2=CubiertaLlanta()
+                instance2.created_by = self.request.user
+                instance2.km=self.request.POST["km"]
+                instance2.costo=self.request.POST["costo"]
+                instance2.fech_ren=self.request.POST["fech_ren"]
+                instance2.nro_ren=self.request.POST["nro_ren"]
+                instance2.a_final=self.request.POST["a_final"]
+                instance2.a_inicial=self.request.POST["a_inicial"]
+                instance2.a_promedio=self.request.POST["a_promedio"]
+                instance2.modelo_renova_id=self.request.POST["modelo_renova"]
+                instance2.ancho_banda_id=self.request.POST["ancho_banda"]
+                instance2.renovadora_id=self.request.POST["renovadora"]
+                instance2.categoria=self.request.POST["categoria"]
+                print("i")
+                instance2.save()
+                instance=form1.save(commit=False)
+                instance.cubierta=instance2
+                instance.created_by = self.request.user
+                instance.save()
+                return JsonResponse({"status":200,"url":self.success_url})
+            else:
+                data = {
+                    "form":form1.errors,
+                    "form2":form2.errors,
+                    'status': 500,
+                    }
+                return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Ha ocurrido un error.')
+            return HttpResponseRedirect(self.success_url)
 
-    def form_invalid(self, form):
-        messages.warning(self.request, form.errors)
-        return super().form_invalid(form)
+    # def form_valid(self, form):
+    #     instance = form.save(commit=False)
+    #     instance.codigo = instance.code
+    #     instance.created_by = self.request.user
+    #     messages.success(self.request, 'Operación realizada correctamente.')
+    #     return super().form_valid(form)
+
+    # def form_invalid(self, form):
+    #     messages.warning(self.request, form.errors)
+    #     return super().form_invalid(form)
 
 
 class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
-    form_class = LlantaForm
     model = Llanta
     template_name = 'Web/llanta.html'
     success_url = reverse_lazy("Web:llantas")
@@ -1845,24 +1887,91 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_llanta"]
 
-    def form_valid(self, form):
-        # import pdb; pdb.set_trace()
-        instance = form.save(commit=False)
-        instance.modified_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     # import pdb; pdb.set_trace()
+    #     instance = form.save(commit=False)
+    #     instance.modified_by = self.request.user
+    #     messages.success(self.request, 'Operación realizada correctamente.')
+    #     return super().form_valid(form)
 
-    def form_invalid(self, form):
-        messages.warning(self.request, form.errors)
-        return super().form_invalid(form)
+    def dispatch(self,request,*args, **kwargs):
+        self.object=self.get_object() 
+        
+        return super().dispatch(request,*args,**kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # import pdb; pdb.set_trace()
-        id =  self.kwargs['pk']
-        context['instance'] = Llanta.objects.filter(pk=id).first()
-        context['update'] = True
-        return context
+
+    def get(self,*args, **kwargs):
+        cubierta=CubiertaLlanta.objects.filter(id=self.object.cubierta.id).first()
+
+        form1=LlantaForm(instance=self.object)
+        form2=CubiertaForm(instance=cubierta)
+        print(cubierta.categoria)
+        context={"form":form1,"cubierta":form2,"nro":cubierta.categoria,"obj":self.get_object()}
+        return render(self.request,self.template_name,context)
+    
+    def post(self,request,*args, **kwargs):
+        print(self.request.POST)
+        try:
+            form2=CubiertaForm(request.POST)
+
+            form1=LlantaForm(request.POST)
+            if form1.is_valid() and form2.is_valid():
+                instance2=CubiertaLlanta.objects.filter(id=self.object.cubierta.id).first()
+                instance2.modified_by = self.request.user
+                instance2.km=self.request.POST["km"]
+                instance2.costo=self.request.POST["costo"]
+                instance2.fech_ren=self.request.POST["fech_ren"]
+                instance2.nro_ren=self.request.POST["nro_ren"]
+                instance2.a_final=self.request.POST["a_final"]
+                instance2.a_inicial=self.request.POST["a_inicial"]
+                instance2.a_promedio=self.request.POST["a_promedio"]
+                instance2.modelo_renova_id=self.request.POST["modelo_renova"]
+                instance2.ancho_banda_id=self.request.POST["ancho_banda"]
+                instance2.renovadora_id=self.request.POST["renovadora"]
+                instance2.categoria=self.request.POST["categoria"]
+   
+                instance2.save()
+                instance=self.get_object()
+                instance.codigo=self.request.POST["codigo"]
+                instance.vehiculo_id=self.request.POST["vehiculo"]
+                instance.medida_llanta_id=self.request.POST["medida_llanta"]
+                instance.modelo_llanta_id=self.request.POST["modelo_llanta"]
+                instance.marca_llanta_id=self.request.POST["marca_llanta"]
+
+                instance.posicion=self.request.POST["posicion"]
+                instance.ubicacion_id=self.request.POST["ubicacion"]
+                instance.estado_id=self.request.POST["estado"]
+                instance.obs=self.request.POST["obs"]
+                instance.acciones=self.request.POST["acciones"]
+                instance.almacen_id=self.request.POST["almacen"]
+
+                instance.cubierta=instance2
+                instance.modified_by = self.request.user
+                instance.save()
+                return JsonResponse({"status":200,"url":self.success_url})
+            else:
+                data = {
+                    "form":form1.errors,
+                    "form2":form2.errors,
+                    'status': 500,
+                    }
+                return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Ha ocurrido un error.')
+            return HttpResponseRedirect(self.success_url)
+
+    # def form_invalid(self, form):
+    #     messages.warning(self.request, form.errors)
+    #     return super().form_invalid(form)
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     # import pdb; pdb.set_trace()
+    #     id =  self.kwargs['pk']
+    #     context['instance'] = Llanta.objects.filter(pk=id).first()
+    #     context['update'] = True
+    #     return context
 
 
 class LlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):

@@ -40,6 +40,11 @@ def MenuUsuario(request):
 def has_group(usuario,grupo):
     return usuario.groups.filter(name__exact=grupo).exists()
 
+@register.filter
+def listar(n):
+    return [i+1 for i in range(0,n)]
+
+
 @register.simple_tag
 def UsuarioPerfil(request):
     try:

@@ -447,7 +447,9 @@ class CubiertaForm(forms.ModelForm):
                     "placeholder": "Usuario",
                     'class': 'form-control',
                 }),
+        'fech_ren': forms.DateInput(format=('%Y-%m-%d'), attrs={ 'type':'date'}),
                 'ancho_banda': forms.Select(attrs={'class': 'form-select'}),
+                'categoria': forms.Select(attrs={'class': 'form-select'}),
 
                 'modelo_renova': forms.Select(attrs={'class': 'form-select'}),
 
@@ -458,23 +460,26 @@ class CubiertaForm(forms.ModelForm):
             self.fields[field].widget.attrs.update({
                 "class": "form-control",
             })
+     
 class LlantaForm(forms.ModelForm):
-    marca = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0), required=True,
-        widget=forms.Select( attrs={'class':'form-control', 'onchange':'actualizar_modelo();'}) )
-    
+    marca_llanta = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0), required=True,
+        widget=forms.Select( attrs={'class':'form-select', 'onchange':'actualizar_modelo();'}) )
+    estado = forms.ModelChoiceField(queryset=EstadoLlanta.objects.filter(eliminado=0), required=True,
+        widget=forms.Select( attrs={'class':'form-select'}) )
     class Meta:	
         model = Llanta
-        fields = ('vehiculo', 'modelo_llanta','ubicacion','almacen', 'estado','obs', 'medida_llanta')
+        fields = ('vehiculo', 'modelo_llanta','ubicacion','almacen', 'estado','obs', 'medida_llanta',"codigo","posicion","acciones","marca_llanta")
         widgets = {
-            'vehiculo': forms.Select(attrs={'class':'form-control'}),
-            'modelo_llanta': forms.Select( attrs={'class':'form-control'}),
-            'medida_llanta': forms.Select( attrs={'class':'form-control'}),
+            'vehiculo': forms.Select(attrs={'class':'form-select'}),
+            'modelo_llanta': forms.Select( attrs={'class':'form-select'}),
+            'medida_llanta': forms.Select( attrs={'class':'form-select'}),
             'ubicacion': forms.Select( attrs={'class':'form-control'}),
             'almacen': forms.Select( attrs={'class':'form-control'}),
-            'estado': forms.Select( attrs={'class':'form-control'}),
-            # 'costo': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
-            # 'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
-            'obs': forms.Select( attrs={'class':'form-control'}),
+            'codigo': forms.TextInput( attrs={'class':'form-control'}),
+            'posicion': forms.TextInput( attrs={'class':'form-control'}),
+            'obs': forms.Select( attrs={'class':'form-select'}),
+            'acciones': forms.Select( attrs={'class':'form-select'}),
+
         }
 
     def __init__(self, *args, **kwargs):
@@ -487,8 +492,13 @@ class LlantaForm(forms.ModelForm):
         self.fields['almacen'].queryset = Almacen.objects.filter(eliminado=False)
         self.fields['almacen'].required = False
         self.fields['obs'].required = False
-
-
+    # def clean_posicion(self):
+    #     data=self.cleaned_data["posicion"]
+    #     auto=self.cleaned_data["vehiculo"]
+        
+    #     obj=Vehiculo.objects.get(id=auto)
+    #     obj.nro_llantas
+        
 class VehiculoForm(forms.ModelForm):
     marca = forms.ModelChoiceField(queryset=MarcaVehiculo.objects.filter(eliminado=0), required=True,
         widget=forms.Select( attrs={'class':'form-control', 'onchange':'actualizar_modelo();'}) )
