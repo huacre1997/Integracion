@@ -182,8 +182,9 @@ class Usuario(AbstractUser):
    def save(self, *args, **kwargs):
       if self.persona:
          self.email=self.persona.correo
-      if("Administrador" in [i.name for i in self.groups.all()]):
-         self.is_staff=True
+      if self.groups:
+         if("Administrador" in [i.name for i in self.groups.all()]):
+            self.is_staff=True
       super(Usuario, self).save(*args, **kwargs)
     
 
