@@ -360,13 +360,16 @@ class UsuarioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         try:
             form = self.get_form()
 
-            if form.is_valid():   
-                form.instance.created_by = self.request.user
+            if form.is_valid(): 
+                instance=form.save(commit=False)
+                if("Administrador" in [i.name for i in instance.groups.all()]):
+                    instance.is_staff=True
+                instance.created_by = self.request.user
                 
-                form.save()    
-                return JsonResponse({"stat":200,"url":self.success_url})
+                instance.save()    
+                return JsonResponse({"status":200,"url":self.success_url})
             else:
-                return JsonResponse({"stat":500,"form":form.errors})
+                return JsonResponse({"status":500,"form":form.errors})
 
         
         except Exception as e:
@@ -405,11 +408,17 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
             form = self.get_form()
 
             if form.is_valid():
+                
                 self.object.groups.clear()
                 self.object.groups.set(form.cleaned_data["groups"])  
-                form.instance.modified_by = self.request.user
+                
+                instance=form.save(commit=False)
+                if("Administrador" in [i.name for i in self.object.groups.all()]):
+                    instance.is_staff=True
+                instance.modified_by = self.request.user
+                
+                instance.save()    
 
-                form.save()
                 persona=Persona.objects.filter(id=self.object.persona.id)
                 if persona.exists():
                     data=persona.first()
@@ -419,17 +428,18 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
                     data.modified_by=self.request.user
                     
                     data.save()
-                return JsonResponse({"stat":200,"url":self.success_url})
+                return JsonResponse({"status":200,"url":self.success_url})
 
             else:
                 data = {
                 "form":form.errors,
-                'stat': 500,
+                'status': 500,
                 }
                 return JsonResponse(data)
           
 
         except Exception as e:
+            print(e)
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
             return HttpResponseRedirect(self.success_url)
 
@@ -1943,7 +1953,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 instance.estado_id=self.request.POST["estado"]
                 instance.obs=self.request.POST["obs"]
                 instance.acciones=self.request.POST["acciones"]
-                instance.almacen_id=self.request.POST["almacen"]
+                # instance.almacen_id=self.request.POST["almacen"]
 
                 instance.cubierta=instance2
                 instance.modified_by = self.request.user

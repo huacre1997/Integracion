@@ -69,6 +69,9 @@ admin.site.register(Renovadora, RenovadoraAdmin)
 class TipoServicioAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(TipoServicio, TipoServicioAdmin)
+class ModeloVehiculoAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(ModeloVehiculo, ModeloVehiculoAdmin)
 """"
 class PermisoPerfilMenuOpcionAdmin(admin.ModelAdmin):
 	#form = UsuariosForm

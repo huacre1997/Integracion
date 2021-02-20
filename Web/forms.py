@@ -460,7 +460,15 @@ class CubiertaForm(forms.ModelForm):
             self.fields[field].widget.attrs.update({
                 "class": "form-control",
             })
-     
+    def clean_categoria(self):
+        data=self.cleaned_data["categoria"]
+        if data=="2":  
+            self.fields['renovadora'].required = True
+            self.fields['ancho_banda'].required = True
+            self.fields['modelo_renova'].required =True
+            self.fields['nro_ren'].required =True
+        return data
+
 class LlantaForm(forms.ModelForm):
     marca_llanta = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0), required=True,
         widget=forms.Select( attrs={'class':'form-select', 'onchange':'actualizar_modelo();'}) )
@@ -485,13 +493,16 @@ class LlantaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['vehiculo'].queryset = Vehiculo.objects.filter(eliminado=False)
-        self.fields['vehiculo'].required = False
+        self.fields['vehiculo'].required = True
         self.fields['modelo_llanta'].queryset = ModeloLlanta.objects.filter(eliminado=False)
         self.fields['medida_llanta'].queryset = MedidaLlanta.objects.filter(eliminado=False)
         self.fields['ubicacion'].queryset = Ubicacion.objects.filter(eliminado=False)
         self.fields['almacen'].queryset = Almacen.objects.filter(eliminado=False)
         self.fields['almacen'].required = False
-        self.fields['obs'].required = False
+        self.fields['codigo'].required = True
+        self.fields['posicion'].required = True
+
+        self.fields['obs'].required = True
     # def clean_posicion(self):
     #     data=self.cleaned_data["posicion"]
     #     auto=self.cleaned_data["vehiculo"]
