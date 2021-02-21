@@ -300,7 +300,12 @@ class MarcaRenovaForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
 
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if MarcaRenova.objects.filter(descripcion=data).exists():
+                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+        return data
 class ModeloRenovaForm(forms.ModelForm):
 
     class Meta:
@@ -314,7 +319,14 @@ class ModeloRenovaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ModeloRenovaForm, self).__init__(*args, **kwargs)
         self.fields['marca_renova'].queryset = MarcaRenova.objects.filter(eliminado=False)
-
+    def clean(self):
+        subject = self.cleaned_data.get('descripcion')
+        subject1 = self.cleaned_data.get('marca_renova')
+        print(f'los valores son {subject}-{subject1}')
+        if self.instance.descripcion!=subject:
+            if ModeloRenova.objects.filter(descripcion=subject,marca_renova=subject1).exists():
+                raise forms.ValidationError(f"La marca {subject1} ya tiene un modelo {subject} .")
+        return self.cleaned_data
 
 class AnchoBandaRenovaForm(forms.ModelForm):
     marca = forms.ModelChoiceField(queryset=MarcaRenova.objects.filter(eliminado=0),
@@ -332,7 +344,12 @@ class AnchoBandaRenovaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['modelo_renova'].queryset = ModeloRenova.objects.filter(eliminado=False)
-    
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if AnchoBandaRenova.objects.filter(descripcion=data).exists():
+                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+        return data  
 
 
 class MarcaLlantaForm(forms.ModelForm):
@@ -371,7 +388,14 @@ class ModeloLlantaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['marca_llanta'].queryset = MarcaLlanta.objects.filter(eliminado=False)
 
-
+    def clean(self):
+        subject = self.cleaned_data.get('descripcion')
+        subject1 = self.cleaned_data.get('marca_llanta')
+        print(f'los valores son {subject}-{subject1}')
+        if self.instance.descripcion!=subject:
+            if ModeloLlanta.objects.filter(descripcion=subject,marca_llanta=subject1).exists():
+                raise forms.ValidationError(f"La marca {subject1} ya tiene una modelo {subject} .")
+        return self.cleaned_data
 class MedidaLlantaForm(forms.ModelForm):
     marca = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0),
         widget=forms.Select( attrs={'class':'form-control', 'onchange':'actualizar_modelo();'}) )
@@ -399,7 +423,12 @@ class EstadoLlantaForm(forms.ModelForm):
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if EstadoLlanta.objects.filter(descripcion=data).exists():
+                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+        return data
 
 class TipoServicioForm(forms.ModelForm):
     class Meta:
@@ -525,12 +554,11 @@ class LlantaForm(forms.ModelForm):
         self.fields['posicion'].required = True
 
         self.fields['obs'].required = True
-    # def clean_posicion(self):
-    #     data=self.cleaned_data["posicion"]
-    #     auto=self.cleaned_data["vehiculo"]
-        
-    #     obj=Vehiculo.objects.get(id=auto)
-    #     obj.nro_llantas
+    def clean_posicion(self):
+        data=self.cleaned_data["posicion"]
+        auto=self.llantas
+        print(auto)
+        return auto
         
 class VehiculoForm(forms.ModelForm):
     marca = forms.ModelChoiceField(queryset=MarcaVehiculo.objects.filter(eliminado=0), required=True,

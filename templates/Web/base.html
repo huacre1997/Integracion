@@ -464,12 +464,7 @@ textarea, .vTextField {
     var tipo=[]
 
       {% for mensaje in messages %}
-        
-
-
-
-
-        html_message+="{{mensaje}}"
+        html_message+='{{mensaje|striptags}}'
             tipo+="{{mensaje.tags}}"
            
         {%endfor%}
@@ -491,11 +486,11 @@ Toast.fire({
   title: html_message
 })
         }else if(tipo=="success"){
-          notificacion(1500,"Genial!","success",html_message)
+          notificacion(2000,"Genial!","success",html_message)
 
         }
         else{
-        notificacion(1500,"Ha ocurrido un error!","error",html_message)
+        notificacion(2000,"Ha ocurrido un error!","error",html_message)
         }
     
       

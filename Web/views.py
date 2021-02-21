@@ -2120,7 +2120,8 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         context = super().get_context_data(**kwargs)
         id = self.kwargs['pk']
         obj = Vehiculo.objects.get(pk=id)
-        context['obj'] = obj
+        context['obj'] =obj
+        context["vehiculo"]=obj.llantas.filter(eliminado=0)
         return context
 # @login_required(login_url="/login/")
 def AnchoBandaRenovaSearch(request):

@@ -144,17 +144,21 @@
             </table> -->
           </div>
           <div class="col-lg-12">
-            <!-- <a href="{% url 'Web:agregar-llanta' obj.pk %}" class="btn btn-success"><i class="fa fa-edit"></i>Agragrar
+            
+            {% comment %}
+            <a href="{% url 'Web:agregar-llanta' obj.pk %}" class="btn btn-success"><i class="fa fa-edit"></i>Agragrar
               Llanta</a>
             <br /><br /> -->
-            <!-- <div class="alert alert-info">
+           <div class="alert alert-info">
               <ul>
-                {% for l in obj.llantas.all %}
+                {% for l in asss %}
                 <li>Codigo de llanta : <a href="{% url 'Web:llanta' l.pk %}" class="">
                     <i class="fa fa-search"></i>{{l.codigo}}</a></li>
                 {% endfor %}
               </ul>
-            </div> -->
+            </div> 
+            {% endcomment %}
+              
             <style>
               .grid>.drag-drop:nth-child(1) {
                 grid-column-start: 4;
@@ -209,7 +213,7 @@
               {% load base_extras %}
                 
                
-                {% for l in obj.llantas.all %}
+                {% for l in vehiculo %}
                 <div  class="drag-drop yes-drop d-flex justify-content-center align-items-center"  data-id="{{forloop.counter}}">{{forloop.counter}}</div>
                 {% endfor %}
                {% comment %}
