@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 
 from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView, View
-from django.views.generic import FormView, CreateView, ListView, UpdateView
+from django.views.generic import FormView, CreateView, ListView, UpdateView,DetailView
 from django.views.generic import FormView
 from django.contrib.auth.models import Group,Permission
 from .forms import (UserGroupForm,UserPasswordResetForm,LoginForm, PersonaForm, UsuarioForm,
@@ -1796,11 +1796,36 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_llanta"]
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                
+                data=[]
+                for i in Llanta.objects.all():
+                    data.append(i.toJSON())
+                print("if")
+                return JsonResponse(data,safe=False)
+
+            else:
+               
+                data["error"]="Ha ocurrido un error"
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
     def get_queryset(self):
         # import pdb; pdb.set_trace();
         qs = super().get_queryset()
+        
         qs = qs.filter(eliminado=False)
+      
         modelo = self.request.GET.get('modelo','')
         costo = self.request.GET.get('costo','')
         fi = self.request.GET.get('fecha_inicio')
@@ -1836,15 +1861,16 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     def get(self,*args, **kwargs):
         Llanta=LlantaForm()
         cubierta=CubiertaForm()
-        context={"form":Llanta,"cubierta":cubierta}
+        context={"form":Llanta,"form2":cubierta}
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
-        print(self.request.POST)
+        print(request.POST)
         try:
+            form1=LlantaForm(request.POST)
+
             form2=CubiertaForm(request.POST)
 
-            form1=LlantaForm(request.POST)
             if form1.is_valid() and form2.is_valid():
                 instance2=CubiertaLlanta()
                 instance2.created_by = self.request.user
@@ -1859,20 +1885,24 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
                 instance2.ancho_banda_id=self.request.POST["ancho_banda"]
                 instance2.renovadora_id=self.request.POST["renovadora"]
                 instance2.categoria=self.request.POST["categoria"]
-                print("i")
                 instance2.save()
                 instance=form1.save(commit=False)
                 instance.cubierta=instance2
+                if "repuesto" in request.POST:
+                    instance.repuesto=True
+                else:
+                    instance.repuesto=False
+
                 instance.created_by = self.request.user
                 instance.save()
-                return JsonResponse({"status":200,"url":self.success_url})
+                return JsonResponse({"status":200,"url":reverse_lazy("Web:llanta")})
             else:
                 data = {
                     "form":form1.errors,
                     "form2":form2.errors,
                     'status': 500,
                     }
-                return JsonResponse(data,safe=False)
+                return JsonResponse(data)
         except Exception as e:
             print(e)
             messages.error(self.request, 'Ha ocurrido un error.')
@@ -1917,7 +1947,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
         form1=LlantaForm(instance=self.object)
         form2=CubiertaForm(instance=cubierta)
         print(cubierta.categoria)
-        context={"form":form1,"cubierta":form2,"nro":cubierta.categoria,"obj":self.get_object()}
+        context={"form":form1,"form2":form2,"cubierta":cubierta,"obj":self.get_object()}
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
@@ -1925,7 +1955,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
         try:
             form2=CubiertaForm(request.POST)
 
-            form1=LlantaForm(request.POST)
+            form1=LlantaForm(request.POST,instance=self.object)
             if form1.is_valid() and form2.is_valid():
                 instance2=CubiertaLlanta.objects.filter(id=self.object.cubierta.id).first()
                 instance2.modified_by = self.request.user
@@ -1948,13 +1978,17 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 instance.medida_llanta_id=self.request.POST["medida_llanta"]
                 instance.modelo_llanta_id=self.request.POST["modelo_llanta"]
                 instance.marca_llanta_id=self.request.POST["marca_llanta"]
-
-                instance.posicion=self.request.POST["posicion"]
+                if "repuesto" in request.POST:
+                    instance.repuesto=True
+                else:
+                    instance.repuesto=False
+                
+                if self.request.POST["posicion"]=="":
+                    instance.posicion=None
+                else:
+                    instance.posicion=self.request.POST["posicion"]
                 instance.ubicacion_id=self.request.POST["ubicacion"]
                 instance.estado_id=self.request.POST["estado"]
-                instance.obs=self.request.POST["obs"]
-                instance.acciones=self.request.POST["acciones"]
-                # instance.almacen_id=self.request.POST["almacen"]
 
                 instance.cubierta=instance2
                 instance.modified_by = self.request.user
@@ -2112,18 +2146,40 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_vehiculo"]
-
+    
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
-
+    # def get(self,request,*args, **kwargs):
+    #     context=Vehiculo.objects.values("placa","id")
+    #     return render(self.request,self.template_name,{"drop":context})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         id = self.kwargs['pk']
         obj = Vehiculo.objects.get(pk=id)
         context['obj'] =obj
-        context["vehiculo"]=obj.llantas.filter(eliminado=0)
+        context["vehiculo"]=obj.llantas.filter(eliminado=0).order_by("posicion")
         return context
 # @login_required(login_url="/login/")
+from django.core import serializers
+from django.http import HttpResponse
+
+class DetalleLlantaView(LoginRequiredMixin,DetailView):
+    model = Llanta
+    template_name = "Web/detalle_llanta.html"
+    context_object_name="obj"
+def getLlanta(request):
+    if request.method=="POST":
+        post = json.loads(request.body.decode("utf-8"))
+        print(f'El id es {post}')
+        qs = Llanta.objects.get(id=int(post)).toJSON()
+        return JsonResponse(qs, content_type='application/json')
+def getVehiculo(request):
+    if request.method=="POST":
+        post = json.loads(request.body.decode("utf-8"))
+        print(post)
+        qs = Vehiculo.objects.get(id=post["id"])
+        qs_json = serializers.serialize('json', [qs],  use_natural_foreign_keys=True,use_natural_primary_keys=True)
+        return HttpResponse(qs_json, content_type='application/json')
 def AnchoBandaRenovaSearch(request):
     template_name="Web/buscarrenova.html"
     product=Renovadora.objects.all()
@@ -2175,3 +2231,10 @@ class AgregarLlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['vehiculo'] = self.vehiculo
         return context
+
+
+class DesmontajeLlantaView(TemplateView):
+    template_name = "Web/desmontaje_llanta.html"
+    
+
+    

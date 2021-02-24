@@ -3,92 +3,234 @@
 {% block collapseCatalogos %}collapse show{% endblock  %}
 {% block medida-llantas %}collapse-item active{% endblock  %}
 {% load static %}
-{% block content %}  
+{% block content %}
 <style>
   input[type=checkbox] {
-      transform: scale(2.5);
+    transform: scale(2.5);
   }
-</style>  
+</style>
 <div id="wrapper">
-        <div class="container-fluid">
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-            	<div class="row">
-                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
-                  {% if update %} Editar Medida de Llanta {% else %} Crear Medida de Llanta {% endif %}</h6>
-            	</div>
-            </div>
-            <form method="post" action="" enctype="multipart/form-data" >
-            {% csrf_token %}
-            <div class="card-body">
-              <!--div class="row">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <div class="row">
+          <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i>
+            {% if update %} Editar Medida de Llanta {% else %} Crear Medida de Llanta {% endif %}</h6>
+        </div>
+      </div>
+      <form method="post" action="" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="card-body">
+          <!--div class="row">
               	<div class="col-lg-2">Descripción</div>
                 <div class="col-lg-4">{{form.descripcion}}</div>
               </div-->
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Marca</div>
-                <div class="col-lg-4">{{form.marca}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Modelo</div>
-                <div class="col-lg-4">{{form.modelo_llanta}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Medida</div>
-                <div class="col-lg-4">{{form.medida}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Profundidad</div>
-                <div class="col-lg-4">{{form.profundidad}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Capas</div>
-                <div class="col-lg-4">{{form.capas}}</div>
-              </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Activo</div>
-                <div class="col-lg-2">{{form.activo}}</div>
-              </div>
-              <br>            
-			
+          <br>
+          <div class="form-row">
+            <div class="form-group col-lg-6">
+              <label for="">Marca</label>
+              {{form.marca}}
+              <div class="invalid-feedback" id="invalid_marca">Este campo es requerido.</div>
+
             </div>
-            <div class="card-footer text-muted">
-                <button type="submit" class="btn btn-primary">Grabar</button>
-                <a href="{% url 'Web:medida-llantas' %}" class="btn btn-secondary">Cancelar</a>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-lg-6">
+              <label for="">Modelo</label>
+              {{form.modelo_llanta}}
+              <div class="invalid-feedback" id="invalid_modelo_llanta">Este campo es requerido.</div>
+
             </div>
-          	</form>
-          </div>				
+          </div>
+          <div class="form-row">
+            <div class="form-group col-lg-6">
+              <label for="">Medida</label>
+              {{form.medida}}
+              <div class="invalid-feedback" id="invalid_medida">Este campo es requerido.</div>
+
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-lg-6">
+              <label for="">Profundidad</label>
+              {{form.profundidad}}
+              <div class="invalid-feedback" id="invalid_profundidad">Este campo es requerido.</div>
+
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-lg-6">
+              <label for="">Capas</label>
+              {{form.capas}}
+              <div class="invalid-feedback" id="invalid_profundidad">Este campo es requerido.</div>
+
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-lg-2">Activo</div>
+            <div class="col-lg-2">{{form.activo}}</div>
+          </div>
+          <br>
+
         </div>
+        <div class="card-footer text-muted">
+          <button type="submit" class="btn btn-primary">Grabar</button>
+          <a href="{% url 'Web:medida-llantas' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}
 {% block bottom_scripts %}
 
 <script type="text/javascript" charset="utf-8">
-$('#id_marca  option[value="{{instance.modelo_llanta.marca_llanta.pk}}"]').prop("selected", true);
-function actualizar_modelo(){
+  $('#id_medida').keyup(function () {
+    this.value = this.value.toLocaleUpperCase();
+  });
+  // document.getElementById("btn-add-medida").addEventListener("click",function () {
+  //   let profundidad=document.getElementById("id_profundidad").value
+  //   let validate=type(profundidad)
+  //   if(!validate){
+  //       document.getElementById("id_profundidad").classList.add("is-invalid")
+  //       document.getElementById("invalid_profundidad").innerHTML="Este campo debe tener decimales y un punto."
+  //   }
+  // })
+
+  document.getElementById("id_profundidad").addEventListener('input', function (event) {
+
+let profundidad = document.getElementById("id_profundidad").value
+let validate = validatePunto(profundidad)
+
+if (profundidad.trim() == "") {
+  console.log("if");
+  document.getElementById("id_profundidad").classList.remove("is-invalid")
+  document.getElementById("invalid_profundidad").innerHTML = "Este campo es requerido"
+} else
+if (profundidad.trim().startsWith(".")) {
+  console.log("if stars");
+  document.getElementById("id_profundidad").classList.remove("is-invalid")
+  document.getElementById("invalid_profundidad").innerHTML = ""
+} else {
+  if (validate) {
+    console.log("validate if fuera del form");
+    document.getElementById("id_profundidad").setCustomValidity("")
+    document.getElementById("id_profundidad").classList.remove("is-invalid")
+  } else {
+    console.log("validate else fuera del form");
+    document.getElementById("id_profundidad").classList.add("is-invalid")
+    document.getElementById("invalid_profundidad").innerHTML = "Este campo debe tener 2 decimales y un punto."
+    document.getElementById("id_profundidad").setCustomValidity("Este campo debe tener 2 decimales y un punto.")
+
+
+  }
+}
+
+
+});
+
+
+
+document.getElementById("id_medida").addEventListener('input', function (event) {
+
+let profundidad = document.getElementById("id_medida").value
+let validate = AlfaNumerico(profundidad)
+
+if (profundidad.trim() == "") {
+  console.log("if");
+  document.getElementById("id_medida").classList.remove("is-invalid")
+  document.getElementById("invalid_medida").innerHTML = "Este campo es requerido"
+}else {
+  if (validate) {
+    console.log("validate if fuera del form");
+    document.getElementById("id_medida").setCustomValidity("")
+    document.getElementById("id_medida").classList.remove("is-invalid")
+    document.getElementById("invalid_medida").innerHTML = ""
+
+  } else {
+    console.log("validate else fuera del form");
+    document.getElementById("id_medida").classList.add("is-invalid")
+    document.getElementById("invalid_medida").innerHTML = "Este campo debe ser un valor alfanumérico."
+    document.getElementById("id_medida").setCustomValidity("Este campo debe ser un valor alfanumérico.")
+
+
+  }
+}
+
+
+});
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        document.getElementById("id_medida").setCustomValidity("")
+
+        let profundidad = document.getElementById("id_profundidad").value
+        let medida = document.getElementById("id_medida").value
+
+        if(!validatePunto(profundidad)){
+          document.getElementById("id_profundidad").classList.add("is-invalid")
+          document.getElementById("id_profundidad").setCustomValidity("Ingrese un valor válido.")
+
+        }
+        if(startPunto(profundidad)){
+          document.getElementById("id_profundidad").classList.add("is-invalid")
+          document.getElementById("id_profundidad").setCustomValidity("Revise un valor válido.")
+          document.getElementById("invalid_profundidad").innerHTML = "Ingrese un valor válido."
+
+        }
+        if(!hasLetters(medida)){
+          document.getElementById("id_medida").classList.add("is-invalid")
+          document.getElementById("id_medida").setCustomValidity("Revise un valor válido.")
+          document.getElementById("invalid_medida").innerHTML = "Ingrese un valor alfanumérico."
+          console.log("if");
+        }
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+          form.classList.add('was-validated')
+
+        
+
+      }, false)
+    })
+})()
+  $('#id_marca  option[value="{{instance.modelo_llanta.marca_llanta.pk}}"]').prop("selected", true);
+
+  function actualizar_modelo() {
     $('#id_modelo_llanta').empty();
-    $('#id_modelo_llanta').append($("<option>", {value: "",text: " --------- "}));              
+    $('#id_modelo_llanta').append($("<option>", {
+      value: "",
+      text: " --------- "
+    }));
     $.ajax({
-      'url' : '/render-option-llanta',
-      'type' : 'GET',
+      'url': '/render-option-llanta',
+      'type': 'GET',
       'async': false,
-      'data' : {'id_marca' : $('#id_marca').val()},
-      'success' : function(data) {
-       $.each(data, function( index, valuex ) {
-          $('#id_modelo_llanta').append($("<option>", {value: valuex.id ,text: valuex.descripcion}));              
-       });
+      'data': {
+        'id_marca': $('#id_marca').val()
       },
-      'error' : function(request,error){
+      'success': function (data) {
+        $.each(data, function (index, valuex) {
+          $('#id_modelo_llanta').append($("<option>", {
+            value: valuex.id,
+            text: valuex.descripcion
+          }));
+        });
+      },
+      'error': function (request, error) {
         //alert("Request: "+JSON.stringify(request));
       }
     });
 
-}
+  }
 </script>
 {% endblock %}

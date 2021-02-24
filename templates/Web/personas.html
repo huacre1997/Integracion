@@ -198,14 +198,33 @@
               let cargo = form[0].ownerDocument.getElementById("id_cargo")
 
               let data = new FormData(form[0].ownerDocument.forms[2])
-              fetch(url, {
+                     
+                let passForm=docDigits(tip_doc.value,nro_doc.value)
+                let emailForm=validarEmail(correo)
+
+              
+                  fetch(url, {
                 method: "POST",
                 headers: {
                   'X-CSRFToken': csrftoken
                 },
                 body: data
 
-              }).then(data => data.json()).then(response => {
+              }).then(data => data.json())
+              .then(function(response){
+                console.log(emailForm);
+                if(emailForm.status==500){
+                  
+                  response.error.mailValid=emailForm.mensaje
+                }
+                if(passForm.status==500){
+                  
+                  response.error.docValid=passForm.mensaje
+                }
+                return response
+              })
+                     
+              .then(response => {
                 console.log(response);
                 if (response.status == 500) {
                   notificacion(1500, "Error", "error", "Revise los campos")
@@ -299,6 +318,17 @@
                     nro_doc.classList.add("is-invalid")
 
                   }
+                  if (response.error.docValid) {
+
+                    document.getElementById("invalid_doc").innerHTML = response.error.docValid
+                    nro_doc.classList.add("is-invalid")
+
+                  }
+                  if (response.error.mailValid) {
+                    document.getElementById("invalid_correo").innerHTML = response.error.mailValid
+                    correo.classList.add("is-invalid")
+
+                  }
                 } else {
                   jc.showLoading(true)
 
@@ -308,6 +338,9 @@
                   tablaPersonas.ajax.reload()
                 }
               })
+
+              
+        
               return false;
             }
           },

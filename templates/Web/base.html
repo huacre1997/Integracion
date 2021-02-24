@@ -27,6 +27,8 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
   <link href="{% static 'css/jquery.datetimepicker.min.css' %}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.23/sb-1.0.1/datatables.min.css" />
+
 <link href='https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap5.min.css' rel="stylesheet">
 
 
@@ -87,14 +89,14 @@ textarea, .vTextField {
       <div class="sidebar-heading">Interface</div>
       
       <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item">
+      <li class="{% block blochProcesos %}nav-item{% endblock %}">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-cog"></i>
           <span>PROCESOS</span>
         </a>
-        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div id="collapseOne" class="{% block collapseProcesos %}collapse{% endblock %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="#">Hoja de movimientos</a>
+            {% comment %} <a class="{% block movimientos %}collapse-item{% endblock %}" href="{% url 'Web:ver-vehiculo' %}">Hoja de movimientos</a> {% endcomment %}
             <a class="collapse-item" href="#">Revisión de llantas</a>
             <a class="collapse-item" href="#">Reparaciones en carretera</a>
             <a class="collapse-item" href="#">Recepción de Reencauchado</a>
@@ -115,31 +117,31 @@ textarea, .vTextField {
         <div id="collapseUtilities" class="{% block collapseCatalogos %}collapse{% endblock %}" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Custom Utilities:</h6>
-            {% comment %} {% if 'Web.view_tipopiso' in perm %}
+          {% if 'Web.view_tipopiso' in perm %}
 
             <a class="{% block tipo-pisos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-pisos' %}">Tipo de pisos</a>
-            {%endif%} {% endcomment %}
-            {% comment %} {% if 'Web.view_tiposervicio' in perm %}
+            {%endif%} 
+           {% if 'Web.view_tiposervicio' in perm %}
 
             <a class="{% block tipo-servicios %}collapse-item{% endblock %}" href="{% url 'Web:tipo-servicios' %}">Tipo de Servicios</a>
-            {%endif%} {% endcomment %}
-             {% comment %} {% if 'Web.view_tipovehiculo' in perm %}
+            {%endif%} 
+            {% if 'Web.view_tipovehiculo' in perm %}
 
             <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">TIpo Vehiculos</a>
-            {%endif%} {% endcomment %}
-             {% comment %} {% if 'Web.view_marcavehiculo' in perm %}
+            {%endif%}
+            {% if 'Web.view_marcavehiculo' in perm %}
 
             <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca Vehiculos</a>
-            {%endif%} {% endcomment %}
-             {% comment %} {% if 'Web.view_modelovehiculo' in perm %}
+            {%endif%} 
+             {% if 'Web.view_modelovehiculo' in perm %}
 
             <a class="{% block modelo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:modelo-vehiculos' %}">Modelo Vehiculos</a>
-            {%endif%} {% endcomment %}
+            {%endif%} 
   
-            {% comment %} {% if 'Web.view_ubicacion' in perm %}
+          {% if 'Web.view_ubicacion' in perm %}
 
             <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicaciones</a>
-            {%endif%} {% endcomment %}
+            {%endif%} 
             {% if 'Web.view_marcarenova' in perm %}
 
             <a class="{% block marca-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:marca-renovaciones' %}">Marca renovación</a>
@@ -174,14 +176,14 @@ textarea, .vTextField {
 
             <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Vehículos</a>
             {%endif%}
-            {% comment %} {% if 'Web.view_almacen' in perm %}
+          {% if 'Web.view_almacen' in perm %}
 
             <a class="{% block almacenes %}collapse-item{% endblock %}" href="{% url 'Web:almacenes' %}">Almacenes</a>
             {% endif %}
             {% if 'Web.view_lugar' in perm %}
 
             <a class="{% block lugares %}collapse-item{% endblock %}" href="{% url 'Web:lugares' %}">Lugares</a>
-            {% endif %} {% endcomment %}
+            {% endif %} 
 
           </div>
         </div>
@@ -260,7 +262,7 @@ textarea, .vTextField {
     <div id="content-wrapper" class="d-flex flex-column">
 
       <!-- Main Content -->
-      <div id="">
+      <div id="content">
 
         <!-- Topbar -->
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
@@ -431,20 +433,25 @@ textarea, .vTextField {
   </div>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
   
   <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
 
   <!-- Core plugin JavaScript-->
   <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
   <script src="{% static 'js/marca.js' %}"></script>
+    <script src="{% static 'js/validaciones.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-
   <script src="{% static "js/sb-admin-2.min.js" %}"></script>
   <script src="https://kit.fontawesome.com/0c4e8d2c3f.js" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/sb-1.0.1/datatables.min.js"></script>
+<script src="http://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+<script src="https://cdn.datatables.net/plug-ins/1.10.13/sorting/datetime-moment.js"></script>
   <script src="{% static "js/jquery.datetimepicker.full.min.js" %}"></script>
-<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js "></script>
-<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script>
+{% comment %} <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js "></script>
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script> {% endcomment %}
   {% block bottom_scripts %}{% endblock %}
   <script>
    

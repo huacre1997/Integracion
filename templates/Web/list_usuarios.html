@@ -13,7 +13,7 @@
             <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Usuarios</h6>
           </div>
           <div class="offset-lg-7 col-lg-2">
-            <a class="btn btn-secondary " href="{% url 'Web:Usuario' %}"><i class="fa fa-file-o"></i> Crear Nuevo
+            <a class="btn btn-secondary " href="{% url 'Web:Usuario' %}"><i class="fa fa-file-o"></i> Nuevo
               Usuario</a>
           </div>
         </div>
@@ -88,7 +88,8 @@
 
       },
 
-      columns: [{
+      columns: [
+        {
           "data": 'id',
           className: "middle"
         },
@@ -190,7 +191,8 @@
         //   $(".fa-thumbs-up", row).eq(0).removeClass().addClass("fas fa-thumbs-down")
 
         // }
-      }
+      },
+        
 
     })
     $(document).on("click", '.btn-change-password', function (e) {

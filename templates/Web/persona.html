@@ -1,7 +1,7 @@
 <div class="container">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   {% if persona %}
-  <form method="POST" id="formPersona" action="{% url 'Web:Persona' persona.pk %}" class="needs-validation" novalidate enctype="multipart/form-data">
+  <form method="POST" novalidate id="formPersona" action="{% url 'Web:Persona' persona.pk %}" class="needs-validation" novalidate enctype="multipart/form-data">
 
 
     {% else %}
@@ -38,7 +38,7 @@
         <div class="form-group col-md-4">
           <label for="id_tip_doc">Tip doc:</label>
           <select name="tip_doc" class="form-select" required="" id="id_tip_doc">
-            <option selected value=""> --- </option>
+            <option selected value="0"> --- </option>
 
             <option value="1" {% if persona.tip_doc == 1 %}selected{%endif%}>DNI</option>
 
@@ -53,7 +53,7 @@
         </div>
         <div class="form-group col-md-4">
           <label for="id_nro_doc">Nro documento:</label>
-          <input type="text" class="form-control" value="{% if persona %}{{persona.nro_doc}}{% endif %}" name="nro_doc"
+          <input disabled type="text" class="form-control" value="{% if persona %}{{persona.nro_doc}}{% endif %}" name="nro_doc"
             maxlength="15" required="" id="id_nro_doc">
                           <div class="invalid-feedback" id="invalid_doc">Este campo es requerido.</div>
 
@@ -287,16 +287,27 @@
          apem.addEventListener("keyup", function () {
        apem.classList.remove("is-invalid")
         })
-         tip_doc.addEventListener("change", function () {
+         tip_doc.addEventListener("change", function (e) {
        tip_doc.classList.remove("is-invalid")
+       console.log(e.target.options[e.target.selectedIndex].value==0);
+       if(e.target.options[e.target.selectedIndex].value==0){
+        nro_doc.setAttribute("disabled","true")
+
+       }else{
+        nro_doc.removeAttribute("disabled")
+
+       }
+       nro_doc.value=""
+
         })
          nro_doc.addEventListener("keyup", function () {
        nro_doc.classList.remove("is-invalid")
         })
-         fech_inicio.addEventListener("keyup", function () {
+         fech_inicio.addEventListener("click", function () {
        fech_inicio.classList.remove("is-invalid")
         })
-         fech_fin.addEventListener("keyup", function () {
+         fech_fin.addEventListener("click", function () {
+           console.log("keyup");
        fech_fin.classList.remove("is-invalid")
         })
          departamento.addEventListener("change", function () {

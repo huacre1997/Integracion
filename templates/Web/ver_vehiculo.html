@@ -1,7 +1,7 @@
 {% extends 'Web/base.html' %}
-{% block blockCatalogos%}nav-item active{% endblock  %}
-{% block collapseCatalogos %}collapse show{% endblock  %}
-{% block vehiculos %}collapse-item active{% endblock  %}
+{% block blockProcesos%}nav-item active{% endblock  %}
+{% block collapseProcesos %}collapse show{% endblock  %}
+{% block movimientos %}collapse-item active{% endblock  %}
 {% load static %}
 {% load base_extras %}
 {% load l10n %}
@@ -50,18 +50,19 @@
 
   .drag-drop {
     display: inline-block;
-    min-width: 30px;
-    padding: 1.5em;
+    /* min-width: 30px;
+    padding: 1.5em; */
     /* margin: 1rem 0 0 1rem; */
-    height: 30px;
+    height: 50px;
+    width: 50px;
     color: #fff;
     background-color: #29e;
     border: solid 2px #fff;
-    max-width: 30px;
+    /* max-width: 30px; */
     touch-action: none;
     -webkit-transform: translate(0px, 0px);
     transform: translate(0px, 0px);
-
+    
     transition: background-color 0.3s;
   }
 
@@ -71,53 +72,74 @@
   }
   .grid{
     display: grid;
-    grid-template-columns: repeat(15,1fr);
-    grid-template-rows: repeat(7,1fr);
+
+    
+        grid-template-columns: repeat(18,1fr);
+    grid-template-rows: repeat(6,1fr);
+    
   }
 </style>
 <style>
-  .table-llanta {
-    background:#8ba987 url("{% static 'img/imgTest.jpg' %}") no-repeat center center;
-    background-size: 100% 100%;
-  }
+
   .img{
-    
-    background:transparent url("{% static 'img/imgTest.jpg' %}") no-repeat center center;
-    grid-column: 1 / 14;
-    grid-row: 2/6
+    /* background:transparent url("../../documentos/documentos/croquis_vehiculo/WhatsApp_Image_2021-02-19_at_11.01.16_PM.jpeg") no-repeat center center; */
+
+    background:transparent url("../../documentos/{{obj.tipo_vehiculo.croquis}}") no-repeat center center;
+
+
+ 
+      
+    grid-column: 1 / 18;
+      grid-row: 2/6
+   
   }
 </style>
+
 <div id="wrapper">
   <div class="container-fluid">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Operaciones</h6>
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Hoja de movimientos</h6>
       </div>
       <div class="card-body">
         <div class="row">
+          <div class="col-lg-2"><label for="" class="form-label">Vehículo:</label></div>
+          <div class="col-lg-4">
+            <select name="" id="drop-vehiculos" class="form-select">
+              
+              {% for i in drop %}
+                <option value="{{i.id}}">{{i.placa}}</option>
+              {% endfor %}
+                
+            </select>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-lg-12">
+         
             <div class="table-responsive">
               <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr class="bg-primary text-white">
                     <th>Placa</th>
+                    <th>Tipo</th>
+
                     <th>Marca</th>
                     <th>Modelo</th>
-                    <th>Año</th>
-                    <th>Nro de Lantas</th>
-                    <th>KM</th>
-                    <th>F. Registro</th>
+                    <th>Km</th>
+                    <th>Operador</th>
+                    <th>Observaciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>{{obj.placa}}</td>
+                    <td>{{obj.tipo_vehiculo}}</td>
                     <td>{{obj.modelo_vehiculo.marca_vehiculo}}</td>
                     <td>{{obj.modelo_vehiculo}}</td>
-                    <td>{{obj.ano}}</td>
-                    <td>{{obj.nro_llantas}}</td>
                     <td>{{obj.km|unlocalize}}</td>
-                    <td>{{obj.created_at|date:'d/m/Y'}}</td>
+                    <td>{{obj.request.user}}</td>
+                    <td>{{obj.obs}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -158,19 +180,100 @@
               </ul>
             </div> 
             {% endcomment %}
+          
+        
+        {% if obj.tipo_vehiculo.id == 1 %}
+            
+     
+        <style>
+          .grid>.drag-drop:nth-child(1) {
+            grid-column-start: 4;
+            grid-row-start: 2;
+            align-self: flex-end;
+            justify-self: end;
+
+          }
+           .drag-drop:nth-child(2) {
+            grid-column-start: 4;
+            grid-row-start: 5;
+            justify-self: end;
+
+          }
+          .drag-drop:nth-child(3) {
+            grid-column-start: 9;
+            grid-row-start: 2;
+            align-self: flex-end;
+            justify-self: end;
+          }
+          .drag-drop:nth-child(4) {
+            grid-column-start: 9;
+            grid-row-start: 3;
+            justify-self: end;
+
+          } 
+          .drag-drop:nth-child(5) {
+            grid-column-start: 9;
+            grid-row-start: 4;
+            align-self: flex-end;
+            justify-self: end;
+
+
+          }
+          .drag-drop:nth-child(6) {
+            grid-column-start: 9;
+            grid-row-start: 5;
+            justify-self: end;
+
+          } 
+          .grid>.drag-drop:nth-child(7) {
+            grid-column-start: 12;
+            grid-row-start: 2;
+            align-self: flex-end;
+
+          }
+           .drag-drop:nth-child(8) {
+            grid-column-start: 12;
+            grid-row-start: 3;
+          }
+          .drag-drop:nth-child(9) {
+            grid-column-start: 12;
+            grid-row-start: 4;
+            align-self: flex-end;
+
+          }
+          .drag-drop:nth-child(10) {
+            grid-column-start: 12;
+            grid-row-start: 5;
+          } 
+          .drag-drop:nth-child(11) {
+            grid-column-start: 14;
+            grid-row-start: 2;
+            align-self: flex-end;
+
+          }
+          .drag-drop:nth-child(12) {
+            grid-column-start: 14;
+            grid-row-start: 5;
+          } 
+        </style>
+    
+          
+        {% elif obj.tipo_vehiculo.id == 2 %}
               
             <style>
               .grid>.drag-drop:nth-child(1) {
-                grid-column-start: 4;
+                grid-column-start: 3;
                 grid-row-start: 2;
+                align-self: flex-end;
               }
                .drag-drop:nth-child(2) {
-                grid-column-start: 4;
+                grid-column-start: 3;
                 grid-row-start: 5;
               }
               .drag-drop:nth-child(3) {
                 grid-column-start: 7;
                 grid-row-start: 2;
+                align-self:end;
               }
               .drag-drop:nth-child(4) {
                 grid-column-start: 7;
@@ -179,52 +282,127 @@
               .drag-drop:nth-child(5) {
                 grid-column-start: 7;
                 grid-row-start: 4;
+                align-self: end;
               }
               .drag-drop:nth-child(6) {
                 grid-column-start: 7;
                 grid-row-start: 5;
               } 
               .grid>.drag-drop:nth-child(7) {
-                grid-column-start: 9;
+                grid-column-start: 16;
                 grid-row-start: 2;
+                align-self: flex-end;
               }
                .drag-drop:nth-child(8) {
-                grid-column-start: 9;
+                grid-column-start: 16;
                 grid-row-start: 3;
               }
               .drag-drop:nth-child(9) {
-                grid-column-start: 9;
+                grid-column-start: 16;
                 grid-row-start: 4;
+                align-self: flex-end;
               }
               .drag-drop:nth-child(10) {
-                grid-column-start: 9;
+                grid-column-start: 16;
                 grid-row-start: 5;
               } 
-              .drag-drop:nth-child(11) {
-                grid-column-start: 11;
-                grid-row-start: 2;
-              }
-              .drag-drop:nth-child(12) {
-                grid-column-start: 11;
-                grid-row-start: 5;
-              } 
+       
             </style>
+        {% elif obj.tipo_vehiculo.id == 3 %}
+
+        <style>
+          .grid>.drag-drop:nth-child(1) {
+            grid-column-start: 2;
+            grid-row-start: 2;
+            align-self: flex-end;
+            justify-self: end;
+
+          }
+          .drag-drop:nth-child(2) {
+            grid-column-start: 2;
+            grid-row-start: 5;
+            justify-self: end;
+
+          }
+          .drag-drop:nth-child(3) {
+            grid-column-start: 7;
+            grid-row-start: 2;
+            align-self: flex-end;
+          }
+          .drag-drop:nth-child(4) {
+            grid-column-start: 7;
+            grid-row-start: 3;
+
+          } 
+          .drag-drop:nth-child(5) {
+            grid-column-start:7;
+            grid-row-start: 4;
+            align-self: flex-end;
+
+
+          }
+          .drag-drop:nth-child(6) {
+            grid-column-start: 7;
+            grid-row-start: 5;
+          } 
+          .grid>.drag-drop:nth-child(7) {
+            grid-column-start: 14;
+            grid-row-start: 2;
+            justify-self  : flex-end;
+            align-self: flex-end;
+          }
+          .drag-drop:nth-child(8) {
+            grid-column-start: 14;
+            grid-row-start: 3;
+            justify-self  : flex-end;
+
+          }
+          .drag-drop:nth-child(9) {
+            grid-column-start: 14;
+            grid-row-start: 4;
+            align-self: flex-end;
+
+          }
+          .drag-drop:nth-child(10) {
+            grid-column-start: 14;
+            grid-row-start: 5;
+          } 
+          .drag-drop:nth-child(11) {
+            grid-column-start: 16;
+            grid-row-start: 2;
+            align-self: flex-end;
+
+          }
+          .drag-drop:nth-child(12) {
+            grid-column-start: 16;
+            grid-row-start: 3;
+          } 
+          .drag-drop:nth-child(13) {
+            grid-column-start: 16;
+            grid-row-start: 4;
+            align-self: flex-end;
+
+          } 
+          .drag-drop:nth-child(14) {
+            grid-column-start: 16;
+            grid-row-start: 5;
+          } 
+        </style>
+        {% endif %}
+        
             <div class="grid ">
               {% load base_extras %}
                 
                
                 {% for l in vehiculo %}
-                <div  class="drag-drop yes-drop d-flex justify-content-center align-items-center"  data-id="{{forloop.counter}}">{{forloop.counter}}</div>
+                <div  class="drag-drop yes-drop verLlanta" data-llanta="{{l.id}}" data-id="{{l.posicion}}">
+                  <div class="d-flex justify-content-center  flex-wrap align-items-center" >
+                    <div class="w-100 posi{{l.posicion}}" style="font-size: 0.6em;" >Pos:{{l.posicion}}</div>
+                    <div  class="posi{{l.posicion}}" style="font-size: 0.6em; color: #000;">{{l.codigo}}</div>
+                  </div>
+                </div>
                 {% endfor %}
-               {% comment %}
-               {% for a in 24|make_list  %}
-                
-               {% for i in 25|make_list   %}
-               <div id="" class="drag-drop yes-drop " style="grid-row-start: {{a}}; grid-column-start:{{i}}"> LLanta {{i}}</div>
-               {% endfor %}
-                 
-               {% endfor %}
-               {% endcomment %}
+       
                  
                 
                <div class="img"></div>
@@ -236,16 +414,16 @@
 
                     
         
-              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 1;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i> <div>Reencuache</div></div>
-              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 2;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i> <div>Almacenes</div></div>
-              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 3;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Reparaciones</div></div>
-              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 15;grid-row-start: 4;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Reparaciones</div></div>
-              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center " style="grid-column-start: 15;grid-row-start: 5;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Movimientos</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 18;grid-row-start: 1;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i> <div>Reencuache</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 18;grid-row-start: 2;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i> <div>Almacenes</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 18;grid-row-start: 3;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Reparaciones</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center" style="grid-column-start: 18;grid-row-start: 4;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Reparaciones</div></div>
+              <div id="inner-dropzone" class="dropzone d-flex flex-wrap justify-content-center " style="grid-column-start: 18;grid-row-start: 5;"><i class="fa fa-car" style="font-size: 3em;margin-bottom: 0.4em;"  aria-hidden="true"></i><div>Movimientos</div></div>
             </div>
           </div>
           </div>
         </div>
-
+        <i class="fas fa-tire    "></i>
       </div>
     </div>
   </div>
@@ -263,7 +441,17 @@
 <script src="{% static "vendor/select2/select2.min.js" %}"></script>
 <script>
   $(document).ready(function () {
-    $('.select2').select2();
+    $('#drop-vehiculos').select2();
+    $('#drop-vehiculos').on("change",function (e) {
+      let data={id:e.target.options[e.target.selectedIndex].value}
+
+       fetch("../get-vehiculo/",{
+         method:"POST",
+         headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken
+            },body:  JSON.stringify(data)}).then(data=>data.json()).then(response=>console.log(response))
+      })
     $('#dataTable').DataTable({
       responsive: true,
       "searching": false,
@@ -282,13 +470,28 @@
         );
       $(this).prop("disabled", true);
     });
+    var drag_pos = {x: 0, y: 0}
 
+function dragging(e) {
+  drag_pos.x += e.dx;
+  drag_pos.y += e.dy;
+
+  e.target.style.transform = 'translate(' + drag_pos.x + 'px, ' + drag_pos.y + 'px)';
+}
+
+function dragged(e) {
+  drag_pos.x = 0;
+  drag_pos.y = 0;
+  e.target.style.transform = 'translate(0px, 0px)';
+  e.target.setAttribute('data-x', 0)
+  e.target.setAttribute('data-y', 0)
+  e.target.classList.remove("can-drop")
+}
     function dragMoveListener(event) {
       var target = event.target
       // keep the dragged position in the data-x/data-y attributes
       var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
       var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
-
       // translate the element
       target.style.webkitTransform =
         target.style.transform =
@@ -309,6 +512,8 @@
       ondropactivate: function (event) {
         // add active dropzone feedback
         event.target.classList.add('drop-active')
+        console.log("ondropactivate");
+        // dragged(event.dragEvent)
       },
       ondragenter: function (event) {
         var draggableElement = event.relatedTarget
@@ -317,23 +522,61 @@
         // feedback the possibility of a drop
         dropzoneElement.classList.add('drop-target')
         draggableElement.classList.add('can-drop')
-        draggableElement.textContent = 'Enviar'
+        // draggableElement.textContent = 'Enviar'
+        console.log("ondragenter");
+
       },
       ondragleave: function (event) {
         // remove the drop feedback style
-        console.log(event);
         event.target.classList.remove('drop-target')
         event.relatedTarget.classList.remove('can-drop')
-        event.relatedTarget.textContent =event.relatedTarget.attributes[1].textContent
-        
+        // event.relatedTarget.textContent =event.relatedTarget.attributes[1].textContent
+        console.log("ondragleave");
+
       },
       ondrop: function (event) {
-        event.relatedTarget.textContent = 'Enviado'
+        event.relatedTarget.classList.add('can-drop')
+        console.log("ondrop");
+
+        fetch(" ../../desmontaje/").then(
+              $.confirm({
+              title: 'Desmontaje de la Llanta',
+              content: 'URL: ../../desmontaje/',
+              type: 'dark',
+              theme:"material",
+              icon: 'fas fa-compact-disc',
+              animation: 'left',
+              closeAnimation: 'right',
+              columnClass:"col-md-6 col-md-offset-3",
+              typeAnimated: true,
+              buttons: {
+              
+                  close: function () {
+                    dragged(event.dragEvent)
+                  }
+              }
+            })
+        )
+
       },
       ondropdeactivate: function (event) {
-        // remove active dropzone feedback
+        console.log("ondeactivate");
+        if(!event.relatedTarget.classList.contains('can-drop')){
+          dragged(event.dragEvent)
+
+        }
+      
+      
+        // event.target.style.webkitTransform =
+        // event.target.style.transform =
+        // 'translate(' +0+ 'px, ' +0 + 'px)'
+
+      // update the posiion attributes
+      // event.target.setAttribute('data-x', 0)
+      // event.target.setAttribute('data-y',0)        
         event.target.classList.remove('drop-active')
         event.target.classList.remove('drop-target')
+        // dragged(event.dragEvent)
       }
     })
 
@@ -349,9 +592,35 @@
         autoScroll: true,
         // dragMoveListener from the dragging demo above
         listeners: {
-          move: dragMoveListener
+          move: dragMoveListener,
+          
         }
       })
   });
+
+let arr=document.getElementsByClassName("verLlanta")
+for (let index = 0; index < arr.length; index++) {
+  const element = arr[index];
+    element.addEventListener("dblclick",function () {  
+      fetch("../../viewLlanta/"+element.dataset.llanta+"/").then(
+              $.confirm({
+              title: 'Detalles de la Llanta',
+              content: 'URL: ../../viewLlanta/'+element.dataset.llanta+"/",
+              type: 'dark',
+              theme:"material", 
+              icon: 'fas fa-compact-disc',
+              animation: 'left',
+              closeAnimation: 'right',
+              columnClass:"col-md-6 col-md-offset-3",
+              typeAnimated: true,
+              buttons: {
+              
+                  close: function () {
+                  }
+              }
+            })
+        )
+    })
+}
 </script>
 {% endblock %}

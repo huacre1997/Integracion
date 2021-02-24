@@ -125,6 +125,10 @@ urlpatterns = [
     path('searchRenovadora/', views.AnchoBandaRenovaSearch, name='search-renovadora'),
     path('viewCondicion/', views.view_condicion, name='view-condicion'),
     path('viewRenova/', views.view_renova, name='view-renova'),
+    path('viewLlanta/<int:pk>/', views.DetalleLlantaView.as_view(), name='ver-llanta'),
+    path('desmontaje/', views.DesmontajeLlantaView.as_view(), name='ver-desmontaje'),
+
+    # path('get-vehiculo/', views.getVehiculo, name='ver-vehiculo'),
 
 ]
 
