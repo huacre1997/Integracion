@@ -1801,7 +1801,7 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     permission_required=["Web.view_llanta"]
     success_url=reverse_lazy("Web:inicio")
     @method_decorator(csrf_exempt)
-    @method_decorator(never_cache)
+    # @method_decorator(never_cache)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
  
