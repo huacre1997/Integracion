@@ -150,6 +150,10 @@
         document.getElementById("background_tipo").parentNode.removeChild(document.getElementById(
           "background_tipo"))
       }
+      if (document.getElementById("background_tipo2") != null) {
+        document.getElementById("background_tipo2").parentNode.removeChild(document.getElementById(
+          "background_tipo2"))
+      }
       td_placa.textContent = ""
       td_tipo.textContent = ""
       td_modelo.textContent = ""
@@ -170,10 +174,34 @@
         document.getElementById("container-grid").classList.add(response.vehiculo.tipo_vehiculo.descripcion)
         let backgroud_img = document.createElement("div")
         backgroud_img.classList.add("img")
+        let backgroud_img2 = document.createElement("div")
+        backgroud_img2.classList.add("img2")
+        backgroud_img2.id = "background_tipo2"
+
         backgroud_img.id = "background_tipo"
-        backgroud_img.style.background = 'transparent url(' + response.vehiculo.tipo_vehiculo.croquis +
-          ') no-repeat center center'
+        if(response.vehiculo.tipo_vehiculo.id==1){
+          backgroud_img.style.background = "transparent url('../documentos/documentos/croquis_vehiculo/12._C4_Posición_x2X060z.png') no-repeat center center"
+          backgroud_img2.style.background = "transparent url('../documentos/documentos/fotos/12.C4.png') no-repeat center center"
+
+        }else
+        if(response.vehiculo.tipo_vehiculo.id==2){
+          backgroud_img.style.background = "transparent url('../documentos/documentos/croquis_vehiculo/2._C2RB1_Posición_LGrukSR.png') no-repeat center center"
+          backgroud_img2.style.background = "transparent url('../documentos/documentos/fotos/2.C2RB1.png') no-repeat center center"
+
+        }else
+        if(response.vehiculo.tipo_vehiculo.id==3){
+          backgroud_img.style.background = "transparent url('../documentos/documentos/croquis_vehiculo/28._T2S2_Posición_3OVPjpv.png') no-repeat center center"
+          backgroud_img2.style.background = "transparent url('../documentos/documentos/fotos/2.C2RB1.png') no-repeat center center"
+
+        }else
+        if(response.vehiculo.tipo_vehiculo.id==4){
+          backgroud_img.style.background = "transparent url('../documentos/documentos/croquis_vehiculo/21._8x4_Posición.png') no-repeat center center"
+          backgroud_img2.style.background = "transparent url('../documentos/documentos/fotos/2.8x4.png') no-repeat center center"
+    
+        }
         document.getElementById("container-grid").append(backgroud_img)
+        document.getElementById("container-grid").append(backgroud_img2)
+
         datos.items.vehiculo_id = response.vehiculo.id
         datos.items.placa = response.vehiculo.placa
 
@@ -184,8 +212,8 @@
         td_km.textContent = response.vehiculo.km
         td_obs.textContent = response.vehiculo.obs
         operador.textContent = response.vehiculo.created_by.persona
-          
-        
+
+     
         for (let i = 0; i < response.llantas.length; i++) {
           if (response.llantas[i].repuesto == false) {
           let parent=document.createElement("div")
@@ -213,7 +241,7 @@
 
           })
         
-          
+       
             parent.classList.add("drag", "bordeado",
               `${response.vehiculo.tipo_vehiculo.descripcion}-ride${response.llantas[i].posicion}`)
 
