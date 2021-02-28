@@ -180,17 +180,17 @@
 
         backgroud_img.id = "background_tipo"
         if(response.vehiculo.tipo_vehiculo.id==1){
-          backgroud_img.style.background = "transparent url('../documentos/documentos/croquis_vehiculo/12._C4_Posición_x2X060z.png') no-repeat center center"
+          backgroud_img.style.background = "transparent url({% static 'img/12._C4_Posición_x2X060z.png' %}) no-repeat center center"
           backgroud_img2.style.background = "transparent url('../documentos/documentos/fotos/12.C4.png') no-repeat center center"
 
         }else
         if(response.vehiculo.tipo_vehiculo.id==2){
-          backgroud_img.style.background = "transparent url('../documentos/documentos/croquis_vehiculo/2._C2RB1_Posición_LGrukSR.png') no-repeat center center"
+          backgroud_img.style.background = "transparent url({% static 'img/2._C2RB1_Posición_LGrukSR.png' %}) no-repeat center center"
           backgroud_img2.style.background = "transparent url('../documentos/documentos/fotos/2.C2RB1.png') no-repeat center center"
 
         }else
         if(response.vehiculo.tipo_vehiculo.id==3){
-          backgroud_img.style.background = "transparent url('../documentos/documentos/croquis_vehiculo/28._T2S2_Posición_3OVPjpv.png') no-repeat center center"
+          backgroud_img.style.background = "transparent url({% static 'img/28._T2S2_Posición_3OVPjpv.png' %}) no-repeat center center"
           backgroud_img2.style.background = "transparent url('../documentos/documentos/fotos/2.C2RB1.png') no-repeat center center"
 
         }else
