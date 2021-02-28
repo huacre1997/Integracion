@@ -98,3 +98,9 @@ CHOICES_CUBIERTA = (
 	
 )
 
+
+CHOICES_UBICACION_LLANTA = (
+	("1", 'MONTADO'),
+	("2", 'DESMONTADO'),
+  
+)

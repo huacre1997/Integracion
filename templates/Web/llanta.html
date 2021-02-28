@@ -54,7 +54,14 @@
 
             </div>
 
-            <div class="form-row section {% if obj.vehiculo %}activo{% endif %}" id="section_vehiculo">
+{% if obj %}
+<div class="form-row section {% if obj.vehiculo %}activo{% endif %}" id="section_vehiculo">
+
+{% else %}
+<div class="form-row section activo" id="section_vehiculo">
+
+{% endif %}
+  
               <div class="form-group col-lg-6">
                 <label for="">Seleccion Vehiculo:</label>
                 {{form.vehiculo}}
@@ -93,16 +100,26 @@
                 {{form.medida_llanta}}
                 <div class="invalid-feedback" id="invalid_medida_llanta">Este campo es requerido.</div>
               </div>
-              <div class="form-group col-lg-6">
+                <div class="form-group col-lg-6">
                 <label for="" style="visibility: hidden;">ss</label>
              <div class="form-check">
-                  <input type="checkbox" name="repuesto" class="form-check-input" 
-                    {% if obj.repuesto %}checked{% endif %}>
+               
+               {% if obj %}
+               <input {% if obj.vehiculo == None %}disabled{% endif %} type="checkbox" name="repuesto" class="form-check-input" id="id_repuesto" 
+               {% if obj.repuesto %}checked{% endif %}>
+               {% else %}
+               <input type="checkbox" name="repuesto" class="form-check-input" id="id_repuesto" 
+              >
+               {% endif %}
+                 
+             
                   <label class="form-check-label" for="id_repuesto">Repuesto</label>
                   <div class="invalid-feedback">Este campo es requerido</div> 
 
                 </div> 
               </div>
+                
+              
             </div>
 
 
@@ -222,9 +239,9 @@
                     <!-- <input type="text" class="form-control" id="id_renovadora"  aria-describedby="btnSearch" name="renovadora">  -->
                     <div class="input-group mb-3">
 
-                      <input type="text" id="id_renovadora" class="form-control" id="id_renova"
+                      <input disabled type="text"  class="form-control" id="id_renova"
                         value="{{cubierta.renovadora}}">
-                      <input type="hidden" name="renovadora" value="{{cubierta.renovadora.id}}">
+                      <input type="hidden" name="renovadora" value="{{cubierta.renovadora.id}}" id="id_renovadora">
                       <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
                           aria-hidden="true"></i></button>
                       <div class="invalid-feedback" id="invalid_renovadora">Este campo es requerido.</div>
@@ -280,6 +297,11 @@
 <script type="text/javascript" charset="utf-8">
   $(document).ready(function () {
     $('#id_categoria').on('mousedown', function (e) {
+      e.preventDefault();
+      this.blur();
+      window.focus();
+    });
+  $('#id_nro_ren').on('mousedown', function (e) {
       e.preventDefault();
       this.blur();
       window.focus();
@@ -343,6 +365,7 @@
       $.confirm({
         title: "",
         content: 'URL:{% url "Web:view-condicion" %}',
+        theme:"material",
         buttons: {
           formSubmit: {
             text: 'Submit',
@@ -577,7 +600,7 @@
     costo.addEventListener("keyup", function () {
       costo.classList.remove("is-invalid")
     })
-    fech_ren.addEventListener("keyup", function () {
+    fech_ren.addEventListener("click", function () {
       fech_ren.classList.remove("is-invalid")
     })
     ancho_banda.addEventListener("change", function () {
@@ -594,18 +617,20 @@
     })
     ubicacion.addEventListener("change", function (e) {
       var strUser = e.target.options[e.target.selectedIndex].value;
-
-      if (strUser == 1) {
+      console.log(strUser);
+      if (strUser === "") {
         document.getElementById("section_vehiculo").classList.add("activo")
-        console.log("1");
+        document.getElementById("id_repuesto").removeAttribute("disabled")
+
       } else {
         document.getElementById("section_vehiculo").classList.remove("activo")
-        console.log("else");
+        document.getElementById("id_repuesto").disabled="true"
+        vehiculo.value=""
+        posicion.value=""
+
       }
     })
-    {% comment %} document.getElementById("id_repuesto").addEventListener("click", function (params) {
-      document.getElementById("id_repuesto").toggleAttribute("checked")
-    }) {% endcomment %}
+
     document.getElementById("btn-add-llanta").addEventListener("click", function (e) {
       document.getElementById("btn-add-llanta").setAttribute("disabled", true)
       let url = document.getElementById("LlantaForm").getAttribute("action")
@@ -618,9 +643,12 @@
         body: formData
       }).then(data => data.json()).then(
         function name(params) {
-          var strUser = ubicacion.options[ubicacion.selectedIndex].textContent;
-          if (vehiculo.value == "" && strUser == "MONTADO") {
-            params.form.vehiculo = "Este campo es olbigatorio."
+          var strUser = ubicacion.options[ubicacion.selectedIndex].value;
+          if (strUser ==="" && vehiculo.value=="" && posicion.value=="") {
+            console.log("if");
+            params.form.vehiculo = "Este campo es obligatorio."
+            params.form.posicion = "Este campo es obligatorio."
+
           }
           return params
         }
@@ -659,7 +687,7 @@
 
           }
           if (response.form.posicion) {
-            document.getElementById("invalid_posicion").innerHTML = response.form.posicion[0]
+            document.getElementById("invalid_posicion").innerHTML = response.form.posicion
             posicion.classList.add("is-invalid")
 
 
@@ -743,6 +771,8 @@
   });
 
   function actualizar_modelo() {
+    $('#id_modelo_llanta').prop("disabled",true)
+
     $('#id_modelo_llanta').empty();
     $('#id_modelo_llanta').append($("<option>", {
       value: "",
@@ -756,6 +786,7 @@
         'id_marca': $('#id_marca_llanta').val()
       },
       'success': function (data) {
+        $('#id_modelo_llanta').prop("disabled",false)
         $.each(data, function (index, valuex) {
           $('#id_modelo_llanta').append($("<option>", {
             value: valuex.id,

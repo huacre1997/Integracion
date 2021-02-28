@@ -21,15 +21,17 @@
             <form method="post" action="" enctype="multipart/form-data" >
             {% csrf_token %}
             <div class="card-body">
+             <div class="row">
+              	<div class="col-lg-2">Marca</div>
+                <div class="col-lg-4">{{form.marca_vehiculo}}</div>
+              </div>
+                            <br>
+
               <div class="row">
               	<div class="col-lg-2">Descripción</div>
                 <div class="col-lg-4">{{form.descripcion}}</div>
               </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Marca</div>
-                <div class="col-lg-4">{{form.marca_vehiculo}}</div>
-              </div>
+             
               <br>
               <div class="row">
               	<div class="col-lg-2">Activo</div>

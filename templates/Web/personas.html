@@ -5,11 +5,7 @@
 {% block collapseAdmin %}collapse show{% endblock  %}
 {% block personas %}collapse-item active{% endblock  %}
 {% block content %}
-<style>
-  .swal2-container {
-    z-index: 999999999;
-  }
-</style>
+
 <link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
 <div id="wrapper">
   <div class="container-fluid">
@@ -68,6 +64,7 @@
 
     tablaPersonas = $("#TablaPersona").DataTable({
       responsive: true,
+      processing:true,
       "order": [],
 
       ajax: {
@@ -87,7 +84,7 @@
         "emptyTable": "No hay datos disponibles para esta tabla",
         "lengthMenu": "Mostrando _MENU_ entradas",
         "loadingRecords": "Cargando...",
-        "processing": "Procesando...",
+        "processing": '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem; role="status"><span class="sr-only">Loading...</span></div>',
         "zeroRecords": "No se encontraron resultados",
         "info": "Mostrando _START_ al _END_ de _TOTAL_ entradas",
         "infoEmpty": "Mostrando 0 al 0 de 0 entradas",
@@ -102,14 +99,14 @@
         {
           "data": null,
           "defaultContent": '',
-          className: "text-center middle",
+          className: "middle",
           render: function (data, type, row) {
             return data.apep + " " + data.apem
           }
         },
         {
           "data": 'nro_doc',
-          className: "middle"
+          className: "text-center middle"
         },
         {
           "data": 'celular',
@@ -173,6 +170,7 @@
         columnClass: 'col-xl-12 col-lg-12 col-md-12 col-sm-10',
         icon: "fa fa-plus-circle",
         type: "dark",
+        theme:"material",
         animateFromElement: true,
         buttons: {
           formSubmit: {

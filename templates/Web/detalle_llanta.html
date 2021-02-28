@@ -1,6 +1,14 @@
 {% load l10n %}
 <div class="container">
+    {% if obj.repuesto %}
+                
+            <span style="position:absolute;right: 0;" class="badge rounded-pill bg-success">Repuesto</span>
+
+        {% endif %} 
+        <br>
     <div class="form-row">
+    
+            
         <div class="form-group col-lg-6">
             <label for="">Código</label>
 

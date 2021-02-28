@@ -79,30 +79,34 @@
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Placa</th>
-                      <th>Marca</th>
-                      <th>Modelo</th>
-                      <th>Año</th>
-                      <th>Nro de Lantas</th>
-                      <th>KM</th>
-                      <th>F. Registro</th>
-                      <th style="width: 18%;"></th>
+                      <th class="middle text-center" style="width: 5%;">#</th>
+                      <th class="middle text-center" style="width: 10%;">Placa</th>
+                      <th class="middle text-center" style="width: 10%;">Marca</th>
+                      <th class="middle text-center" style="width: 15%;">Modelo</th>
+                      <th class="middle text-center" style="width: 5%;">Año</th>
+                      <th class="middle text-center" style="width: 5%;">N° Llantas</th>
+                      <th class="middle text-center" style="width: 5%;">Llantas Repuesto</th>
+
+                      <th class="middle text-center" style="width: 10%;">KM</th>
+                      <th class="middle text-center" style="width: 15%;">F. Registro</th>
+                      <th style="width: 20%;"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for obj in objetos %}
                     <tr>
                       {% number_page forloop.counter page_obj.number pages as pag %}
-                      <td>{{pag}}</td>
-                      <td>{{obj.placa}}</td>
-                      <td>{{obj.modelo_vehiculo.marca_vehiculo}}</td>
-                      <td>{{obj.modelo_vehiculo}}</td>
-                      <td>{{obj.ano}}</td>
+                      <td class="middle text-center">{{pag}}</td>
+                      <td class="middle text-center">{{obj.placa}}</td>
+                      <td class="middle text-center">{{obj.modelo_vehiculo.marca_vehiculo}}</td>
+                      <td class="middle ">{{obj.modelo_vehiculo}}</td>
+                      <td class="middle text-center">{{obj.ano}}</td>
                       <!--td>{{obj.ubicacion}} {% if obj.almacen %} / {{obj.almacen}} {% endif %}</td-->
-                      <td>{{obj.nro_llantas}}</td>
-                      <td>{{obj.km|unlocalize}}</td>
-                      <td>{{obj.created_at|date:'d/m/Y'}}</td>
+                      <td class="middle text-center">{{obj.nro_llantas}}</td>
+                      <td class="middle text-center">{{obj.nro_llantas_repuesto}}</td>
+
+                      <td class="middle text-center">{{obj.km|unlocalize}}</td>
+                      <td class="middle text-center">{{obj.created_at|date:'d/m/Y'}}</td>
                       <td>
                         <a href="{% url 'Web:ver-vehiculo' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-tools"></i>Operaciones</a>
                       {% if 'Web.change_vehiculo' in perm %}

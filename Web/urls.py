@@ -4,6 +4,7 @@ from . import views
 app_name = 'Web'
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
+from django.views.decorators.cache import cache_page
 
 urlpatterns = [
     path("password_reset/", auth_views.PasswordResetView.as_view(success_url=reverse_lazy("Web:password_reset_done")), name="password_reset"),
@@ -103,7 +104,7 @@ urlpatterns = [
     path('modelo-vehiculo/<int:pk>/', views.ModeloVehiculoUpdateView.as_view(), name='modelo-vehiculo'),
     path('modelo-vehiculo/<int:pk>/delete/', views.ModeloVehiculoDeleteView.as_view(), name='modelo-vehiculo-delete'),
 
-    path('llantas/', views.LlantasListView.as_view(), name='llantas'),
+    path('llantas/',views.LlantasListView.as_view(), name='llantas'),
     path('llanta/', views.LlantaCreateView.as_view(), name='llanta'),
     path('llanta/<int:pk>/', views.LlantaUpdateView.as_view(), name='llanta'),
     path('llanta/<int:pk>/delete/', views.LlantaDeleteView.as_view(), name='llanta-delete'),
@@ -127,6 +128,8 @@ urlpatterns = [
     path('viewRenova/', views.view_renova, name='view-renova'),
     path('viewLlanta/<int:pk>/', views.DetalleLlantaView.as_view(), name='ver-llanta'),
     path('desmontaje/', views.DesmontajeLlantaView.as_view(), name='ver-desmontaje'),
+    path('hoja-movimientos/', views.HojaDeMovimientosView.as_view(), name='hoja-movimientos'),
+    path('inspeccion-llantas/', views.InspeccionLlantasView.as_view(), name='inspeccion-llantas'),
 
     # path('get-vehiculo/', views.getVehiculo, name='ver-vehiculo'),
 

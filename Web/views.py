@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 from django.urls import reverse_lazy
+from django.views.decorators.cache import cache_page
 
 from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView, View
@@ -1016,11 +1017,13 @@ class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
                 data=[]
                 for i in MarcaLlanta.objects.filter(activo=True).order_by("created_at").reverse():
                     data.append(i.toJSON())
-                return JsonResponse(data,safe=False)
 
             else:
                 data["error"]="Ha ocurrido un error"
+            return JsonResponse(data,safe=False)
+
         except Exception as e:
+            print(e)
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
             return HttpResponseRedirect(self.success_url)
 
@@ -1037,7 +1040,8 @@ class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
         return render(self.request,self.template_name,{"form":form})
     
     
-    def post(self, request,*args, **kwargs):       
+    def post(self, request,*args, **kwargs):      
+        print(request.POST) 
         try:
             form = self.get_form()
 
@@ -1778,7 +1782,6 @@ class ModeloVehiculoDeleteView(LoginRequiredMixin,ValidateMixin, View):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.delete_modelovehiculo"]
-
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = ModeloVehiculo.objects.get(pk=id)
@@ -1786,36 +1789,40 @@ class ModeloVehiculoDeleteView(LoginRequiredMixin,ValidateMixin, View):
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
-        return HttpResponseRedirect(reverse('Web:modelo-vehiculos',))
+        return HttpResponseRedirect(reverse_lazy('Web:modelo-vehiculos'))
 
+from django.views.decorators.cache import never_cache
 
 class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/llantas.html'
     model = Llanta
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_llanta"]
+    success_url=reverse_lazy("Web:inicio")
     @method_decorator(csrf_exempt)
+    @method_decorator(never_cache)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
  
-
+   
     def post(self,request,*args, **kwargs):
-        data={}
         try:
             action=request.POST["action"]
+            print("if")
             if action=="searchData":
-                
+                print(action)
                 data=[]
-                for i in Llanta.objects.all():
+                for i in Llanta.objects.filter(activo=True,eliminado=False).order_by("created_at").reverse():
                     data.append(i.toJSON())
-                print("if")
-                return JsonResponse(data,safe=False)
+              
 
             else:
                
                 data["error"]="Ha ocurrido un error"
+            dump = json.dumps(data)
+            return HttpResponse(dump, content_type='application/json')
+ 
         except Exception as e:
             print(e)
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
@@ -1824,32 +1831,32 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
         # import pdb; pdb.set_trace();
         qs = super().get_queryset()
         
-        qs = qs.filter(eliminado=False)
+        qs = qs.filter(eliminado=False,activo=True)
       
-        modelo = self.request.GET.get('modelo','')
-        costo = self.request.GET.get('costo','')
-        fi = self.request.GET.get('fecha_inicio')
-        ff =self.request.GET.get('fecha_fin')
+        # modelo = self.request.GET.get('modelo','')
+        # costo = self.request.GET.get('costo','')
+        # fi = self.request.GET.get('fecha_inicio')
+        # ff =self.request.GET.get('fecha_fin')
         
-        if modelo:
-            qs = qs.filter(modelo_llanta__pk=modelo)
-        if costo:
-            qs = qs.filter(costo__icontains=costo)
+        # if modelo:
+        #     qs = qs.filter(modelo_llanta__pk=modelo)
+        # if costo:
+        #     qs = qs.filter(costo__icontains=costo)
         
-        if fi:
-            fi=datetime.strptime(fi, '%Y-%m-%d').date()
-            ff=datetime.strptime(ff, '%Y-%m-%d').date()
-            ff = ff + timedelta(days=1)
-            qs = qs.filter(created_at__range=(fi,ff))
+        # if fi:
+        #     fi=datetime.strptime(fi, '%Y-%m-%d').date()
+        #     ff=datetime.strptime(ff, '%Y-%m-%d').date()
+        #     ff = ff + timedelta(days=1)
+        #     qs = qs.filter(created_at__range=(fi,ff))
         
-        return qs.order_by('-pk')
+        return qs.order_by('created_at').reverse()
 
-    def get_context_data(self, **kwargs):
-        # import pdb; pdb.set_trace()
-        context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
-        context['marcas'] = MarcaLlanta.objects.filter(eliminado=False).order_by('descripcion')
-        return context
+    # def get_context_data(self, **kwargs):
+    #     # import pdb; pdb.set_trace()
+    #     context = super().get_context_data(**kwargs)
+    #     # context['pages'] = self.paginate_by
+    #     context['marcas'] = MarcaLlanta.objects.filter(eliminado=False,activo=True).order_by('descripcion')
+    #     return context
 
 
 class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
@@ -1943,7 +1950,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
 
     def get(self,*args, **kwargs):
         cubierta=CubiertaLlanta.objects.filter(id=self.object.cubierta.id).first()
-
+        print(self.object.ubicacion)
         form1=LlantaForm(instance=self.object)
         form2=CubiertaForm(instance=cubierta)
         print(cubierta.categoria)
@@ -1974,7 +1981,10 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 instance2.save()
                 instance=self.get_object()
                 instance.codigo=self.request.POST["codigo"]
-                instance.vehiculo_id=self.request.POST["vehiculo"]
+                if self.request.POST["vehiculo"]!="":
+                    instance.vehiculo_id=self.request.POST["vehiculo"]
+                else:
+                    instance.vehiculo_id=None
                 instance.medida_llanta_id=self.request.POST["medida_llanta"]
                 instance.modelo_llanta_id=self.request.POST["modelo_llanta"]
                 instance.marca_llanta_id=self.request.POST["marca_llanta"]
@@ -2023,17 +2033,21 @@ class LlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.delete_llanta"]
-
-    def get(self, request, *args, **kwargs):
-        id = self.kwargs['pk']
-        obj = Llanta.objects.get(pk=id)
-        obj.modified_by=request.user
-        obj.eliminado = True
-        obj.save()
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return HttpResponseRedirect(reverse('Web:llantas',))
-
-
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            id = self.kwargs['pk']
+            obj = Llanta.objects.get(pk=id)
+            obj.modified_by=request.user
+            obj.eliminado = True
+            obj.save()
+            data={"response":200}
+            
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Ha ocurrido un error.')
+            return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/vehiculos.html'
     model = Vehiculo
@@ -2157,7 +2171,9 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         id = self.kwargs['pk']
         obj = Vehiculo.objects.get(pk=id)
         context['obj'] =obj
-        context["vehiculo"]=obj.llantas.filter(eliminado=0).order_by("posicion")
+        context["vehiculo"]=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
+        context["ubicaciones"]=Ubicacion.objects.filter(eliminado=0,activo=True).values("id","descripcion")
+
         return context
 # @login_required(login_url="/login/")
 from django.core import serializers
@@ -2231,10 +2247,71 @@ class AgregarLlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['vehiculo'] = self.vehiculo
         return context
+from .constanst import  CHOICES_OBSERVACION,CHOICES_ACCION
+from django.db import transaction
 
-
-class DesmontajeLlantaView(TemplateView):
+class DesmontajeLlantaView(LoginRequiredMixin,TemplateView):
     template_name = "Web/desmontaje_llanta.html"
-    
+    def get(self,request,*args, **kwargs):
+        estado=EstadoLlanta.objects.all().values("id","descripcion")
+        print(f'el get esta en {request.GET}')
+        context={"condicion":estado,"obs":CHOICES_OBSERVACION,"obj":request.GET}
+        return render(self.request,self.template_name,context)
+    def post(self,request,*args, **kwargs):
+        # print(request.POST)
+        try:
+            llanta=Llanta.objects.filter(id=request.POST["llanta"])
+            if llanta.exists():
+                with transaction.atomic():
 
-    
+                    objeto=llanta.first()
+                    objeto.vehiculo=None
+                    objeto.posicion=None
+                    objeto.estado_id=request.POST["estado"]
+
+                    objeto.ubicacion_id=request.POST["ubicacion"]
+                    objeto.save()
+                    historial=HistorialLLantas()
+                    historial.llanta=objeto
+                    historial.km=request.POST["kilometros"]
+                    historial.estado_id=request.POST["estado"]
+                    historial.obs=request.POST["obs"]
+                    if request.POST["repuesto"]=="true":
+                        historial.posicion="R"
+
+                    else:
+                        historial.posicion=request.POST["posicion"]
+
+                    historial.vehiculo_id=request.POST["vehiculo"]
+                    historial.profundidad=request.POST["profundidad"]
+                    historial.created_by=self.request.user
+                    historial.ubicacion_id=request.POST["ubicacion"]
+
+                    historial.save()
+                    response={"status":200}
+            else:
+                response={"status":500,"message":"Esa llanta no existe."}
+
+            return JsonResponse(response,safe=False)
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Ha ocurrido un error.')
+            return HttpResponseRedirect(reverse_lazy("Web:inicio"))
+class HojaDeMovimientosView(LoginRequiredMixin,TemplateView):
+    template_name="Web/hoja_movimientos.html"   
+
+    def post(self,request,*args, **kwargs):
+        data=[]
+        post = json.loads(request.body.decode("utf-8"))
+        qs = Vehiculo.objects.get(id=post["id"]).toJSON()
+        nm = Llanta.objects.filter(vehiculo=post["id"]).order_by("posicion")
+        for i in nm:
+           data.append(i.toJSON2())
+        return JsonResponse({"vehiculo":qs,"llantas":data},safe=False, content_type='application/json')
+    def get_context_data(self, **kwargs):
+        context = super(HojaDeMovimientosView, self).get_context_data(**kwargs)
+        context["placa"]=Vehiculo.objects.all().values("id","placa")
+        context["ubicaciones"]=Ubicacion.objects.filter(eliminado=False,activo=True)
+        return context
+class InspeccionLlantasView(LoginRequiredMixin,TemplateView):
+    template_name="Web/inspeccion_llantas.html"

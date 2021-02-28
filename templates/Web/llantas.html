@@ -5,33 +5,30 @@
 {% load static %}
 {% load base_extras %}
 {% load l10n %}
+
 {% block content %}
 <link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
 
 
-<style>
-  table.dataTable tbody th,
-  table.dataTable tbody td {
-    padding: 3px 3px;
-    /* e.g. change 8x to 4px here */
-  }
-</style>
+
 <div id="wrapper">
   <div class="container-fluid">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <div class="row align-items-center"><div class="col-lg-9">
-          <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Llantas</h6>
+        <div class="row align-items-center">
+          <div class="col-lg-9">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Llantas</h6>
 
+          </div>
+          <div class="col-lg-3">
+            <a href="{% url 'Web:llanta' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nueva
+              Llanta</a>
+          </div>
         </div>
-      <div class="col-lg-3">
-        <a href="{% url 'Web:llanta' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nueva
-          Llanta</a>
-      </div></div>
-      
+
       </div>
       <div class="card-body">
-<!-- 
+        <!-- 
           <div class="row">
             <div class="col-lg-3">
               <label>Marca/Modelo</label>
@@ -85,53 +82,56 @@
             </div>
             {% endif %}
           </div> -->
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Codigo</th>
-                  <th>Marca</th>
-                  <th>Modelo</th>
-                  <th>Medida</th>
-                  <th>Ubicación</th>
-                  <th>Costo</th>
-                  <th>KM</th>
-                  <th>F. Registro</th>
-                  <th>Vehículo</th>
-                  <th style="width: 12%;"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for obj in objetos %}
-                <tr>
-                  {% number_page forloop.counter page_obj.number pages as pag %}
-                  <td>{{pag}}</td>
-                  <td>{{obj.codigo}}</td>
-                  <td>{{obj.modelo_llanta.marca_llanta}}</td>
-                  <td>{{obj.modelo_llanta}}</td>
-                  <td>{{obj.medida_llanta}}</td>
-                  <td>{{obj.ubicacion}} {% if obj.almacen %} / {{obj.almacen}} {% endif %}</td>
-                  <td>{{obj.cubierta.costo|unlocalize}}</td>
-                  <td>{{obj.cubierta.km|unlocalize}}</td>
-                  <td>{{obj.created_at|date:'Y-m-d'}}</td>
-                  <td>{{obj.vehiculo|default_if_none:''}} </td>
-                  <td>
-                    {% if 'Web.change_llanta' in perm %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Codigo</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Medida</th>
+                <th>Ubicación</th>
+                <th>Costo</th>
+                <th>KM</th>
+                <th>F. Registro</th>
+                <th>Vehículo</th>
+                <th style="width: 12%;"></th>
+              </tr>
+            </thead>
+            <tbody>
 
-                    <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i
-                        class="fa fa-edit"></i>Editar</a>{% endif %}
-                    {% if 'Web.delete_llanta' in perm %}
-                    <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i
-                        class="fa fa-ban"></i></a>{% endif %}
-                    {% include 'Web/fragments/eliminar_llanta.html' %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
+       
+              {% for obj in objetos %}
+              <tr>
+                <td>1</td>
+                <td>{{obj.codigo}}</td>
+                <td>{{obj.modelo_llanta.marca_llanta}}</td>
+                <td>{{obj.modelo_llanta}}</td>
+                <td>{{obj.medida_llanta}}</td>
+                <td>{{obj.ubicacion}}</td>
+                <td>{{obj.cubierta.costo|unlocalize}}</td>
+                <td>{{obj.cubierta.km|unlocalize}}</td>
+                <td>{{obj.created_at|date:'Y-m-d'}}</td>
+                <td>{{obj.vehiculo|default_if_none:''}} </td>
+                <td>
+                  {% if 'Web.change_llanta' in perm %}
 
-            </table>
-          </div>
+                  <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i
+                      class="fa fa-edit"></i>Editar</a>{% endif %}
+                  {% if 'Web.delete_llanta' in perm %}
+                  <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i
+                      class="fa fa-ban"></i></a>{% endif %}
+                  {% include 'Web/fragments/eliminar_llanta.html' %}
+                </td>
+              </tr>
+              {% endfor %}
+
+
+            </tbody>
+
+          </table>
+        </div>
 
       </div>
     </div>
@@ -139,30 +139,50 @@
 </div>
 <!-- End of Page Wrapper -->
 {% endblock %}
+
 {% block bottom_scripts %}
 
 
 <script src="{% static "vendor/select2/select2.min.js" %}"></script>
 
 <script>
+  
+
   $(document).ready(function () {
     $('.select2').select2();
-    $.fn.dataTable.moment( 'DD/MM/YYYY' );
-   
+    $.fn.dataTable.moment('DD/MM/YYYY');
+
     var tablaLLantas = $('#dataTable').DataTable({
       responsive: true,
- 
+      stateSave: true,
+
+
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+  
+      columnDefs:[
+         {
+    targets: [5],
+          render: function (data, type, row) {  
+            if(data=="None")
+            {
+              return "MONTADO"
+            }else{
+              return data
+            }
+          } 
+        },
+      ],
       searchBuilder: true,
       searchBuilder: {
-            columns: [1,2,3,4,5,6,7,8,9]
-        },
-                dom: 'Qlfrtip',
-"language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.18/i18n/Italian.json"
-            },
+        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      },
+  
       "language": {
-        
-        "processing": "Procesando...",
+
+        "processing": '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem; role="status"><span class="sr-only">Loading...</span></div>',
         "lengthMenu": "Mostrar _MENU_ registros",
         "zeroRecords": "No se encontraron resultados",
         "emptyTable": "Ningún dato disponible en esta tabla",
@@ -181,11 +201,11 @@
           data: 'Columna',
 
           title: {
-                    0: 'Filtros',
-                    _: 'Filtros (%d)'
-                },
-                value: 'Ingrese término de búsqueda.',
-                valueJoiner: 'et',
+            0: 'Filtros',
+            _: 'Filtros (%d)'
+          },
+          value: 'Ingrese término de búsqueda.',
+          valueJoiner: 'hasta',
           "clearAll": "Borrar todo",
           "condition": "Condición",
           "conditions": {
@@ -223,19 +243,59 @@
           },
         }
       },
-  
+
       "initComplete": function (settings, json) {
         $("select[name='dataTable_length']").removeClass("form-control").addClass("form-select")
         // $(".dtsb-group > .dtsb-add").removeClass("btn-light").addClass("btn-primary")
         console.log($("button[class='dtsb-add']"));
 
-        console.log("if");
 
       }
 
     });
     tablaLLantas.searchBuilder.container().prependTo(tablaLLantas.table().container());
+    tablaLLantas.on('order.dt search.dt', function () {
+      tablaLLantas.column(0, {
+        search: 'applied',
+        order: 'applied'
+      }).nodes().each(function (cell, i) {
+        cell.innerHTML = i + 1;
+      });
+    }).draw();
+    $(document).on("click", '.btn-delete-llanta', function (e) {
 
+e.preventDefault()
+var tr = tablaLLantas.cell($(this).closest("td")).index();
+var data = tablaLLantas.row(tr.row).data();
+Swal.fire({
+  title: 'Eliminar llanta',
+  icon: "warning",
+  text: "¿Está seguro que desea eliminar la llanta?",
+  showCancelButton: true,
+  confirmButtonColor: "#e74a3b",
+  cancelButtonColor: '#6c757d',
+  confirmButtonText: 'Sí, eliminarlo!'
+}).then((result) => {
+  if (result.isConfirmed) {
+      Swal.showLoading()
+
+      fetch("../llanta/" + data.id + "/delete/", {
+        method: "POST",
+        headers: {
+          'X-CSRFToken': csrftoken
+        },
+      }).then(data => data.json()).then(response => {
+        if (response.status = 200) {
+          notificacion(1500, "Genial!", "success", "Llanta inhabilitada")
+          tablaLLantas.ajax.reload()
+        } else{
+          notificacion(1500, "Error", "error", "Esa llanta no existe")
+        }
+      })
+    
+  }
+})
+})
     $("#btnBuscar").click(function () {
       $('#frmlist').submit();
       let spinner = $(this.currentTarget).find('span')

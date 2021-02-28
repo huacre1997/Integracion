@@ -1,7 +1,6 @@
 from django.db import models
 import uuid
-from Web.constanst import (CHOICES_APP, APP_GESTION, CHOICES_TIPO_DOC2, 
-   CHOICES_SEXO, TIPO_DOC_DNI, ESTADO_1, CHOICES_ESTADOS ,CHOICES_OBSERVACION,CHOICES_ACCION)  
+from Web.constanst import *
 from functools import partial
 from .functions import letters
 import uuid
@@ -194,6 +193,10 @@ class Usuario(AbstractUser):
       item["groups"]= item['groups'] = [{'id': g.id, 'name': g.name} for g in self.groups.all()]
       item["persona"]=self.persona.toJSON()
       return item
+   def toJSON2(self):
+      item = model_to_dict(self,exclude=["groups","created_at"])
+      item["persona"]=self.persona.nom+" "+self.persona.apep+" "+self.persona.apem
+      return item
 
 @receiver(post_save, sender=Usuario)
 def update_user(sender, instance, **kwargs):
@@ -217,8 +220,7 @@ class Ubicacion(models.Model):
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self)
-      item["descripcion"]=self.descripcion
+      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
       return item
 class Almacen(models.Model):
    descripcion = models.CharField(max_length=100)
@@ -231,7 +233,9 @@ class Almacen(models.Model):
    
    def __str__(self):
       return self.descripcion
-
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      return item
 
 class Lugar(models.Model):
    descripcion = models.CharField(max_length=100)
@@ -245,7 +249,9 @@ class Lugar(models.Model):
    def __str__(self):
       return self.descripcion
 
-
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      return item
 class MarcaRenova(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
@@ -257,7 +263,9 @@ class MarcaRenova(models.Model):
 
    def __str__(self):
       return self.descripcion
-
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      return item
 
 class ModeloRenova(models.Model):
    marca_renova = models.ForeignKey(MarcaRenova, on_delete=models.PROTECT, related_name="modelos_renova")
@@ -272,7 +280,10 @@ class ModeloRenova(models.Model):
 
    def __str__(self):
       return self.descripcion
-
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item["marca_renova"]=self.marca_renova.toJSON()
+      return item
 
 class AnchoBandaRenova(models.Model):
    modelo_renova = models.ForeignKey(ModeloRenova, on_delete=models.PROTECT)
@@ -287,7 +298,10 @@ class AnchoBandaRenova(models.Model):
 
    def __str__(self):
       return self.descripcion
-
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item["modelo_renova"]=self.modelo_renova.toJSON()
+      return item
 
 class MarcaLlanta(models.Model):
    descripcion = models.CharField(max_length=100)
@@ -302,9 +316,8 @@ class MarcaLlanta(models.Model):
       return self.descripcion
 
    def toJSON(self):
-        item = model_to_dict(self)
-        item["descripcion"]=self.descripcion
-        return item
+      item = model_to_dict(self,exclude=["activo","modified_by","eliminado","created_by","modified_at"])
+      return item
 class ModeloLlanta(models.Model):
    marca_llanta = models.ForeignKey(MarcaLlanta, on_delete=models.PROTECT, related_name="modelos")
    descripcion = models.CharField(max_length=100)
@@ -319,8 +332,8 @@ class ModeloLlanta(models.Model):
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self)
-      item["descripcion"]=self.descripcion
+      item = model_to_dict(self,exclude=["created_by","modified_by"])
+      item=self.marca_llanta.toJSON()
       return item
       
 
@@ -340,7 +353,8 @@ class MedidaLlanta(models.Model):
    def __str__(self):
       return 'Medida {} - {} - {}'.format(str(self.medida), str(self.profundidad), str(self.capas))
    def toJSON(self):
-      item = model_to_dict(self)
+      item = model_to_dict(self,exclude=["modified_by","created_by"])
+      item["modelo_llanta"]= self.modelo_llanta.toJSON()
       item["descripcion"]='Medida {} - {} - {}'.format(str(self.medida), str(self.profundidad), str(self.capas))
       return item
       
@@ -356,7 +370,10 @@ class EstadoLlanta(models.Model):
    
    def __str__(self):
       return self.descripcion
-
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","created_by"])
+      return item
+        
 
 class TipoPiso(models.Model):
    descripcion = models.CharField(max_length=100)
@@ -370,7 +387,10 @@ class TipoPiso(models.Model):
    def __str__(self):
       return self.descripcion
 
-
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","created_by"])
+      return item
+        
 
 
 class MarcaVehiculo(models.Model):
@@ -386,8 +406,7 @@ class MarcaVehiculo(models.Model):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self)
-      item["descripcion"]=self.descripcion
+      item = model_to_dict(self,exclude=["created_by","modified_by"])
       return item
 
 class ModeloVehiculo(models.Model):
@@ -404,9 +423,8 @@ class ModeloVehiculo(models.Model):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self)
+      item = model_to_dict(self,exclude=["created_by","modified_by"])
       item["marca-vehiculo"]=self.marca_vehiculo.toJSON()
-      item["descripcion"]=self.descripcion
       return item
 class TipoVehiculo(models.Model):
    descripcion = models.CharField(max_length=100)
@@ -420,15 +438,21 @@ class TipoVehiculo(models.Model):
 
    def __str__(self):
       return self.descripcion
+   def get_image(self):
+        if self.croquis:
+            return '{}{}'.format(settings.MEDIA_URL,self.croquis)
    def toJSON(self):
-      item = model_to_dict(self,exclude=["croquis"])
+      item = model_to_dict(self,exclude=["created_by","modified_by"])
 
-      item["descripcion"]=self.descripcion
-    
+      item["croquis"]=self.get_image()
+
 
       return item
 
 class Vehiculo(models.Model):
+   class Operacion(models.TextChoices):
+        COMBUSTIBLE = "1", _('COMBUSTIBLE')
+        MINERALES = "2", _('MINERALES')
    ano = models.IntegerField(null=True)
    modelo_vehiculo = models.ForeignKey(ModeloVehiculo, on_delete=models.PROTECT)
    tipo_vehiculo = models.ForeignKey(TipoVehiculo, on_delete=models.PROTECT)
@@ -436,7 +460,7 @@ class Vehiculo(models.Model):
    almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT)
    propiedad = models.CharField(max_length=50, null=True)
    placa = models.CharField(max_length=50, null=True, blank=True)
-   operacion = models.CharField(max_length=100, null=True, blank=True)
+   operacion = models.CharField(max_length=2,choices=Operacion.choices, null=True, blank=True)
    km = models.DecimalField(max_digits=10, decimal_places=2)
    nro_ejes = models.IntegerField(null=True)
    nro_llantas = models.IntegerField(null=True)
@@ -453,14 +477,12 @@ class Vehiculo(models.Model):
    def __str__(self):
       return self.placa
    def toJSON(self):
-      item = model_to_dict(self)
-      item["placa"]=self.placa
-      item["km"]=self.km
-      item["observaciones"]=self.obs
+      item = model_to_dict(self,exclude=["modified_by","almacen"])
+      item["created_by"]=self.created_by.toJSON2()
+
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')
       item["modelo_vehiculo"]=self.modelo_vehiculo.toJSON()
       item["tipo_vehiculo"]=self.tipo_vehiculo.toJSON()
-      item["ubicacion"]=self.ubicacion.toJSON()
       item["ubicacion"]=self.ubicacion.toJSON()
 
       return item
@@ -474,12 +496,16 @@ class Renovadora(models.Model):
    eliminado=models.BooleanField(default=False,editable=False)
    def __str__(self):
       return self.nombre
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_by","created_by"])
+      return item
+        
 class  CubiertaLlanta(models.Model):
    class TipoCubierta(models.TextChoices):
         NUEVO = "1", _('Nuevo')
         REENCAUCHADO = "2", _('Reencauchado')
    nro_ren=models.CharField(max_length=2,null=True,blank=True,default=None)      
-   categoria=models.CharField(max_length=20, default=TipoCubierta.NUEVO,choices=TipoCubierta.choices)
+   categoria=models.CharField(max_length=10, default=TipoCubierta.NUEVO,choices=TipoCubierta.choices)
    costo = models.DecimalField(max_digits=10, decimal_places=2)
    km = models.DecimalField(max_digits=10, decimal_places=2)
    a_final = models.DecimalField(max_digits=10, decimal_places=2)
@@ -496,7 +522,7 @@ class  CubiertaLlanta(models.Model):
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
    def toJSON(self):
-      item = model_to_dict(self)
+      item = model_to_dict(self,exclude=["eliminado","modelo_renova","ancho_banda","eliminado","renovadora","created_by","modified_by"])
       item["costo"]=self.costo
       item["km"]=self.km
       return item
@@ -505,17 +531,20 @@ class Llanta(models.Model):
    marca_llanta = models.ForeignKey(MarcaLlanta, on_delete=models.PROTECT,null=True)
 
    modelo_llanta = models.ForeignKey(ModeloLlanta, on_delete=models.PROTECT,null=True)
-   vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True,blank=True,default=None)
-   codigo = models.CharField(max_length=100, null=True, blank=True)
    medida_llanta = models.ForeignKey(MedidaLlanta, on_delete=models.PROTECT)
-   ubicacion = models.ForeignKey(Ubicacion, on_delete=models.PROTECT,blank=True,null=True)
-   almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT,blank=True)
-   estado = models.ForeignKey(EstadoLlanta, on_delete=models.PROTECT, null=True)
+   # ubicacion = models.CharField(max_length=50, choices=CHOICES_UBICACION_LLANTA,null=True,blank=True)
+   cubierta=models.ForeignKey(CubiertaLlanta, verbose_name=_("Cubierta"), on_delete=models.PROTECT,null=True,blank=True)
+   ubicacion = models.ForeignKey(Ubicacion,on_delete=models.PROTECT,null=True,blank=True)
+
+   vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True,blank=True,default=None)
+   
+   codigo = models.CharField(max_length=100, null=True, blank=True)
    posicion=models.IntegerField(blank=True,null=True,default=None)
    repuesto=models.BooleanField(default=False)
 
-   cubierta=models.ForeignKey(CubiertaLlanta, verbose_name=_("Cubierta"), on_delete=models.PROTECT,null=True,blank=True)
-
+   almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT,blank=True)
+   estado = models.ForeignKey(EstadoLlanta, on_delete=models.PROTECT, null=True)
+   
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
@@ -525,14 +554,20 @@ class Llanta(models.Model):
    def __str__(self):
       return self.codigo
    def toJSON(self):
-      item = model_to_dict(self)
-      item["marca_llanta"]=self.marca_llanta.toJSON()
-      item["modelo_llanta"]=self.modelo_llanta.toJSON()
-      item["medida"]=self.medida_llanta.toJSON()
-      item["ubicacion"]=self.ubicacion.toJSON()
-      item["cubierta"]=self.cubierta.toJSON()
-      item["created_at"]=self.created_at.strftime('%Y-%m-%d')   
-      item["vehiculo"]=self.vehiculo.toJSON()
+      item = model_to_dict(self,exclude=["almacen","estado","eliminado","activo","modified_at","eliminado","created_by","modified_by"])
+      item["marca_llanta"]=self.marca_llanta.descripcion
+      item["modelo_llanta"]=self.modelo_llanta.descripcion
+      item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
+      item["km"]=format(self.cubierta.km, '.2f')
+      item["costo"]=format(self.cubierta.costo, '.2f')
+      
+      item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
+      if self.vehiculo: 
+         item["vehiculo"]=self.vehiculo.placa
+      return item
+   def toJSON2(self):
+      item = model_to_dict(self,exclude=["almacen","marca_llanta","medida_llanta","activo","modelo_llanta","cubierta","vehiculo","ubicacion"])
+    
       return item
    @property
    def code(self):
@@ -545,3 +580,24 @@ class Llanta(models.Model):
          aux = 0
       codigo = '{}{}'.format(ano, str((aux + 1)).zfill(6))
       return codigo
+class HistorialLLantas(models.Model):
+
+   llanta=models.ForeignKey(Llanta,on_delete=models.PROTECT,blank=True,null=True)
+   km=models.CharField( max_length=20)
+   profundidad=models.CharField(max_length=20)
+   vehiculo=models.ForeignKey(Vehiculo, verbose_name=_("Vehículo"), on_delete=models.PROTECT,blank=True,null=True)
+   posicion=models.CharField(max_length=5)
+   estado=models.ForeignKey(EstadoLlanta,on_delete=models.PROTECT,blank=True,null=True)
+   obs=models.CharField(max_length=50,choices=CHOICES_OBSERVACION)
+   ubicacion=models.ForeignKey(Ubicacion,on_delete=models.PROTECT,blank=True,null=True)
+   activo = models.BooleanField(default=True)
+   eliminado=models.BooleanField(default=False,editable=False)
+
+   created_at = models.DateTimeField(auto_now_add=True, null=True)
+   modified_at = models.DateTimeField(auto_now=True)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   
+   
+class InpeccionLlantas(models.Model):
+   pass

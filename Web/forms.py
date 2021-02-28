@@ -272,7 +272,12 @@ class UbicacionForm(forms.ModelForm):
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if Ubicacion.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : La ubicación {data} ya se encuentra registrada .")
+        return data  
 
 class AlmacenForm(forms.ModelForm):
     class Meta:
@@ -282,7 +287,12 @@ class AlmacenForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
 
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if Almacen.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : El almacén {data} ya se encuentra registrada .")
+        return data  
 class LugarForm(forms.ModelForm):
     class Meta:
         model = Lugar
@@ -304,7 +314,7 @@ class MarcaRenovaForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
             if MarcaRenova.objects.filter(descripcion=data).exists():
-                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+                self.add_error("descripcion",f" : La marca de renovación {data} ya se encuentra registrada .")
         return data
 class ModeloRenovaForm(forms.ModelForm):
 
@@ -327,7 +337,7 @@ class ModeloRenovaForm(forms.ModelForm):
         print(f'los valores son {subject}-{subject1}')
         if self.instance.descripcion!=subject:
             if ModeloRenova.objects.filter(descripcion=subject,marca_renova=subject1).exists():
-                raise forms.ValidationError(f"La marca {subject1} ya tiene un modelo {subject} .")
+                self.add_error("descripcion",f" : La marca {subject1} ya tiene un modelo {subject} .")
         return self.cleaned_data
 
 class AnchoBandaRenovaForm(forms.ModelForm):
@@ -350,7 +360,7 @@ class AnchoBandaRenovaForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
             if AnchoBandaRenova.objects.filter(descripcion=data).exists():
-                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+                self.add_error("descripcion",f" : El ancho de banda {data} ya se encuentra registrado .")
         return data  
 
 
@@ -365,7 +375,7 @@ class MarcaLlantaForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
             if MarcaLlanta.objects.filter(descripcion=data).exists():
-                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+                self.add_error("descripcion",f" : La marca {data} ya se encuentra registrada .")
         return data
 class TipoVehiculoForm(forms.ModelForm):
     class Meta:
@@ -375,7 +385,12 @@ class TipoVehiculoForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
 
         }
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if TipoVehiculo.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
+        return data
 class ModeloLlantaForm(forms.ModelForm):
 
     class Meta:
@@ -393,10 +408,9 @@ class ModeloLlantaForm(forms.ModelForm):
     def clean(self):
         subject = self.cleaned_data.get('descripcion')
         subject1 = self.cleaned_data.get('marca_llanta')
-        print(f'los valores son {subject}-{subject1}')
         if self.instance.descripcion!=subject:
             if ModeloLlanta.objects.filter(descripcion=subject,marca_llanta=subject1).exists():
-                raise forms.ValidationError(f"La marca {subject1} ya tiene una modelo {subject} .")
+                self.add_error("descripcion",f" : La marca {subject1} ya tiene una modelo {subject} .")
         return self.cleaned_data
 class MedidaLlantaForm(forms.ModelForm):
     marca = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0,activo=True),
@@ -417,7 +431,13 @@ class MedidaLlantaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['modelo_llanta'].queryset = ModeloLlanta.objects.filter(eliminado=False,activo=True)
-        
+    def clean(self):
+        subject = self.cleaned_data.get('medida')
+        subject1 = self.cleaned_data.get('modelo_llanta')
+        if self.instance.medida!=subject:
+            if MedidaLlanta.objects.filter(medida=subject,modelo_llanta=subject1).exists():
+                self.add_error("medida",f" : La medida {subject1} ya tiene una modelo {subject} .")
+        return self.cleaned_data   
 class EstadoLlantaForm(forms.ModelForm):
     class Meta:
         model = EstadoLlanta
@@ -429,7 +449,7 @@ class EstadoLlantaForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
             if EstadoLlanta.objects.filter(descripcion=data).exists():
-                raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+                self.add_error("descripcion",f" : El estado {data} ya se encuentra registrado .")
         return data
 
 class TipoServicioForm(forms.ModelForm):
@@ -451,8 +471,10 @@ class TipoPisoForm(forms.ModelForm):
 
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
-        if TipoPiso.objects.filter(descripcion=data).exists():
-            raise forms.ValidationError(f"El piso {data} ya se encuentra registrada .")
+        if self.instance.descripcion!=data:
+
+            if TipoPiso.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : El piso {data} ya se encuentra registrado .")
         return data
 class MarcaVehiculoForm(forms.ModelForm):
     class Meta:
@@ -464,8 +486,9 @@ class MarcaVehiculoForm(forms.ModelForm):
 
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
-        if MarcaLlanta.objects.filter(descripcion=data).exists():
-            raise forms.ValidationError(f"La marca {data} ya se encuentra registrada .")
+        if self.instance.descripcion!=data:
+            if MarcaVehiculo.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : La marca de vehículo {data} ya se encuentra registrada .")
         return data
 class ModeloVehiculoForm(forms.ModelForm):
 
@@ -480,11 +503,15 @@ class ModeloVehiculoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['marca_vehiculo'].queryset = MarcaVehiculo.objects.filter(eliminado=False,activo=True)
-    def clean_descripcion(self):
-        data=self.cleaned_data["descripcion"]
-        if MarcaLlanta.objects.filter(descripcion=data).exists():
-            raise forms.ValidationError(f"El modelo {data} ya se encuentra registrada .")
-        return data
+    def clean(self):
+        data=self.cleaned_data.get("descripcion")
+        data2=self.cleaned_data.get("marca_vehiculo")
+        if self.instance.descripcion!=data:
+
+            if ModeloVehiculo.objects.filter(descripcion=data,marca_vehiculo=data2).exists():
+                self.add_error("descripcion",f" : La marca {data2} ya tiene registrado un modelo {data} .")
+        return self.cleaned_data
+
 class CubiertaForm(forms.ModelForm):
     class Meta:
         model=CubiertaLlanta
@@ -516,19 +543,21 @@ class CubiertaForm(forms.ModelForm):
 class LlantaForm(forms.ModelForm):
     marca_llanta = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0,activo=True), required=True,
         widget=forms.Select( attrs={'class':'form-select', 'onchange':'actualizar_modelo();'}) )
+    ubicacion = forms.ModelChoiceField(queryset=Ubicacion.objects.filter(eliminado=False,activo=True),empty_label="MONTADO",
+                                     widget=forms.Select( attrs={'class':'form-select'}) , required=False)
+
     estado = forms.ModelChoiceField(queryset=EstadoLlanta.objects.filter(eliminado=0,activo=True), required=True,
         widget=forms.Select( attrs={'class':'form-select'}) )
     repuesto = forms.BooleanField(initial=False, required=False)
 
     class Meta:	
         model = Llanta
-        fields = ('vehiculo', 'modelo_llanta','ubicacion','almacen',"repuesto", 'estado', 'medida_llanta',"codigo","posicion","marca_llanta")
+        fields = ('vehiculo','ubicacion' ,'modelo_llanta','almacen',"repuesto", 'estado', 'medida_llanta',"codigo","posicion","marca_llanta")
         widgets = {
             'vehiculo': forms.Select(attrs={'class':'form-select'}),
             'modelo_llanta': forms.Select( attrs={'class':'form-select'}),
             'medida_llanta': forms.Select( attrs={'class':'form-select'}),
             'ubicacion': forms.Select( attrs={'class':'form-control'}),
-            'almacen': forms.Select( attrs={'class':'form-control'}),
             'codigo': forms.TextInput( attrs={'class':'form-control'}),
             'posicion': forms.TextInput( attrs={'class':'form-control'}),
 
@@ -539,45 +568,51 @@ class LlantaForm(forms.ModelForm):
         self.fields['vehiculo'].queryset = Vehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['modelo_llanta'].queryset = ModeloLlanta.objects.filter(eliminado=False,activo=True)
         self.fields['medida_llanta'].queryset = MedidaLlanta.objects.filter(eliminado=False,activo=True)
-        self.fields['ubicacion'].queryset = Ubicacion.objects.filter(eliminado=False,activo=True)
-        self.fields['almacen'].queryset = Almacen.objects.filter(eliminado=False,activo=True)
         self.fields['almacen'].required = False
         self.fields['codigo'].required = True
-        self.fields['ubicacion'].required=True
 
     def clean(self):
+        if self.cleaned_data.get('ubicacion')==None:
         
-        subject = self.cleaned_data.get('posicion')
-        subject1 = self.cleaned_data.get('vehiculo')
-        repuesto = self.cleaned_data.get('repuesto')
-        print(repuesto)
+            subject = self.cleaned_data.get('posicion')
+            subject1 = self.cleaned_data.get('vehiculo')
+            repuesto = self.cleaned_data.get('repuesto')
+            print(repuesto)
 
-        if self.instance.posicion!=subject:
-            dataLlanta=Llanta.objects.filter(vehiculo=subject1,posicion=subject)
-           
-            if dataLlanta.exists():
-                self.add_error("posicion",f"El vehiculo {subject1} ya tiene asiganada una llanta en la posición {subject} .")
-            data=Vehiculo.objects.get(pk=subject1.id)
-            nrollantas=data.nro_llantas
-            nrorepuesto=data.nro_llantas_repuesto
-            total=int(nrollantas)+int(nrorepuesto)
-            if repuesto:
-                if subject>int(nrorepuesto):
-                    self.add_error("posicion",f"El vehiculo {subject1} solo puede tener  {nrorepuesto} llantas de respuesto .")
-
-            else:
-                if subject > total:
-                    self.add_error("posicion",f"El vehiculo {subject1} no puede tener mas de {total} llantas .")
+            if self.instance.posicion!=subject:
+                dataLlanta=Llanta.objects.filter(vehiculo=subject1,posicion=subject)
             
-                
-        return self.cleaned_data
-    def clean_ubicacion(self):
-        data=self.cleaned_data["ubicacion"]
-        if data!=None:   
-            if(data.descripcion=="MONTADO"):
-                self.fields['posicion'].required = True
+                if dataLlanta.exists():
+                    self.add_error("posicion",f"El vehiculo {subject1} ya tiene asiganada una llanta en la posición {subject} .")
+            
+                else:
+                    data=Vehiculo.objects.get(pk=subject1.id)
+                    nrollantas=data.nro_llantas
+                    nrorepuesto=data.nro_llantas_repuesto
+                    total=int(nrollantas)+int(nrorepuesto)
+                    if repuesto:
+                        a=""
+                        for i in range(nrollantas,total):
+                            a+=str(i+1)+" "
+                        if not (subject<=int(total) and subject>int(nrollantas)):
+                            print("repuesto")
+                            self.add_error("posicion",f"Esta llanta de repuesto solo puede ocupar las posiciones {a}.")
 
-                self.fields['vehiculo'].required = True
+                    else:
+                        if subject > total :
+                            self.add_error("posicion",f"El vehiculo {subject1} no puede tener mas de {total} llantas totales.")
+                        elif subject > nrollantas :
+                            self.add_error("posicion",f"El vehiculo {subject1} solo tiene {nrollantas} llantas.")
+                    
+                    
+        return self.cleaned_data
+ 
+    
+    def clean_codigo(self):
+        data=self.cleaned_data["codigo"]
+        if self.instance.codigo!=data:
+            if Llanta.objects.filter(codigo=data).exists():
+                self.add_error("codigo",f" : El código {data} ya se encuentra registrado .")
         return data
 class VehiculoForm(forms.ModelForm):
     marca = forms.ModelChoiceField(queryset=MarcaVehiculo.objects.filter(eliminado=0,activo=True), required=True,
@@ -595,7 +630,7 @@ class VehiculoForm(forms.ModelForm):
             'placa': forms.TextInput( attrs={'class':'form-control'}),
             'ubicacion': forms.Select( attrs={'class':'form-control'}),
             'almacen': forms.Select( attrs={'class':'form-control'}),
-            'operacion': forms.TextInput( attrs={'class':'form-control'}),
+            'operacion': forms.Select( attrs={'class':'form-select'}),
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             'nro_llantas': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
             'nro_llantas_repuesto': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
@@ -611,3 +646,10 @@ class VehiculoForm(forms.ModelForm):
         self.fields['almacen'].queryset = Almacen.objects.filter(eliminado=False,activo=True)
         self.fields['almacen'].required = False
         self.fields['nro_llantas_repuesto'].required = False
+    
+    def clean_placa(self):
+        data=self.cleaned_data["placa"]
+        if self.instance.placa!=data:
+            if Vehiculo.objects.filter(placa=data).exists():
+                self.add_error("placa",f" : La placa {data} ya se encuentra registrada .")
+        return data

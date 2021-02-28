@@ -1,9 +1,23 @@
 function validatePunto(num) {
-    let val = num.includes(".")
-    if (val == false) {
-        return false
+    const r=/[0-9]\.[0-9]{2}$/;
+    if (r.test(num)) {
+        return true
     }
-    return true
+    return false
+}
+function validatePlaca(num) {
+    const r = /^([A-Z]{3})-([0-9]{3})$/;    
+    
+    if (r.test(num)) {
+        return true
+    }
+    return false
+}
+function validateAño(num) {
+    if(parseInt(num)>1900 && parseInt(num)<2010){
+        return true
+    }
+    return false
 }
 
 function startPunto(num) {

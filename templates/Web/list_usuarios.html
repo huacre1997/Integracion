@@ -33,7 +33,6 @@
                   <th>Usuario</th>
                   <th>Nombres</th>
                   <th>Apellidos</th>
-
                   <th>Perfil</th>
                   <th>Estado</th>
                   <th></th>
@@ -61,8 +60,8 @@
 
     TablaUsuarios = $("#TablaUsuarios").DataTable({
       responsive: true,
+      processing:true,
       "order": [],
-
       ajax: {
         url: "{% url 'Web:Usuarios' %}",
         type: "POST",
@@ -80,10 +79,11 @@
         "emptyTable": "No hay datos disponibles para esta tabla",
         "lengthMenu": "Mostrando _MENU_ entradas",
         "loadingRecords": "Cargando...",
-        "processing": "Procesando...",
+        "processing": '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem; role="status"><span class="sr-only">Loading...</span></div>',
         "zeroRecords": "No se encontraron resultados",
         "info": "Mostrando _START_ al _END_ de _TOTAL_ entradas",
         "infoEmpty": "Mostrando 0 al 0 de 0 entradas",
+        "loadingRecords": "Cargando...",
 
 
       },
@@ -105,7 +105,7 @@
         {
           "data": null,
           "defaultContent": '',
-          className: "text-center middle",
+          className: " middle",
           render: function (data, type, row) {
             return data.persona.apep + " " + data.persona.apem
           }
@@ -204,15 +204,14 @@
         title: "Cambiar Contraseña",
         content: "URL:../Usuario/changepassword/" + data.id,
         columnClass: 'col-xl-4 col-lg-4 col-md-8 col-sm-10',
-        icon: "fa fa-edit",
-        type: "green",
+        icon: "fas fa-sync-alt",
+        type: "blue",
         scrollToPreviousElement: true,
         scrollToPreviousElementAnimate: true,
-
         buttons: {
           Confirm: {
             text: 'Guardar cambios',
-            btnClass: 'btn-green',
+            btnClass: 'btn btn-primary',
 
             action: function url(e) {
 

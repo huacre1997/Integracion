@@ -1,0 +1,516 @@
+{% extends 'Web/base.html' %}
+{% block blockProcesos%}nav-item active{% endblock  %}
+{% block collapseProcesos %}collapse show{% endblock  %}
+{% block movimientos %}collapse-item active{% endblock  %}
+{% load static %}
+{% load base_extras %}
+{% load l10n %}
+{% block content %}
+
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Hoja de movimientos</h6>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-2"><label for="" class="form-label">Vehículo:</label></div>
+          <div class="col-lg-4">
+            <select name="" id="drop-vehiculos" class="form-select">
+              <option value="">Seleccione vehículo...</option>
+              {% for i in placa %}
+              <option value="{{i.id}}">{{i.placa}}</option>
+              {% endfor %}
+
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr class="bg-primary text-white">
+                    <th>Placa</th>
+                    <th>Tipo</th>
+
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Km</th>
+                    <th>Operador</th>
+                    <th>Observaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td id="td_placa"></td>
+                    <td id="td_tipo"></td>
+                    <td id="td_marca"></td>
+                    <td id="td_modelo"></td>
+                    <td id="td_km"></td>
+                    <td id="td_operador"></td>
+                    <td id="td_obs"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="sliders">
+
+          <div class="row">
+
+            <div class="col-lg-8" style="display: none;">
+
+            </div>
+            <div class="col-lg-12">
+              
+
+              <div  id="container-grid">
+                <div style="display: grid; grid-column-start: 18;grid-row-start: 1;grid-row-end: 6;">
+
+
+
+
+                  {% for i  in ubicaciones  %}
+                  <div id="inner-dropzone" data-id="{{i.id}}" class="dropzone d-flex flex-wrap justify-content-center "
+                    style="grid-column-start: 18;grid-row-start: {{forloop.counter}};"><i class="fa fa-car"
+                      style="font-size: 3em;margin-bottom: 0.4em;" aria-hidden="true"></i>{{i.descripcion}}</div>
+
+                  {% endfor %}
+
+                </div>
+
+
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/drag/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/auto-start/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/resize/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/modifiers/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/dev-tools/index.js"></script>
+<script src="{% static "vendor/select2/select2.min.js" %}"></script>
+<script>
+  $(document).ready(function () {
+
+    $('#drop-vehiculos').select2();
+    let td_placa = document.getElementById("td_placa")
+    let td_tipo = document.getElementById("td_tipo")
+    let td_modelo = document.getElementById("td_modelo")
+    let td_marca = document.getElementById("td_marca")
+    let td_km = document.getElementById("td_km")
+    let td_obs = document.getElementById("td_obs")
+    let operador = document.getElementById("td_operador")
+
+    var datos = {
+      items: {
+        vehiculo_id: "",
+        placa: "",
+        llanta_id: "",
+        llanta_codigo: "",
+        posicion: "",
+        ubicacion: "",
+        repuesto: ""
+
+      }
+    }
+    $('#drop-vehiculos').on("change", function (e) {
+      document.getElementById("container-grid").removeAttribute("class")
+      datos.items.vehiculo_id = ""
+      datos.items.placa = ""
+      datos.items.llanta_id = ""
+      datos.items.llanta_codigo = ""
+      datos.items.posicion = ""
+      datos.items.repuesto = ""
+
+      let data = {
+        id: e.target.options[e.target.selectedIndex].value
+      }
+      let deleteDrop = document.getElementsByClassName("drag-drop")
+      const removeElements = (elms) => elms.forEach(el => el.remove());
+
+      removeElements(document.querySelectorAll(".drag-drop"));
+      removeElements(document.querySelectorAll(".bordeado"));
+      if (document.getElementById("background_tipo") != null) {
+        document.getElementById("background_tipo").parentNode.removeChild(document.getElementById(
+          "background_tipo"))
+      }
+      td_placa.textContent = ""
+      td_tipo.textContent = ""
+      td_modelo.textContent = ""
+      td_marca.textContent = ""
+      td_km.textContent = ""
+      td_obs.textContent = ""
+      operador.textContent = ""
+
+      fetch("{% url 'Web:hoja-movimientos'%}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify(data)
+      }).then(data => data.json()).then(response => {
+        console.log(response);
+        document.getElementById("container-grid").classList.add(response.vehiculo.tipo_vehiculo.descripcion)
+        let backgroud_img = document.createElement("div")
+        backgroud_img.classList.add("img")
+        backgroud_img.id = "background_tipo"
+        backgroud_img.style.background = 'transparent url(' + response.vehiculo.tipo_vehiculo.croquis +
+          ') no-repeat center center'
+        document.getElementById("container-grid").append(backgroud_img)
+        datos.items.vehiculo_id = response.vehiculo.id
+        datos.items.placa = response.vehiculo.placa
+
+        td_placa.textContent = response.vehiculo.placa
+        td_tipo.textContent = response.vehiculo.tipo_vehiculo.descripcion
+        td_modelo.textContent = response.vehiculo.modelo_vehiculo.descripcion
+        td_marca.textContent = response.vehiculo.modelo_vehiculo["marca-vehiculo"].descripcion
+        td_km.textContent = response.vehiculo.km
+        td_obs.textContent = response.vehiculo.obs
+        operador.textContent = response.vehiculo.created_by.persona
+
+     
+        for (let i = 0; i < response.llantas.length; i++) {
+          if (response.llantas[i].repuesto == false) {
+          let parent=document.createElement("div")
+          let dragdrop = document.createElement("div")
+          dragdrop.addEventListener("dblclick", function () {
+            fetch("../../viewLlanta/" + response.llantas[i].id + "/").then(
+              $.confirm({
+                title: 'Detalles de la Llanta',
+                content: 'URL: ../../viewLlanta/' + response.llantas[i].id + "/",
+                type: 'dark',
+                theme: "material",
+                icon: 'fas fa-compact-disc',
+                animation: 'left',
+                closeAnimation: 'right',
+                columnClass: "col-md-6 col-md-offset-3",
+                typeAnimated: true,
+                buttons: {
+
+                  close: function () {}
+                }
+              })
+            )
+
+
+
+          })
+        
+       
+            parent.classList.add("drag", "bordeado",
+              `${response.vehiculo.tipo_vehiculo.descripcion}-ride${response.llantas[i].posicion}`)
+
+          
+          if (response.llantas[i].repuesto == true) {
+            dragdrop.classList.add("repuesto","verLlanta","drag-drop","yes-drop")
+          } else {
+            dragdrop.classList.add("llanta","verLlanta","drag-drop","yes-drop")
+
+          }
+          dragdrop.dataset.llanta = response.llantas[i].id
+          dragdrop.dataset.codigo = response.llantas[i].codigo
+          dragdrop.dataset.posicion = response.llantas[i].posicion
+          dragdrop.dataset.repuesto = response.llantas[i].repuesto
+          let dragdropSon = document.createElement("div")
+          dragdropSon.classList.add("d-flex", "justify-content-center", "flex-wrap", "align-items-center")
+          let posicion = document.createElement("div")
+          posicion.classList.add("w-100")
+          posicion.style.fontSize = "0.6em"
+          posicion.textContent = "Pos :" + response.llantas[i].posicion
+          let codigo = document.createElement("div")
+          codigo.style.fontSize = "0.6em"
+          codigo.style.color = "#000"
+          codigo.textContent = response.llantas[i].codigo
+          dragdropSon.append(posicion)
+          dragdropSon.append(codigo)
+          dragdrop.append(dragdropSon)
+          parent.append(dragdrop)
+          document.getElementById("container-grid").append(parent)
+
+        }
+    
+        // let sectores=["Reencuache","Almacenes","Reparaciones","Scrap","Movimientos"]
+        // for (let i = 0; i < sectores.length; i++) {
+        //     let estado=document.createElement("div")
+        //     estado.id="inner-dropzone"
+        //     estado.style.gridColumnStart=18
+        //     estado.style.gridRowStart=i+1
+
+        //     estado.classList.add("dropzone","d-flex","flex-wrap","justify-content-center")
+        //     let icon=document.createElement("i")
+        //     icon.classList.add("fa","fa-car","grid-icon")
+        //     icon.after(i)
+        //     estado.append(icon)
+        //     document.getElementById("container-grid").append(estado)
+        // }
+      }
+      })
+    })
+    $('#dataTable').DataTable({
+      responsive: true,
+      "searching": false,
+      "paging": false,
+      "ordering": true,
+      "info": false
+    });
+
+    $("#btnBuscar").click(function () {
+      $('#frmlist').submit();
+      let spinner = $(this.currentTarget).find('span')
+      spinner.removeClass('d-none')
+      setTimeout(_ => spinner.addClass('d-none'), 2000)
+      $(this).html(
+        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...'
+      );
+      $(this).prop("disabled", true);
+    });
+    var drag_pos = {
+      x: 0,
+      y: 0
+    }
+
+    function dragging(e) {
+      drag_pos.x += e.dx;
+      drag_pos.y += e.dy;
+
+      e.target.style.transform = 'translate(' + drag_pos.x + 'px, ' + drag_pos.y + 'px)';
+    }
+
+    function dragged(e) {
+      drag_pos.x = 0;
+      drag_pos.y = 0;
+      e.target.style.transform = 'translate(0px, 0px)';
+      e.target.setAttribute('data-x', 0)
+      e.target.setAttribute('data-y', 0)
+      e.target.classList.remove("can-drop")
+    }
+
+    function dragMoveListener(event) {
+      var target = event.target
+      // keep the dragged position in the data-x/data-y attributes
+      var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+      var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+      // translate the element
+      target.style.webkitTransform =
+        target.style.transform =
+        'translate(' + x + 'px, ' + y + 'px)'
+
+      // update the posiion attributes
+      target.setAttribute('data-x', x)
+      target.setAttribute('data-y', y)
+    }
+    interact('.dropzone').dropzone({
+      // only accept elements matching this CSS selector
+      accept: '.yes-drop',
+      // Require a 75% element overlap for a drop to be possible
+      overlap: 0.75,
+
+      // listen for drop related events:
+
+      ondropactivate: function (event) {
+        // add active dropzone feedback
+        event.target.classList.add('drop-active')
+        console.log("ondropactivate");
+        // dragged(event.dragEvent)
+      },
+      ondragenter: function (event) {
+        var draggableElement = event.relatedTarget
+        var dropzoneElement = event.target
+
+        // feedback the possibility of a drop
+        dropzoneElement.classList.add('drop-target')
+        draggableElement.classList.add('can-drop')
+        // draggableElement.textContent = 'Enviar'
+        console.log("ondragenter");
+
+      },
+      ondragleave: function (event) {
+        // remove the drop feedback style
+        event.target.classList.remove('drop-target')
+        event.relatedTarget.classList.remove('can-drop')
+        // event.relatedTarget.textContent =event.relatedTarget.attributes[1].textContent
+        console.log("ondragleave");
+
+      },
+      ondrop: function (event) {
+        console.log(event);
+        event.relatedTarget.classList.add('can-drop')
+        let id = event.relatedTarget.dataset.llanta;
+        let codigo = event.relatedTarget.dataset.codigo;
+
+        let posicion = event.relatedTarget.dataset.posicion;
+        let repuesto = event.relatedTarget.dataset.repuesto;
+        datos.items.llanta_id = id
+        datos.items.llanta_codigo = codigo
+        datos.items.posicion = posicion
+        datos.items.ubicacion = event.currentTarget.dataset.id
+        datos.items.repuesto = repuesto
+        console.log(datos);
+        let url = " ../../desmontaje?" + new URLSearchParams({
+          llanta: datos.items.llanta_id,
+          codigo: datos.items.llanta_codigo,
+          posicion: datos.items.posicion,
+          vehiculo: datos.items.vehiculo_id,
+          placa: datos.items.placa,
+          ubicacion: datos.items.ubicacion,
+          repuesto: datos.items.repuesto,
+
+        })
+        console.log(datos);
+        fetch(url).then(
+          $.confirm({
+            title: 'Desmontaje de la Llanta',
+            content: 'URL:' + url,
+            type: 'dark',
+            theme: "material",
+            icon: 'fas fa-compact-disc',
+            animation: 'left',
+            closeAnimation: 'right',
+            columnClass: "col-lg-6 col-md-6 col-md-offset-3",
+            containerFluid: true, // this will add 'container-fluid' instead of 'container'
+          
+            typeAnimated: true,
+            buttons: {
+              guardar: {
+                btnClass: 'btn-success',
+                keys: ['enter', 'shift'],
+                action: function () {
+                  let form= this.$content[0].ownerDocument
+                  let id_llanta =form.getElementById("id_llanta")
+                  let profundidad = form.getElementById("id_profundidad")
+                  let km = form.getElementById("id_km")
+                  let estado = form.getElementById("id_estado")
+                  let obs = form.getElementById("id_obs")
+                  let data = new FormData(form.forms[1])
+                  let error=0
+                  if(km.value==""){
+                    form.getElementById("invalid_km").innerHTML="Este campo es requerido"
+                    km.classList.add("is-invalid")
+                    error=1
+                  }
+                  if(profundidad.value==""){
+                    form.getElementById("invalid_profundidad").innerHTML="Este campo es requerido"
+                    profundidad.classList.add("is-invalid")
+                    error=1
+
+                  }
+                   if(!validatePunto(profundidad.value)){
+                    form.getElementById("invalid_profundidad").innerHTML="Este campo debe tener un punto y 2 decimales."
+                    profundidad.classList.add("is-invalid")
+                    error=1
+
+                  }
+                  if(obs.value==0){
+                    form.getElementById("invalid_obs").innerHTML="Este campo es requerido"
+                    obs.classList.add("is-invalid")
+                    error=1
+
+                  }
+                  if(estado.value==0){
+                    form.getElementById("invalid_estado").innerHTML="Este campo es requerido"
+                    estado.classList.add("is-invalid")
+                    error=1
+
+                  }
+                  if(error==0){
+                                      fetch('{% url "Web:ver-desmontaje" %}', {
+                    method: "POST",
+                    headers: {
+                      'X-CSRFToken': csrftoken
+                    },
+                    body: data
+
+                  }).then(data => data.json()).then(response => {
+                    console.log(response);
+                    if (response.status == 200) {
+                      const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                          toast.addEventListener('mouseenter', Swal.stopTimer)
+                          toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                      })
+
+                      Toast.fire({
+                        icon: 'success',
+                        title: 'Operacion realizada correctamente'
+                      })
+                      this.close()
+                      event.relatedTarget.parentNode.removeChild(event.relatedTarget)
+
+                    }else{
+                      notificacion(2000,"Ha ocurrido un error!","error")
+                    }
+                  })
+                  }else{
+                                          notificacion(20000,"Revise los campos!","error")
+
+                  }
+                  return false
+                }
+              },
+              close: function () {
+                dragged(event.dragEvent)
+                datos.items.llanta_id = ""
+                datos.items.llanta_codigo = ""
+                datos.items.posicion = ""
+              }
+            }
+          })
+        )
+
+      },
+      ondropdeactivate: function (event) {
+        console.log("ondeactivate");
+        if (!event.relatedTarget.classList.contains('can-drop')) {
+          dragged(event.dragEvent)
+
+        }
+
+
+        event.target.classList.remove('drop-active')
+        event.target.classList.remove('drop-target')
+
+      }
+    })
+
+    interact('.drag-drop')
+      .draggable({
+        inertia: true,
+        {% comment %} modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+            endOnly: true
+          })
+        ], {% endcomment %}
+        autoScroll: true,
+        // dragMoveListener from the dragging demo above
+        listeners: {
+          move: dragMoveListener,
+
+        }
+      })
+  });
+</script>
+{% endblock %}

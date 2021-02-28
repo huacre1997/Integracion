@@ -1,1 +1,112 @@
-<h1>DESMONTAJE</h1>
+<div class="container">
+    <form id="form_desmontaje" method="POST" action="">
+        <div class="form-row">
+            <div class="form-group col-lg-6">
+                <input type="hidden" name="repuesto"  id="id_repuesto" value="{{obj.repuesto}}">
+
+                <input type="hidden" name="vehiculo"  id="id_vehiculo" value="{{obj.vehiculo}}">
+
+                <label for="">Unidad</label>
+                <input disabled type="text" value="{{obj.placa}}" name=""  class="form-control">
+    
+            </div>
+            <div class="form-group col-lg-6">
+                <input type="hidden" name="llanta" value="{{obj.llanta}}" id="id_llanta">
+                <label for="">Llanta</label>
+                <input disabled type="text" value="{{obj.codigo}}"  name="llanta"  class="form-control">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-lg-6">
+                <label for="">Posicion</label>
+                <input readonly type="text"  value="{{obj.posicion}}" name="posicion" id="id_posicion" class="form-control">
+            </div>
+            <div class="form-group col-lg-6">
+                <label for="">Kilometros</label>
+                <input  type="number" min="0" value="" name="kilometros" id="id_km" class="form-control">
+                                <div class="invalid-feedback" id="invalid_km"></div>
+
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-lg-6">
+                <label for="">Profundidad</label>
+                <input  type="number" name="profundidad" id="id_profundidad" class="form-control">
+                <div class="invalid-feedback" id="invalid_profundidad"></div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label for="">Fecha</label>
+                <input disabled type="text"  id="id_fecha" value="{% now 'd-m-Y' %}" class="form-control">
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="">Condición</label>
+            <select name="estado" id="id_estado" class="form-select">
+                <option value="0">Seleccione condicion...</option>
+                {% for i in condicion  %}
+                <option value="{{i.id}}">{{i.descripcion}}</option>
+                {% endfor %}
+    
+            </select>
+                            <div class="invalid-feedback" id="invalid_estado"></div>
+
+        </div>
+        <br>
+        <div class="form-row mb-5">
+            <label for="">Observaciones</label>
+            <select name="obs" id="id_obs" class="form-select">
+                <option value="0">Seleccione Observacion...</option>
+                {% for i in obs  %}
+                <option value="{{i.0}}">{{i.1}}</option>
+                {% endfor %}
+            </select>
+                            <div class="invalid-feedback" id="invalid_obs"></div>
+
+        </div>
+        <input type="hidden" name="ubicacion" value="{{obj.ubicacion}}">
+    </form>
+</div>
+<script>
+document.getElementById("id_km").addEventListener('input', function (event) {
+    document.getElementById("id_km").classList.remove("is-invalid")
+
+})
+document.getElementById("id_obs").addEventListener('change', function (event) {
+    document.getElementById("id_obs").classList.remove("is-invalid")
+
+})
+document.getElementById("id_estado").addEventListener('change', function (event) {
+    document.getElementById("id_estado").classList.remove("is-invalid")
+
+})
+  document.getElementById("id_profundidad").addEventListener('input', function (event) {
+
+    let profundidad = document.getElementById("id_profundidad").value
+    let validate = validatePunto(profundidad)
+
+    if (profundidad.trim() == "") {
+      console.log("if");
+      document.getElementById("id_profundidad").classList.remove("is-invalid")
+      document.getElementById("invalid_profundidad").innerHTML = "Este campo es requerido."
+    } else
+    if (profundidad.trim().startsWith(".")) {
+      console.log("if stars");
+      document.getElementById("id_profundidad").classList.remove("is-invalid")
+      document.getElementById("invalid_profundidad").innerHTML = ""
+    } else {
+      if (validate) {
+        console.log("validate if fuera del form");
+        document.getElementById("id_profundidad").setCustomValidity("")
+        document.getElementById("id_profundidad").classList.remove("is-invalid")
+      } else {
+        console.log("validate else fuera del form");
+        document.getElementById("id_profundidad").classList.add("is-invalid")
+        document.getElementById("invalid_profundidad").innerHTML = "Este campo debe tener 2 decimales y un punto."
+        document.getElementById("id_profundidad").setCustomValidity("Este campo debe tener 2 decimales y un punto.")
+
+
+      }
+    }
+
+
+  });</script>
