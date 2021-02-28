@@ -184,8 +184,8 @@
         td_km.textContent = response.vehiculo.km
         td_obs.textContent = response.vehiculo.obs
         operador.textContent = response.vehiculo.created_by.persona
-
-     
+          
+        
         for (let i = 0; i < response.llantas.length; i++) {
           if (response.llantas[i].repuesto == false) {
           let parent=document.createElement("div")
@@ -213,7 +213,7 @@
 
           })
         
-       
+          
             parent.classList.add("drag", "bordeado",
               `${response.vehiculo.tipo_vehiculo.descripcion}-ride${response.llantas[i].posicion}`)
 
