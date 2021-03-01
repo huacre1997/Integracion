@@ -128,6 +128,9 @@ urlpatterns = [
     path('viewRenova/', views.view_renova, name='view-renova'),
     path('viewLlanta/<int:pk>/', views.DetalleLlantaView.as_view(), name='ver-llanta'),
     path('desmontaje/', views.DesmontajeLlantaView.as_view(), name='ver-desmontaje'),
+    path('montaje/', views.MontajeLlantasView.as_view(), name='ver-montaje'),
+    path('searchLlanta/', views.LlantaSearch, name='search-llanta'),
+
     path('hoja-movimientos/', views.HojaDeMovimientosView.as_view(), name='hoja-movimientos'),
     path('inspeccion-llantas/', views.InspeccionLlantasView.as_view(), name='inspeccion-llantas'),
 

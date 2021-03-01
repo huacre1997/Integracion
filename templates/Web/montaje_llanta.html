@@ -1,8 +1,8 @@
 <div class="container">
-    <form id="form_desmontaje" method="POST" action="">
+    <form id="form_montaje" method="POST" action="">
         <div class="form-row">
             <div class="form-group col-lg-6">
-                <input type="hidden" name="repuesto"  id="id_repuesto" value="{{obj.repuesto}}">
+                <input type="hidden" name="repuesto"  value="{{obj.repuesto}}">
 
                 <input type="hidden" name="vehiculo"  id="id_vehiculo" value="{{obj.vehiculo}}">
 
@@ -11,56 +11,71 @@
     
             </div>
             <div class="form-group col-lg-6">
-                <input type="hidden" name="llanta" value="{{obj.llanta}}" id="id_llanta">
-                <label for="">Llanta</label>
-                <input disabled type="text" value="{{obj.codigo}}"  name="llanta"  class="form-control">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-lg-6">
                 <label for="">Posicion</label>
                 <input readonly type="text"  value="{{obj.posicion}}" name="posicion" id="id_posicion" class="form-control">
             </div>
-            <div class="form-group col-lg-6">
-                <label for="">Kilometros</label>
-                <input  type="text"  value="" name="kilometros" id="id_km" class="form-control">
-            </div>
+         
         </div>
         <div class="form-row">
+          <div class="form-group col-lg-6">
+                <label for="">Fecha</label>
+                <input disabled type="text"  id="id_fecha" value="{% now 'd-m-Y' %}" class="form-control">
+            </div>
+             <div class="form-group col-lg-6">
+                <label for="">Llanta</label>
+                    <div class="input-group mb-3">
+
+                      <input disabled type="text"  class="form-control" id="id_neu">
+                      <input type="hidden" name="llanta"  id="id_llanta">
+                      <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
+                          aria-hidden="true"></i></button>
+                      <div class="invalid-feedback" id="invalid_llanta">Este campo es requerido.</div>
+
+                    </div>
+            </div>
+      
+        </div>
+        <div class="form-row">
+            <div class="form-group col-lg-6">
+                <label for="">Kilometros</label>
+                <input  type="text"  value="0" name="kilometros" id="id_km" class="form-control">
+                <div class="invalid-feedback" id="invalid_km"></div>
+
+            </div>
             <div class="form-group col-lg-6">
                 <label for="">Profundidad</label>
                 <input  type="text" name="profundidad" id="id_profundidad" class="form-control">
                 <div class="invalid-feedback" id="invalid_profundidad"></div>
             </div>
-            <div class="form-group col-lg-6">
-                <label for="">Fecha</label>
-                <input disabled type="text"  id="id_fecha" value="{% now 'd-m-Y' %}" class="form-control">
-            </div>
+          
         </div>
-        <div class="form-row">
-            <label for="">Condición</label>
-            <select name="estado" id="id_estado" class="form-select">
-                <option value="0">Seleccione condicion...</option>
-                {% for i in condicion  %}
-                <option value="{{i.id}}">{{i.descripcion}}</option>
-                {% endfor %}
-    
-            </select>
-        </div>
-        <br>
-        <div class="form-row">
-            <label for="">Observaciones</label>
-            <select name="obs" id="id_obs" class="form-select">
-                <option value="0">Seleccione Observacion...</option>
-                {% for i in obs  %}
-                <option value="{{i.0}}">{{i.1}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <input type="hidden" name="ubicacion" value="{{obj.ubicacion}}">
+       
+  
     </form>
 </div>
 <script>
+
+    $("#btnSearch").click(function (e) {
+
+      e.preventDefault();
+      searchLlanta = $.confirm({
+        title: 'Buscar Llanta +',
+        icon: "fa fa-search-plus",
+        type: "blue",
+        containerFluid: true,
+        content: "URL:{% url 'Web:search-llanta'%}",
+        theme: "material",
+        columnClass: 'col-md-12 col-lg-8',
+
+        buttons: {
+      
+          cerrar: function () {
+            //close
+          },
+        }
+      });
+
+    });
   document.getElementById("id_profundidad").addEventListener('input', function (event) {
 
     let profundidad = document.getElementById("id_profundidad").value

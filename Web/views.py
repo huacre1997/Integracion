@@ -2199,8 +2199,12 @@ def getVehiculo(request):
 def AnchoBandaRenovaSearch(request):
     template_name="Web/buscarrenova.html"
     product=Renovadora.objects.all()
-
     contexto={"obj":product}
+    return render(request,template_name,contexto)
+def LlantaSearch(request):
+    template_name="Web/buscarLlanta.html"
+    llantas=Llanta.objects.exclude(ubicacion=None,activo=True,eliminado=False)
+    contexto={"obj":llantas}
     return render(request,template_name,contexto)
 def view_condicion(request):
     template_name="Web/condicion.html"
@@ -2297,17 +2301,69 @@ class DesmontajeLlantaView(LoginRequiredMixin,TemplateView):
             print(e)
             messages.error(self.request, 'Ha ocurrido un error.')
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
+class MontajeLlantasView(LoginRequiredMixin,TemplateView):
+    template_name = "Web/montaje_llanta.html"
+    def get(self,request,*args, **kwargs):
+        estado=EstadoLlanta.objects.all().values("id","descripcion")
+        print(f'el get esta en {request.GET}')
+        context={"obj":request.GET}
+        return render(self.request,self.template_name,context)
+    def post(self,request,*args, **kwargs):
+        print(request.POST)
+        try:
+            llanta=Llanta.objects.filter(id=request.POST["llanta"])
+            if llanta.exists():
+                with transaction.atomic():
+                    if request.POST["repuesto"]=="1":
+                        rep=True
+                        pos="R"
+                    else:
+                        rep=False
+                        pos=request.POST["posicion"]
+                    objeto=llanta.first()
+                    objeto.ubicacion_id=None
+
+                    objeto.vehiculo_id=request.POST["vehiculo"]
+                    objeto.repuesto=rep
+                    objeto.posicion=request.POST["posicion"]
+
+                    objeto.save()
+                    historial=HistorialLLantas()
+                    historial.llanta=objeto
+                    historial.km=request.POST["kilometros"]
+                    historial.posicion=pos
+                  
+                    historial.vehiculo_id=request.POST["vehiculo"]
+                    historial.profundidad=request.POST["profundidad"]
+                    historial.created_by=self.request.user
+                    historial.ubicacion_id=None
+                    historial.save()
+                    response={"status":200,"id":objeto.id,"codigo":objeto.codigo,"posicion":request.POST["posicion"]}
+            else:
+                response={"status":500,"message":"Esa llanta no existe."}
+
+            return JsonResponse(response,safe=False)
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Ha ocurrido un error.')
+            return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 class HojaDeMovimientosView(LoginRequiredMixin,TemplateView):
     template_name="Web/hoja_movimientos.html"   
 
     def post(self,request,*args, **kwargs):
         data=[]
         post = json.loads(request.body.decode("utf-8"))
-        qs = Vehiculo.objects.get(id=post["id"]).toJSON()
-        nm = Llanta.objects.filter(vehiculo=post["id"]).order_by("posicion")
-        for i in nm:
-           data.append(i.toJSON2())
-        return JsonResponse({"vehiculo":qs,"llantas":data},safe=False, content_type='application/json')
+
+        if(post["id"]!=""):
+            qs = Vehiculo.objects.get(id=post["id"]).toJSON()
+            nm = Llanta.objects.filter(vehiculo=post["id"]).order_by("posicion")
+            for i in nm:
+                lala=i.toJSON2()
+                data.append(lala)   
+
+            return JsonResponse({"status":200,"vehiculo":qs,"llantas":data},safe=False, content_type='application/json')
+        return JsonResponse({"status":303},safe=False, content_type='application/json')
+
     def get_context_data(self, **kwargs):
         context = super(HojaDeMovimientosView, self).get_context_data(**kwargs)
         context["placa"]=Vehiculo.objects.all().values("id","placa")

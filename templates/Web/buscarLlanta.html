@@ -6,21 +6,28 @@
                     <table class="table  table-hover" id="tablaSearch" style="width: 100%;">
                         <thead>
                             <th>#</th>
-                                 <th>Descripción</th>
-                               
-                                <th>Diseño</th>
+                                 <th>Código</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Medida</th>
+
+                                <th>Ubicación</th>
                             <th class="all">Acciones</th>
                         </thead>
                         <tbody>
                             {% for item in obj %}
                             <tr>
-                                <td class="id">{{item.id}}</td>
-                                 <td>{{item.nombre}}</td>
-                                <td>{{item.diseño}}</td>
-                        
+                                <td></td>
+                                <td class="id">{{item.codigo}}</td>
+                                 <td>{{item.marca_llanta}}</td>
+                                <td>{{item.modelo_llanta}}</td>
+                                <td>{{item.medida_llanta}}</td>
+
+                                    <td>{{item.ubicacion}}</td>
+
                                 <td>
                                     <button
-                                        onclick="seleccionarRenovadora({{item.id}},'{{item.nombre}}')"
+                                        onclick="seleccionarRenovadora({{item.id}},'{{item.codigo}}')"
                                         class="btn btn-warning" id="btnselect"><i
                                             class="far fa-hand-pointer"></i></button>
                                 </td>
@@ -34,9 +41,11 @@
         </div>
 {% block bottom_scripts %}
 <script>
+  var tablaLlanta
     $(document).ready(function () {
-        $("#tablaSearch").DataTable({
-      responsive: true,
+              responsive: true,
+
+        tablaLlanta= $("#tablaSearch").DataTable({
             "lengthMenu": [
                 [5, 10, 25, 50, -1],
                 [5, 10, 25, 50, "All"]
@@ -44,15 +53,20 @@
         })
  
 
+   tablaLlanta.on( 'order.dt search.dt', function () {
+        tablaLlanta.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i+1;
+        } );
+    } ).draw();
        });
 
        
     function seleccionarRenovadora(id,  descripcion) {
         console.log("aea")
-        $("#id_renova").val(descripcion)
-                $("#id_renovadora").val(id)
+        $("#id_neu").val(descripcion)
+                $("#id_llanta").val(id)
 
-        searchrenova.close()
+        searchLlanta.close()
         
 
     }

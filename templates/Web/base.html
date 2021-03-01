@@ -33,6 +33,7 @@
 
 <link href='https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap5.min.css' rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
 
 </head>
 <style>
@@ -266,7 +267,7 @@ textarea, .vTextField {
 
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
-        {% comment %} <button class="rounded-circle border-0" id="sidebarToggle"></button> {% endcomment %}
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
       </div>
 
     </ul>
@@ -450,20 +451,30 @@ textarea, .vTextField {
   <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
   
   <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/drag/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/auto-start/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/resize/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/modifiers/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/dev-tools/index.js"></script>
   <!-- Core plugin JavaScript-->
   <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
-  <script src="{% static 'js/marca.js' %}"></script>
-    <script src="{% static 'js/validaciones.js' %}"></script>
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
   <script src="{% static "js/sb-admin-2.min.js" %}"></script>
   <script src="https://kit.fontawesome.com/0c4e8d2c3f.js" crossorigin="anonymous"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/sb-1.0.1/datatables.min.js"></script>
 <script src="http://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script src="{% static "vendor/select2/select2.min.js" %}"></script>
 
 <script src="https://cdn.datatables.net/plug-ins/1.10.13/sorting/datetime-moment.js"></script>
   <script src="{% static "js/jquery.datetimepicker.full.min.js" %}"></script>
+    <script src="{% static 'js/marca.js' %}"></script>
+    <script src="{% static 'js/validaciones.js' %}"></script>
+    <script src="{% static 'js/hoja_movimientos.js' %}"></script>
 {% comment %} <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js "></script>
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script> {% endcomment %}
   {% block bottom_scripts %}{% endblock %}

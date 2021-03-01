@@ -7,7 +7,6 @@
 {% load l10n %}
 
 {% block content %}
-<link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
 
 
 
@@ -83,7 +82,7 @@
             {% endif %}
           </div> -->
         <div class="table-responsive">
-          <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+          <table class="table table-bordered table-hover" id="tablaLlanta" width="100%" cellspacing="0">
             <thead>
               <tr>
                 <th>#</th>
@@ -143,7 +142,6 @@
 {% block bottom_scripts %}
 
 
-<script src="{% static "vendor/select2/select2.min.js" %}"></script>
 
 <script>
   
@@ -152,7 +150,7 @@
     $('.select2').select2();
     $.fn.dataTable.moment('DD/MM/YYYY');
 
-    var tablaLLantas = $('#dataTable').DataTable({
+    var tablaLLantas = $('#tablaLlanta').DataTable({
       responsive: true,
       stateSave: true,
 
