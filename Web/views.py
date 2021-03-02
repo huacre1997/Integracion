@@ -2170,8 +2170,64 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         context = super().get_context_data(**kwargs)
         id = self.kwargs['pk']
         obj = Vehiculo.objects.get(pk=id)
+        u=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
+        nrollantas=obj.nro_llantas
+        nrorepuesto=obj.nro_llantas_repuesto
+        pos ,posrep,faltantes ,faltantesrep= [],[],[],[]
+        sum=0
+        nro_llantas = len(u)
+        total=nrollantas+nrorepuesto
+        for i in range(0,nro_llantas):
+            if u[i].repuesto==True:
+                posrep.append(u[i].posicion)
+            else:
+                pos.append(u[i].posicion)
+        
+        
+        print(posrep)
+        print(pos)
+
+        for i in range(1,nrollantas+1):
+            if not i in pos:
+                faltantes.append(i)
+        
+        print(f'El numero de llantas es{nrollantas}')
+        print(f'El total de llantas es{total}')
+        for i in range(nrollantas+1,total+1):
+            print(i)
+            if not i in posrep:
+                faltantesrep.append(i)    
+        
+        print(f'Los faltante son{faltantes}')
+        print(f'Los faltante de repuesto son{faltantesrep}')
+        data1=[]
+        data2=[]
+        al={}
+        al2={}
+
+        if len(faltantes)!=0:
+            
+            for i in range(0,len(faltantes)):
+                al["posicion"]=faltantes[i]
+                al["id"]=i+nro_llantas
+                al["repuesto"]=False
+                data1.append(al)
+                al={}
+                sum=sum+1
+            print(f'la suma es {sum}')
+            print(data1)
+        for i in range(0,len(faltantesrep)):
+            al2["posicion"]=faltantesrep[i]
+            al2["id"]=i+sum+nro_llantas
+            al2["repuesto"]=True
+            data2.append(al2)
+            al2={}
+        print(data2)
         context['obj'] =obj
-        context["vehiculo"]=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
+        context["vehiculo"]=u
+        context["faltantesRe"]=data2
+        context["faltantes"]=data1
+
         context["ubicaciones"]=Ubicacion.objects.filter(eliminado=0,activo=True).values("id","descripcion")
 
         return context

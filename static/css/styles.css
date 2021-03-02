@@ -111,6 +111,27 @@ grid-row: 7/18;
   grid-column-start: 6;
 
 }
+.C4-ride19 {
+  grid-column-start: 7;
+
+}
+.C4-ride20 {
+  grid-column-start: 8;
+
+}
+
+.C4-ride21 {
+  grid-column-start: 9;
+
+}
+.C4-ride22 {
+  grid-column-start: 10;
+
+}
+.C4-ride23 {
+  grid-column-start: 11;
+
+}
 
 .C2RB1-ride1 {
   grid-column-start: 2;
@@ -475,7 +496,7 @@ table.dataTable tbody td {
 
 }
 
-.dropzone {
+.dropzone,.dropzone-2 {
   background-color: #29e;
   border: solid 4px black;
   font-size: 0.7em;
@@ -497,7 +518,7 @@ table.dataTable tbody td {
   border-style: solid;
 }
 
-.drag-drop {
+.drag-drop,.drag-drop-2 {
   /* display: inline-block; */
   /* min-width: 30px;
   padding: 1.5em; */
@@ -515,6 +536,10 @@ table.dataTable tbody td {
 }
 
 .drag-drop.can-drop {
+  color: #000;
+  background-color: #4e4;
+}
+.drag-drop-2.can-drop {
   color: #000;
   background-color: #4e4;
 }

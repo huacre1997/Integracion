@@ -1,5 +1,33 @@
 $(document).ready(function () {
+  const removeParam = (key, sourceURL) => {
+    var rtn = sourceURL.split("?")[0],
+      param,
+      params_arr = [],
+      queryString =
+        sourceURL.indexOf("?") !== -1 ? sourceURL.split("?")[1] : "";
+    if (queryString !== "") {
+      params_arr = queryString.split("&");
+      for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+        param = params_arr[i].split("=")[0];
+        if (param === key) params_arr.splice(i, 1);
+      }
+      rtn = rtn + "?" + params_arr.join("&");
+    }
+    return rtn.replace(/%2C/g, ",");
+  };
 
+  const returnURL = (num) => {
+    oldURL = window.location.href;
+
+
+      var url = new URL(oldURL);
+      url.searchParams.set("sc", num.toString()); // setting your param
+      var newUrl = url.href;
+      newUrl2 = removeParam("page", newUrl);
+
+      return newUrl2.replace(/%2C/g, ",");
+    }
+  
     $('#drop-vehiculos').select2();
     let td_placa = document.getElementById("td_placa")
     let td_tipo = document.getElementById("td_tipo")
@@ -22,6 +50,8 @@ $(document).ready(function () {
       }
     }
     $('#drop-vehiculos').on("change", function (e) {
+    
+
       document.getElementById("container-grid").removeAttribute("class")
       datos.items.vehiculo_id = ""
       datos.items.placa = ""
@@ -32,7 +62,12 @@ $(document).ready(function () {
 
       let data = {
         id: e.target.options[e.target.selectedIndex].value
+        
       }
+      oldURL=window.location.href
+      var url = new URL(oldURL);
+      url.searchParams.set("key", data.id); // setting your param
+      var newUrl = url.href;
       let deleteDrop = document.getElementsByClassName("drag-drop")
       const removeElements = (elms) => elms.forEach(el => el.remove());
 
@@ -54,6 +89,9 @@ $(document).ready(function () {
       td_obs.textContent = "-"
       operador.textContent = "-"
 
+      // If your expected result is "http://foo.bar/?x=1&y=2&x=42"
+
+      // If your expected result is "http://foo.bar/?x=42&y=2"
       fetch("../hoja-movimientos/", {
         method: "POST",
         headers: {
@@ -133,6 +171,7 @@ $(document).ready(function () {
       ).then(response => {
         console.log(response);
         if(response.status==200){
+
         document.getElementById("container-grid").classList.add(response.vehiculo.tipo_vehiculo.descripcion)
         // let backgroud_img = document.createElement("div")
         // backgroud_img.classList.add("img")
@@ -140,6 +179,8 @@ $(document).ready(function () {
         // backgroud_img.style.background = 'transparent url(' + response.vehiculo.tipo_vehiculo.croquis +
         //   ') no-repeat center center'
         // document.getElementById("container-grid").append(backgroud_img)
+        
+        
         let backgroud_img = document.createElement("div")
         backgroud_img.classList.add("img")
         let backgroud_img2 = document.createElement("div")

@@ -17,12 +17,16 @@
         <div class="container-fluid">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Vehiculos</h6>
+              <div class="d-flex justify-content-between">
+               <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Vehiculos</h6>
+                                                                                     {% if 'Web.add_vehiculo' in perm %}
+<a href="{% url 'Web:vehiculo' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nuevo Vehiculo</a>{% endif %}
+              </div>
+
             </div>
             <div class="card-body">
 
-                <form method="GET" action="" id="frmlist">
-                {% csrf_token %}
+                {% comment %} {% csrf_token %}
                   <div class="row">     
                     <div class="col-lg-3">
                       <label>Marca/Modelo</label>
@@ -66,17 +70,11 @@
                           <i class="fa fa-search"></i>Buscar
                         </button>
                     </div>
-                                                                       {% if 'Web.add_vehiculo' in perm %}
 
-                    <div class="col-lg-3">
-                      <label>&nbsp;</label></br>
-                      <a href="{% url 'Web:vehiculo' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nuevo Vehiculo</a>
-                    </div>
-{% endif %}
-                </div>
-                <br>                  
+                  
+                </div> {% endcomment %}
                 <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="tablaVehiculo" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th class="middle text-center" style="width: 5%;">#</th>
@@ -118,14 +116,14 @@
                         <a href="#" class="btn btn-danger btn-sm"   data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
                         
                       {% endif %}
-                        {% include 'Web/fragments/eliminar_vehiculo.html' %}
+                        {% comment %} {% include 'Web/fragments/eliminar_vehiculo.html' %} {% endcomment %}
                       </td>
                     </tr>
                     {% endfor %}
                   </tbody>
                 </table>
                 </div>
-                {% include 'Common/paginacion.html' %}
+                {% comment %} {% include 'Common/paginacion.html' %} {% endcomment %}
               </form>
 
             </div>
@@ -138,16 +136,107 @@
 
   <script src="{% static "vendor/select2/select2.min.js" %}"></script>
   <script>
+  var tablaVehiculo
     $(document).ready(function() {
       $('.select2').select2();
-      $('#dataTable').DataTable({
-            responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
-      });
+     var tablaVehiculo = $('#tablaVehiculo').DataTable({
+      responsive: true,
+      stateSave: true,
 
+
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+  
+    
+      searchBuilder: true,
+      searchBuilder: {
+        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      },
+  
+      "language": {
+
+        "processing": '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem; role="status"><span class="sr-only">Loading...</span></div>',
+        "lengthMenu": "Mostrar _MENU_ registros",
+        "zeroRecords": "No se encontraron resultados",
+        "emptyTable": "Ningún dato disponible en esta tabla",
+        "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+        "search": "Buscar:",
+        "infoThousands": ",",
+        "loadingRecords": "Cargando...",
+        "searchBuilder": {
+          "add": "Añadir condición",
+          "button": {
+            "0": "Constructor de búsqueda",
+            "_": "Constructor de búsqueda (%d)"
+          },
+          data: 'Columna',
+
+          title: {
+            0: 'Filtros',
+            _: 'Filtros (%d)'
+          },
+          value: 'Ingrese término de búsqueda.',
+          valueJoiner: 'hasta',
+          "clearAll": "Borrar todo",
+          "condition": "Condición",
+          "conditions": {
+            "date": {
+              "after": "Despues",
+              "before": "Antes",
+              "between": "Entre",
+              "empty": "Vacío",
+              "equals": "Igual a",
+              "not": "No",
+              "notBetween": "No entre",
+              "notEmpty": "No Vacio"
+            },
+            "number": {
+              "between": "Entre",
+              "empty": "Vacio",
+              "equals": "Igual a",
+              "gt": "Mayor a",
+              "gte": "Mayor o igual a",
+              "lt": "Menor que",
+              "lte": "Menor o igual que",
+              "not": "No",
+              "notBetween": "No entre",
+              "notEmpty": "No vacío"
+            },
+            "string": {
+              "contains": "Contiene",
+              "empty": "Vacío",
+              "endsWith": "Termina en",
+              "equals": "Igual a",
+              "not": "No",
+              "notEmpty": "No Vacio",
+              "startsWith": "Empieza con"
+            }
+          },
+        }
+      },
+
+      "initComplete": function (settings, json) {
+        $("select[name='dataTable_length']").removeClass("form-control").addClass("form-select")
+        // $(".dtsb-group > .dtsb-add").removeClass("btn-light").addClass("btn-primary")
+        console.log($("button[class='dtsb-add']"));
+
+
+      }
+
+    });
+      tablaVehiculo.searchBuilder.container().prependTo(tablaVehiculo.table().container());
+    tablaVehiculo.on('order.dt search.dt', function () {
+      tablaVehiculo.column(0, {
+        search: 'applied',
+        order: 'applied'
+      }).nodes().each(function (cell, i) {
+        cell.innerHTML = i + 1;
+      });
+    }).draw();
       $("#btnBuscar").click(function() {
         $('#frmlist').submit();
         let spinner = $(this.currentTarget).find('span')
