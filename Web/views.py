@@ -2403,6 +2403,10 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
                     detalle=DetalleInspeccion()
                     detalle.inspeccion=ins
                     detalle.posicion=request.POST["posicion"]
+                    if request.POST["repuesto"]=="1":
+                        detalle.repuesto=True
+                    else:
+                        detalle.repuesto=False
                     detalle.llanta=objeto
                     detalle.save()
                     response={"status":200,"id":objeto.id,"codigo":objeto.codigo,"posicion":request.POST["posicion"]}
