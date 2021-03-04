@@ -579,6 +579,10 @@ class Llanta(models.Model):
          aux = 0
       codigo = '{}{}'.format(ano, str((aux + 1)).zfill(6))
       return codigo
+   
+   
+
+   
 class HistorialLLantas(models.Model):
   
    llanta=models.ForeignKey(Llanta,on_delete=models.PROTECT,blank=True,null=True)

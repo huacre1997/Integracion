@@ -1801,7 +1801,6 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     permission_required=["Web.view_llanta"]
     success_url=reverse_lazy("Web:inicio")
     @method_decorator(csrf_exempt)
-    # @method_decorator(never_cache)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
  
@@ -1872,7 +1871,6 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
-        print(request.POST)
         try:
             form1=LlantaForm(request.POST)
 
@@ -1902,6 +1900,14 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
                 instance.created_by = self.request.user
                 instance.save()
+                if self.request.POST["ubicacion"]=="":
+                    obj,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=self.request.POST["vehiculo"])
+                    
+                    det=DetalleInspeccion()
+                    det.inspeccion=obj
+                    det.llanta_id=instance.id
+                    det.posicion=self.request.POST["posicion"]
+                    det.save()
                 return JsonResponse({"status":200,"url":reverse_lazy("Web:llanta")})
             else:
                 data = {
@@ -2399,7 +2405,7 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
                     historial.created_by=self.request.user
                     historial.ubicacion_id=None
                     historial.save()
-                    ins=InpeccionLlantas.objects.get(vehiculo_id=request.POST["vehiculo"])
+                    ins,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=request.POST["vehiculo"])
                     detalle=DetalleInspeccion()
                     detalle.inspeccion=ins
                     detalle.posicion=request.POST["posicion"]
@@ -2450,6 +2456,7 @@ class InspeccionLlantasView(LoginRequiredMixin,TemplateView):
             llanta=Llanta.objects.filter(vehiculo_id=post["id"])
             obj,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=post["id"])
             if p:
+                print("Entro al p ")
                 for i in llanta:
                     det=DetalleInspeccion()
                     det.inspeccion=obj
@@ -2521,7 +2528,6 @@ class InsepccionDetalleView(LoginRequiredMixin,UpdateView):
 
                 inspeccion.save()
                 inspeccion.detalleinspeccion_set.all().delete()
-                print(objeto)
 
                 for i in objeto:
                     data=DetalleInspeccion()
