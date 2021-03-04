@@ -456,7 +456,7 @@ class Vehiculo(models.Model):
    ano = models.IntegerField(null=True)
    modelo_vehiculo = models.ForeignKey(ModeloVehiculo, on_delete=models.PROTECT)
    tipo_vehiculo = models.ForeignKey(TipoVehiculo, on_delete=models.PROTECT)
-   ubicacion = models.ForeignKey(Ubicacion, on_delete=models.PROTECT, null=True)
+   ubicacion = models.CharField( max_length=50,null=False,blank=True)
    almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT)
    propiedad = models.CharField(max_length=50, null=True)
    placa = models.CharField(max_length=50, null=True, blank=True)
@@ -483,7 +483,6 @@ class Vehiculo(models.Model):
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')
       item["modelo_vehiculo"]=self.modelo_vehiculo.toJSON()
       item["tipo_vehiculo"]=self.tipo_vehiculo.toJSON()
-      item["ubicacion"]=self.ubicacion.toJSON()
 
       return item
 class Renovadora(models.Model):
@@ -581,10 +580,10 @@ class Llanta(models.Model):
       codigo = '{}{}'.format(ano, str((aux + 1)).zfill(6))
       return codigo
 class HistorialLLantas(models.Model):
-
+  
    llanta=models.ForeignKey(Llanta,on_delete=models.PROTECT,blank=True,null=True)
-   km=models.CharField( max_length=20)
-   profundidad=models.CharField(max_length=20)
+   km=models.CharField( max_length=20,blank=True,null=True)
+   profundidad=models.CharField(max_length=20,blank=True,null=True)
    vehiculo=models.ForeignKey(Vehiculo, verbose_name=_("Vehículo"), on_delete=models.PROTECT,blank=True,null=True)
    posicion=models.CharField(max_length=5,blank=True,null=True)
    estado=models.ForeignKey(EstadoLlanta,on_delete=models.PROTECT,blank=True,null=True)
@@ -600,4 +599,63 @@ class HistorialLLantas(models.Model):
    
    
 class InpeccionLlantas(models.Model):
-   pass
+     
+   vehiculo=models.ForeignKey(Vehiculo,on_delete=models.PROTECT,null=True,blank=True)
+   fech_ins=models.DateField(blank=True,null=True)
+   km_act=models.CharField(max_length=50,blank=True,null=True)
+   km_ult=models.CharField(max_length=50,blank=True,null=True)
+   km_re=models.CharField(max_length=50,blank=True,null=True)
+   operacion=models.CharField(choices=CHOICES_OPERACION, max_length=50,blank=True,null=True)
+   supervisor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_supervisor')
+   tecnico = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_tecnico')
+
+   fech_km_ant=models.DateField(blank=True,null=True)
+   created_at = models.DateTimeField(auto_now_add=True, null=True)
+   modified_at = models.DateTimeField(auto_now=True)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+import decimal
+class DetalleInspeccion(models.Model):
+  
+   inspeccion=models.ForeignKey(InpeccionLlantas, verbose_name=_(""), on_delete=models.PROTECT,blank=True,null=True)
+   llanta=models.ForeignKey(Llanta, verbose_name=_("Llanta"), on_delete=models.PROTECT,null=True,blank=True)
+   posicion=models.CharField(_("Posicion"), max_length=5,blank=True,null=True)
+   cubierta=models.CharField(choices=CHOICES_CUBIERTA_INSPECCION  ,max_length=10,blank=True,null=True)
+   rem1=models.IntegerField(blank=True,null=True,default=0)
+   rem2=models.IntegerField(blank=True,null=True,default=0)
+   rem3=models.IntegerField(blank=True,null=True,default=0)
+   rem_prom= models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True,default=0.00)
+   rem_max=models.CharField(_("Presión inicial"), max_length=10,blank=True,null=True)
+   rem_min=models.CharField(_("Presión inicial"), max_length=10,blank=True,null=True)
+   pres_ini=models.CharField(_("Presión inicial"), max_length=10,blank=True,null=True)
+   pres_fin=models.CharField(_("Presión final"), max_length=10,blank=True,null=True)
+   obs=models.CharField(_("Observación"), choices=CHOICES_OBSERVACION,max_length=50)
+   accion=models.CharField(_("Acción"),choices=CHOICES_ACCION,max_length=50)
+   repuesto=models.BooleanField(blank=True,null=True)
+   created_at = models.DateTimeField(auto_now_add=True, null=True)
+   modified_at = models.DateTimeField(auto_now=True)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["modified_at","created_by","modified_by","inspeccion"])
+      item["codigo"]=self.llanta.codigo
+      item["rem_prom"]=format(self.rem_prom,".2f")
+      return item
+   
+   
+@receiver(post_save, sender=DetalleInspeccion)
+def detalle_inspeccion(sender,instance,**kwargs):
+   print(sender)
+   print()
+   ex=Llanta.objects.filter(pk=instance.llanta.id).first()
+   if ex:
+      print("if")
+      ex.ubicacion_id=None
+      ex.vehiculo=instance.inspeccion.vehiculo
+      ex.posicion=instance.posicion
+      ex.repuesto=instance.repuesto
+      ex.save()
+   else:
+      print("else")

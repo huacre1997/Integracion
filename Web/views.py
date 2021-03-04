@@ -9,7 +9,7 @@ from django.views.generic import FormView, CreateView, ListView, UpdateView,Deta
 from django.views.generic import FormView
 from django.contrib.auth.models import Group,Permission
 from .forms import (UserGroupForm,UserPasswordResetForm,LoginForm, PersonaForm, UsuarioForm,
-    UbicacionForm, MarcaRenovaForm, ModeloRenovaForm, AnchoBandaRenovaForm, 
+    UbicacionForm, MarcaRenovaForm, ModeloRenovaForm, AnchoBandaRenovaForm,InspeccionForm, 
     MarcaLlantaForm ,ModeloLlantaForm, MedidaLlantaForm, AlmacenForm, LugarForm, EstadoLlantaForm,
     TipoPisoForm, TipoServicioForm, MarcaVehiculoForm, ModeloVehiculoForm, LlantaForm, VehiculoForm,TipoVehiculoForm,CubiertaForm)
 from django.http.response import HttpResponseRedirect
@@ -28,7 +28,7 @@ import json
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.utils.decorators import method_decorator
 
-from .mixins import ValidateMixin,AdminPermission
+from .mixins import ValidateMixin
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from six import text_type
 from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
@@ -2348,6 +2348,10 @@ class DesmontajeLlantaView(LoginRequiredMixin,TemplateView):
                     historial.ubicacion_id=request.POST["ubicacion"]
 
                     historial.save()
+                    ins=InpeccionLlantas.objects.get(vehiculo_id=request.POST["vehiculo"])
+                    
+                    det=DetalleInspeccion.objects.get(inspeccion=ins,posicion=request.POST["posicion"])
+                    det.delete()
                     response={"status":200}
             else:
                 response={"status":500,"message":"Esa llanta no existe."}
@@ -2376,6 +2380,7 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
                     else:
                         rep=False
                         pos=request.POST["posicion"]
+                    
                     objeto=llanta.first()
                     objeto.ubicacion_id=None
 
@@ -2394,6 +2399,12 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
                     historial.created_by=self.request.user
                     historial.ubicacion_id=None
                     historial.save()
+                    ins=InpeccionLlantas.objects.get(vehiculo_id=request.POST["vehiculo"])
+                    detalle=DetalleInspeccion()
+                    detalle.inspeccion=ins
+                    detalle.posicion=request.POST["posicion"]
+                    detalle.llanta=objeto
+                    detalle.save()
                     response={"status":200,"id":objeto.id,"codigo":objeto.codigo,"posicion":request.POST["posicion"]}
             else:
                 response={"status":500,"message":"Esa llanta no existe."}
@@ -2415,6 +2426,7 @@ class HojaDeMovimientosView(LoginRequiredMixin,TemplateView):
             nm = Llanta.objects.filter(vehiculo=post["id"]).order_by("posicion")
             for i in nm:
                 lala=i.toJSON2()
+              
                 data.append(lala)   
 
             return JsonResponse({"status":200,"vehiculo":qs,"llantas":data},safe=False, content_type='application/json')
@@ -2427,3 +2439,119 @@ class HojaDeMovimientosView(LoginRequiredMixin,TemplateView):
         return context
 class InspeccionLlantasView(LoginRequiredMixin,TemplateView):
     template_name="Web/inspeccion_llantas.html"
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def post(self,request,*args, **kwargs):
+        try:
+            post = json.loads(request.body.decode("utf-8"))
+
+            llanta=Llanta.objects.filter(vehiculo_id=post["id"])
+            obj,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=post["id"])
+            if p:
+                for i in llanta:
+                    det=DetalleInspeccion()
+                    det.inspeccion=obj
+                    det.llanta_id=i.id
+                    det.save()
+            data=[]
+            for i in DetalleInspeccion.objects.filter(inspeccion=obj.id).order_by("llanta__posicion"):
+                data.append(i.toJSON())
+            
+        
+            
+            return JsonResponse({"response":data,"id":obj.id},safe=False)
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+   
+    def get_context_data(self, **kwargs):
+        context = super(InspeccionLlantasView, self).get_context_data(**kwargs)
+        context["placa"]=Vehiculo.objects.all().values("id","placa")
+        return context
+class InsepccionDetalleView(LoginRequiredMixin,UpdateView):
+    model=InpeccionLlantas
+    template_name="Web/inspeccion_detalles.html"
+    context_object_name="obj"
+    form_class=InspeccionForm
+   
+    def dispatch(self,request,*args, **kwargs):
+
+        return super().dispatch(request,*args,**kwargs)
+    def get_details_product(self):
+        data=[]
+        try:
+            for i in DetalleInspeccion.objects.filter(inspeccion=self.get_object().id):
+                item=i.toJSON()
+               
+                print(i.rem_prom)
+                data.append(item)
+        except:
+            pass
+        return data
+    def get(self,*args, **kwargs):
+        detail=DetalleInspeccion.objects.filter(inspeccion=self.get_object()).order_by("llanta__posicion")
+        user=Usuario.objects.filter(groups__name="Administrador").select_related("persona")
+        det=json.dumps(self.get_details_product())
+
+        context={"det":det,"user":user,"obj":self.get_object(),"form":self.form_class,"detail":detail,"obs":CHOICES_OBSERVACION,"accion":CHOICES_ACCION,"cubierta":CHOICES_CUBIERTA_INSPECCION,"operacion":CHOICES_OPERACION}
+        return render(self.request,self.template_name,context)
+    def post(self,*args, **kwargs):
+        try: 
+            with transaction.atomic():
+                print("1")
+                objeto=json.loads(self.request.POST["objeto"])
+                print("2")
+
+                inspeccion=self.get_object()
+                print("3")
+                print(self.request.POST["fech_ins"])
+                inspeccion.fech_ins=datetime.strptime(self.request.POST["fech_ins"], '%Y-%m-%d').date()
+                print("4")
+                inspeccion.km_act=self.request.POST["km_act"]
+                inspeccion.km_ult=self.request.POST["km_ult"]
+                inspeccion.fech_km_ant=datetime.strptime(self.request.POST["fech_km_ant"], '%Y-%m-%d').date()
+                inspeccion.km_re=self.request.POST["km_re"]
+                inspeccion.supervisor_id=self.request.POST["supervisor"]
+                inspeccion.tecnico_id=self.request.POST["tecnico"]
+                inspeccion.operacion=self.request.POST["operacion"]
+                print("5")
+
+                inspeccion.save()
+                inspeccion.detalleinspeccion_set.all().delete()
+                print(objeto)
+
+                for i in objeto:
+                    data=DetalleInspeccion()
+                    data.inspeccion_id=self.get_object().id
+                    data.llanta_id=i["llanta"]
+                    data.posicion=i["posicion"]
+                    data.cubierta=i["cubierta"]
+                    data.rem1=i["rem1"]
+                    data.rem2=i["rem2"]
+                    data.rem3=i["rem3"]
+                    data.rem_prom=i["rem_prom"]
+                    data.rem_max=i["rem_max"]
+                    data.rem_min=i["rem_min"]
+                    data.pres_fin=i["pres_fin"]
+                    data.pres_ini=i["pres_ini"]
+                    data.obs=i["obs"]
+                    if i["repuesto"]=="1":
+                        data.repuesto=True
+                    else:
+                        data.repuesto=False
+                    data.accion=i["accion"]
+                    data.save()
+                return JsonResponse({"response":200},safe=False)
+     
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Ha ocurrido un error.')
+            return HttpResponseRedirect(reverse_lazy("Web:inicio"))
+def AgregarInspeccion(request):
+    template_name="Web/inspeccion-agregar.html"
+    context={"obs":CHOICES_OBSERVACION,"accion":CHOICES_ACCION,"cubierta":CHOICES_CUBIERTA_INSPECCION}
+
+    return render(request,template_name,context)

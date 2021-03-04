@@ -50,6 +50,12 @@
                 [5, 10, 25, 50, -1],
                 [5, 10, 25, 50, "All"]
             ],
+                "initComplete": function (settings, json) {
+        $("select[name='dataTable_length']").removeClass("form-control").addClass("form-select")
+        // $(".dtsb-group > .dtsb-add").removeClass("btn-light").addClass("btn-primary")
+
+
+      }
         })
  
 

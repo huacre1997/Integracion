@@ -3,13 +3,11 @@
 
 from django import forms
 from .models import Usuario
-from Web.models import (Persona, Usuario, Ubicacion, ModeloRenova,
-    MarcaRenova, AnchoBandaRenova, MarcaLlanta, ModeloLlanta, MedidaLlanta,
-    Almacen, Lugar, EstadoLlanta, TipoServicio, TipoPiso, MarcaVehiculo, ModeloVehiculo, Vehiculo,
-    Llanta, TipoVehiculo,Departamento,Provincia,Distrito,CubiertaLlanta)
+from Web.models import *
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from django.contrib.auth.models import Group
+from django.conf import settings
 
 from django import forms
 from django.contrib.auth.forms import  PasswordResetForm, SetPasswordForm
@@ -628,7 +626,7 @@ class VehiculoForm(forms.ModelForm):
             'tipo_vehiculo': forms.Select( attrs={'class':'form-control'}),
             'propiedad': forms.TextInput( attrs={'class':'form-control'}),
             'placa': forms.TextInput( attrs={'class':'form-control'}),
-            'ubicacion': forms.Select( attrs={'class':'form-control'}),
+            'ubicacion': forms.TextInput( attrs={'class':'form-control'}),
             'almacen': forms.Select( attrs={'class':'form-control'}),
             'operacion': forms.Select( attrs={'class':'form-select'}),
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
@@ -642,7 +640,6 @@ class VehiculoForm(forms.ModelForm):
         self.fields['modelo_vehiculo'].queryset = ModeloVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['tipo_vehiculo'].queryset = TipoVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['obs'].required = False
-        self.fields['ubicacion'].queryset = Ubicacion.objects.filter(eliminado=False,activo=True)
         self.fields['almacen'].queryset = Almacen.objects.filter(eliminado=False,activo=True)
         self.fields['almacen'].required = False
         self.fields['nro_llantas_repuesto'].required = False
@@ -653,3 +650,14 @@ class VehiculoForm(forms.ModelForm):
             if Vehiculo.objects.filter(placa=data).exists():
                 self.add_error("placa",f" : La placa {data} ya se encuentra registrada .")
         return data
+class InspeccionForm(forms.ModelForm):
+
+    tecnico = forms.ModelChoiceField(queryset=Usuario.objects.filter(groups__name="Técnico"),empty_label="Seleccione técnico..",
+                                     widget=forms.Select( attrs={'class':'form-select'}))
+
+    class Meta:	
+        model = InpeccionLlantas
+        exclude=["vehiculo","eliminado","modified_at","created_at","modified_by"]
+        widgets = {
+            'operacion': forms.Select( attrs={'class':'form-control'}),
+        }

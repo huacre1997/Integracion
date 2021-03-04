@@ -77,10 +77,10 @@ $(document).ready(function () {
         document.getElementById("background_tipo").parentNode.removeChild(document.getElementById(
           "background_tipo"))
       }
-      if (document.getElementById("background_tipo2") != null) {
-        document.getElementById("background_tipo2").parentNode.removeChild(document.getElementById(
-          "background_tipo2"))
-      }
+      // if (document.getElementById("background_tipo2") != null) {
+      //   document.getElementById("background_tipo2").parentNode.removeChild(document.getElementById(
+      //     "background_tipo2"))
+      // }
       td_placa.textContent = "-"
       td_tipo.textContent = "-"
       td_modelo.textContent = "-"
@@ -173,43 +173,43 @@ $(document).ready(function () {
         if(response.status==200){
 
         document.getElementById("container-grid").classList.add(response.vehiculo.tipo_vehiculo.descripcion)
-        // let backgroud_img = document.createElement("div")
-        // backgroud_img.classList.add("img")
-        // backgroud_img.id = "background_tipo"
-        // backgroud_img.style.background = 'transparent url(' + response.vehiculo.tipo_vehiculo.croquis +
-        //   ') no-repeat center center'
-        // document.getElementById("container-grid").append(backgroud_img)
-        
-        
         let backgroud_img = document.createElement("div")
         backgroud_img.classList.add("img")
-        let backgroud_img2 = document.createElement("div")
-        backgroud_img2.classList.add("img2")
-        backgroud_img2.id = "background_tipo2"
-
         backgroud_img.id = "background_tipo"
-        if(response.vehiculo.tipo_vehiculo.id==1){
-          backgroud_img.style.background = "transparent url('../static/img/12._C4_Posición_x2X060z.png') no-repeat center center"
-          backgroud_img2.style.background = 'transparent url("../static/img/12.C4.png") no-repeat center center'
-
-        }else
-        if(response.vehiculo.tipo_vehiculo.id==2){
-          backgroud_img.style.background = "transparent url('../static/img/2._C2RB1_Posición_LGrukSR.png') no-repeat center center"
-          backgroud_img2.style.background = "transparent url('../static/img/2.C2RB1.png') no-repeat center center"
-
-        }else
-        if(response.vehiculo.tipo_vehiculo.id==3){
-          backgroud_img.style.background = "transparent url('../static/img/28._T2S2_Posición_3OVPjpv.png') no-repeat center center"
-          backgroud_img2.style.background = "transparent url('../static/img/28.T2S2.png') no-repeat center center"
-
-        }else
-        if(response.vehiculo.tipo_vehiculo.id==4){
-          backgroud_img.style.background = "transparent url('../static/img/21._8x4_Posición.png') no-repeat center center"
-          backgroud_img2.style.background = "transparent url('../static/img/21.8x4.png') no-repeat center center"
-    
-        }
+        backgroud_img.style.background = 'transparent url(' + response.vehiculo.tipo_vehiculo.croquis +
+          ') no-repeat center center'
         document.getElementById("container-grid").append(backgroud_img)
-        document.getElementById("container-grid").append(backgroud_img2)
+        
+        
+        // let backgroud_img = document.createElement("div")
+        // backgroud_img.classList.add("img")
+        // let backgroud_img2 = document.createElement("div")
+        // backgroud_img2.classList.add("img2")
+        // backgroud_img2.id = "background_tipo2"
+
+        // backgroud_img.id = "background_tipo"
+        // if(response.vehiculo.tipo_vehiculo.id==1){
+        //   backgroud_img.style.background = "transparent url('../static/img/12._C4_Posición_x2X060z.png') no-repeat center center"
+        //   backgroud_img2.style.background = 'transparent url("../static/img/12.C4.png") no-repeat center center'
+
+        // }else
+        // if(response.vehiculo.tipo_vehiculo.id==2){
+        //   backgroud_img.style.background = "transparent url('../static/img/2._C2RB1_Posición_LGrukSR.png') no-repeat center center"
+        //   backgroud_img2.style.background = "transparent url('../static/img/2.C2RB1.png') no-repeat center center"
+
+        // }else
+        // if(response.vehiculo.tipo_vehiculo.id==3){
+        //   backgroud_img.style.background = "transparent url('../static/img/28._T2S2_Posición_3OVPjpv.png') no-repeat center center"
+        //   backgroud_img2.style.background = "transparent url('../static/img/28.T2S2.png') no-repeat center center"
+
+        // }else
+        // if(response.vehiculo.tipo_vehiculo.id==4){
+        //   backgroud_img.style.background = "transparent url('../static/img/21._8x4_Posición.png') no-repeat center center"
+        //   backgroud_img2.style.background = "transparent url('../static/img/21.8x4.png') no-repeat center center"
+    
+        // }
+        document.getElementById("container-grid").append(backgroud_img)
+        // document.getElementById("container-grid").append(backgroud_img2)
 
 
 

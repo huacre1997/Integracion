@@ -11,7 +11,7 @@
   .img2{
     /* background:transparent url("../../documentos/documentos/croquis_vehiculo/WhatsApp_Image_2021-02-19_at_11.01.16_PM.jpeg") no-repeat center center; */
     
-    {% if obj.tipo_vehiculo.id == 1 %}
+   {% if obj.tipo_vehiculo.id == 1 %}
     background:transparent url("../../static/img/12.C4.png") no-repeat center center;
       {% elif obj.tipo_vehiculo.id == 2 %}
       background: transparent url('../../static/img/2.C2RB1.png') no-repeat center center;
@@ -19,10 +19,9 @@
       background:transparent url('../../static/img/28.T2S2.png') no-repeat center center;
       {% elif obj.tipo_vehiculo.id == 4 %}
       background:transparent url('../../static/img/21.8x4.png') no-repeat center center;
-      {% endif %}
+      {% endif %} 
 
-    {% comment %} background:transparent url("../../documentos/{{obj.tipo_vehiculo.croquis}}") no-repeat center center; {% endcomment %}
-
+    background:transparent url("../../documentos/{{obj.tipo_vehiculo.croquis}}") no-repeat center center;
 
  
 
@@ -31,7 +30,7 @@
   
   .img{
     
-    {% if obj.tipo_vehiculo.id == 1 %}
+ {% if obj.tipo_vehiculo.id == 1 %}
     background:transparent url('../../static/img/12._C4_Posición_x2X060z.png') no-repeat center center;
       {% elif obj.tipo_vehiculo.id == 2 %}
       background: transparent url('../../static/img/2._C2RB1_Posición_LGrukSR.png') no-repeat center center;
@@ -40,11 +39,12 @@
       {% elif obj.tipo_vehiculo.id == 4 %}
       background:transparent url('../../static/img/21._8x4_Posición.png') no-repeat center center;
     {% endif %}
-      
+       
 
 
 
- 
+   {% comment %} background:transparent url("../../documentos/{{obj.tipo_vehiculo.croquis}}") no-repeat center center;  {% endcomment %}
+
 
    
   }
@@ -161,7 +161,7 @@
               </div>
                   {% endfor %}
 
-                  <div style="display: grid; grid-column-start: 20;grid-row-start: 1;grid-row-end: 6;">
+                  <div style="display: grid; grid-column-start: 21;grid-row-start: 1;grid-row-end: 6;">
   
   
                   {% for i  in ubicaciones  %}
@@ -534,7 +534,7 @@ function dragged(e) {
                             })
 
                           } else {
-                            notificacion(20000, "Revise los campos!", "error")
+                            notificacion(2000, "Revise los campos!", "error")
 
                           }
                           return false

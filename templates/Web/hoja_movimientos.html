@@ -68,11 +68,11 @@
 
               </div>
               <div id="container-grid">
-                <div style="display: grid; grid-column-start: 20;grid-row-start: 1;grid-row-end: 6;">
+                <div style="display: grid; grid-column-start: 21;grid-row-start: 1;grid-row-end: 6;">
 
 
 
-                <div style="display: grid;grid-template-columns: repeat(20,1fr);">
+                <div style="display: grid;grid-template-columns: repeat(21,1fr);">
 
                   {% for i  in ubicaciones  %}
                   <div id="inner-dropzone" data-id="{{i.id}}" class="dropzone d-flex flex-wrap justify-content-center "
@@ -97,7 +97,14 @@
 {% endblock content %}
 
 {% block bottom_scripts %}
+  {% comment %} <script src="{% static 'js/interact.min.js' %}"></script>
 
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/drag/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/auto-start/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/resize/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/modifiers/index.js"></script>
+<script type="module" src="https://cdn.interactjs.io/v1.9.20/dev-tools/index.js"></script>
 <script src="{% static 'vendor/select2/select2.min.js' %}"></script>
+    <script src="{% static 'js/hoja_movimientos.js' %}"></script> {% endcomment %}
 
 {% endblock %}

@@ -91,11 +91,11 @@ textarea, .vTextField {
       <hr class="sidebar-divider my-0">
   
       <!-- Nav Item - Dashboard -->
-      <li class="nav-item active">
+      {% comment %} <li class="nav-item active">
         <a class="nav-link" href="index.html">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
-      </li>
+      </li> {% endcomment %}
 
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -451,7 +451,7 @@ textarea, .vTextField {
   <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
   
   <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.5/dist/interact.min.js"></script>
 
 <script type="module" src="https://cdn.interactjs.io/v1.9.20/actions/drag/index.js"></script>
 <script type="module" src="https://cdn.interactjs.io/v1.9.20/auto-start/index.js"></script>
