@@ -2040,20 +2040,14 @@ class LlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.delete_llanta"]
     
-    def post(self, request, *args, **kwargs):
-        try:
-            id = self.kwargs['pk']
-            obj = Llanta.objects.get(pk=id)
-            obj.modified_by=request.user
-            obj.eliminado = True
-            obj.save()
-            data={"response":200}
-            
-            return JsonResponse(data,safe=False)
-        except Exception as e:
-            print(e)
-            messages.error(self.request, 'Ha ocurrido un error.')
-            return HttpResponseRedirect(reverse_lazy("Web:inicio"))
+    def get(self, request, *args, **kwargs):
+        id_llanta = self.kwargs['pk']
+        llanta = Llanta.objects.get(pk=id_llanta)
+        llanta.modified_by=request.user
+        llanta.eliminado = True
+        llanta.save()
+        messages.success(self.request, 'Operación realizada correctamente.')
+        return HttpResponseRedirect(reverse('Web:llantas'))
 class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/vehiculos.html'
     model = Vehiculo
