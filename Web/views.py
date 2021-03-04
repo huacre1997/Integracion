@@ -2051,37 +2051,37 @@ class LlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
 class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/vehiculos.html'
     model = Vehiculo
-    paginate_by = 10
+    # paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_vehiculo"]
 
-    def get_queryset(self):
-        # import pdb; pdb.set_trace();
-        qs = super().get_queryset()
-        qs = qs.filter(eliminado=False)
-        modelo = self.request.GET.get('modelo','')
-        placa = self.request.GET.get('placa','')
-        fi = self.request.GET.get('fecha_inicio')
-        ff =self.request.GET.get('fecha_fin')
+    # def get_queryset(self):
+    #     # import pdb; pdb.set_trace();
+    #     qs = super().get_queryset()
+    #     qs = qs.filter(eliminado=False)
+    #     modelo = self.request.GET.get('modelo','')
+    #     placa = self.request.GET.get('placa','')
+    #     fi = self.request.GET.get('fecha_inicio')
+    #     ff =self.request.GET.get('fecha_fin')
         
-        if modelo:
-            qs = qs.filter(modelo_vehiculo__pk=modelo)
-        if placa:
-            qs = qs.filter(placa__icontains=placa)
+    #     if modelo:
+    #         qs = qs.filter(modelo_vehiculo__pk=modelo)
+    #     if placa:
+    #         qs = qs.filter(placa__icontains=placa)
         
-        if fi:
-            fi=datetime.strptime(fi, '%Y-%m-%d').date()
-            ff=datetime.strptime(ff, '%Y-%m-%d').date()
-            ff = ff + timedelta(days=1)
-            qs = qs.filter(created_at__range=(fi,ff))
+    #     if fi:
+    #         fi=datetime.strptime(fi, '%Y-%m-%d').date()
+    #         ff=datetime.strptime(ff, '%Y-%m-%d').date()
+    #         ff = ff + timedelta(days=1)
+    #         qs = qs.filter(created_at__range=(fi,ff))
         
-        return qs.order_by('-pk')
+    #     return qs.order_by('-pk')
 
     def get_context_data(self, **kwargs):
         # import pdb; pdb.set_trace()
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
+        # context['pages'] = self.paginate_by
         context['marcas'] = MarcaVehiculo.objects.filter(eliminado=False).order_by('descripcion')
         return context
 
