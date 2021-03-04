@@ -72,6 +72,15 @@ admin.site.register(TipoServicio, TipoServicioAdmin)
 class ModeloVehiculoAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(ModeloVehiculo, ModeloVehiculoAdmin)
+class LlantaAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Llanta, LlantaAdmin)
+class InspeccionADmin(admin.ModelAdmin):
+	pass
+admin.site.register(InpeccionLlantas, InspeccionADmin)
+class DetalleInspeccionadmin(admin.ModelAdmin):
+	pass
+admin.site.register(DetalleInspeccion, DetalleInspeccionadmin)
 """"
 class PermisoPerfilMenuOpcionAdmin(admin.ModelAdmin):
 	#form = UsuariosForm
