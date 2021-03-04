@@ -1,0 +1,158 @@
+<div class="container">
+    <form id="inspeccion-agregar-form">
+    <div class="form-row">
+        <div class="form-group col-lg-6">
+            <label for="">Posición</label>
+            <input type="number" class="form-control posicion" name="posicion" id="id_posicion">
+            <div class="invalid-feedback" id="invalid_posicion">Este campo es requerido.</div>
+
+        </div>
+        <div class="form-group col-lg-6">
+            <label for="">Llanta</label>
+                <div class="input-group mb-3">
+                    <input type="hidden" name="repuesto" class="repuesto" id="id_repuesto" >
+
+                  <input disabled type="text"  class="form-control" id="id_neu">
+                  <input type="hidden" name="llanta"  id="id_llanta">
+                  <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
+                      aria-hidden="true"></i></button>
+                  <div class="invalid-feedback" id="invalid_llanta">Este campo es requerido.</div>
+
+                </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-lg-6"><label for="">Cubierta</label>
+            <select name="cubierta" id="id_cubierta" class="form-select">
+                <option value="0">Seleccione Cubierta...</option>
+                {% for i in cubierta  %}
+                <option value="{{i.0}}">{{i.1}}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback" id="invalid_cubierta">Este campo es requerido.</div>
+
+        </div>
+        <div class="form-group col-lg-6">
+            <label for="">Remanente 1</label>
+            <input type="number" class="form-control" name="rem_1" id="id_rem_1">
+            <div class="invalid-feedback" id="invalid_rem1">Este campo es requerido.</div>
+
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-lg-6">
+            <label for="">Remanente 2</label>
+            <input type="number" class="form-control" name="rem_2" id="id_rem_2">
+            <div class="invalid-feedback" id="invalid_rem2">Este campo es requerido.</div>
+
+        </div>
+        <div class="form-group col-lg-6">
+            <label for="">Remanente 3</label>
+            <input type="number"  class="form-control" name="rem_3" id="id_rem_3">
+            <div class="invalid-feedback" id="invalid_rem3">Este campo es requerido.</div>
+
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-lg-6">
+            <label for="">Promedio</label>
+            <input  readonly type="number" class="form-control" name="rem_prom" id="id_rem_prom">
+            <div class="invalid-feedback" id="invalid_rem_prom">Este campo es requerido.</div>
+
+        </div>
+        <div class="form-group col-lg-6">
+            <label for="">Remanente Máximo</label>
+            <input type="number" class="form-control" name="rem_max" id="id_rem_max">
+            <div class="invalid-feedback" id="invalid_rem_max">Este campo es requerido.</div>
+
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-lg-6">
+            <label for="">Remanente Mínimo</label>
+            <input type="number" class="form-control" name="rem_min" id="id_rem_min">
+            <div class="invalid-feedback" id="invalid_rem_min">Este campo es requerido.</div>
+
+        </div>
+        <div class="form-group col-lg-6">
+            <label for="">Presión Inicial</label>
+            <input type="number" class="form-control" name="pres_ini" id="id_pres_ini">
+            <div class="invalid-feedback" id="invalid_pres_ini">Este campo es requerido.</div>
+
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-lg-6">
+            <label for="">Presión Final</label>
+            <input type="number" class="form-control" name="pres_fin" id="id_pres_fin">
+            <div class="invalid-feedback" id="invalid_pres_fin">Este campo es requerido.</div>
+
+        </div>
+        <div class="form-group col-lg-6"><label for="">Observación</label>
+            <select name="obs" id="id_obs" class="form-select">
+                <option value="0">Seleccione Observacion...</option>
+                {% for i in obs  %}
+                <option value="{{i.0}}">{{i.1}}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback" id="invalid_obs">Este campo es requerido.</div>
+
+        </div>
+
+    </div>
+    <div class="form-row mb-4">
+        <div class="form-group col-lg-6">
+            <label for="">Acción a tomar</label>
+            <select name="accion" id="id_accion" class="form-select">
+                <option value="0">Seleccione Acción...</option>
+                {% for i in accion  %}
+                <option value="{{i.0}}">{{i.1}}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback" id="invalid_accion">Este campo es requerido.</div>
+
+        </div>
+    </div>
+</form>
+</div>
+<script>
+    $(document).ready(function () {
+        let rem1=document.getElementById("id_rem_1")
+    let rem2=document.getElementById("id_rem_2")
+    let rem3=document.getElementById("id_rem_3")
+    let prom=document.getElementById("id_rem_prom")
+    rem1.addEventListener("input",function (param) {
+ let promedio=(parseInt(rem1.value)+parseInt(rem2.value)+parseInt(rem3.value))/3        
+ prom.value=promedio.toFixed(2)      
+      })
+    rem2.addEventListener("input",function (param) {
+     let promedio=(parseInt(rem1.value)+parseInt(rem2.value)+parseInt(rem3.value))/3
+        prom.value=promedio.toFixed(2)   
+      })
+    rem3.addEventListener("input",function (param) {
+     let promedio=(parseInt(rem1.value)+parseInt(rem2.value)+parseInt(rem3.value))/3
+        prom.value=promedio.toFixed(2)      
+      })
+        $("#btnSearch").click(function (e) {
+
+e.preventDefault();
+searchLlanta = $.confirm({
+  title: 'Buscar Llanta +',
+  icon: "fa fa-search-plus",
+  type: "blue",
+  containerFluid: true,
+  content: "URL:{% url 'Web:search-llanta'%}",
+  theme: "material",
+  columnClass: 'col-md-12 col-lg-8',
+
+  buttons: {
+
+    cerrar: function () {
+      //close
+    },
+  }
+});
+
+});
+    });
+</script>
