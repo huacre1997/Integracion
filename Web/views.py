@@ -1904,6 +1904,10 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
                     obj,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=self.request.POST["vehiculo"])
                     
                     det=DetalleInspeccion()
+                    if "repuesto" in request.POST:
+                        det.repuesto=True
+                    else:
+                        det.repuesto=False
                     det.inspeccion=obj
                     det.llanta_id=instance.id
                     det.posicion=self.request.POST["posicion"]
