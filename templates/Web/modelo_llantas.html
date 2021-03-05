@@ -90,7 +90,14 @@
 						{% comment %} "searching": false, {% endcomment %}
 						{% comment %} "paging":   false, {% endcomment %}
 						"ordering": true,
-						"info":     false
+						"info":     false,
+                "initComplete": function (settings, json) {
+        $("select[name='dataTable_length']").removeClass("form-control").addClass("form-select")
+        // $(".dtsb-group > .dtsb-add").removeClass("btn-light").addClass("btn-primary")
+        console.log($("button[class='dtsb-add']"));
+
+
+      }
       });
 
       $("#btnBuscar").click(function() {

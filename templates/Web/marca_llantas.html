@@ -159,7 +159,10 @@
 
         // }
       },
+  "initComplete": function( settings, json ) {
+    $('select[name="dataTable_length"]').removeClass("form-control").removeClass("form-control-sm")
 
+  }
     });
     tablaMarcas.on( 'order.dt search.dt', function () {
         tablaMarcas.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
