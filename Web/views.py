@@ -2422,8 +2422,9 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
             print(e)
             messages.error(self.request, 'Ha ocurrido un error.')
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
-class HojaDeMovimientosView(LoginRequiredMixin,TemplateView):
+class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name="Web/hoja_movimientos.html"   
+    permission_required=["Web.view_historialllantas"]
 
     def post(self,request,*args, **kwargs):
         data=[]
@@ -2445,7 +2446,9 @@ class HojaDeMovimientosView(LoginRequiredMixin,TemplateView):
         context["placa"]=Vehiculo.objects.all().values("id","placa")
         context["ubicaciones"]=Ubicacion.objects.filter(eliminado=False,activo=True)
         return context
-class InspeccionLlantasView(LoginRequiredMixin,TemplateView):
+class InspeccionLlantasView(LoginRequiredMixin,ValidateMixin,TemplateView):
+    permission_required=["Web.view_inspeccionllantas"]
+
     template_name="Web/inspeccion_llantas.html"
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):

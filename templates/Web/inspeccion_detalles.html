@@ -543,6 +543,9 @@
                 obs.addEventListener("change",function (param) { obs.classList.remove("is-invalid")  })
                 accion.addEventListener("change",function (param) { accion.classList.remove("is-invalid")  })
                 form.getElementById("btnSearch").addEventListener("click",function (param) { form.getElementById("id_neu").classList.remove("is-invalid")  })
+                posicion.addEventListener("keyup",function (param) { 
+                  posicion.classList.remove("is-invalid") 
+                  })
 
                 rem1.addEventListener("keyup",function (param) { 
                   rem1.classList.remove("is-invalid") 

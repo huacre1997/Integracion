@@ -53,7 +53,7 @@
         </div>
         <div class="form-group col-md-4">
           <label for="id_nro_doc">Nro documento:</label>
-          <input disabled type="text" class="form-control" value="{% if persona %}{{persona.nro_doc}}{% endif %}" name="nro_doc"
+          <input readonly type="text" class="form-control" value="{% if persona %}{{persona.nro_doc}}{% endif %}" name="nro_doc"
             maxlength="15" required="" id="id_nro_doc">
                           <div class="invalid-feedback" id="invalid_doc">Este campo es requerido.</div>
 
@@ -482,8 +482,8 @@ jQuery('#openCalendar3').click(function(){
 
 
     $("#btnEditUser").on("click", function (e) {
-      de.showLoading(true)
       var id = $("#id").val()
+       de.showLoading()
 
       var paramaters = new FormData($('.needs-validation')[0])
       $.ajax({
@@ -493,14 +493,114 @@ jQuery('#openCalendar3').click(function(){
         dataType: "json",
         processData: false, // tell jQuery not to process the data
         contentType: false,
-        success: function (data) {
-          if (data["stat"] == "ok") {
+        success: function (response) {
+          console.log(response)
+          if (response["stat"] == "ok") {
             de.close()
             notificacion(1500, "Genial!", "success", "Persona guardada!")
           } else {
-            $(":text").keypress(function (e) {
-              $(this).removeClass("is-invalid")
-            });
+            de.hideLoading()
+                   if (response.error.apem) {
+                    document.getElementById("invalid_apem").innerHTML = response.error.apem[0]
+                    apem.classList.add("is-invalid")
+
+                  }
+                  if (response.error.apep) {
+                    document.getElementById("invalid_apep").innerHTML = response.error.apep[0]
+                    apep.classList.add("is-invalid")
+
+                  }
+                  if (response.error.nom) {
+                    document.getElementById("invalid_nom").innerHTML = response.error.nom[0]
+                    name.classList.add("is-invalid")
+
+                  }
+                  if (response.error.area) {
+                    document.getElementById("invalid_area").innerHTML = response.error.area[0]
+                    area.classList.add("is-invalid")
+
+                  }
+                  if (response.error.cargo) {
+                    document.getElementById("invalid_cargo").innerHTML = response.error.cargo[0]
+                    cargo.classList.add("is-invalid")
+
+                  }
+                  if (response.error.celular) {
+                    document.getElementById("invalid_celular").innerHTML = response.error.celular[0]
+                    celular.classList.add("is-invalid")
+
+                  }
+                  if (response.error.correo) {
+                    document.getElementById("invalid_correo").innerHTML = response.error.correo[0]
+                    correo.classList.add("is-invalid")
+
+                  }
+                  if (response.error.departamento) {
+                    document.getElementById("invalid_departamento").innerHTML = response.error.departamento[0]
+                    departamento.classList.add("is-invalid")
+
+                  }
+                  if (response.error.provincia) {
+                    console.log("if provi");
+
+                    document.getElementById("invalid_provincia").innerHTML = response.error.provincia[0]
+                    provincia.classList.add("is-invalid")
+
+                  }
+                  if (response.error.distrito) {
+                    console.log("if distri");
+
+                    document.getElementById("invalid_distrito").innerHTML = response.error.distrito[0]
+                    distrito.classList.add("is-invalid")
+
+                  }
+                
+                  if (response.error.direccion) {
+                    console.log("if direccion");
+
+                    document.getElementById("invalid_direccion").innerHTML = response.error.direccion[0]
+                    direccion.classList.add("is-invalid")
+
+                  }
+                  if (response.error.fech_inicio) {
+                    console.log("if gech iniico");
+
+                    document.getElementById("invalid_fech_inicio").innerHTML = response.error.fech_inicio[0]
+                    fech_inicio.classList.add("is-invalid")
+
+                  }
+                  if (response.error.fech_fin) {
+                    console.log("if fecha fin");
+
+                    document.getElementById("invalid_fech_fin").innerHTML = response.error.fech_fin[0]
+                    fech_fin.classList.add("is-invalid")
+
+                  }
+                  if (response.error.tip_doc) {
+                    console.log("if tip doc");
+
+                    document.getElementById("invalid_tip_doc").innerHTML = response.error.tip_doc[0]
+                    tip_doc.classList.add("is-invalid")
+
+                  }
+                  if (response.error.nro_doc) {
+                    console.log("if nro_doc");
+
+                    document.getElementById("invalid_doc").innerHTML = response.error.nro_doc[0]
+                    nro_doc.classList.add("is-invalid")
+
+                  }
+                  if (response.error.docValid) {
+
+                    document.getElementById("invalid_doc").innerHTML = response.error.docValid
+                    nro_doc.classList.add("is-invalid")
+
+                  }
+                  if (response.error.mailValid) {
+                    document.getElementById("invalid_correo").innerHTML = response.error.mailValid
+                    correo.classList.add("is-invalid")
+
+                  }
           }
           tablaPersonas.ajax.reload()
         }
