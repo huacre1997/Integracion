@@ -2447,7 +2447,7 @@ class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
         context["ubicaciones"]=Ubicacion.objects.filter(eliminado=False,activo=True)
         return context
 class InspeccionLlantasView(LoginRequiredMixin,ValidateMixin,TemplateView):
-    permission_required=["Web.view_inspeccionllantas"]
+    permission_required=["Web.view_inpeccionllantas"]
 
     template_name="Web/inspeccion_llantas.html"
     @method_decorator(csrf_exempt)
