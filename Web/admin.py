@@ -81,6 +81,9 @@ admin.site.register(InpeccionLlantas, InspeccionADmin)
 class DetalleInspeccionadmin(admin.ModelAdmin):
 	pass
 admin.site.register(DetalleInspeccion, DetalleInspeccionadmin)
+class HistorialAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(HistorialLLantas, HistorialAdmin)
 """"
 class PermisoPerfilMenuOpcionAdmin(admin.ModelAdmin):
 	#form = UsuariosForm
