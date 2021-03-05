@@ -291,10 +291,10 @@
        tip_doc.classList.remove("is-invalid")
        console.log(e.target.options[e.target.selectedIndex].value==0);
        if(e.target.options[e.target.selectedIndex].value==0){
-        nro_doc.setAttribute("disabled","true")
+        nro_doc.setAttribute("readonly","true")
 
        }else{
-        nro_doc.removeAttribute("disabled")
+        nro_doc.removeAttribute("readonly")
 
        }
        nro_doc.value=""

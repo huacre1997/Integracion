@@ -2314,8 +2314,10 @@ class AgregarLlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 from .constanst import  CHOICES_OBSERVACION,CHOICES_ACCION
 from django.db import transaction
 
-class DesmontajeLlantaView(LoginRequiredMixin,TemplateView):
+class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name = "Web/desmontaje_llanta.html"
+    permission_required=["Web.view_historialllantas"]
+
     def get(self,request,*args, **kwargs):
         estado=EstadoLlanta.objects.all().values("id","descripcion")
         print(f'el get esta en {request.GET}')
@@ -2367,6 +2369,8 @@ class DesmontajeLlantaView(LoginRequiredMixin,TemplateView):
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 class MontajeLlantasView(LoginRequiredMixin,TemplateView):
     template_name = "Web/montaje_llanta.html"
+    permission_required=["Web.view_historialllantas"]
+
     def get(self,request,*args, **kwargs):
         estado=EstadoLlanta.objects.all().values("id","descripcion")
         print(f'el get esta en {request.GET}')
@@ -2483,7 +2487,9 @@ class InspeccionLlantasView(LoginRequiredMixin,ValidateMixin,TemplateView):
         context = super(InspeccionLlantasView, self).get_context_data(**kwargs)
         context["placa"]=Vehiculo.objects.all().values("id","placa")
         return context
-class InsepccionDetalleView(LoginRequiredMixin,UpdateView):
+class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
+    permission_required=["Web.view_inpeccionllantas"]
+
     model=InpeccionLlantas
     template_name="Web/inspeccion_detalles.html"
     context_object_name="obj"
