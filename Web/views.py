@@ -160,11 +160,11 @@ class PerfilCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
             if form.is_valid():
                 form.save()
-                data={"stat":200,"url":self.success_url}
+                data={"status":200,"url":self.success_url}
             else:
                 data = {
                 "form":form.errors,
-                'stat': 500,
+                'status': 500,
                 }
             return JsonResponse(data,safe=False)
         
@@ -195,9 +195,9 @@ class PerfilUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
             if form.is_valid():
                 form.save()
               
-                return JsonResponse({"stat":200,"url":self.success_url})
+                return JsonResponse({"status":200,"url":self.success_url})
             else:
-                return JsonResponse({"stat":500,"form":form.errors})
+                return JsonResponse({"status":500,"form":form.errors})
 
         except Exception as e:
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
@@ -254,13 +254,13 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                     form.save()
 
                     data = {
-                    'stat': 'ok',
+                    'status': 200,"error":{}
                    }
                     return JsonResponse(data)
                 else:
                     data = {
                     "error":form.errors,
-                    'stat': False,
+                    'status': 500,
                     }
                     return JsonResponse(data)
             else:
@@ -295,7 +295,7 @@ class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
                 form.instance.created_by = self.request.user
                 form.save()
                 data = {
-                    'status': 200,
+                    'status': 200,"error":{}
                    }
                 return JsonResponse(data,safe=False)
             else:

@@ -1,20 +1,22 @@
 function validatePunto(num) {
-    const r=/[0-9]\.[0-9]{2}$/;
+    const r = /[0-9]\.[0-9]{2}$/;
     if (r.test(num)) {
         return true
     }
     return false
 }
+
 function validatePlaca(num) {
-    const r = /^([A-Z]{3})-([0-9]{3})$/;    
-    
+    const r = /^([A-Z]{3})-([0-9]{3})$/;
+
     if (r.test(num)) {
         return true
     }
     return false
 }
+
 function validateAño(num) {
-    if(parseInt(num)>1900 && parseInt(num)<2010){
+    if (parseInt(num) > 1900 && parseInt(num) < 2010) {
         return true
     }
     return false
@@ -69,14 +71,14 @@ function docDigits(tipo, num) {
     if (tipo == 2) {
         if (value.length != 9) {
             data.status = 500,
-            data.mensaje = "El Carnet de extranjería tiene que tener 9 dígitos."
+                data.mensaje = "El Carnet de extranjería tiene que tener 9 dígitos."
         }
 
     } else
     if (tipo == 4) {
         if (value.length != 11) {
             data.status = 500,
-            data.mensaje = "El RUC debe tener 11 dígitos."
+                data.mensaje = "El RUC debe tener 11 dígitos."
 
         }
     } else {
@@ -90,24 +92,29 @@ function docDigits(tipo, num) {
 
 function validarEmail(valor) {
     re = /^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
-    if (valor.value.search("gmail") != -1 || valor.value.search("hotmail") != -1) {
-        if (!re.exec(valor)) {
-            data = {
-                status: 200,
-            }
-            return data
+    let data = {}
+    console.log(re.exec(valor.value));
+    if (re.exec(valor.value) != null) {
+        if (valor.value.search("gmail") != -1 || valor.value.search("hotmail") != -1) {
+            console.log("entro al gmail");
+            data.status = 200
         } else {
-            data = {
-                status: 500,
-                mensaje: "Ingrese un email válido."
-            }
-            return data
+            console.log("no tiene gmail o hotmail");
+            data.status = 500
+            data.mensaje = "Ingrese un email válido."
+
         }
+
     } else {
-        data = {
-            status: 500,
-            mensaje: "Ingrese un email válido."
-        }
-        return data
+        data.status = 500
+        data.mensaje = "Ingrese un correo válido."
+
+        if (valor.value == "") {
+            data.mensaje = "Este campo es requerido."
+
+        } 
+       
     }
+    return data
+
 }

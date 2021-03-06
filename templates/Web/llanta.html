@@ -240,7 +240,7 @@
                     <div class="input-group mb-3">
 
                       <input disabled type="text"  class="form-control" id="id_renova"
-                        value="{{cubierta.renovadora}}">
+                        value="{% if cubierta.categoria == '2' %}{{cubierta.renovadora}}{%endif%}">
                       <input type="hidden" name="renovadora" value="{{cubierta.renovadora.id}}" id="id_renovadora">
                       <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
                           aria-hidden="true"></i></button>

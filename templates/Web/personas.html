@@ -194,6 +194,8 @@
               let correo = form[0].ownerDocument.getElementById("id_correo")
               let area = form[0].ownerDocument.getElementById("id_area")
               let cargo = form[0].ownerDocument.getElementById("id_cargo")
+              let telefono = form[0].ownerDocument.getElementById("id_telefono")
+              let sexo = form[0].ownerDocument.getElementById("id_sexo")
 
               let data = new FormData(form[0].ownerDocument.forms[2])
                      
@@ -210,15 +212,29 @@
 
               }).then(data => data.json())
               .then(function(response){
-                console.log(emailForm);
+
+                
                 if(emailForm.status==500){
-                  
+                  console.log("Entro a lstatus")
+                  response.status=500
                   response.error.mailValid=emailForm.mensaje
                 }
                 if(passForm.status==500){
-                  
+                  response.status=500
                   response.error.docValid=passForm.mensaje
+                  document.getElementById("id_nro_doc").removeAttribute("readonly")
                 }
+                if(sexo.value=="")
+                {
+                  response.status=500
+                  response.error.sexo="Este campo es requerido."
+                }
+                if(fech_nac.value=="")
+                {
+                  response.status=500
+                  response.error.fech_nac="Este campo es requerido."
+                }
+                
                 return response
               })
                      
@@ -327,6 +343,21 @@
                     correo.classList.add("is-invalid")
 
                   }
+                  if (response.error.telefono) {
+                    document.getElementById("invalid_telefono").innerHTML = response.error.telefono
+                    telefono.classList.add("is-invalid")
+
+                  }
+                  if (response.error.sexo) {
+                    document.getElementById("invalid_sexo").innerHTML = response.error.sexo
+                    sexo.classList.add("is-invalid")
+
+                  }
+                  if (response.error.fech_nac) {
+                    document.getElementById("invalid_fech_nac").innerHTML = response.error.fech_nac
+                    fech_nac.classList.add("is-invalid")
+
+                  }
                 } else {
                   jc.showLoading(true)
 
@@ -363,7 +394,7 @@
       de = $.confirm({
         title: "Editar Persona",
         content: "URL:../Persona/" + data.id,
-        columnClass: 'col-xl-12 col-lg-12 col-md-8 col-sm-10',
+        columnClass: 'col-xl-12 col-lg-12 col-md-12 col-sm-10',
         icon: "fa fa-edit",
         type: "orange",
         scrollToPreviousElement: true,

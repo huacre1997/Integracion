@@ -3,7 +3,7 @@
     <div class="form-row">
         <div class="form-group col-lg-6">
             <label for="">Posición</label>
-            <input type="number" class="form-control posicion" name="posicion" id="id_posicion">
+            <input type="number" min="0" class="form-control posicion" name="posicion" id="id_posicion">
             <div class="invalid-feedback" id="invalid_posicion">Este campo es requerido.</div>
 
         </div>
@@ -34,7 +34,7 @@
         </div>
         <div class="form-group col-lg-6">
             <label for="">Remanente 1</label>
-            <input type="number" class="form-control" name="rem_1" id="id_rem_1">
+            <input type="number" min="0" class="form-control" name="rem_1" id="id_rem_1">
             <div class="invalid-feedback" id="invalid_rem1">Este campo es requerido.</div>
 
         </div>
@@ -56,7 +56,7 @@
     <div class="form-row">
         <div class="form-group col-lg-6">
             <label for="">Promedio</label>
-            <input  readonly type="number" class="form-control" name="rem_prom" id="id_rem_prom">
+            <input  readonly type="number"  class="form-control" name="rem_prom" id="id_rem_prom">
             <div class="invalid-feedback" id="invalid_rem_prom">Este campo es requerido.</div>
 
         </div>

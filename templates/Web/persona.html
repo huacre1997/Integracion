@@ -63,10 +63,7 @@
 
           <div class="input-group mb-3">
 
-            {{form.fech_nac}}
-             <div class="input-group-append">
-               <button id="openCalendar" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
-             </div>
+<input type="date" name="fech_nac" value="{{persona.fech_nac |date:'Y-m-d'}}" class="form-control" id="id_fech_nac"> 
               <div class="invalid-feedback" id="invalid_fech_nac">Este campo es requerido.</div>
 
            </div>
@@ -84,18 +81,17 @@
             <option value="2" {% if persona.sexo == 2 %}selected{%endif%}>Mujer</option>
 
           </select>
-          
+                        <div class="invalid-feedback"   id="invalid_sexo">Este campo es requerido.</div>
+
           </div>
         <div class="form-group col-md-4">
           <label for="id_fech_nac">Fecha de inicio:</label>
 
           <div class="input-group mb-3">
 
-            {{form.fech_inicio}}
-             <div class="input-group-append">
-               <button id="openCalendar2" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
-             </div>
-              <div class="invalid-feedback" id="invalid_fech_inicio">Este campo es requerido.</div>
+           <input type="date" name="fech_inicio" class="form-control" value="{{persona.fech_inicio |date:'Y-m-d'}}" id="id_fech_inicio">
+          
+              <div class="invalid-feedback"   id="invalid_fech_inicio">Este campo es requerido.</div>
 
            </div>
 
@@ -105,10 +101,8 @@
 
           <div class="input-group mb-3">
 
-            {{form.fech_fin}}
-             <div class="input-group-append">
-               <button id="openCalendar3" class="btn btn-outline-primary" type="button"><i class="fa fa-calendar"></i></button>
-             </div>
+<input type="date" name="fech_fin" value="{{persona.fech_fin |date:'Y-m-d'}}" class="form-control" id="id_fech_fin"> 
+             
                 <div class="invalid-feedback" id="invalid_fech_fin">Este campo es requerido.</div>
 
            </div>
@@ -209,7 +203,7 @@
         <div class="form-group col-md-4">
           <label for="id_telefono">Telefono:</label>
           <input type="text" class="form-control" name="telefono"
-            value="{% if persona %}{{persona.telefono}}{% endif %}" maxlength="15" id="id_telefono">
+            value="{% if persona %}{{persona.telefono}}{% endif %}"  id="id_telefono">
                           <div class="invalid-feedback" id="invalid_telefono">Este campo es requerido.</div>
 
         </div>
@@ -278,6 +272,9 @@
               let correo = document.getElementById("id_correo")
               let area = document.getElementById("id_area")
               let cargo = document.getElementById("id_cargo")
+                            let telefono = document.getElementById("id_telefono")
+                            let sexo = document.getElementById("id_sexo")
+
     name.addEventListener("keyup", function () {
        name.classList.remove("is-invalid")
         })
@@ -334,37 +331,11 @@
          cargo.addEventListener("keyup", function () {
        cargo.classList.remove("is-invalid")
         })
-
-    $(function () {
-      jQuery.datetimepicker.setLocale('es');
-      $("#id_fech_nac").datetimepicker({
-        
-
-        timepicker: false,
-        format: 'Y-m-d'
-      });
-      $("#id_fech_inicio").datetimepicker({
-        
-
-        timepicker: false,
-        format: 'Y-m-d'
-      });
-      $("#id_fech_fin").datetimepicker({
-        
-
-        timepicker: false,
-        format: 'Y-m-d'
-      });
-    });
-    jQuery('#openCalendar').click(function(){
-  jQuery('#id_fech_nac').datetimepicker('show'); //support hide,show and destroy command
-});
-jQuery('#openCalendar2').click(function(){
-  jQuery('#id_fech_inicio').datetimepicker('show'); //support hide,show and destroy command
-});
-jQuery('#openCalendar3').click(function(){
-  jQuery('#id_fech_fin').datetimepicker('show'); //support hide,show and destroy command
-});
+sexo.addEventListener("change", function () {
+       sexo.classList.remove("is-invalid")
+        })
+ 
+   
     selectDepart = document.getElementById("id_departamento")
     selectProvince = document.getElementById("id_provincia")
     selectDistrict = document.getElementById("id_distrito")
@@ -485,22 +456,48 @@ jQuery('#openCalendar3').click(function(){
       var id = $("#id").val()
        de.showLoading()
 
-      var paramaters = new FormData($('.needs-validation')[0])
-      $.ajax({
-        type: "POST",
-        url: "../Persona/" + id + "/",
-        data: paramaters,
-        dataType: "json",
-        processData: false, // tell jQuery not to process the data
-        contentType: false,
-        success: function (response) {
-          console.log(response)
-          if (response["stat"] == "ok") {
-            de.close()
-            notificacion(1500, "Genial!", "success", "Persona guardada!")
-          } else {
-            de.hideLoading()
-                   if (response.error.apem) {
+      var parameters = new FormData($('.needs-validation')[0])
+              
+                    let passForm=docDigits(tip_doc.value,nro_doc.value)
+                let emailForm=validarEmail(correo)
+                  fetch( "../Persona/" + id + "/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                },
+                body: parameters
+
+              }).then(data => data.json())
+              .then(function(response){
+                if(emailForm.status==500){
+                  console.log("Entro a lstatus")
+                  response.status=500
+                  response.error.mailValid=emailForm.mensaje
+                }
+                if(passForm.status==500){
+                  response.status=500
+                  response.error.docValid=passForm.mensaje
+                  document.getElementById("id_nro_doc").removeAttribute("readonly")
+                }
+                if(sexo.value=="")
+                {
+                  response.status=500
+                  response.error.sexo="Este campo es requerido."
+                }
+                if(fech_nac.value=="")
+                {
+                  response.status=500
+                  response.error.fech_nac="Este campo es requerido."
+                }
+                
+                return response
+              })
+                     
+              .then(response => {
+                console.log(response);
+                if (response.status == 500) {
+                  notificacion(1500, "Error", "error", "Revise los campos")
+                  if (response.error.apem) {
                     document.getElementById("invalid_apem").innerHTML = response.error.apem[0]
                     apem.classList.add("is-invalid")
 
@@ -601,14 +598,33 @@ jQuery('#openCalendar3').click(function(){
                     correo.classList.add("is-invalid")
 
                   }
-          }
-          tablaPersonas.ajax.reload()
-        }
-      }).done(function (data) {}).fail(function (jqXHR, textStatus, errorThrown) {
-        alert("done:" + textStatus + ': ' + errorThrown);
-      }).always(function (data) {
+                  if (response.error.telefono) {
+                    document.getElementById("invalid_telefono").innerHTML = response.error.telefono
+                    telefono.classList.add("is-invalid")
 
-      });;
+                  }
+                  if (response.error.sexo) {
+                    document.getElementById("invalid_sexo").innerHTML = response.error.sexo
+                    sexo.classList.add("is-invalid")
+
+                  }
+                  if (response.error.fech_nac) {
+                    document.getElementById("invalid_fech_nac").innerHTML = response.error.fech_nac
+                    fech_nac.classList.add("is-invalid")
+
+                  }
+                                    de.hideLoading()
+
+                } else {
+                  de.showLoading()
+
+                  de.close()
+                  notificacion(2000, "Éxito", "success", "Persona guardada")
+
+                  tablaPersonas.ajax.reload()
+                }
+              })
+
       return false;
     });
   })

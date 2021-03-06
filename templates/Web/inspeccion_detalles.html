@@ -38,11 +38,11 @@
           </div>
           <div class="form-group col-lg-3">
             <label for="" class="form-label">Km.Actuales</label>
-            <input type="number" name="km_act" value="{{obj.km_act}}" class="form-control">
+            <input type="number" min="0" name="km_act" value="{{obj.km_act}}" class="form-control">
           </div>
           <div class="form-group col-lg-3">
             <label for="" class="form-label">Km.Ult.Revisión</label>
-            <input type="number" name="km_ult" value="{{obj.km_ult}}" class="form-control">
+            <input type="number" min="0" name="km_ult" value="{{obj.km_ult}}" class="form-control">
           </div>
           <div class="form-group col-lg-3">
             <label for="" class="form-label">Fecha.Ult.Revisión</label>
@@ -52,7 +52,7 @@
         <div class="form-row">
           <div class="form-group col-lg-3">
             <label for="" class="form-label">Km. Recorridos</label>
-            <input type="number" name="km_re" value="{{obj.km_re}}" class="form-control">
+            <input type="number" min="0" name="km_re" value="{{obj.km_re}}" class="form-control">
           </div>
           <div class="form-group col-lg-3">
             <label for="" class="form-label">Supervisor</label>
