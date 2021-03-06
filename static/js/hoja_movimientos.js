@@ -147,7 +147,7 @@ $(document).ready(function () {
         let backgroud_img = document.createElement("div")
         backgroud_img.classList.add("img")
         backgroud_img.id = "background_tipo"
-        backgroud_img.style.background = 'transparent url(" ../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoPosicion +
+        backgroud_img.style.background = 'transparent url("../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoPosicion +
           '.png") no-repeat center center'
         document.getElementById("container-grid").append(backgroud_img)
         
@@ -155,29 +155,9 @@ $(document).ready(function () {
         let backgroud_img2 = document.createElement("div")
         backgroud_img2.classList.add("img2")
         backgroud_img2.id = "background_tipo2"
-        backgroud_img2.style.background = 'transparent url(" ../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoImagen +
+        backgroud_img2.style.background = 'transparent url("../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoImagen +
         '.png") no-repeat center center'
-        // backgroud_img.id = "background_tipo"
-        // if(response.vehiculo.tipo_vehiculo.id==1){
-        //   backgroud_img.style.background = "transparent url('../static/img/12._C4_Posición_x2X060z.png') no-repeat center center"
-        //   backgroud_img2.style.background = 'transparent url("../static/img/12.P-C4.png") no-repeat center center'
-
-        // }else
-        // if(response.vehiculo.tipo_vehiculo.id==2){
-        //   backgroud_img.style.background = "transparent url('../static/img/2._C2RB1_Posición_LGrukSR.png') no-repeat center center"
-        //   backgroud_img2.style.background = "transparent url('../static/img/2.P-C2RB1.png') no-repeat center center"
-
-        // }else
-        // if(response.vehiculo.tipo_vehiculo.id==3){
-        //   backgroud_img.style.background = "transparent url('../static/img/28._T2S2_Posición_3OVPjpv.png') no-repeat center center"
-        //   backgroud_img2.style.background = "transparent url('../static/img/28.P-T2S2.png') no-repeat center center"
-
-        // }else
-        // if(response.vehiculo.tipo_vehiculo.id==4){
-        //   backgroud_img.style.background = "transparent url('../static/img/21._8x4_Posición.png') no-repeat center center"
-        //   backgroud_img2.style.background = "transparent url('../static/img/21.8x4.png') no-repeat center center"
-    
-        // }
+      
         document.getElementById("container-grid").append(backgroud_img)
         document.getElementById("container-grid").append(backgroud_img2)
 
