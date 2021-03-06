@@ -133,6 +133,7 @@
 {% block bottom_scripts %}
 
 <script type="text/javascript" charset="utf-8">
+
   fetch("../../getTipo/"+document.getElementById("id_tipo_vehiculo").value+"/").then(data=>data.json())
     .then(response=>{
 
@@ -140,10 +141,16 @@
     })
 console.log( );
  document.getElementById("id_tipo_vehiculo").addEventListener("change",function (param) {
+   {% if update %}
+  let url="../../getTipo/"+param.target.options[param.target.options.selectedIndex].value
+   {% else %}
+  let url="../getTipo/"+param.target.options[param.target.options.selectedIndex].value
+
+   {% endif %}
   document.getElementById("img-vehiculo").setAttribute("src","")
-    fetch("../getTipo/"+param.target.options[param.target.options.selectedIndex].value).then(data=>data.json())
+    fetch(url).then(data=>data.json())
     .then(response=>{
-      document.getElementById("img-vehiculo").setAttribute("src","../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+      document.getElementById("img-vehiculo").setAttribute("src","../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
     })
     })
   document.getElementById("id_ano").addEventListener('input', function (event) {

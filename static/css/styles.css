@@ -2432,7 +2432,7 @@ grid-template-rows: 45px 50px 55px 50px 80px 55px repeat(11  ,50px);
   background-color: white;
 }
 
-.activo{
+.activate{
   color:rgba(255,255,255,.8) !important
 
   }
