@@ -2208,7 +2208,7 @@ table.dataTable tbody td {
 
   display: grid;
   grid-template-columns: repeat(21,50px);
-  grid-template-rows: (17,50px);
+  grid-template-rows: repeat(17,50px);
 
 
 }
