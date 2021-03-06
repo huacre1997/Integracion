@@ -1,33 +1,6 @@
 $(document).ready(function () {
-  const removeParam = (key, sourceURL) => {
-    var rtn = sourceURL.split("?")[0],
-      param,
-      params_arr = [],
-      queryString =
-        sourceURL.indexOf("?") !== -1 ? sourceURL.split("?")[1] : "";
-    if (queryString !== "") {
-      params_arr = queryString.split("&");
-      for (var i = params_arr.length - 1; i >= 0; i -= 1) {
-        param = params_arr[i].split("=")[0];
-        if (param === key) params_arr.splice(i, 1);
-      }
-      rtn = rtn + "?" + params_arr.join("&");
-    }
-    return rtn.replace(/%2C/g, ",");
-  };
-
-  const returnURL = (num) => {
-    oldURL = window.location.href;
-
-
-      var url = new URL(oldURL);
-      url.searchParams.set("sc", num.toString()); // setting your param
-      var newUrl = url.href;
-      newUrl2 = removeParam("page", newUrl);
-
-      return newUrl2.replace(/%2C/g, ",");
-    }
-  
+ 
+ 
     $('#drop-vehiculos').select2();
     let td_placa = document.getElementById("td_placa")
     let td_tipo = document.getElementById("td_tipo")
@@ -65,9 +38,7 @@ $(document).ready(function () {
         
       }
       oldURL=window.location.href
-      var url = new URL(oldURL);
-      url.searchParams.set("key", data.id); // setting your param
-      var newUrl = url.href;
+    
       let deleteDrop = document.getElementsByClassName("drag-drop")
       const removeElements = (elms) => elms.forEach(el => el.remove());
 
@@ -107,12 +78,12 @@ $(document).ready(function () {
           let sum=0
           let faltantes = []
           let faltantesrep = []
-          let nro_llantas = response.llantas.length
-          // console.log(nro_llantas);
+          let nro_llantas_array = response.llantas.length
+          let nro_llantas=response.vehiculo.tipo_vehiculo.nro_llantas
           let nro_repuesto=response.vehiculo.nro_llantas_repuesto
-          let total=response.vehiculo.nro_llantas+nro_repuesto
+          let total=nro_llantas+nro_repuesto
           // console.log(total);
-          for (let index = 0; index < nro_llantas; index++) {
+          for (let index = 0; index < nro_llantas_array; index++) {
             if(response.llantas[index].repuesto==true){
               posrep.push(response.llantas[index].posicion)
             }else{
@@ -122,15 +93,15 @@ $(document).ready(function () {
           }
       //  console.log(pos);
       //  console.log(posrep);
-          if (response.llantas != response.vehiculo.nro_llantas) {
+          if (response.llantas != nro_llantas) {
 
-            for (let i = 1; i < response.vehiculo.nro_llantas + 1; i++) {
+            for (let i = 1; i < nro_llantas + 1; i++) {
               if (!pos.includes(i)) {
                 faltantes.push(i)
               }
 
             }
-            for (let i = response.vehiculo.nro_llantas+1; i <= total ; i++) {
+            for (let i = nro_llantas+1; i <= total ; i++) {
               // console.log(i);
               if (!posrep.includes(i)) {
                 faltantesrep.push(i)
@@ -147,7 +118,7 @@ $(document).ready(function () {
               id: null,
               repuesto:false
             }
-            response.llantas[i+nro_llantas] = al
+            response.llantas[i+nro_llantas_array] = al
             sum=sum+1
             }}
             for (let i =0; i <faltantesrep.length; i++) {
@@ -157,7 +128,7 @@ $(document).ready(function () {
                 id: null,
                 repuesto:true
                 }
-                response.llantas[i+ nro_llantas+sum] = al
+                response.llantas[i+ nro_llantas_array+sum] = al
 
                 }
           }
@@ -172,42 +143,41 @@ $(document).ready(function () {
         console.log(response);
         if(response.status==200){
 
-        document.getElementById("container-grid").classList.add(response.vehiculo.tipo_vehiculo.descripcion)
-        // let backgroud_img = document.createElement("div")
-        // backgroud_img.classList.add("img")
-        // backgroud_img.id = "background_tipo"
-        // backgroud_img.style.background = 'transparent url(' + response.vehiculo.tipo_vehiculo.croquis +
-        //   ') no-repeat center center'
-        // document.getElementById("container-grid").append(backgroud_img)
-        
-        
+        document.getElementById("container-grid").classList.add(response.vehiculo.tipo_vehiculo.codigoPosicion)
         let backgroud_img = document.createElement("div")
         backgroud_img.classList.add("img")
+        backgroud_img.id = "background_tipo"
+        backgroud_img.style.background = 'transparent url(" ../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoPosicion +
+          '.png") no-repeat center center'
+        document.getElementById("container-grid").append(backgroud_img)
+        
+    
         let backgroud_img2 = document.createElement("div")
         backgroud_img2.classList.add("img2")
         backgroud_img2.id = "background_tipo2"
+        backgroud_img2.style.background = 'transparent url(" ../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoImagen +
+        '.png") no-repeat center center'
+        // backgroud_img.id = "background_tipo"
+        // if(response.vehiculo.tipo_vehiculo.id==1){
+        //   backgroud_img.style.background = "transparent url('../static/img/12._C4_Posición_x2X060z.png') no-repeat center center"
+        //   backgroud_img2.style.background = 'transparent url("../static/img/12.P-C4.png") no-repeat center center'
 
-        backgroud_img.id = "background_tipo"
-        if(response.vehiculo.tipo_vehiculo.id==1){
-          backgroud_img.style.background = "transparent url('../static/img/12._C4_Posición_x2X060z.png') no-repeat center center"
-          backgroud_img2.style.background = 'transparent url("../static/img/12.C4.png") no-repeat center center'
+        // }else
+        // if(response.vehiculo.tipo_vehiculo.id==2){
+        //   backgroud_img.style.background = "transparent url('../static/img/2._C2RB1_Posición_LGrukSR.png') no-repeat center center"
+        //   backgroud_img2.style.background = "transparent url('../static/img/2.P-C2RB1.png') no-repeat center center"
 
-        }else
-        if(response.vehiculo.tipo_vehiculo.id==2){
-          backgroud_img.style.background = "transparent url('../static/img/2._C2RB1_Posición_LGrukSR.png') no-repeat center center"
-          backgroud_img2.style.background = "transparent url('../static/img/2.C2RB1.png') no-repeat center center"
+        // }else
+        // if(response.vehiculo.tipo_vehiculo.id==3){
+        //   backgroud_img.style.background = "transparent url('../static/img/28._T2S2_Posición_3OVPjpv.png') no-repeat center center"
+        //   backgroud_img2.style.background = "transparent url('../static/img/28.P-T2S2.png') no-repeat center center"
 
-        }else
-        if(response.vehiculo.tipo_vehiculo.id==3){
-          backgroud_img.style.background = "transparent url('../static/img/28._T2S2_Posición_3OVPjpv.png') no-repeat center center"
-          backgroud_img2.style.background = "transparent url('../static/img/28.T2S2.png') no-repeat center center"
-
-        }else
-        if(response.vehiculo.tipo_vehiculo.id==4){
-          backgroud_img.style.background = "transparent url('../static/img/21._8x4_Posición.png') no-repeat center center"
-          backgroud_img2.style.background = "transparent url('../static/img/21.8x4.png') no-repeat center center"
+        // }else
+        // if(response.vehiculo.tipo_vehiculo.id==4){
+        //   backgroud_img.style.background = "transparent url('../static/img/21._8x4_Posición.png') no-repeat center center"
+        //   backgroud_img2.style.background = "transparent url('../static/img/21.8x4.png') no-repeat center center"
     
-        }
+        // }
         document.getElementById("container-grid").append(backgroud_img)
         document.getElementById("container-grid").append(backgroud_img2)
 
@@ -256,11 +226,11 @@ $(document).ready(function () {
 
             if (response.llantas[i].repuesto == true) {
                 parent.classList.add("drag", "bordeado","re",
-              `${response.vehiculo.tipo_vehiculo.descripcion}-ride${response.llantas[i].posicion}`)
+              `${response.vehiculo.tipo_vehiculo.codigoPosicion}-ride${response.llantas[i].posicion}`)
               dragdrop.classList.add("repuesto", "verLlanta", "drag-drop", "yes-drop")
             } else {
                 parent.classList.add("drag", "bordeado",
-              `${response.vehiculo.tipo_vehiculo.descripcion}-ride${response.llantas[i].posicion}`)
+              `${response.vehiculo.tipo_vehiculo.codigoPosicion}-ride${response.llantas[i].posicion}`)
               dragdrop.classList.add("llanta", "verLlanta", "drag-drop", "yes-drop")
 
             }
@@ -446,7 +416,7 @@ $(document).ready(function () {
                             })
 
                           } else {
-                            notificacion(20000, "Revise los campos!", "error")
+                            notificacion(2000, "Revise los campos!", "error")
 
                           }
                           return false
@@ -820,7 +790,7 @@ $(document).ready(function () {
                             })
 
                           } else {
-                            notificacion(20000, "Revise los campos!", "error")
+                            notificacion(2000, "Revise los campos!", "error")
 
                           }
                           return false
@@ -839,7 +809,7 @@ $(document).ready(function () {
                       }
                     })
                   } else {
-                    notificacion(20000, "Revise los campos!", "error")
+                    notificacion(2000, "Revise los campos!", "error")
 
                   }
                   return false

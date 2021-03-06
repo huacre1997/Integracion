@@ -50,8 +50,7 @@
                   <tbody>
                     {% for obj in objetos %}
                     <tr>
-                      {% number_page forloop.counter page_obj.number pages as pag %}
-                      <td>{{pag}}</td>
+                      <td>{{obj.id}}</td>
                       <td>{{obj.descripcion}}</td>
                       <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
                       <td>
@@ -62,14 +61,12 @@
 
                         <a href="{% url 'Web:tipo-vehiculo-delete' obj.pk %}" class="btn btn-danger btn-sm"
                         data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
-                        {% include 'Web/fragments/eliminar_tipovehiculo.html' %}
                       </td>
                     </tr>
                     {% endfor %}
                   </tbody>
                 </table>
                 </div>        
-                {% include 'Common/paginacion.html' %}
               </form>
 
             </div>
@@ -85,10 +82,7 @@
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
+		
       });
 
       $("#btnBuscar").click(function() {

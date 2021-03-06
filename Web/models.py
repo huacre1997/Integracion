@@ -428,25 +428,25 @@ class ModeloVehiculo(models.Model):
       return item
 class TipoVehiculo(models.Model):
    descripcion = models.CharField(max_length=100)
-   croquis = models.FileField(upload_to = 'documentos/croquis_vehiculo/')
+   codigo = models.CharField(max_length=50)
+   codigoPosicion=models.CharField(max_length=50)
+   codigoImagen=models.CharField(max_length=50)
+   nro_llantas=models.IntegerField()
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
-
+   def save(self,*args, **kwargs):
+      self.codigoImagen="I-"+self.codigo
+      self.codigoPosicion="P-"+self.codigo      
+      super(TipoVehiculo, self).save(*args, **kwargs)
    def __str__(self):
-      return self.descripcion
-   def get_image(self):
-        if self.croquis:
-            return '{}{}'.format(settings.MEDIA_URL,self.croquis)
+      return self.descripcion+"-"+str(self.nro_llantas)+" llantas"
+
    def toJSON(self):
       item = model_to_dict(self,exclude=["created_by","modified_by"])
-
-      item["croquis"]=self.get_image()
-
-
       return item
 
 class Vehiculo(models.Model):
@@ -463,7 +463,6 @@ class Vehiculo(models.Model):
    operacion = models.CharField(max_length=2,choices=Operacion.choices, null=True, blank=True)
    km = models.DecimalField(max_digits=10, decimal_places=2)
    nro_ejes = models.IntegerField(null=True)
-   nro_llantas = models.IntegerField(null=True)
    nro_llantas_repuesto = models.IntegerField(null=True)
    obs = models.TextField(null=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)

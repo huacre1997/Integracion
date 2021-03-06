@@ -105,7 +105,7 @@ admin.site.register(PermisoPerfilMenuOpcion, PermisoPerfilMenuOpcionAdmin)
 
 class TipoVehiculoAdmin(admin.ModelAdmin):
 	#model = Usuarios
-	list_display = ('descripcion','croquis','activo',)
+	list_display = ('descripcion',"codigo",'activo',)
 	#list_filter = ('perfil',) # filtros
 	#ordering = ('-id_persona',)
 	search_fields = ('descripcion',)

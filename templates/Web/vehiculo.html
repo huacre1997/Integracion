@@ -96,11 +96,7 @@
                     {{form.km}}
                     <div class="invalid-feedback" id="invalid_km">Este campo es requerido</div>
                   </div>
-                  <div class="form-group col-lg-4">
-                   <label for="">Nro Llantas</label>
-                    {{form.nro_llantas}}
-                    <div class="invalid-feedback" id="invalid_llantas">Este campo es requerido</div>
-                  </div>
+                
                   <div class="form-group col-lg-4">
                    <label for="">Nro Llantas de repuesto</label>
                     {{form.nro_llantas_repuesto}}
@@ -110,10 +106,17 @@
               </div>
              
               <br>
-              <div class="babge badge-info"> Observaciones </div>
+              <div class="d-flex">
+                <div class="babge badge-info" style="width:32%"> Observaciones </div>
+                <div class="babge badge-info" style="width:68%"> Imagen Referencial </div>
+              </div>
+
               <br>
               <div class="row">
-                <div class="col-lg-12">{{form.obs}}</div>
+                <div class="col-lg-4">{{form.obs}}</div>
+                
+                  <div class="col-lg-6"><img class="img-vehiculo" src="" id="img-vehiculo" alt=""></div>
+
               </div>
          
 			
@@ -130,6 +133,19 @@
 {% block bottom_scripts %}
 
 <script type="text/javascript" charset="utf-8">
+  fetch("../../getTipo/"+document.getElementById("id_tipo_vehiculo").value+"/").then(data=>data.json())
+    .then(response=>{
+
+      document.getElementById("img-vehiculo").setAttribute("src","../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+    })
+console.log( );
+ document.getElementById("id_tipo_vehiculo").addEventListener("change",function (param) {
+  document.getElementById("img-vehiculo").setAttribute("src","")
+    fetch("../getTipo/"+param.target.options[param.target.options.selectedIndex].value).then(data=>data.json())
+    .then(response=>{
+      document.getElementById("img-vehiculo").setAttribute("src","../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+    })
+    })
   document.getElementById("id_ano").addEventListener('input', function (event) {
         document.getElementById("id_ano").classList.remove("is-invalid")
         document.getElementById("id_ano").setCustomValidity("")
@@ -167,6 +183,7 @@
     }
 
   });
+ 
   (function () {
     'use strict'
 
@@ -186,14 +203,15 @@
           document.getElementById("id_placa").classList.add("is-invalid")
           document.getElementById("id_placa").setCustomValidity("Ingrese una placa válida.")
           document.getElementById("invalid_placa").innerHTML = "Ingrese una placa válida."
-          console.log("if");
+          notificacion(1500, "Error", "error", "Revise los campos!")
+
         }
 
          if(!validateAño(año)){
           document.getElementById("id_ano").classList.add("is-invalid")
           document.getElementById("id_ano").setCustomValidity("Ingrese un año válido.")
           document.getElementById("invalid_ano").innerHTML = "Ingrese un año válido."
-          console.log("if");
+          notificacion(1500, "Error", "error", "Revise los campos!")
         } 
           if (!form.checkValidity()) {
             event.preventDefault()

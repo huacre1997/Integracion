@@ -1638,7 +1638,6 @@ class MarcaVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/tipo_vehiculos.html'
     model = TipoVehiculo
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_tipovehiculo"]
@@ -2060,27 +2059,15 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_vehiculo"]
 
-    # def get_queryset(self):
-    #     # import pdb; pdb.set_trace();
-    #     qs = super().get_queryset()
-    #     qs = qs.filter(eliminado=False)
-    #     modelo = self.request.GET.get('modelo','')
-    #     placa = self.request.GET.get('placa','')
-    #     fi = self.request.GET.get('fecha_inicio')
-    #     ff =self.request.GET.get('fecha_fin')
+    def get_queryset(self):
+        # import pdb; pdb.set_trace();
+        qs = super().get_queryset()
+        qs = qs.filter(eliminado=False)
+       
         
-    #     if modelo:
-    #         qs = qs.filter(modelo_vehiculo__pk=modelo)
-    #     if placa:
-    #         qs = qs.filter(placa__icontains=placa)
+     
         
-    #     if fi:
-    #         fi=datetime.strptime(fi, '%Y-%m-%d').date()
-    #         ff=datetime.strptime(ff, '%Y-%m-%d').date()
-    #         ff = ff + timedelta(days=1)
-    #         qs = qs.filter(created_at__range=(fi,ff))
-        
-    #     return qs.order_by('-pk')
+        return qs.order_by('created_at').reverse()
 
     def get_context_data(self, **kwargs):
         # import pdb; pdb.set_trace()
@@ -2175,7 +2162,7 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         id = self.kwargs['pk']
         obj = Vehiculo.objects.get(pk=id)
         u=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
-        nrollantas=obj.nro_llantas
+        nrollantas=obj.tipo_vehiculo.nro_llantas
         nrorepuesto=obj.nro_llantas_repuesto
         pos ,posrep,faltantes ,faltantesrep= [],[],[],[]
         sum=0
@@ -2261,6 +2248,16 @@ def AnchoBandaRenovaSearch(request):
     product=Renovadora.objects.all()
     contexto={"obj":product}
     return render(request,template_name,contexto)
+def getTipo(request,id):
+    print(id)
+    obj=TipoVehiculo.objects.filter(id=id)
+    if obj.exists:
+        data2=[]
+        data2.append(obj.first().toJSON())
+        data={"status":200,"response":data2}
+    else:
+        data={"status":500}
+    return JsonResponse(data,safe=False)
 def LlantaSearch(request):
     template_name="Web/buscarLlanta.html"
     llantas=Llanta.objects.exclude(ubicacion=None,activo=True,eliminado=False)

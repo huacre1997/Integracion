@@ -378,7 +378,7 @@ class MarcaLlantaForm(forms.ModelForm):
 class TipoVehiculoForm(forms.ModelForm):
     class Meta:
         model = TipoVehiculo
-        fields = ('descripcion', "croquis",'activo')
+        fields = ('descripcion', "codigo",'activo',"nro_llantas")
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
 
@@ -585,7 +585,7 @@ class LlantaForm(forms.ModelForm):
             
                 else:
                     data=Vehiculo.objects.get(pk=subject1.id)
-                    nrollantas=data.nro_llantas
+                    nrollantas=data.tipo_vehiculo.nro_llantas
                     nrorepuesto=data.nro_llantas_repuesto
                     total=int(nrollantas)+int(nrorepuesto)
                     if repuesto:
@@ -619,7 +619,7 @@ class VehiculoForm(forms.ModelForm):
     class Meta:	
         model = Vehiculo
         fields = ('ano','modelo_vehiculo','tipo_vehiculo','propiedad','placa',
-            'operacion','km','nro_llantas','nro_llantas_repuesto','obs', 'ubicacion', 'almacen' )
+            'operacion','km','nro_llantas_repuesto','obs', 'ubicacion', 'almacen' )
         widgets = {
             'ano': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'1950', 'step':'1'}),
             'modelo_vehiculo': forms.Select( attrs={'class':'form-control'}),
@@ -630,9 +630,8 @@ class VehiculoForm(forms.ModelForm):
             'almacen': forms.Select( attrs={'class':'form-control'}),
             'operacion': forms.Select( attrs={'class':'form-select'}),
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
-            'nro_llantas': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
             'nro_llantas_repuesto': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
-            'obs': forms.Textarea( attrs={'class':'form-control','rows':'3',}),
+            'obs': forms.Textarea( attrs={'class':'form-control',"cols":"3","rows":"6"}),
         }
 
     def __init__(self, *args, **kwargs):

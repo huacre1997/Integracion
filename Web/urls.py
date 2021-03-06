@@ -134,6 +134,7 @@ urlpatterns = [
     path('hoja-movimientos/', views.HojaDeMovimientosView.as_view(), name='hoja-movimientos'),
     path('inspeccion-llantas/', views.InspeccionLlantasView.as_view(), name='inspeccion-llantas'),
     path('inspeccion-agregar/', views.AgregarInspeccion, name='inspeccion-agregar'),
+    path('getTipo/<int:id>/', views.getTipo, name='get-tipo'),
 
     path('inspeccion-llantas/detalles/<int:pk>/', views.InsepccionDetalleView.as_view(), name='inspeccion-detalle'),
 

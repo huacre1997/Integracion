@@ -9,19 +9,9 @@
 <link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
 <style>
   .img2{
-    /* background:transparent url("../../documentos/documentos/croquis_vehiculo/WhatsApp_Image_2021-02-19_at_11.01.16_PM.jpeg") no-repeat center center; */
     
-   {% if obj.tipo_vehiculo.id == 1 %}
-    background:transparent url("../../static/img/12.C4.png") no-repeat center center;
-      {% elif obj.tipo_vehiculo.id == 2 %}
-      background: transparent url('../../static/img/2.C2RB1.png') no-repeat center center;
-      {% elif obj.tipo_vehiculo.id == 3 %}
-      background:transparent url('../../static/img/28.T2S2.png') no-repeat center center;
-      {% elif obj.tipo_vehiculo.id == 4 %}
-      background:transparent url('../../static/img/21.8x4.png') no-repeat center center;
-      {% endif %} 
-
-    {% comment %} background:transparent url("../../documentos/{{obj.tipo_vehiculo.croquis}}") no-repeat center center; {% endcomment %}
+  
+  background:transparent url('../../static/img/vehiculos/{{obj.tipo_vehiculo.codigo}}/{{obj.tipo_vehiculo.codigoImagen}}.png') no-repeat center center;  
 
  
 
@@ -30,20 +20,11 @@
   
   .img{
     
- {% if obj.tipo_vehiculo.id == 1 %}
-    background:transparent url('../../static/img/12._C4_Posición_x2X060z.png') no-repeat center center;
-      {% elif obj.tipo_vehiculo.id == 2 %}
-      background: transparent url('../../static/img/2._C2RB1_Posición_LGrukSR.png') no-repeat center center;
-      {% elif obj.tipo_vehiculo.id == 3 %}
-      background:transparent url('../../static/img/28._T2S2_Posición_3OVPjpv.png') no-repeat center center;
-      {% elif obj.tipo_vehiculo.id == 4 %}
-      background:transparent url('../../static/img/21._8x4_Posición.png') no-repeat center center;
-    {% endif %}
-       
 
 
 
-   {% comment %} background:transparent url("../../documentos/{{obj.tipo_vehiculo.croquis}}") no-repeat center center;  {% endcomment %}
+
+  background:transparent url('../../static/img/vehiculos/{{obj.tipo_vehiculo.codigo}}/{{obj.tipo_vehiculo.codigoPosicion}}.png') no-repeat center center;  
 
 
    
@@ -101,7 +82,7 @@
                        {% for l in vehiculo %}
               
               {% if l.repuesto %}
-              <div class="drag bordeado {{obj.tipo_vehiculo.descripcion}}-ride{{l.posicion}}" >
+              <div class="drag bordeado {{obj.tipo_vehiculo.codigoPosicion}}-ride{{l.posicion}}" >
                 <div  class=" yes-drop  drag-drop-2 verLlanta  {% if l.repuesto %}repuesto{%else%}llanta{% endif %}"  data-llanta="{{l.id}}" data-repuesto="{{l.repuesto}}"  data-codigo="{{l.codigo}}" data-posicion="{{l.posicion}}">
                   <div class="d-flex justify-content-center  flex-wrap align-items-center" >
                     <div class="w-100 " style="font-size: 0.6em;" >Pos:{{l.posicion}}</div>
@@ -115,7 +96,7 @@
               
               {% for l in faltantesRe %}
             
-                <div class="drag bordeado re {{obj.tipo_vehiculo.descripcion}}-ride{{l.posicion}}" data-posicion="{{l.posicion}}"></div>
+                <div class="drag bordeado re {{obj.tipo_vehiculo.codigoPosicion}}-ride{{l.posicion}}" data-posicion="{{l.posicion}}"></div>
 
 
                 {% endfor %}
@@ -135,7 +116,7 @@
             </div> 
             {% endcomment %}
                 
-            <div class="{{obj.tipo_vehiculo.descripcion}} ">
+            <div class="{{obj.tipo_vehiculo.codigoPosicion}}">
           
               <div class="img"></div>
               <div class="img2"></div>
@@ -145,7 +126,7 @@
                 {% for l in vehiculo %}
                 {% if not l.repuesto %}
 
-                <div class="drag bordeado {{obj.tipo_vehiculo.descripcion}}-ride{{l.posicion}}" data-posicion={{l.posicion}} >
+                <div class="drag bordeado {{obj.tipo_vehiculo.codigoPosicion}}-ride{{l.posicion}}" data-posicion={{l.posicion}} >
                 <div  class="verLlanta drag-drop-2 yes-drop  {% if l.repuesto %}repuesto{%else%}llanta{% endif %}"  data-llanta="{{l.id}}" data-repuesto="{{l.repuesto}}"  data-codigo="{{l.codigo}}" data-posicion="{{l.posicion}}">
                   <div class="d-flex justify-content-center  flex-wrap align-items-center" >
                     <div class="w-100 " style="font-size: 0.6em;" >Pos:{{l.posicion}}</div>
@@ -156,7 +137,7 @@
               {%endif%}
                 {% endfor %}
                   {% for l in faltantes %}
-                   <div class="drag bordeado {{obj.tipo_vehiculo.descripcion}}-ride{{l.posicion}}" data-posicion={{l.posicion}} >
+                   <div class="drag bordeado {{obj.tipo_vehiculo.codigoPosicion}}-ride{{l.posicion}}" data-posicion={{l.posicion}} >
                
               </div>
                   {% endfor %}
