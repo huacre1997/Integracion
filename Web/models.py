@@ -428,9 +428,9 @@ class ModeloVehiculo(models.Model):
       return item
 class TipoVehiculo(models.Model):
    descripcion = models.CharField(max_length=100)
-   codigo = models.CharField(max_length=50)
-   codigoPosicion=models.CharField(max_length=50)
-   codigoImagen=models.CharField(max_length=50)
+   codigo = models.CharField(max_length=20)
+   codigoPosicion=models.CharField(max_length=20)
+   codigoImagen=models.CharField(max_length=20)
    nro_llantas=models.IntegerField()
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
