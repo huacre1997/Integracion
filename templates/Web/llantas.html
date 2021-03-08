@@ -27,7 +27,40 @@
 
       </div>
       <div class="card-body">
-     
+
+        <div class="form-row">
+          <div class="form-group col-lg-3">
+            <label for="">Medida</label>
+            <select name="medida" id="medida" class="form-select">
+              <option value=""></option>
+              {% for i in medida %}
+              <option value="{{i.id}}">{{i}}</option>
+              {% endfor %}
+            </select>
+
+
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="">Marca</label>
+            <select name="marca" id="marca" class="form-select">
+              <option value=""></option>
+              {% for i in marca %}
+              <option value="{{i.id}}">{{i.descripcion}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="">Modelo</label>
+            <select name="modelo" id="modelo" class="form-select">
+
+            </select>
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="">Rango de fecha de creación</label>
+            <input type="text" name="date_ranger" class="form-control" id="date_ranger" autocomplete="off">
+
+          </div>
+        </div>
         <div class="table-responsive">
           <table class="table table-bordered table-hover" id="tablaLlanta" width="100%" cellspacing="0">
             <thead>
@@ -41,40 +74,39 @@
                 <th>Costo</th>
                 <th>KM</th>
                 <th>F. Registro</th>
-                <th  >Vehículo</th>
+                <th>Vehículo</th>
                 <th style="width: 12%;"></th>
               </tr>
             </thead>
-            <tbody>
-
-       
-              {% for obj in objetos %}
-              <tr>
-                <td class="middle text-center">{{obj.id}}</td>
-                <td class="middle text-center">{{obj.codigo}}</td>
-                <td class="middle text-center">{{obj.modelo_llanta.marca_llanta}}</td>
-                <td class="middle text-center">{{obj.modelo_llanta}}</td>
-                <td>{{obj.medida_llanta}}</td>
-                <td class="middle text-center">{{obj.ubicacion}}</td>
-                <td class="middle text-center">{{obj.cubierta.costo|unlocalize}}</td>
-                <td class="middle text-center">{{obj.cubierta.km|unlocalize}}</td>
-                <td class="middle text-center">{{obj.created_at|date:'Y-m-d'}}</td>
-                <td class="middle text-center">{{obj.vehiculo|default_if_none:'---------'}} </td>
-                <td>
-                  {% if 'Web.change_llanta' in perm %}
-
-                  <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i
-                      class="fa fa-edit"></i>Editar</a>{% endif %}
-                  {% if 'Web.delete_llanta' in perm %}
-                  <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i
-                      class="fa fa-ban"></i></a>{% endif %}
-                  {% include 'Web/fragments/eliminar_llanta.html' %}
-                </td>
-              </tr>
-              {% endfor %}
+            {% comment %}
 
 
-            </tbody>
+            {% for obj in objetos %}
+            <tr>
+              <td class="middle text-center">{{obj.id}}</td>
+              <td class="middle text-center">{{obj.codigo}}</td>
+              <td class="middle text-center">{{obj.modelo_llanta.marca_llanta}}</td>
+              <td class="middle text-center">{{obj.modelo_llanta}}</td>
+              <td>{{obj.medida_llanta}}</td>
+              <td class="middle text-center">{{obj.ubicacion}}</td>
+              <td class="middle text-center">{{obj.cubierta.costo|unlocalize}}</td>
+              <td class="middle text-center">{{obj.cubierta.km|unlocalize}}</td>
+              <td class="middle text-center">{{obj.created_at|date:'Y-m-d'}}</td>
+              <td class="middle text-center">{{obj.vehiculo|default_if_none:'---------'}} </td>
+              <td>
+                {% if 'Web.change_llanta' in perm %}
+
+                <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i
+                    class="fa fa-edit"></i>Editar</a>{% endif %}
+                {% if 'Web.delete_llanta' in perm %}
+                <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i
+                    class="fa fa-ban"></i></a>{% endif %}
+                {% include 'Web/fragments/eliminar_llanta.html' %}
+              </td>
+            </tr>
+            {% endfor %}
+            {% endcomment %}
+
 
           </table>
         </div>
@@ -91,165 +123,254 @@
 
 
 <script>
-  
+  var date_range = null
+  var date_now = new moment().format('YYYY-MM-DD');
+  var parameters = {
+    "start_date": "",
+    "end_date": "",
+    "medida": "",
+    "modelo": "",
+    "marca": ""
 
-  $(document).ready(function () {
-    $('.select2').select2();
+  }
+  $('#medida').select2();
+  $('#marca').select2();
 
-    var tablaLLantas = $('#tablaLlanta').DataTable({
+  $('#modelo').select2();
+
+  generate_reports()
+
+  function generate_reports() {
+
+
+    tabla = $("#tablaLlanta").DataTable({
+      processing: "true",
       responsive: true,
       stateSave: true,
-
+      destroy: true,
 
       "lengthMenu": [
         [5, 10, 25, 50, -1],
         [5, 10, 25, 50, "All"]
       ],
-  
-      columnDefs:[
-         {
-    targets: [-2],
-          render: function (data, type, row) {  
-            console.log(data)
-            if(data=="")
-            {
-              return "-------"
-            }else{
-              return data
+      language: {
+        "url": "{% static 'language.json' %}"
+      },
+      ajax: {
+        url: window.location.pathname,
+        type: "POST",
+        data: parameters,
+        dataSrc: ""
+      },
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+
+
+      columns: [{
+          "data": "id",
+          className: "middle text-center"
+
+        },
+        {
+          "data": "codigo",
+          className: "middle text-center"
+        },
+        {
+          "data": "marca_llanta",
+          className: "middle text-center"
+        },
+        {
+          "data": "modelo_llanta",
+          className: "middle text-center"
+        },
+        {
+          "data": "medida",
+          className: "middle"
+        },
+        {
+          "data": "ubicacion",
+          className: "middle text-center",
+          render: function (data) {
+            if (data == null) {
+              return "MONTADO"
             }
-          } 
+            return data
+          }
+        },
+        {
+          "data": "costo",
+          className: "middle text-center"
+        },
+        {
+          "data": "km",
+          className: "middle text-center"
+        },
+        {
+          "data": "created_at",
+          className: "middle text-center"
+        },
+        {
+          "data": "vehiculo",
+          className: "middle text-center",
+          render: function (data) {
+            if (data == null) {
+              return "----------"
+            }
+            return data
+          }
+        },
+        {
+          "data": null,
+          className: "middle text-center"
         },
       ],
-      searchBuilder: true,
-      searchBuilder: {
-        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-      },
-  
-      "language": {
+      columnDefs: [{
+        targets: [-1],
 
-        "processing": '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem; role="status"><span class="sr-only">Loading...</span></div>',
-        "lengthMenu": "Mostrar _MENU_ registros",
-        "zeroRecords": "No se encontraron resultados",
-        "emptyTable": "Ningún dato disponible en esta tabla",
-        "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-        "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-        "infoFiltered": "(filtrado de un total de _MAX_ registros)",
-        "search": "Buscar:",
-        "infoThousands": ",",
-        "loadingRecords": "Cargando...",
-        "searchBuilder": {
-          "add": "Añadir condición",
-          "button": {
-            "0": "Constructor de búsqueda",
-            "_": "Constructor de búsqueda (%d)"
+        render: function (row, data, index) {
+          var buttons =
+            ' {% if "Web.change_llanta" in perm %}<a class="btn btn-warning"  role="button" href="../llanta/' +
+            index.id +
+
+            '"><i class="far fa-edit" ></i></a>{%endif%}' +
+            ' {% if "Web.delete_llanta" in perm %}<button class="btn btn-danger mr-1 btn-delete-llanta"' +
+            '"><i class="fa fa-ban" ></i></button>{%endif%}';
+          return buttons;
+
+        },
+
+      }]
+
+
+    });
+
+
+  }
+  $('input[name="date_ranger"]').daterangepicker({
+    autoUpdateInput: false,
+
+    locale: {
+      format: 'YYYY-MM-DD'
+    },
+    opens: 'right'
+  }).on("apply.daterangepicker", function (ev, picker) {
+    date_range = picker;
+
+    $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+
+    parameters["start_date"] = date_range.startDate.format("YYYY-MM-DD")
+    parameters["end_date"] = date_range.endDate.format("YYYY-MM-DD")
+    generate_reports()
+
+  }).on('cancel.daterangepicker', function (ev, picker) {
+    $(this).data('daterangepicker').setStartDate(date_now);
+    $(this).data('daterangepicker').setEndDate(date_now);
+    date_range = picker;
+    generate_reports();
+  });
+  $(document).on("click", '.btn-delete-llanta', function (e) {
+
+    e.preventDefault()
+    var tr = tabla.cell($(this).closest("td")).index();
+    var data = tabla.row(tr.row).data();
+    Swal.fire({
+      title: 'Eliminar llanta',
+      icon: "warning",
+      text: "¿Está seguro que desea eliminar la llanta?",
+      showCancelButton: true,
+      confirmButtonColor: "#e74a3b",
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminarlo!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.showLoading()
+
+        fetch("../llanta/" + data.id + "/delete/", {
+          method: "POST",
+          headers: {
+            'X-CSRFToken': csrftoken
           },
-          data: 'Columna',
-
-          title: {
-            0: 'Filtros',
-            _: 'Filtros (%d)'
-          },
-          value: 'Ingrese término de búsqueda.',
-          valueJoiner: 'hasta',
-          "clearAll": "Borrar todo",
-          "condition": "Condición",
-          "conditions": {
-            "date": {
-              "after": "Despues",
-              "before": "Antes",
-              "between": "Entre",
-              "empty": "Vacío",
-              "equals": "Igual a",
-              "not": "No",
-              "notBetween": "No entre",
-              "notEmpty": "No Vacio"
-            },
-            "number": {
-              "between": "Entre",
-              "empty": "Vacio",
-              "equals": "Igual a",
-              "gt": "Mayor a",
-              "gte": "Mayor o igual a",
-              "lt": "Menor que",
-              "lte": "Menor o igual que",
-              "not": "No",
-              "notBetween": "No entre",
-              "notEmpty": "No vacío"
-            },
-            "string": {
-              "contains": "Contiene",
-              "empty": "Vacío",
-              "endsWith": "Termina en",
-              "equals": "Igual a",
-              "not": "No",
-              "notEmpty": "No Vacio",
-              "startsWith": "Empieza con"
-            }
-          },
-        }
-      },
-
-      "initComplete": function (settings, json) {
-    $('select[name="tablaLlanta_length"]').removeClass("form-control").removeClass("form-control-sm")
-
-  
+        }).then(data => data.json()).then(response => {
+          if (response.status = 200) {
+            notificacion(1500, "Genial!", "success", "Llanta inhabilitada")
+            tabla.ajax.reload()
+          } else {
+            notificacion(1500, "Error", "error", "Esa llanta no existe")
+          }
+        })
 
       }
+    })
 
-    });
-    tablaLLantas.searchBuilder.container().prependTo(tablaLLantas.table().container());
-    tablaLLantas.on('order.dt search.dt', function () {
-      tablaLLantas.column(0, {
-        search: 'applied',
-        order: 'applied'
-      }).nodes().each(function (cell, i) {
-        cell.innerHTML = i + 1;
-      });
-    }).draw();
-    $(document).on("click", '.btn-delete-llanta', function (e) {
 
-e.preventDefault()
-var tr = tablaLLantas.cell($(this).closest("td")).index();
-var data = tablaLLantas.row(tr.row).data();
-Swal.fire({
-  title: 'Eliminar llanta',
-  icon: "warning",
-  text: "¿Está seguro que desea eliminar la llanta?",
-  showCancelButton: true,
-  confirmButtonColor: "#e74a3b",
-  cancelButtonColor: '#6c757d',
-  confirmButtonText: 'Sí, eliminarlo!'
-}).then((result) => {
-  if (result.isConfirmed) {
-      Swal.showLoading()
+  });
+  $("#modelo").on("change", function (e) {
+    parameters["modelo"] = $("#modelo").val()
+    generate_reports();
+  })
+  $("#medida").on("change", function (e) {
+    $("#date_ranger").val("")
+    $('#marca').prop("disabled", true)
+    $('#date_ranger').prop("disabled", true)
+    if ($('#medida').val() == "") {
 
-      fetch("../llanta/" + data.id + "/delete/", {
-        method: "POST",
-        headers: {
-          'X-CSRFToken': csrftoken
+      $('#marca').prop("disabled", false)
+      $('#date_ranger').prop("disabled", false)
+      $('#modelo').prop("disabled", false)
+      $('#modelo').empty();
+    }
+    parameters["start_date"]=""
+      parameters["end_date"]=""
+      parameters["medida"] = $("#medida").val()
+      parameters["marca"] = ""
+      parameters["modelo"] =""
+
+    generate_reports();
+
+  })
+  $("#marca").on("change", function (e) {
+    parameters["marca"] = $("#marca").val()
+    generate_reports();
+    $('#medida').prop("disabled", true)
+    $('#date_ranger').prop("disabled", true)
+    e.preventDefault();
+
+    if ($('#marca').val() == "") {
+      $('#medida').prop("disabled", false)
+      $('#date_ranger').prop("disabled", false)
+      $('#modelo').prop("disabled", true)
+      $('#modelo').empty();
+    } else {
+      $('#modelo').prop("disabled", true)
+
+      $('#modelo').empty();
+      $('#modelo').append($("<option>", {
+        value: "",
+        text: " --------- "
+      }));
+      $.ajax({
+        'url': '/render-option-llanta',
+        'type': 'GET',
+        'async': false,
+        'data': {
+          'id_marca': $('#marca').val()
         },
-      }).then(data => data.json()).then(response => {
-        if (response.status = 200) {
-          notificacion(1500, "Genial!", "success", "Llanta inhabilitada")
-          tablaLLantas.ajax.reload()
-        } else{
-          notificacion(1500, "Error", "error", "Esa llanta no existe")
+        'success': function (data) {
+          $('#modelo').prop("disabled", false)
+          $.each(data, function (index, valuex) {
+            $('#modelo').append($("<option>", {
+              value: valuex.id,
+              text: valuex.descripcion
+            }));
+          });
+        },
+        'error': function (request, error) {
+          //alert("Request: "+JSON.stringify(request));
         }
-      })
-    
-  }
-})
-})
-    $("#btnBuscar").click(function () {
-      $('#frmlist').submit();
-      let spinner = $(this.currentTarget).find('span')
-      spinner.removeClass('d-none')
-      setTimeout(_ => spinner.addClass('d-none'), 2000)
-      $(this).html(
-        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...'
-      );
-      $(this).prop("disabled", true);
-    });
+      });
+    }
   });
 </script>
 {% endblock %}

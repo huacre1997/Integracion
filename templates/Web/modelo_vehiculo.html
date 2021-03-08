@@ -22,8 +22,19 @@
             {% csrf_token %}
             <div class="card-body">
              <div class="row">
-              	<div class="col-lg-2">Marca</div>
-                <div class="col-lg-4">{{form.marca_vehiculo}}</div>
+              	<div class="col-lg-2">Marca {{obj.marca_vehiculo.id}}</div>
+                <div class="col-lg-4">
+                <select name="marca_vehiculo" id="marca_vehiculo" class="form-select">
+                <option value=""></option>
+                
+                  {% for i in marca_vehiculo  %}
+                  {% if  i.activo or obj.marca_vehiculo.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.marca_vehiculo.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                </div>
               </div>
                             <br>
 
@@ -31,7 +42,6 @@
               	<div class="col-lg-2">Descripción</div>
                 <div class="col-lg-4">{{form.descripcion}}</div>
               </div>
-             
               <br>
               <div class="row">
               	<div class="col-lg-2">Activo</div>
@@ -53,11 +63,23 @@
 {% block bottom_scripts %}
 
 <script>
+$(document).ready(function () {
+  // $("#id_marca_vehiculo option[value={{obj.marca_vehiculo.id}}]").attr("selected","selected")
+
   $('.btn_x').on('click', function() {
     //var $this = $(this);
     //archivo = $('#id_solicitud').val()
     //if (archivo!='') { $this.button('loading');}
-    $this.button('loading');
+    $this.button('loading');})
   });
+
+  {% if obj %}
+  let option=document.createElement("option")
+  option.textContent="{{obj.marca_vehiculo.descripcion}}"
+  option.selected=true
+    option.value="{{obj.marca_vehiculo.id}}"
+
+  $("#id_marca_vehiculo").append(option)
+  {%endif%}
   </script>
 {% endblock %}

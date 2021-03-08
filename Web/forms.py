@@ -370,9 +370,11 @@ class AnchoBandaRenovaForm(forms.ModelForm):
 class MarcaLlantaForm(forms.ModelForm):
     class Meta:
         model = MarcaLlanta
-        fields = ["descripcion"]
+        fields = ["descripcion","activo"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+            "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
+
         }
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
@@ -404,12 +406,10 @@ class ModeloLlantaForm(forms.ModelForm):
         fields = ('descripcion', 'marca_llanta', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
-            'marca_llanta': forms.Select( attrs={'class':'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['marca_llanta'].queryset = MarcaLlanta.objects.filter(eliminado=False,activo=True)
 
     def clean(self):
         subject = self.cleaned_data.get('descripcion')
@@ -488,6 +488,7 @@ class MarcaVehiculoForm(forms.ModelForm):
         fields = ('descripcion', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+            "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
         }
 
     def clean_descripcion(self):
@@ -503,12 +504,11 @@ class ModeloVehiculoForm(forms.ModelForm):
         fields = ('descripcion', 'marca_vehiculo', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
-            'marca_vehiculo': forms.Select( attrs={'class':'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['marca_vehiculo'].queryset = MarcaVehiculo.objects.filter(eliminado=False,activo=True)
+     
     def clean(self):
         data=self.cleaned_data.get("descripcion")
         data2=self.cleaned_data.get("marca_vehiculo")

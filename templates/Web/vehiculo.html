@@ -237,7 +237,6 @@ console.log( );
 $('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').prop("selected", true);
 function actualizar_modelo(){
    if(  $('#id_marca').val()==""){
-      console.log("aea")
            $('#id_modelo_vehiculo').prop("disabled",true)
        }else{
     $('#id_modelo_vehiculo').empty();

@@ -89,6 +89,7 @@ class LogueoView(FormView):
         password = form.cleaned_data['clave']
         user = auth.authenticate(username=username, password=password)
         if user is not None and user.is_active:
+            print("aeaaaaa")
             auth.login(self.request, user)
             messages.success(self.request,f"Bienvenido {self.request.user}",extra_tags="login")
 
@@ -96,11 +97,12 @@ class LogueoView(FormView):
         else:
             auth.logout(self.request)    
             messages.error(self.request, 'El usuario o la clave es incorrecto.')
+            print("aea")
             return redirect(reverse_lazy("Web:login"))            
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, str(form.errors))
+        messages.error(self.request, 'El usuario o la clave es incorrecto.')
         return super().form_invalid(form)
 
 class HomePageView(LoginView, TemplateView):
@@ -1008,10 +1010,11 @@ class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     def post(self,request,*args, **kwargs):
         data={}
         try:
+            print(request.POST)
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in MarcaLlanta.objects.filter(activo=True).order_by("created_at").reverse():
+                for i in MarcaLlanta.objects.filter(eliminado=False).order_by("created_at").reverse():
                     data.append(i.toJSON())
 
             else:
@@ -1088,11 +1091,15 @@ class MarcaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def post(self, request,*args, **kwargs):       
         try:
+            print(self.request.POST)
             form = self.get_form()
 
             if form.is_valid():
-
+                print(form)
                 instance=form.save(commit=False)
+                if not "activo" in self.request.POST:
+                    print("aeaaaa")
+                    instance.activo=False
                 instance.modified_by = self.request.user
                 instance.save()
                 data = {
@@ -1173,7 +1180,11 @@ class ModeloLlantaCreateView(LoginRequiredMixin,ValidateMixin ,CreateView):
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['marca_llanta']=MarcaLlanta.objects.all().values("id","descripcion","activo")
+        return context
+    
 
 class ModeloLlantaUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = ModeloLlantaForm
@@ -1183,7 +1194,7 @@ class ModeloLlantaUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_modelollanta"]
-
+    context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -1197,6 +1208,8 @@ class ModeloLlantaUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['update'] = True
+        context['marca_llanta']=MarcaLlanta.objects.all().values("id","descripcion","activo")
+
         return context
 
 
@@ -1745,6 +1758,10 @@ class ModeloVehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['marca_vehiculo']=MarcaVehiculo.objects.all().values("id","descripcion","activo")
+        return context
 
 
 class ModeloVehiculoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
@@ -1755,7 +1772,7 @@ class ModeloVehiculoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_modelovehiculo"]
-
+    context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -1763,12 +1780,15 @@ class ModeloVehiculoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
+        print(form)
+
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['update'] = True
+        context['marca_vehiculo']=MarcaVehiculo.objects.all().values("id","descripcion","activo")
         return context
 
 
@@ -1801,20 +1821,34 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
    
     def post(self,request,*args, **kwargs):
         try:
-            action=request.POST["action"]
-            print("if")
-            if action=="searchData":
-                print(action)
-                data=[]
-                for i in Llanta.objects.filter(activo=True,eliminado=False).order_by("created_at").reverse():
-                    data.append(i.toJSON())
-              
+            print(self.request.POST)
+            start_date=self.request.POST["start_date"]
+            end_date=self.request.POST["end_date"]
+            modelo=self.request.POST["modelo"]
+            medida=self.request.POST["medida"]
 
-            else:
-               
-                data["error"]="Ha ocurrido un error"
-            dump = json.dumps(data)
-            return HttpResponse(dump, content_type='application/json')
+            marca=self.request.POST["marca"]
+
+            search=Llanta.objects.filter(eliminado=False) 
+            response=search 
+            if marca:
+                response=search.filter(modelo_llanta__marca_llanta_id=marca)
+
+                if modelo:
+
+                    response=search.filter(modelo_llanta__marca_llanta_id=marca,modelo_llanta_id=modelo)
+            elif medida!="":
+                response=search.filter(medida_llanta=medida)
+
+            elif start_date and end_date:
+                response=search.filter(created_at__range=[start_date,end_date])
+
+                if start_date==end_date:     
+                    response=search.filter(created_at__contains=start_date)            
+            data=[]
+            for i in response:
+                data.append(i.toJSON2())   
+            return JsonResponse(data, safe=False)
  
         except Exception as e:
             print(e)
@@ -1844,12 +1878,14 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
         
         return qs.order_by('created_at').reverse()
 
-    # def get_context_data(self, **kwargs):
-    #     # import pdb; pdb.set_trace()
-    #     context = super().get_context_data(**kwargs)
-    #     # context['pages'] = self.paginate_by
-    #     context['marcas'] = MarcaLlanta.objects.filter(eliminado=False,activo=True).order_by('descripcion')
-    #     return context
+    def get_context_data(self, **kwargs):
+        # import pdb; pdb.set_trace()
+        context = super().get_context_data(**kwargs)
+        # context['pages'] = self.paginate_by
+        context['medida'] = MedidaLlanta.objects.all()
+        context['marca'] = MarcaLlanta.objects.all().values("id",'descripcion')
+
+        return context
 
 
 class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
@@ -2038,14 +2074,14 @@ class LlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.delete_llanta"]
     
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         id_llanta = self.kwargs['pk']
         llanta = Llanta.objects.get(pk=id_llanta)
         llanta.modified_by=request.user
         llanta.eliminado = True
         llanta.save()
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return HttpResponseRedirect(reverse('Web:llantas'))
+        data={"status":200}
+        return JsonResponse(data,safe=False)
     
 from datetime import date
 from datetime import datetime
@@ -2064,16 +2100,31 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     
     
     def post(self,request,*args, **kwargs):
-        data={}
         try:
             print(self.request.POST)
-            start_date=self.request.POST.get("start_date","")
-            end_date=self.request.POST.get("end_date","")
-            if start_date!="" and end_date!="":
-                
-                search=Vehiculo.objects.all().filter(created_at__range=[start_date,end_date],eliminado=False)
-            else:
-                search=Vehiculo.objects.all().filter(eliminado=False)    
+            start_date=self.request.POST["start_date"]
+            end_date=self.request.POST["end_date"]
+            placa=self.request.POST["placa"]
+            modelo=self.request.POST["modelo"]
+
+            marca=self.request.POST["marca"]
+
+            search=Vehiculo.objects.filter(eliminado=False)    
+            if marca:
+                search=Vehiculo.objects.filter(eliminado=False,modelo_vehiculo__marca_vehiculo_id=marca)
+
+                if modelo:
+                    search=Vehiculo.objects.filter(eliminado=False,modelo_vehiculo__marca_vehiculo_id=marca,modelo_vehiculo_id=modelo)
+
+                    
+            elif placa:
+                search=Vehiculo.objects.filter(placa=placa)
+            elif start_date and end_date:
+                search=Vehiculo.objects.filter(created_at__range=[start_date,end_date],eliminado=False)
+
+                if start_date==end_date:     
+                    search=Vehiculo.objects.filter(created_at__contains=start_date,eliminado=False)
+
             data=[]
             for i in search:
                 data.append(i.toJSON2())
@@ -2089,7 +2140,10 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
         # import pdb; pdb.set_trace()
         context = super().get_context_data(**kwargs)
         # context['pages'] = self.paginate_by
-        context['marcas'] = MarcaVehiculo.objects.filter(eliminado=False).order_by('descripcion')
+        context['marca'] = MarcaVehiculo.objects.filter().values("id",'descripcion')
+
+        context['placa'] = Vehiculo.objects.filter(eliminado=False).values("placa","id")
+
         return context
 
 
@@ -2146,14 +2200,15 @@ class VehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.delete_vehiculo"]
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         id = self.kwargs['pk']
+        print(id)
         obj = Vehiculo.objects.get(pk=id)
         obj.modified_by=request.user
         obj.eliminado = True
         obj.save()
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return HttpResponseRedirect(reverse('Web:vehiculos',))
+        data={"status":200}
+        return JsonResponse(data,safe=False)
 
 
 def RenderOptionVehiculo(request):

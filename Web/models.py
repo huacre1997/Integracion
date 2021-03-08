@@ -316,7 +316,7 @@ class MarcaLlanta(models.Model):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self,exclude=["activo","modified_by","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["modified_by","eliminado","created_by","modified_at"])
       return item
 class ModeloLlanta(models.Model):
    marca_llanta = models.ForeignKey(MarcaLlanta, on_delete=models.PROTECT, related_name="modelos")
@@ -574,8 +574,21 @@ class Llanta(models.Model):
          item["vehiculo"]=self.vehiculo.placa
       return item
    def toJSON2(self):
-      item = model_to_dict(self,exclude=["almacen","marca_llanta","medida_llanta","activo","modelo_llanta","cubierta","vehiculo","ubicacion"])
-    
+      item = model_to_dict(self,exclude=["medida_llanta","posicion","repuesto","almacen","cubierta","estado","eliminado","activo","modified_at","eliminado","created_by","modified_by"])
+      item["marca_llanta"]=self.marca_llanta.descripcion
+      item["modelo_llanta"]=self.modelo_llanta.descripcion
+      if self.medida_llanta.capas:
+         item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
+      else:
+         item["medida"]='Medida {} - {} '.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')))
+ 
+      item["km"]=format(self.cubierta.km, '.2f')
+      item["costo"]=format(self.cubierta.costo, '.2f')
+      item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
+      if self.vehiculo: 
+         item["vehiculo"]=self.vehiculo.placa
+      if self.ubicacion: 
+         item["ubicacion"]=self.ubicacion.descripcion    
       return item
    @property
    def code(self):

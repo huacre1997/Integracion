@@ -42,6 +42,7 @@
                       <th></th>
                       <th>N° de marca</th>
                       <th>Nombre</th>
+                        <th>Estado</th>
                       <th style="width: 20%;">Acciones</th>
                     </tr>
                   </thead>
@@ -72,8 +73,7 @@
   <!-- End of Page Wrapper -->
   {% endblock %}
   {% block bottom_scripts %}
-  <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js  "></script>
-  <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+ 
   <script>
     var tablaMarcas
     $(document).ready(function() {
@@ -102,25 +102,25 @@
           "data": null,
         },
         {
-          "data": 'id',className: "middle"
+          "data": 'id',className: "middle text-center"
         },
         
         {
-          "data": 'descripcion',className: "middle"
+          "data": 'descripcion',className: "middle  text-center"
         },
         
      
-        {% comment %} {
+       {
           "data": 'activo',
-          className: "estado middle",
+          className: "estado middle  text-center",
           render: function (data, type, row) {
             if (data) {
-              return '<i class="fa fa-check text-success" aria-hidden="true"></i>';
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
             } else {
-              return "Inactivo"
+              return '<i class="fas fa-times-circle text-danger"></i>';
             }
           }
-        }, {% endcomment %}
+        },
         {
           "data": 'estado',className:"text-center middle"
         },
