@@ -494,11 +494,14 @@ class Vehiculo(models.Model):
 class Renovadora(models.Model):
    nombre=models.CharField(max_length=100,null=True,blank=True)
    diseño=models.CharField(max_length=100, null=True,blank=True)
+   diseño2=models.CharField(max_length=100, null=True,blank=True)
+
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
+   
    def __str__(self):
       return self.nombre
    def toJSON(self):
