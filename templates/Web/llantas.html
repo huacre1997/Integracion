@@ -266,6 +266,11 @@
 
   }).on('cancel.daterangepicker', function (ev, picker) {
     $(this).val("");
+    parameters["start_date"]=""
+    parameters["end_date"]=""
+    parameters["medida"]=""
+    parameters["modelo"]=""
+    parameters["marca"]=""
 
     date_range = picker;
     generate_reports();

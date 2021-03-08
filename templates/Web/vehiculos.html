@@ -253,9 +253,13 @@
     generate_reports()
 
   }).on('cancel.daterangepicker', function (ev, picker) {
-      $(this).val("");
-
     date_range = picker;
+    $(this).val("");
+    parameters["start_date"]=""
+    parameters["end_date"]=""
+    parameters["placa"]=""
+    parameters["modelo"]=""
+    parameters["marca"]=""
     generate_reports();
   });
     $(document).on("click", '.btn-eliminar-vehiculo', function (e) {
