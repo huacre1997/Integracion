@@ -456,8 +456,7 @@ class Vehiculo(models.Model):
    ano = models.IntegerField(null=True)
    modelo_vehiculo = models.ForeignKey(ModeloVehiculo, on_delete=models.PROTECT)
    tipo_vehiculo = models.ForeignKey(TipoVehiculo, on_delete=models.PROTECT)
-   ubicacion = models.CharField( max_length=50,null=False,blank=True)
-   almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT)
+   ubicacionv = models.ForeignKey(Lugar, verbose_name="Lugar", on_delete=models.PROTECT, null=True, blank=True)
    propiedad = models.CharField(max_length=50, null=True)
    placa = models.CharField(max_length=50, null=True, blank=True)
    operacion = models.CharField(max_length=2,choices=Operacion.choices, null=True, blank=True)
@@ -476,12 +475,20 @@ class Vehiculo(models.Model):
    def __str__(self):
       return self.placa
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","almacen"])
+      item = model_to_dict(self,exclude=["modified_by"])
       item["created_by"]=self.created_by.toJSON2()
 
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')
       item["modelo_vehiculo"]=self.modelo_vehiculo.toJSON()
       item["tipo_vehiculo"]=self.tipo_vehiculo.toJSON()
+
+      return item
+   def toJSON2(self):
+      item = model_to_dict(self,exclude=["obs","nro_ejes","estado","propiedad","operacion","modified_by","almacen","modelo_vehiculo","tipo_vehiculo","created_by","ubicacionv"])
+      item["marca"]=self.modelo_vehiculo.marca_vehiculo.descripcion
+      item["modelo"]=self.modelo_vehiculo.descripcion
+      item["nro_llantas"]=self.tipo_vehiculo.nro_llantas
+      item["created_at"]=self.created_at.strftime('%Y-%m-%d')
 
       return item
 class Renovadora(models.Model):
@@ -511,8 +518,8 @@ class  CubiertaLlanta(models.Model):
    a_promedio=models.DecimalField(max_digits=10, decimal_places=2)
    fech_ren=models.DateField()
    modelo_renova=models.ForeignKey(ModeloRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
-   ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.CASCADE,blank=True,null=True,default=None)
-   renovadora=models.ForeignKey(Renovadora,on_delete=models.CASCADE,blank=True,null=True,default=None)
+   ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
+   renovadora=models.ForeignKey(MarcaRenova,on_delete=models.PROTECT,blank=True,null=True,default=None)
    
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)

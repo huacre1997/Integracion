@@ -25,7 +25,7 @@
 
             </div>
             <div class="card-body">
-
+            <input type="text" name="date_ranger" class="form-control" id="date_ranger" autocomplete="off">
   
                 <div class="table-responsive">
                 <table class="table table-bordered table-hover" id="tablaVehiculo" width="100%" cellspacing="0">
@@ -44,7 +44,7 @@
                       <th style="width: 20%;"></th>
                     </tr>
                   </thead>
-                  <tbody>
+                  {% comment %} <tbody>
                     {% for obj in objetos %}
                     <tr>
                       <td class="middle text-center">{{pag}}</td>
@@ -69,14 +69,13 @@
                         <a href="#" class="btn btn-danger btn-sm"   data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
                         
                       {% endif %}
-                        {% comment %} {% include 'Web/fragments/eliminar_vehiculo.html' %} {% endcomment %}
+                        {% include 'Web/fragments/eliminar_vehiculo.html' %}
                       </td>
                     </tr>
                     {% endfor %}
-                  </tbody>
+                  </tbody> {% endcomment %}
                 </table>
                 </div>
-                {% comment %} {% include 'Common/paginacion.html' %} {% endcomment %}
               </form>
 
             </div>
@@ -87,109 +86,13 @@
   {% endblock %}
   {% block bottom_scripts %}
 
-  <script src="{% static "vendor/select2/select2.min.js" %}"></script>
   <script>
   var tablaVehiculo
-    $(document).ready(function() {
+
+
       $('.select2').select2();
-     var tablaVehiculo = $('#tablaVehiculo').DataTable({
-      responsive: true,
-      stateSave: true,
 
-
-      "lengthMenu": [
-        [5, 10, 25, 50, -1],
-        [5, 10, 25, 50, "All"]
-      ],
-  
-    
-      searchBuilder: true,
-      searchBuilder: {
-        columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-      },
-  
-      "language": {
-
-        "processing": '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem; role="status"><span class="sr-only">Loading...</span></div>',
-        "lengthMenu": "Mostrar _MENU_ registros",
-        "zeroRecords": "No se encontraron resultados",
-        "emptyTable": "Ningún dato disponible en esta tabla",
-        "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-        "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-        "infoFiltered": "(filtrado de un total de _MAX_ registros)",
-        "search": "Buscar:",
-        "infoThousands": ",",
-        "loadingRecords": "Cargando...",
-        "searchBuilder": {
-          "add": "Añadir condición",
-          "button": {
-            "0": "Constructor de búsqueda",
-            "_": "Constructor de búsqueda (%d)"
-          },
-          data: 'Columna',
-
-          title: {
-            0: 'Filtros',
-            _: 'Filtros (%d)'
-          },
-          value: 'Ingrese término de búsqueda.',
-          valueJoiner: 'hasta',
-          "clearAll": "Borrar todo",
-          "condition": "Condición",
-          "conditions": {
-            "date": {
-              "after": "Despues",
-              "before": "Antes",
-              "between": "Entre",
-              "empty": "Vacío",
-              "equals": "Igual a",
-              "not": "No",
-              "notBetween": "No entre",
-              "notEmpty": "No Vacio"
-            },
-            "number": {
-              "between": "Entre",
-              "empty": "Vacio",
-              "equals": "Igual a",
-              "gt": "Mayor a",
-              "gte": "Mayor o igual a",
-              "lt": "Menor que",
-              "lte": "Menor o igual que",
-              "not": "No",
-              "notBetween": "No entre",
-              "notEmpty": "No vacío"
-            },
-            "string": {
-              "contains": "Contiene",
-              "empty": "Vacío",
-              "endsWith": "Termina en",
-              "equals": "Igual a",
-              "not": "No",
-              "notEmpty": "No Vacio",
-              "startsWith": "Empieza con"
-            }
-          },
-        }
-      },
-
-      "initComplete": function (settings, json) {
-        $("select[name='tablaVehiculo_length']").removeClass("form-control").addClass("form-select")
-        // $(".dtsb-group > .dtsb-add").removeClass("btn-light").addClass("btn-primary")
-        console.log($("button[class='dtsb-add']"));
-
-
-      }
-
-    });
-      tablaVehiculo.searchBuilder.container().prependTo(tablaVehiculo.table().container());
-    tablaVehiculo.on('order.dt search.dt', function () {
-      tablaVehiculo.column(0, {
-        search: 'applied',
-        order: 'applied'
-      }).nodes().each(function (cell, i) {
-        cell.innerHTML = i + 1;
-      });
-    }).draw();
+ 
       $("#btnBuscar").click(function() {
         $('#frmlist').submit();
         let spinner = $(this.currentTarget).find('span')
@@ -198,7 +101,183 @@
         $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
         $(this).prop("disabled", true);
       });
+ var date_range = null
+  var date_now = new moment().format('YYYY-MM-DD');
+
+  function generate_reports() {
+    var parameters = {
+      "start_date": "",
+      "end_date": "",
+    }
+    if (date_range !== null) {
+      parameters["start_date"] = date_range.startDate.format("YYYY-MM-DD")
+      parameters["end_date"] = date_range.endDate.format("YYYY-MM-DD")
+
+    }
+    tabla = $("#tablaVehiculo").DataTable({
+      processing:"true",
+    responsive: true,
+      stateSave: true,
+            destroy: true,
+
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+      language:{"url":"{% static 'language.json' %}"},
+      ajax: {
+        url: window.location.pathname,
+        type: "POST",
+        data: parameters,
+        dataSrc: ""
+      },
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+   
+
+      columns: [
+       {
+          "data": "id",
+            className: "middle"
+
+        },
+        {
+          "data": "placa",
+          className: "middle"
+        },
+         {
+          "data": "marca",
+          className: "middle"
+        },
+         {
+          "data": "modelo",
+          className: "middle"
+        },
+          {
+          "data": "ano",
+          className: "middle"
+        },
+        {
+          "data": "nro_llantas",
+          className: "middle"
+        },
+        {
+          "data": "nro_llantas_repuesto",
+          className: "middle"
+        },
+        {
+          "data": "km",
+          className: "middle"
+        },
+        {
+          "data": "created_at",
+          className: "middle"
+        },
+          {
+          "data": "null",
+          className: "middle"
+        },
+       ],
+       columnDefs: [{
+          targets: [-1],
+
+          render: function (row, data, index) {
+              var buttons =
+                '<a class="btn btn-warning mr-1"  role="button" href="../vehiculo/'+ index.id +
+    
+                '"><i class="far fa-edit" ></i>&nbsp;Editar</a>' +
+                  '<button class="btn btn-danger mr-1 btn-eliminar-vehiculo"'+      
+                '"><i class="fa fa-ban" ></i></button>';
+              return buttons;
+            
+          },
+
+        }]
+  
+
     });
+
+   {% comment %} tabla.on('order.dt search.dt', function () {
+      tabla.column(0, {
+        search: 'applied',
+        order: 'applied'
+      }).nodes().each(function (cell, i) {
+        cell.innerHTML = i + 1;
+      });
+    }).draw(); {% endcomment %}
+  }
+  $('input[name="date_ranger"]').daterangepicker({
+    opens: 'left'
+  }).on("apply.daterangepicker", function (ev, picker) {
+    date_range = picker;
+    generate_reports()
+
+  }).on('cancel.daterangepicker', function (ev, picker) {
+    $(this).data('daterangepicker').setStartDate(date_now);
+    $(this).data('daterangepicker').setEndDate(date_now);
+    date_range = picker;
+    generate_reports();
+  });
+    $(document).on("click", '.btn-eliminar-vehiculo', function (e) {
+
+      e.preventDefault()
+      var tr = tabla.cell($(this).closest("td")).index();
+      var data = tabla.row(tr.row).data();
+      Swal.fire({
+        title: 'Eliminar vehículo',
+        icon: "warning",
+        text: "¿Está seguro que desea Eliminar el vehículo?",
+        showCancelButton: true,
+        confirmButtonColor: "#e74a3b",
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminarlo!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.showLoading()
+
+            fetch("../vehiculo/" + data.id + "/delete/", {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+            }).then(data => data.json()).then(response => {
+              if (response.status = 200) {
+                notificacion(1500, "Genial!", "success", "Vehículo eliminado!")
+                tabla.ajax.reload()
+              } else
+              if (response == 404) {
+                notificacion(1500, "Error", "error", "Ese vehículo no existe")
+              }
+            })
+          
+        }
+      })
+    })
+    generate_reports();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
   </script>
   {% endblock %}
   

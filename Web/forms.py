@@ -299,7 +299,12 @@ class LugarForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
         }
 
-
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if Lugar.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : La ubicación {data} ya se encuentra registrada .")
+        return data
 class MarcaRenovaForm(forms.ModelForm):
     class Meta:
         model = MarcaRenova
@@ -381,6 +386,9 @@ class TipoVehiculoForm(forms.ModelForm):
         fields = ('descripcion', "codigo",'activo',"nro_llantas")
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+            'codigo': forms.TextInput( attrs={'class':'form-control'}),
+            'nro_llantas': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
+            'activo': forms.CheckboxInput ( attrs={'class':'form-check-input'}),
 
         }
     def clean_descripcion(self):
@@ -619,15 +627,14 @@ class VehiculoForm(forms.ModelForm):
     class Meta:	
         model = Vehiculo
         fields = ('ano','modelo_vehiculo','tipo_vehiculo','propiedad','placa',
-            'operacion','km','nro_llantas_repuesto','obs', 'ubicacion', 'almacen' )
+            'operacion','km','nro_llantas_repuesto','obs', 'ubicacionv' )
         widgets = {
             'ano': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'1950', 'step':'1'}),
             'modelo_vehiculo': forms.Select( attrs={'class':'form-control'}),
             'tipo_vehiculo': forms.Select( attrs={'class':'form-control'}),
             'propiedad': forms.TextInput( attrs={'class':'form-control'}),
             'placa': forms.TextInput( attrs={'class':'form-control'}),
-            'ubicacion': forms.TextInput( attrs={'class':'form-control'}),
-            'almacen': forms.Select( attrs={'class':'form-control'}),
+            'ubicacionv': forms.Select( attrs={'class':'form-select'}),
             'operacion': forms.Select( attrs={'class':'form-select'}),
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             'nro_llantas_repuesto': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
@@ -639,8 +646,7 @@ class VehiculoForm(forms.ModelForm):
         self.fields['modelo_vehiculo'].queryset = ModeloVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['tipo_vehiculo'].queryset = TipoVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['obs'].required = False
-        self.fields['almacen'].queryset = Almacen.objects.filter(eliminado=False,activo=True)
-        self.fields['almacen'].required = False
+
         self.fields['nro_llantas_repuesto'].required = False
     
     def clean_placa(self):

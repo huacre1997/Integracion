@@ -89,10 +89,10 @@
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
+				   language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
       });
 
       $("#btnBuscar").click(function() {

@@ -15,7 +15,7 @@
 
   <!-- Custom fonts for this template-->
   <!--link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"-->
-  <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
   
   <!---->
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -33,7 +33,8 @@
 
 <link href='https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap5.min.css' rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
+<link href="{% static 'vendor/select2/select2.min.css' %}" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
 </head>
 <style>
@@ -101,9 +102,97 @@ textarea, .vTextField {
       <hr class="sidebar-divider">
 
       <!-- Heading -->
-      <div class="sidebar-heading">Módulos</div>
+      <div class="sidebar-heading">MÓDULOS</div>
+
+         {% if request.user|has_group:"Catalogos" or request.user|has_group:"Administrador" %} 
+
+      <li class="{% block blockCatalogos %}nav-item{% endblock %}">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-wrench"></i>
+          <span>CATÁLOGOS</span>
+        </a>
+        <div id="collapseUtilities" class="{% block collapseCatalogos %}collapse{% endblock %}" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            {% if 'Web.view_marcavehiculo' in perm %}
+
+            <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca del Vehículo</a>
+            {%endif%} 
+                {% if 'Web.view_modelovehiculo' in perm %}
+
+            <a class="{% block modelo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:modelo-vehiculos' %}">Modelo del Vehículo</a>
+            {%endif%} 
+               {% if 'Web.view_tipovehiculo' in perm %}
+
+            <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">Configuración Vehicular</a>
+            {%endif%}
+             {% if 'Web.view_lugar' in perm %}
+
+            <a class="{% block lugares %}collapse-item{% endblock %}" href="{% url 'Web:lugares' %}">Ubicación del Vehículo</a>
+            {% endif %} 
+             {% if 'Web.view_vehiculo' in perm %}
+
+            <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Registro del Vehículo</a>
+            {%endif%}
+              {% if 'Web.view_marcallanta' in perm %}
+
+            <a class="{% block marca-llantas %}collapse-item{% endblock %}" href="{% url 'Web:marca-llantas' %}">Marca del Neumático</a>
+            {% endif %}
+            {% if 'Web.view_modelollanta' in perm %}
+
+            <a class="{% block modelo-llantas %}collapse-item{% endblock %}" href="{% url 'Web:modelo-llantas' %}">Modelo del Neumático</a>
+            {% endif %}
+            {% if 'Web.view_medidallanta' in perm %}
+
+            <a class="{% block medida-llantas %}collapse-item{% endblock %}" href="{% url 'Web:medida-llantas' %}">Medida del Neumático</a>
+            {% endif %}
+            {% if 'Web.view_marcarenova' in perm %}
+
+            <a class="{% block marca-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:marca-renovaciones' %}">Reencauchadora</a>
+            {% endif %}
+            {% if 'Web.view_modelorenova' in perm %}
+
+            <a class="{% block modelo-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:modelo-renovaciones' %}">Modelo de Banda</a>
+            {% endif %}
+            {% if 'Web.view_anchobandarenova' in perm %}
+
+            <a class="{% block ancho-banda-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:ancho-banda-renovaciones' %}">Ancho de Banda</a>
+            {% endif %}
+             {% if 'Web.view_ubicacion' in perm %}
+
+            <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicación del Neumático</a>
+            {%endif%} 
+           
+
+            <!-- <a class="" href="{% url 'Web:estado-llantas' %}">Estado llantas</a> -->
+            {% if 'Web.view_llanta' in perm %}
+
+            <a class="{% block llantas %}collapse-item{% endblock %}" href="{% url 'Web:llantas' %}">Registro del Neumático</a>
+            {% endif %}
+          {% comment %} {% if 'Web.view_tipopiso' in perm %}
+
+            <a class="{% block tipo-pisos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-pisos' %}">Tipo de pisos</a>
+            {%endif%} 
+           {% if 'Web.view_tiposervicio' in perm %}
+
+            <a class="{% block tipo-servicios %}collapse-item{% endblock %}" href="{% url 'Web:tipo-servicios' %}">Tipo de Servicios</a>
+            {%endif%} 
+          {% endcomment %}
+         
+{% comment %}   
+         
+          
+          {% if 'Web.view_almacen' in perm %}
+
+            <a class="{% block almacenes %}collapse-item{% endblock %}" href="{% url 'Web:almacenes' %}">Almacenes</a>
+            {% endif %}
+          {% endcomment %}
+
+          </div>
+        </div>
+      </li>
+  {% endif %}
       
-      <!-- Nav Item - Pages Collapse Menu -->
+   
            {% if 'Web.view_historialllantas' in perm and 'Web.view_inpeccionllantas' in perm %}
 
       <li class="{% block blockProcesos %}nav-item{% endblock %}">
@@ -125,87 +214,7 @@ textarea, .vTextField {
       </li>
    
       {% endif %}
-    {% if request.user|has_group:"Catalogos" or request.user|has_group:"Administrador" %} 
-
-      <li class="{% block blockCatalogos %}nav-item{% endblock %}">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-          <i class="fas fa-fw fa-wrench"></i>
-          <span>CATALOGOS</span>
-        </a>
-        <div id="collapseUtilities" class="{% block collapseCatalogos %}collapse{% endblock %}" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-          {% if 'Web.view_tipopiso' in perm %}
-
-            <a class="{% block tipo-pisos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-pisos' %}">Tipo de pisos</a>
-            {%endif%} 
-           {% if 'Web.view_tiposervicio' in perm %}
-
-            <a class="{% block tipo-servicios %}collapse-item{% endblock %}" href="{% url 'Web:tipo-servicios' %}">Tipo de Servicios</a>
-            {%endif%} 
-            {% if 'Web.view_tipovehiculo' in perm %}
-
-            <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">TIpo Vehiculos</a>
-            {%endif%}
-            {% if 'Web.view_marcavehiculo' in perm %}
-
-            <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca Vehiculos</a>
-            {%endif%} 
-             {% if 'Web.view_modelovehiculo' in perm %}
-
-            <a class="{% block modelo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:modelo-vehiculos' %}">Modelo Vehiculos</a>
-            {%endif%} 
-  
-          {% if 'Web.view_ubicacion' in perm %}
-
-            <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicaciones</a>
-            {%endif%} 
-            {% if 'Web.view_marcarenova' in perm %}
-
-            <a class="{% block marca-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:marca-renovaciones' %}">Marca renovación</a>
-            {% endif %}
-            {% if 'Web.view_modelorenova' in perm %}
-
-            <a class="{% block modelo-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:modelo-renovaciones' %}">Modelo renovación</a>
-            {% endif %}
-            {% if 'Web.view_anchobandarenova' in perm %}
-
-            <a class="{% block ancho-banda-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:ancho-banda-renovaciones' %}">Ancho banda renovaciones</a>
-            {% endif %}
-
-            <!-- <a class="" href="{% url 'Web:estado-llantas' %}">Estado llantas</a> -->
-            {% if 'Web.view_llanta' in perm %}
-
-            <a class="{% block llantas %}collapse-item{% endblock %}" href="{% url 'Web:llantas' %}">Llantas</a>
-            {% endif %}
-            {% if 'Web.view_marcallanta' in perm %}
-
-            <a class="{% block marca-llantas %}collapse-item{% endblock %}" href="{% url 'Web:marca-llantas' %}">Marca llantas</a>
-            {% endif %}
-            {% if 'Web.view_modelollanta' in perm %}
-
-            <a class="{% block modelo-llantas %}collapse-item{% endblock %}" href="{% url 'Web:modelo-llantas' %}">Modelo llantas</a>
-            {% endif %}
-            {% if 'Web.view_medidallanta' in perm %}
-
-            <a class="{% block medida-llantas %}collapse-item{% endblock %}" href="{% url 'Web:medida-llantas' %}">Medida  llantas</a>
-            {% endif %}
-            {% if 'Web.view_vehiculo' in perm %}
-
-            <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Vehículos</a>
-            {%endif%}
-          {% if 'Web.view_almacen' in perm %}
-
-            <a class="{% block almacenes %}collapse-item{% endblock %}" href="{% url 'Web:almacenes' %}">Almacenes</a>
-            {% endif %}
-            {% if 'Web.view_lugar' in perm %}
-
-            <a class="{% block lugares %}collapse-item{% endblock %}" href="{% url 'Web:lugares' %}">Lugares</a>
-            {% endif %} 
-
-          </div>
-        </div>
-      </li>
-  {% endif %}
+ 
       <!-- Divider -->
       <!-- <hr class="sidebar-divider"> -->
 
@@ -465,20 +474,21 @@ textarea, .vTextField {
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-  <script src="{% static "js/sb-admin-2.min.js" %}"></script>
+  <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
   <script src="https://kit.fontawesome.com/0c4e8d2c3f.js" crossorigin="anonymous"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/sb-1.0.1/datatables.min.js"></script>
 <script src="http://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-<script src="{% static "vendor/select2/select2.min.js" %}"></script>
+<script src="{% static 'vendor/select2/select2.min.js' %}"></script>
 
-<script src="https://cdn.datatables.net/plug-ins/1.10.13/sorting/datetime-moment.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
   <script src="{% static "js/jquery.datetimepicker.full.min.js" %}"></script>
     <script src="{% static 'js/marca.js' %}"></script>
     <script src="{% static 'js/validaciones.js' %}"></script>
     <script src="{% static 'js/hoja_movimientos.js' %}"></script>
-{% comment %} <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js "></script>
-<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script> {% endcomment %}
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js "></script>
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
   {% block bottom_scripts %}{% endblock %}
   <script>
     $(document).ready(function () {

@@ -119,16 +119,16 @@ WSGI_APPLICATION = 'app.wsgi.application'
 #         'LOCATION': '127.0.0.1:11211',
 #     }
 # }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': "bdprueba",
-#         "HOST": "localhost",
-#         "USER": "postgres",
-#         "PASSWORD": "123",
-#         "PORT": 5432
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': "bdprueba",
+        "HOST": "localhost",
+        "USER": "postgres",
+        "PASSWORD": "123",
+        "PORT": 5432
+    }
+}
 
 import dj_database_url
 from decouple import config
@@ -175,7 +175,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

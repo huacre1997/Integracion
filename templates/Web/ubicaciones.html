@@ -50,8 +50,7 @@
                   <tbody>
                     {% for u in ubicaciones %}
                     <tr>
-                      {% number_page forloop.counter page_obj.number pages as pag %}
-                      <td>{{pag}}</td>
+                      <td></td>
                       <td>{{u.descripcion}}</td>
                       <td>{% if u.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
                       <td>
@@ -69,7 +68,6 @@
                   </tbody>
                 </table>
                 </div>
-                {% include 'Common/paginacion.html' %}
               </form>
 
             </div>
@@ -79,18 +77,29 @@
   <!-- End of Page Wrapper -->
   {% endblock %}
   {% block bottom_scripts %}
-  <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
-  <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
-  <script>
-    $(document).ready(function() {
-      $('#dataTable').DataTable({
-            responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
-      });
 
+  <script>
+  var tablaUbicaciones
+    $(document).ready(function() {
+     tablaUbicaciones=$('#dataTable').DataTable({
+            responsive: true,
+       "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+               language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+      });
+    tablaUbicaciones.on('order.dt search.dt', function () {
+      tablaUbicaciones.column(0, {
+        search: 'applied',
+        order: 'applied'
+      }).nodes().each(function (cell, i) {
+        cell.innerHTML = i + 1;
+      });
+    }).draw();
       $("#btnBuscar").click(function() {
         $('#frmlist').submit();
         let spinner = $(this.currentTarget).find('span')

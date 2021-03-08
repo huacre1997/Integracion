@@ -256,13 +256,12 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                     data = {
                     'status': 200,"error":{}
                    }
-                    return JsonResponse(data)
                 else:
                     data = {
                     "error":form.errors,
                     'status': 500,
                     }
-                    return JsonResponse(data)
+                return JsonResponse(data)
             else:
                 data["error"]="Nose ha ingresado nada"
                 return JsonResponse(data)
@@ -506,7 +505,6 @@ def UsuarioActivate(request,pk):
 class ListUbicacionesListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/ubicaciones.html'
     model = Ubicacion
-    paginate_by = 10
     context_object_name = 'ubicaciones'
     permission_required=["Web.view_ubicacion"]
     login_url=reverse_lazy("Web:login")
@@ -515,13 +513,11 @@ class ListUbicacionesListView(LoginRequiredMixin,ValidateMixin, ListView):
         # import pdb; pdb.set_trace();
         qs = super().get_queryset()
         qs = qs.filter(eliminado=False)
-        q = self.request.GET.get('q','')
-        qs = qs.filter(descripcion__icontains=q)
-        return qs.order_by('descripcion')
+    
+        return qs.order_by('created_at').reverse()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -740,10 +736,10 @@ class LugarDeleteView(LoginRequiredMixin,ValidateMixin ,View):
 
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
-        Lugar = Lugar.objects.get(pk=id)
-        Lugar.modified_by=request.user
-        Lugar.eliminado = True
-        Lugar.save()
+        lugar = Lugar.objects.get(pk=id)
+        lugar.modified_by=request.user
+        lugar.eliminado = True
+        lugar.save()
         messages.success(self.request, 'Operación realizada correctamente.')
         return HttpResponseRedirect(reverse('Web:lugares',))
 
@@ -1646,9 +1642,8 @@ class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
         # import pdb; pdb.set_trace();
         qs = super().get_queryset()
         qs = qs.filter(eliminado=False)
-        q = self.request.GET.get('q','')
-        qs = qs.filter(descripcion__icontains=q)
-        return qs.order_by('descripcion')
+  
+        return qs.order_by('created_at').reverse()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2051,6 +2046,10 @@ class LlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
         llanta.save()
         messages.success(self.request, 'Operación realizada correctamente.')
         return HttpResponseRedirect(reverse('Web:llantas'))
+    
+from datetime import date
+from datetime import datetime
+from time import strptime
 class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/vehiculos.html'
     model = Vehiculo
@@ -2058,16 +2057,33 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_vehiculo"]
-
-    def get_queryset(self):
-        # import pdb; pdb.set_trace();
-        qs = super().get_queryset()
-        qs = qs.filter(eliminado=False)
-       
-        
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
      
-        
-        return qs.order_by('created_at').reverse()
+    
+    
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            print(self.request.POST)
+            start_date=self.request.POST.get("start_date","")
+            end_date=self.request.POST.get("end_date","")
+            if start_date!="" and end_date!="":
+                
+                search=Vehiculo.objects.all().filter(created_at__range=[start_date,end_date],eliminado=False)
+            else:
+                search=Vehiculo.objects.all().filter(eliminado=False)    
+            data=[]
+            for i in search:
+                data.append(i.toJSON2())
+            return JsonResponse(data,safe=False)
+
+           
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
 
     def get_context_data(self, **kwargs):
         # import pdb; pdb.set_trace()

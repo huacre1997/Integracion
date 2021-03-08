@@ -90,10 +90,14 @@
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
-						"searching": false,
-						"paging":   false,
-						"ordering": true,
-						"info":     false
+			     "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+               language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
       });
 
       $("#btnBuscar").click(function() {

@@ -61,6 +61,8 @@
 
                         <a href="{% url 'Web:tipo-vehiculo-delete' obj.pk %}" class="btn btn-danger btn-sm"
                         data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
+                                              {% include 'Web/fragments/eliminar_tipovehiculo.html' %}
+
                       </td>
                     </tr>
                     {% endfor %}
@@ -82,7 +84,16 @@
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
-		
+          language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+          "initComplete": function (settings, json) {
+    $('select[name="dataTable_length"]').removeClass("form-control").removeClass("form-control-sm")
+
+  
+
+      }
       });
 
       $("#btnBuscar").click(function() {

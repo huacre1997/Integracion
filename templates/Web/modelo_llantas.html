@@ -87,8 +87,10 @@
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
-						{% comment %} "searching": false, {% endcomment %}
-						{% comment %} "paging":   false, {% endcomment %}
+						   language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
 						"ordering": true,
 						"info":     false,
                 "initComplete": function (settings, json) {
