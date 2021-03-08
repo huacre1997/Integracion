@@ -1,5 +1,6 @@
     <div class="container-fluid">
     {% load base_extras %}
+    {% load static %}
 {% load l10n %}
             <div class="row no-gutters align-items-center">
                 <div class="col">
@@ -8,19 +9,19 @@
                             <th>#</th>
                                  <th>Descripción</th>
                                
-                                <th>Diseño</th>
+                                <th>Estado</th>
                             <th class="all">Acciones</th>
                         </thead>
                         <tbody>
                             {% for item in obj %}
                             <tr>
                                 <td class="id">{{item.id}}</td>
-                                 <td>{{item.nombre}}</td>
-                                <td>{{item.diseño}}</td>
+                                 <td>{{item.descripcion}}</td>
+                                <td>{{item.activo}}</td>
                         
                                 <td>
                                     <button
-                                        onclick="seleccionarRenovadora({{item.id}},'{{item.nombre}}')"
+                                        onclick="seleccionarRenovadora({{item.id}},'{{item.descripcion}}')"
                                         class="btn btn-warning" id="btnselect"><i
                                             class="far fa-hand-pointer"></i></button>
                                 </td>

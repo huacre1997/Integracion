@@ -2261,7 +2261,7 @@ def getVehiculo(request):
         return HttpResponse(qs_json, content_type='application/json')
 def AnchoBandaRenovaSearch(request):
     template_name="Web/buscarrenova.html"
-    product=Renovadora.objects.all()
+    product=MarcaRenova.objects.filter(eliminado=False,activo=True).values("id","descripcion","activo")
     contexto={"obj":product}
     return render(request,template_name,contexto)
 def getTipo(request,id):

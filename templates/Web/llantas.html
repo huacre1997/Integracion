@@ -32,7 +32,7 @@
           <table class="table table-bordered table-hover" id="tablaLlanta" width="100%" cellspacing="0">
             <thead>
               <tr>
-                <th>#</th>
+                <th class="middle">#</th>
                 <th>Codigo</th>
                 <th>Marca</th>
                 <th>Modelo</th>
@@ -41,7 +41,7 @@
                 <th>Costo</th>
                 <th>KM</th>
                 <th>F. Registro</th>
-                <th>Vehículo</th>
+                <th  >Vehículo</th>
                 <th style="width: 12%;"></th>
               </tr>
             </thead>
@@ -50,16 +50,16 @@
        
               {% for obj in objetos %}
               <tr>
-                <td>1</td>
-                <td>{{obj.codigo}}</td>
-                <td>{{obj.modelo_llanta.marca_llanta}}</td>
-                <td>{{obj.modelo_llanta}}</td>
+                <td class="middle text-center">{{obj.id}}</td>
+                <td class="middle text-center">{{obj.codigo}}</td>
+                <td class="middle text-center">{{obj.modelo_llanta.marca_llanta}}</td>
+                <td class="middle text-center">{{obj.modelo_llanta}}</td>
                 <td>{{obj.medida_llanta}}</td>
-                <td>{{obj.ubicacion}}</td>
-                <td>{{obj.cubierta.costo|unlocalize}}</td>
-                <td>{{obj.cubierta.km|unlocalize}}</td>
-                <td>{{obj.created_at|date:'Y-m-d'}}</td>
-                <td>{{obj.vehiculo|default_if_none:''}} </td>
+                <td class="middle text-center">{{obj.ubicacion}}</td>
+                <td class="middle text-center">{{obj.cubierta.costo|unlocalize}}</td>
+                <td class="middle text-center">{{obj.cubierta.km|unlocalize}}</td>
+                <td class="middle text-center">{{obj.created_at|date:'Y-m-d'}}</td>
+                <td class="middle text-center">{{obj.vehiculo|default_if_none:'---------'}} </td>
                 <td>
                   {% if 'Web.change_llanta' in perm %}
 
@@ -95,7 +95,6 @@
 
   $(document).ready(function () {
     $('.select2').select2();
-    $.fn.dataTable.moment('DD/MM/YYYY');
 
     var tablaLLantas = $('#tablaLlanta').DataTable({
       responsive: true,
@@ -109,11 +108,12 @@
   
       columnDefs:[
          {
-    targets: [5],
+    targets: [-2],
           render: function (data, type, row) {  
-            if(data=="None")
+            console.log(data)
+            if(data=="")
             {
-              return "MONTADO"
+              return "-------"
             }else{
               return data
             }
