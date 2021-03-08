@@ -265,8 +265,8 @@
     generate_reports()
 
   }).on('cancel.daterangepicker', function (ev, picker) {
-    $(this).data('daterangepicker').setStartDate(date_now);
-    $(this).data('daterangepicker').setEndDate(date_now);
+    $(this).val("");
+
     date_range = picker;
     generate_reports();
   });
@@ -335,6 +335,8 @@
     generate_reports();
     $('#medida').prop("disabled", true)
     $('#date_ranger').prop("disabled", true)
+    $('#date_ranger').val("")
+
     e.preventDefault();
 
     if ($('#marca').val() == "") {

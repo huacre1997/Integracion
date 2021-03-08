@@ -242,6 +242,8 @@
     opens: 'right'
   }).on("apply.daterangepicker", function (ev, picker) {
     parameters["placa"]=""
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+
     date_range = picker;
     parameters["modelo"]=""
     parameters["marca"]=""
@@ -251,10 +253,8 @@
     generate_reports()
 
   }).on('cancel.daterangepicker', function (ev, picker) {
-        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+      $(this).val("");
 
-    $(this).data('daterangepicker').setStartDate(date_now);
-    $(this).data('daterangepicker').setEndDate(date_now);
     date_range = picker;
     generate_reports();
   });
@@ -299,6 +299,8 @@
     $("#placa").on("change",function (e) { 
       $('#marca').prop("disabled",true)
            $('#date_ranger').prop("disabled",true)
+               $('#date_ranger').val("")
+
       e.preventDefault();
       if(  $('#placa').val()=="0"){
            $('#marca').prop("disabled",false)
@@ -336,10 +338,10 @@
                   $('#placa').prop("disabled",true)
                   $('#date_ranger').prop("disabled",true)
 
+    $('#date_ranger').val("")
 
   if(  $('#marca').val()==""){
     $('#placa').prop("disabled",false)
-        $("#date_ranger").val("")
 
                   $('#date_ranger').prop("disabled",false)
     $('#modelo').prop("disabled",false)
