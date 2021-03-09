@@ -5,7 +5,6 @@
 {% load static %}
 {% load base_extras %}
 {% block content %}  
-<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
   <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
@@ -41,10 +40,10 @@
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Descripción</th>
-                      <th>Marca</th>
-                      <th>Profundidad</th>
+                      <th class="text-center middle">#</th>
+                      <th class="text-center middle">Descripción</th>
+                      <th class="text-center middle">Marca</th>
+                      <th class="text-center middle">Profundidad</th>
 
                       <th>Activo</th>
                       <th style="width: 20%;"></th>
@@ -53,13 +52,12 @@
                   <tbody>
                     {% for obj in objetos %}
                     <tr>
-                      {% number_page forloop.counter page_obj.number pages as pag %}
-                      <td>{{pag}}</td>
-                      <td>{{obj.descripcion}}</td>
-                      <td>{{obj.marca_renova}}</td>
-                      <td>{{obj.profundidad}}</td>
+                      <td class="text-center middle">{{obj.id}}</td>
+                      <td class="middle">{{obj.descripcion}}</td>
+                      <td class="middle">{{obj.marca_renova}}</td>
+                      <td class="text-center middle">{{obj.profundidad}}</td>
 
-                      <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
+                      <td class="text-center middle">{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
                       <td>
                                                        {% if 'Web.change_modelorenova' in perm %}
 

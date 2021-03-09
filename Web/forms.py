@@ -74,7 +74,7 @@ class LoginForm(forms.Form):
         if data is None:
             raise forms.ValidationError("Debe Ingresar un usuario")
         return data
-
+    
 
 class PersonaForm(forms.ModelForm):
     departamento = forms.ModelChoiceField(queryset=Departamento.objects.all(), empty_label="Seleccione departamento...")
@@ -326,14 +326,12 @@ class ModeloRenovaForm(forms.ModelForm):
         fields = ('descripcion', 'marca_renova',"profundidad" ,'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
-            'marca_renova': forms.Select( attrs={'class':'form-control'}),
             'profundidad': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
         }
 
     def __init__(self, *args, **kwargs):
         super(ModeloRenovaForm, self).__init__(*args, **kwargs)
-        self.fields['marca_renova'].queryset = MarcaRenova.objects.filter(eliminado=False,activo=True)
     def clean(self):
         subject = self.cleaned_data.get('descripcion')
         subject1 = self.cleaned_data.get('marca_renova')
@@ -344,21 +342,19 @@ class ModeloRenovaForm(forms.ModelForm):
         return self.cleaned_data
 
 class AnchoBandaRenovaForm(forms.ModelForm):
-    marca = forms.ModelChoiceField(queryset=MarcaRenova.objects.filter(eliminado=0,activo=True),
-        widget=forms.Select( attrs={'class':'form-control', 'onchange':'actualizar_modelo();'}) )
-    
+  
     class Meta:	
         model = AnchoBandaRenova
         fields = ('descripcion', 'modelo_renova', 'ancho_banda', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
             'ancho_banda': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
-            'modelo_renova': forms.Select( attrs={'class':'form-control'}),
+            'modelo_renova': forms.Select( attrs={'class':'form-select'}),
+
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['modelo_renova'].queryset = ModeloRenova.objects.filter(eliminado=False,activo=True)
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
@@ -621,9 +617,7 @@ class LlantaForm(forms.ModelForm):
                 self.add_error("codigo",f" : El código {data} ya se encuentra registrado .")
         return data
 class VehiculoForm(forms.ModelForm):
-    marca = forms.ModelChoiceField(queryset=MarcaVehiculo.objects.filter(eliminado=0,activo=True), required=True,
-        widget=forms.Select( attrs={'class':'form-control', 'onchange':'actualizar_modelo();'}) )
-    
+
     class Meta:	
         model = Vehiculo
         fields = ('ano','modelo_vehiculo','tipo_vehiculo','propiedad','placa',
@@ -634,7 +628,6 @@ class VehiculoForm(forms.ModelForm):
             'tipo_vehiculo': forms.Select( attrs={'class':'form-control'}),
             'propiedad': forms.TextInput( attrs={'class':'form-control'}),
             'placa': forms.TextInput( attrs={'class':'form-control'}),
-            'ubicacionv': forms.Select( attrs={'class':'form-select'}),
             'operacion': forms.Select( attrs={'class':'form-select'}),
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             'nro_llantas_repuesto': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
@@ -643,7 +636,6 @@ class VehiculoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['modelo_vehiculo'].queryset = ModeloVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['tipo_vehiculo'].queryset = TipoVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['obs'].required = False
 

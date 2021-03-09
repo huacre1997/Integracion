@@ -227,7 +227,7 @@ class PersonaListView(LoginRequiredMixin,ValidateMixin,ListView):
                 data["error"]="Ha ocurrido un error"
             return JsonResponse(data,safe=False)
         except Exception as e:
-            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            messages.error(self.request, 'Algo salió mal.Intentelo nuevamente.')
             return HttpResponseRedirect(self.success_url)
    
 class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
@@ -586,7 +586,6 @@ class UbicacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 class AlmacenesListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/almacenes.html'
     model = Almacen
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_almacen"]
@@ -601,7 +600,6 @@ class AlmacenesListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -668,7 +666,6 @@ class AlmacenDeleteView(LoginRequiredMixin,ValidateMixin, View):
 class LugaresListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/lugares.html'
     model = Lugar
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_lugar"]
@@ -683,7 +680,6 @@ class LugaresListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -749,7 +745,6 @@ class LugarDeleteView(LoginRequiredMixin,ValidateMixin ,View):
 class MarcaRenovacionesListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/marca_renovaciones.html'
     model = MarcaRenova
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_marcarenova"]
@@ -764,7 +759,6 @@ class MarcaRenovacionesListView(LoginRequiredMixin, ValidateMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -830,7 +824,6 @@ class MarcaRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 class ModeloRenovacionesListView(LoginRequiredMixin, ListView):
     template_name = 'Web/modelo_renovaciones.html'
     model = ModeloRenova
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
 
@@ -844,7 +837,6 @@ class ModeloRenovacionesListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -865,7 +857,11 @@ class ModeloRenovacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["marca_renova"] =  MarcaRenova.objects.all().values("id","descripcion","activo","eliminado")
+        return context
+    
 
 class ModeloRenovacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = ModeloRenovaForm
@@ -875,7 +871,7 @@ class ModeloRenovacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_modelorenova"]
-
+    context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -889,6 +885,8 @@ class ModeloRenovacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['update'] = True
+        context["marca_renova"] =  MarcaRenova.objects.all().values("id","descripcion","activo","eliminado")
+
         return context
 
 
@@ -910,23 +908,18 @@ class ModeloRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 class AnchoBandaRenovacionesListView(LoginRequiredMixin,ValidateMixin ,ListView):
     template_name = 'Web/ancho_banda_renovaciones.html'
     model = AnchoBandaRenova
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_anchobandarenova"]
 
     def get_queryset(self):
-        # import pdb; pdb.set_trace();
+   
         qs = super().get_queryset()
-        qs = qs.filter(eliminado=False)
-        q = self.request.GET.get('q','')
-        qs = qs.filter(descripcion__icontains=q)
-        return qs.order_by('descripcion')
+        qs = qs.filter(eliminado=False).order_by('-created_at')
+        print(qs)
+        return qs
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
-        return context
+
 
 
 class AnchoBandaRenovacionCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
@@ -946,7 +939,12 @@ class AnchoBandaRenovacionCreateView(LoginRequiredMixin, ValidateMixin,CreateVie
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['marca_renova'] = MarcaRenova.objects.all().values("id",'descripcion',"activo","eliminado")
+ 
+        return context
+    
 
 class AnchoBandaRenovacionUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = AnchoBandaRenovaForm
@@ -956,7 +954,7 @@ class AnchoBandaRenovacionUpdateView(LoginRequiredMixin, ValidateMixin,UpdateVie
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_anchobandarenova"]
-
+    context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -970,8 +968,7 @@ class AnchoBandaRenovacionUpdateView(LoginRequiredMixin, ValidateMixin,UpdateVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # import pdb; pdb.set_trace()
-        idancho =  self.kwargs['pk']
-        context['instance'] = AnchoBandaRenova.objects.filter(pk=idancho).first()
+        context['marca_renova'] = MarcaRenova.objects.all().values("id",'descripcion',"activo","eliminado")
         context['update'] = True
         return context
 
@@ -993,8 +990,8 @@ class AnchoBandaRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 def RenderOption(request):
     id_marca = request.GET.get('id_marca')
-    modelos = ModeloRenova.objects.filter(eliminado=False, marca_renova__pk=id_marca)
-    return HttpResponse(json.dumps(list(modelos.values('id','descripcion'))), content_type="application/json")
+    modelos = ModeloRenova.objects.filter(marca_renova__pk=id_marca)
+    return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"eliminado","activo"))), content_type="application/json")
 
 
 class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
@@ -1144,7 +1141,6 @@ class MarcaLlantaDeleteView(LoginRequiredMixin,ValidateMixin, View):
 class ModeloLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/modelo_llantas.html'
     model = ModeloLlanta
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_modelollanta"]
@@ -1159,8 +1155,8 @@ class ModeloLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
+
 
 
 class ModeloLlantaCreateView(LoginRequiredMixin,ValidateMixin ,CreateView):
@@ -1231,7 +1227,6 @@ class ModeloLlantaDeleteView(LoginRequiredMixin,ValidateMixin ,View):
 class MedidaLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/medida_llantas.html'
     model = MedidaLlanta
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_medidallanta"]
@@ -1246,7 +1241,6 @@ class MedidaLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -1322,7 +1316,6 @@ def RenderOptionLlanta(request):
 class EstadoLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/estado_llantas.html'
     model = EstadoLlanta
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_estadollanta"]
@@ -1337,7 +1330,6 @@ class EstadoLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -1403,7 +1395,6 @@ class EstadoLlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
 class TipoServiciosListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/tipo_servicios.html'
     model = TipoServicio
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_tiposervicio"]
@@ -1418,7 +1409,6 @@ class TipoServiciosListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -1484,7 +1474,6 @@ class TipoServicioDeleteView(LoginRequiredMixin,ValidateMixin, View):
 class TipoPisosListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/tipo_pisos.html'
     model = TipoPiso
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_tipopiso"]
@@ -1499,7 +1488,6 @@ class TipoPisosListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -1565,7 +1553,6 @@ class TipoPisoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 class MarcaVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/marca_vehiculos.html'
     model = MarcaVehiculo
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_marcavehiculo"]
@@ -1580,7 +1567,6 @@ class MarcaVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -1660,7 +1646,6 @@ class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = TipoVehiculoForm
@@ -1722,7 +1707,6 @@ class TipoVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 class ModeloVehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/modelo_vehiculos.html'
     model = ModeloVehiculo
-    paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_modelovehiculo"]
@@ -1737,7 +1721,6 @@ class ModeloVehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['pages'] = self.paginate_by
         return context
 
 
@@ -1881,7 +1864,6 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     def get_context_data(self, **kwargs):
         # import pdb; pdb.set_trace()
         context = super().get_context_data(**kwargs)
-        # context['pages'] = self.paginate_by
         context['medida'] = MedidaLlanta.objects.all()
         context['marca'] = MarcaLlanta.objects.all().values("id",'descripcion')
 
@@ -2089,7 +2071,6 @@ from time import strptime
 class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     template_name = 'Web/vehiculos.html'
     model = Vehiculo
-    # paginate_by = 10
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_vehiculo"]
@@ -2139,7 +2120,6 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     def get_context_data(self, **kwargs):
         # import pdb; pdb.set_trace()
         context = super().get_context_data(**kwargs)
-        # context['pages'] = self.paginate_by
         context['marca'] = MarcaVehiculo.objects.filter().values("id",'descripcion')
 
         context['placa'] = Vehiculo.objects.filter(eliminado=False).values("placa","id")
@@ -2154,7 +2134,7 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.add_vehiculo"]
-
+    
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.created_by = self.request.user
@@ -2165,7 +2145,12 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
 
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['marca_vehiculo'] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
+        context['ubicacion'] = Lugar.objects.filter().values("id",'descripcion',"activo","eliminado")
+        return context
+    
 class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = VehiculoForm
     model = Vehiculo
@@ -2174,9 +2159,9 @@ class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_vehiculo"]
-
+    context_object_name="obj"
     def form_valid(self, form):
-        # import pdb; pdb.set_trace()
+        print(self.request.POST)
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -2190,7 +2175,9 @@ class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
         context = super().get_context_data(**kwargs)
         # import pdb; pdb.set_trace()
         id =  self.kwargs['pk']
-        context['instance'] = Vehiculo.objects.filter(pk=id).first()
+        context['marca_vehiculo'] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
+        context['ubicacion'] = Lugar.objects.filter().values("id",'descripcion',"activo","eliminado")
+
         context['update'] = True
         return context
 
@@ -2213,8 +2200,8 @@ class VehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
 def RenderOptionVehiculo(request):
     id_marca = request.GET.get('id_marca')
-    modelos = ModeloVehiculo.objects.filter(eliminado=False, marca_vehiculo__pk=id_marca)
-    return HttpResponse(json.dumps(list(modelos.values('id','descripcion'))), content_type="application/json")
+    modelos = ModeloVehiculo.objects.filter(marca_vehiculo__pk=id_marca)
+    return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"activo","eliminado"))), content_type="application/json")
 
 
 class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):

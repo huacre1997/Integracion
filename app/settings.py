@@ -113,12 +113,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': '127.0.0.1:11211',
-#     }
-# }
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -191,8 +191,9 @@ LOGGING = {
         },
     },
 }
+
 LOGIN_REDIRECT_URL="/"
-LOGOUT_REDIRECT_URL="/login/"
+LOGOUT_URL="/login/"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_ROOT = ''

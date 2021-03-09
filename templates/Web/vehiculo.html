@@ -40,9 +40,17 @@
               </div>
                 <div class="form-row">	
                   <div class="form-group col-lg-4">
-                    <label for="">Marca</label>
-                    {{form.marca}}
-                    <div class="invalid-feedback" id="invalid_marca">Este campo es requerido</div>
+                  <label for="">Marca</label>
+                     <select name="marca_vehiculo" id="id_marca" class="form-select" onchange="actualizarmodelo()">
+                <option value=""></option>
+                
+                  {% for i in marca_vehiculo  %}
+                  {% if  not i.eliminado  and i.activo  %}
+                   <option value="{{i.id}}" {% if obj.marca_vehiculo.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
                   </div>
                   <div class="form-group col-lg-4">
                    <label for="">Modelo</label>
@@ -66,10 +74,18 @@
                     <div class="invalid-feedback" id="invalid_operacion">Este campo es requerido</div>
                   </div>
                   <div class="form-group col-lg-4">
-                   <label for="">Ubicación</label>
-                    {{form.ubicacionv}}
-                    <div class="invalid-feedback" id="invalid_ubicacion">Este campo es requerido</div>
-                  </div>
+                    <label for="">Ubicacion }</label>
+                       <select name="ubicacionv" id="id_ubicacionv" class="form-select">
+                  <option value=""></option>
+                        
+                    {% for i in ubicacion  %}
+                    {% if  not i.eliminado  and i.activo  %}
+                     <option value="{{i.id}}" {% if obj.ubicacionv.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                    {% endif %}
+                     
+                    {% endfor %}
+                    </select>
+                    </div>
                   {% comment %} <div class="form-group col-lg-4">
                    <label for="">Almacen</label>
                     {{form.almacen}}
@@ -131,6 +147,7 @@
 {% block bottom_scripts %}
 
 <script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
 
   fetch("../../getTipo/"+document.getElementById("id_tipo_vehiculo").value+"/").then(data=>data.json())
     .then(response=>{
@@ -229,41 +246,159 @@ console.log( );
         }, false)
       })
   })()
-{% if not instance %} 
-    if(  $('#id_marca_vehiculo').val()!=""){
+{% if  obj %} 
+    if(  $('#id_marca').val()!=""){
            $('#id_modelo_vehiculo').prop("disabled",true)
            $('#id_modelo_vehiculo').val("")
        } {% endif %}
 $('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').prop("selected", true);
-function actualizar_modelo(){
-   if(  $('#id_marca').val()==""){
-           $('#id_modelo_vehiculo').prop("disabled",true)
-       }else{
-    $('#id_modelo_vehiculo').empty();
-    $('#id_modelo_vehiculo').append($("<option>", {value: "",text: " --------- "}));              
-    $.ajax({
-      'url' : '/render-option-vehiculo',
-      'type' : 'GET',
-      'data' : {'id_marca' : $('#id_marca').val()},
-      'success' : function(data) {
-       $.each(data, function( index, valuex ) {
-          $('#id_modelo_vehiculo').append($("<option>", {value: valuex.id ,text: valuex.descripcion}));              
-       });
-         $('#id_modelo_vehiculo').removeAttr("disabled")
-      },
-      'error' : function(request,error){
-        //alert("Request: "+JSON.stringify(request));
-      }
-    });}
-}
-$('#id_ubicacion').change(function() {
-      //alert($(this).val());
-      if( $(this).val()==1 ){
-        $('#valueAlmacen').show();
-      }else{
-        $('#valueAlmacen').hide();
-      }
-    });
 
+
+  let array=document.getElementById("id_marca").options
+  let options=[]
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i].value;
+    options.push(element)
+  }
+  let array2=document.getElementById("id_ubicacionv").options
+  let options2=[]
+  for (let i = 0; i < array2.length; i++) {
+    const element2 = array2[i].value;
+    options2.push(element2)
+  }
+
+  let array3=document.getElementById("id_modelo_vehiculo").options
+  let options3=[]
+  for (let i = 0; i < array3.length; i++) {
+    const element3 = array3[i].value;
+    options3.push(element3)
+  }
+  console.log(options3);
+  actualizarmodelo()
+  {% if obj %}
+
+  let modelo="{{obj.modelo_vehiculo.id}}"
+  if (options3.includes(modelo)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.modelo_vehiculo.descripcion}}"
+  option3.selected=true
+    option3.value=modelo
+
+  $("#id_modelo_vehiculo").append(option3)
+
+  }else{
+    document.getElementById('id_modelo_vehiculo').value=modelo;
+
+  }
+
+
+
+
+  let ubicacionv="{{obj.ubicacionv.id}}"
+  if (options2.includes(ubicacionv)!=true) {
+
+  let option2=document.createElement("option")
+  option2.textContent="{{obj.ubicacionv.descripcion}}"
+  option2.selected=true
+    option2.value=ubicacionv
+
+  $("#id_ubicacionv").append(option2)
+
+  }else{
+    document.getElementById('id_ubicacionv').value=ubicacionv;
+
+  }
+
+  let marca="{{obj.modelo_vehiculo.marca_vehiculo.id}}"
+  if (options.includes(marca)!=true) {
+
+  let option=document.createElement("option")
+  option.textContent="{{obj.modelo_vehiculo.marca_vehiculo.descripcion}}"
+  option.selected="selected"
+    option.value=marca
+
+  $("#id_marca").append(option)
+
+
+  
+
+  }else{
+    // $('#id_marca  option[value="'+marca+'"]').prop("selected", true);
+
+    document.getElementById('id_marca').value=marca;
+
+
+  }
+  {%endif%}
+    
+})
+
+
+function actualizarmodelo(){
+        $(function () {
+          
+        
+          console.log($('#id_marca')[0].selectedIndex);
+
+    
+      if(  $('#id_marca').val()==""){
+        console.log("if");
+              $('#id_modelo_vehiculo').prop("disabled",true)
+              $('#id_modelo_vehiculo').empty();
+
+          }else{
+        $('#id_modelo_vehiculo').empty();
+        $('#id_modelo_vehiculo').append($("<option>", {value: "",text: " --------- "}));              
+        $.ajax({
+          'url' : '/render-option-vehiculo',
+          'type' : 'GET',
+          'data' : {'id_marca' : $('#id_marca').val()},
+          'success' : function(data) {
+          $.each(data, function( index, valuex ) {
+            console.log(data);
+            let idm="{{obj.modelo_vehiculo.id}}"
+            console.log(idm);
+              if(!valuex.eliminado && valuex.activo){
+                let opcion=document.createElement("option")
+                  opcion.value=valuex.id
+                opcion.textContent=valuex.descripcion
+                console.log(opcion);
+                  document.getElementById("id_modelo_vehiculo").append(opcion)
+                  
+              }        
+          });
+          let array4=document.getElementById("id_modelo_vehiculo").options
+            let options4=[]
+            for (let i = 0; i < array4.length; i++) {
+              const element4 = array4[i].value;
+              options4.push(element4)
+            }
+            let modelo2="{{obj.modelo_vehiculo.id}}"
+
+            if (options4.includes(modelo2)!=true) {
+
+              let option4=document.createElement("option")
+              option4.textContent="{{obj.modelo_vehiculo.descripcion}}"
+              option4.selected=true
+                option4.value=modelo2
+
+              $("#id_modelo_vehiculo").append(option4)
+
+              }else{
+                document.getElementById('id_modelo_vehiculo').value=modelo2;
+
+              }
+
+
+
+            $('#id_modelo_vehiculo').removeAttr("disabled")
+          },
+          'error' : function(request,error){
+            //alert("Request: "+JSON.stringify(request));
+          }
+        });}
+      });
+    }
 </script>
 {% endblock %}

@@ -5,7 +5,6 @@
 {% load static %}
 {% load base_extras %}
 {% block content %}  
-<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
   <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
@@ -41,19 +40,19 @@
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Descripción</th>
-                      <th>Activo</th>
+                      <th class="text-center middle">#</th>
+                      <th class="text-center middle">Descripción</th>
+                      <th class="text-center middle">Activo</th>
                       <th style="width: 20%;"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for obj in objetos %}
                     <tr>
-                      <td>{{obj.id}}</td>
-                      <td>{{obj.descripcion}}</td>
-                      <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
-                      <td>
+                      <td class="text-center middle">{{obj.id}}</td>
+                      <td class="middle">{{obj.descripcion}}</td>
+                      <td class="text-center middle">{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
+                      <td class="text-center middle">
                              {% if 'Web.change_tipovehiculo' in perm %}
 
                         <a href="{% url 'Web:tipo-vehiculo' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}

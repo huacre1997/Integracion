@@ -41,21 +41,20 @@
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Descripción</th>
-                      <th>Marca</th>
-                      <th>Activo</th>
-                      <th style="width: 20%;"></th>
+                      <th class="middle text-center">#</th>
+                      <th class="middle text-center">Descripción</th>
+                      <th class="middle text-center">Marca</th>
+                      <th class="middle text-center">Activo</th>
+                      <th class="middle text-center" style="width: 20%;"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for obj in objetos %}
                     <tr>
-                      {% number_page forloop.counter page_obj.number pages as pag %}
-                      <td>{{pag}}</td>
-                      <td>{{obj.descripcion}}</td>
-                      <td>{{obj.marca_vehiculo}}</td>
-                      <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
+                      <td class="middle text-center">{{obj.id}}</td>
+                      <td class="middle">{{obj.descripcion}}</td>
+                      <td class="middle ">{{obj.marca_vehiculo}}</td>
+                      <td class="middle text-center">{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
                       <td>
                                                      {% if 'Web.change_modelovehiculo' in perm %}
 
@@ -71,7 +70,6 @@
                   </tbody>
                 </table>
                 </div>
-                {% include 'Common/paginacion.html' %}
               </form>
 
             </div>
@@ -86,6 +84,7 @@
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
+            ordering:false,
      "lengthMenu": [
         [5, 10, 25, 50, -1],
         [5, 10, 25, 50, "All"]

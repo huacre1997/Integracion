@@ -19,6 +19,21 @@
       <form method="post" action="" class="g-3 needs-validation" novalidate>
         {% csrf_token %}
         <div class="card-body">
+           <div class="form-row">
+                <div class="form-group col-lg-6">
+                	<label>Marca</label>
+               <select name="marca_renova" id="marca_renova" class="form-select">
+                <option value=""></option>
+                
+                  {% for i in marca_renova  %}
+                  {% if  i.activo and not i.eliminado or obj.marca_renova.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.marca_renova.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                </div>
+              </div>
           <div class="form-row">
             <div class="form-group col-lg-6">
               <label class="form-label">Descripción</label>
@@ -26,13 +41,7 @@
               <div class="invalid-feedback" id="invalid_descripcion">Este campo es requerido</div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group col-lg-6">
-              <label class="form-label">Marca</label>
-              {{form.marca_renova}}
-              <div class="invalid-feedback" id="invalid_marca">Este campo es requerido</div>
-            </div>
-          </div>
+       
           <div class="form-row">
             <div class="form-group col-lg-6">
               <label class="form-label">Profundidad</label>
@@ -135,5 +144,25 @@
         }, false)
       })
   })()
+
+ {% if obj %}
+
+  let marca_renova="{{obj.marca_renova.id}}"
+  if (options3.includes(marca_renova)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.marca_renova.descripcion}}"
+  option3.selected=true
+    option3.value=marca_renova
+
+  $("#marca_renova").append(option3)
+
+  }else{
+    document.getElementById('marca_renova').value=marca_renova;
+
+  }
+
+  {%endif%}
+
 </script>
 {% endblock %}
