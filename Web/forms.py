@@ -415,8 +415,7 @@ class ModeloLlantaForm(forms.ModelForm):
                 self.add_error("descripcion",f" : La marca {subject1} ya tiene una modelo {subject} .")
         return self.cleaned_data
 class MedidaLlantaForm(forms.ModelForm):
-    marca = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0,activo=True),
-        widget=forms.Select( attrs={'class':'form-control', 'onchange':'actualizar_modelo();'}) )
+ 
     
     class Meta:	
         model = MedidaLlanta
@@ -432,7 +431,6 @@ class MedidaLlantaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['modelo_llanta'].queryset = ModeloLlanta.objects.filter(eliminado=False,activo=True)
     def clean(self):
         subject = self.cleaned_data.get('medida')
         subject1 = self.cleaned_data.get('modelo_llanta')
@@ -543,8 +541,7 @@ class CubiertaForm(forms.ModelForm):
         return data
 
 class LlantaForm(forms.ModelForm):
-    marca_llanta = forms.ModelChoiceField(queryset=MarcaLlanta.objects.filter(eliminado=0,activo=True), required=True,
-        widget=forms.Select( attrs={'class':'form-select', 'onchange':'actualizar_modelo();'}) )
+ 
     ubicacion = forms.ModelChoiceField(queryset=Ubicacion.objects.filter(eliminado=False,activo=True),empty_label="MONTADO",
                                      widget=forms.Select( attrs={'class':'form-select'}) , required=False)
 
@@ -554,7 +551,7 @@ class LlantaForm(forms.ModelForm):
 
     class Meta:	
         model = Llanta
-        fields = ('vehiculo','ubicacion' ,'modelo_llanta','almacen',"repuesto", 'estado', 'medida_llanta',"codigo","posicion","marca_llanta")
+        fields = ('vehiculo','ubicacion' ,'modelo_llanta','almacen',"repuesto", 'estado', 'medida_llanta',"codigo","posicion")
         widgets = {
             'vehiculo': forms.Select(attrs={'class':'form-select'}),
             'modelo_llanta': forms.Select( attrs={'class':'form-select'}),
@@ -568,8 +565,6 @@ class LlantaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['vehiculo'].queryset = Vehiculo.objects.filter(eliminado=False,activo=True)
-        self.fields['modelo_llanta'].queryset = ModeloLlanta.objects.filter(eliminado=False,activo=True)
-        self.fields['medida_llanta'].queryset = MedidaLlanta.objects.filter(eliminado=False,activo=True)
         self.fields['almacen'].required = False
         self.fields['codigo'].required = True
 

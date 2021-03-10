@@ -80,11 +80,19 @@
 
 
             <div class="form-row">
-              <div class="form-group col-lg-6">
-                <label>Marca de la Llanta</label>
-                {{form.marca_llanta}}
-                <div class="invalid-feedback" id="invalid_marca_llanta">Este campo es requerido.</div>
-              </div>
+               <div class="form-group col-lg-6">
+                	<label>Marca Llanta</label>
+               <select name="marca_llanta" id="id_marca_llanta" class="form-select" onchange="actualizar_modelo()">
+                <option value=""></option>
+                
+                  {% for i in marca_llanta  %}
+                  {% if  i.activo and not i.eliminado or obj.modelo_llanta.marca_llanta.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.modelo_llanta.marca_llanta.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                </div>
               <div class="form-group col-lg-6">
 
                 <label>Modelo de la Llanta</label>
@@ -251,9 +259,18 @@
 
                 </div>
                 <div class="col-lg-4">
-                  <label for="">Modelo de la banda</label>
+                  <label for="">Modelo de la banda {{obj.cubierta.modelo_renova.id}}</label>
                   <div class="form-group">
-                    {{form2.modelo_renova}}
+                 <select name="modelo_renova" id="id_modelo_renova" class="form-select">
+                <option value=""></option>
+                
+                  {% for i in modelo_renova  %}
+                  {% if  i.activo and not i.eliminado  %}
+                   <option value="{{i.id}}" {% if obj.cubierta.modelo_renova.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
                     <div class="invalid-feedback" id="invalid_modelo_renova">Este campo es requerido.</div>
 
                   </div>
@@ -292,10 +309,8 @@
 
 {% endblock %}
 {% block bottom_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script type="text/javascript" charset="utf-8">
-  $(document).ready(function () {
     $('#id_categoria').on('mousedown', function (e) {
       e.preventDefault();
       this.blur();
@@ -307,58 +322,10 @@
       window.focus();
     });
 
-    $('#id_modelo_llanta').find("option").remove().end() 
-    {%if obj %}
 
-    var e = document.getElementById("id_marca_llanta");
-    var strUser = e.options[e.selectedIndex].value;
-
-    $.ajax({
-      'url': '/render-option-llanta',
-      'type': 'GET',
-      'async': false,
-      'data': {
-        'id_marca': strUser
-      },
-      'success': function (data) {
-        $.each(data, function (index, valuex) {
-          $('#id_modelo_llanta').append($("<option>", {
-            value: valuex.id,
-            text: valuex.descripcion
-          }));
-        });
-      },
-      'error': function (request, error) {}
-    });
-
-    {% endif %}
     let categroai = document.getElementById("id_categoria").value
-    // jQuery.datetimepicker.setLocale('es');
-    // $("#id_fech_ren").datetimepicker({
-
-
-    //   timepicker: false,
-    //   format: 'Y-m-d'
-    // });
-
-
-    // jQuery('#openCalendar').click(function () {
-    //   jQuery('#id_fech_ren').datetimepicker('show'); //support hide,show and destroy command
-    // });
-
-    // $('#id_marca_llanta option[value="{{instance.modelo_llanta.marca_llanta.pk}}"]').prop("selected", true);
-
-
-    // $('#id_ubicacion').change(function () {
-    //   //alert($(this).val());
-    //   if ($(this).val() == 1) {
-    //     $('#labelAlmacen').show();
-    //     $('#valueAlmacen').show();
-    //   } else {
-    //     $('#labelAlmacen').hide();
-    //     $('#valueAlmacen').hide();
-    //   }
-    // });
+ 
+   
     var de
     var updateForm
     $("#openModal").on("click", function () {
@@ -768,7 +735,79 @@
         }
       })
     })
-  });
+
+  let array=document.getElementById("id_marca_llanta").options
+  let options=[]
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i].value;
+    options.push(element)
+  }
+    let array3=document.getElementById("id_modelo_llanta").options
+  let options3=[]
+  for (let i = 0; i < array3.length; i++) {
+    const element3 = array3[i].value;
+    options3.push(element3)
+  }
+       let array5=document.getElementById("id_modelo_renova").options
+  let options5=[]
+  for (let i = 0; i < array5.length; i++) {
+    const element = array5[i].value;
+    options5.push(element)}
+ {% if obj %}
+  let modelo="{{obj.modelo_llanta.id}}"
+  if (options3.includes(modelo)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.modelo_llanta.descripcion}}"
+  option3.selected=true
+    option3.value=modelo
+
+  $("#id_modelo_llanta").append(option3)
+
+  }else{
+    document.getElementById('id_modelo_llanta').value=modelo;
+
+  }
+  let marca="{{obj.modelo_llanta.marca_llanta.id}}"
+  if (options.includes(marca)!=true) {
+
+  let option=document.createElement("option")
+  option.textContent="{{obj.modelo_llanta.marca_llanta.descripcion}}"
+  option.selected=true
+    option.value=marca
+
+  $("#id_marca_llanta").append(option)
+
+
+  
+
+  }else{
+
+    document.getElementById('id_marca_llanta').value=marca;
+
+
+  }
+      
+ 
+      let modelo5="{{obj.cubierta.modelo_renova.id}}"
+  if (options5.includes(modelo5)!=true) {
+    console.log("if")
+
+  let option5=document.createElement("option")
+  option5.textContent="{{obj.cubierta.modelo_renova.descripcion}}"
+  option5.selected=true
+    option5.value=modelo5
+
+  $("#id_modelo_renova").append(option5)
+
+  }else{
+    document.getElementById('id_modelo_llanta').value=modelo5;
+
+  }
+  
+  {%endif%}
+
+  actualizar_modelo()
 
   function actualizar_modelo() {
     $('#id_modelo_llanta').prop("disabled",true)
@@ -786,13 +825,44 @@
         'id_marca': $('#id_marca_llanta').val()
       },
       'success': function (data) {
+        console.log(data)
+          let modelo2="{{obj.modelo_llanta.id}}"
+        let marca2="{{obj.modelo_llanta.marca_llanta.id}}"
         $('#id_modelo_llanta').prop("disabled",false)
         $.each(data, function (index, valuex) {
-          $('#id_modelo_llanta').append($("<option>", {
-            value: valuex.id,
-            text: valuex.descripcion
-          }));
+                if(!valuex.eliminado && valuex.activo){
+                let opcion=document.createElement("option")
+                  opcion.value=valuex.id
+                opcion.textContent=valuex.descripcion
+                  document.getElementById("id_modelo_llanta").append(opcion)
+                  
+              } 
         });
+              if($("#id_marca_llanta").val()==marca2){
+          let array4=document.getElementById("id_modelo_llanta").options
+            let options4=[]
+            for (let i = 0; i < array4.length; i++) {
+              const element4 = array4[i].value;
+              options4.push(element4)
+            }
+
+            if (options4.includes(modelo2)!=true) {
+
+              let option4=document.createElement("option")
+              option4.textContent="{{obj.modelo_llanta.descripcion}}"
+              option4.selected=true
+                option4.value=modelo2
+
+              $("#id_modelo_llanta").append(option4)
+
+              }else{
+                document.getElementById('id_modelo_llanta').value=modelo2;
+
+              }
+        }
+    
+            $('#id_modelo_llanta').prop("disabled",false)
+
       },
       'error': function (request, error) {
         //alert("Request: "+JSON.stringify(request));

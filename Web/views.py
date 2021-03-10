@@ -1007,7 +1007,6 @@ class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     def post(self,request,*args, **kwargs):
         data={}
         try:
-            print(request.POST)
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
@@ -1262,7 +1261,12 @@ class MedidaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
 
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['marca_llanta'] = MarcaLlanta.objects.all().values("id",'descripcion',"activo","eliminado")
+ 
+        return context
+    
 class MedidaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = MedidaLlantaForm
     model = MedidaLlanta
@@ -1271,7 +1275,7 @@ class MedidaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_medidallanta"]
-
+    context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -1284,9 +1288,8 @@ class MedidaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # import pdb; pdb.set_trace()
-        id =  self.kwargs['pk']
-        context['instance'] = MedidaLlanta.objects.filter(pk=id).first()
+        context['marca_llanta'] = MarcaLlanta.objects.all().values("id",'descripcion',"activo","eliminado")
+
         context['update'] = True
         return context
 
@@ -1308,10 +1311,12 @@ class MedidaLlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
 def RenderOptionLlanta(request):
     id_marca = request.GET.get('id_marca')
-    print(id_marca  )
-    modelos = ModeloLlanta.objects.filter(eliminado=False, marca_llanta=id_marca)
-    return HttpResponse(json.dumps(list(modelos.values('id','descripcion'))), content_type="application/json")
-
+    if id_marca!="":
+        modelos = ModeloLlanta.objects.filter(marca_llanta=id_marca)
+    
+        return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"eliminado","activo"))), content_type="application/json")
+    else:
+        return JsonResponse({"response":"seleccione marca"},safe=False)
 
 class EstadoLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
     template_name = 'Web/estado_llantas.html'
@@ -1831,6 +1836,7 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
             data=[]
             for i in response:
                 data.append(i.toJSON2())   
+            
             return JsonResponse(data, safe=False)
  
         except Exception as e:
@@ -1879,7 +1885,10 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     def get(self,*args, **kwargs):
         Llanta=LlantaForm()
         cubierta=CubiertaForm()
-        context={"form":Llanta,"form2":cubierta}
+        marca_llanta = MarcaLlanta.objects.all().values("id",'descripcion',"activo","eliminado")
+        modelo_renova = ModeloRenova.objects.all().values("id",'descripcion',"activo","eliminado")
+
+        context={"form":Llanta,"form2":cubierta,"marca_llanta":marca_llanta,"modelo_renova":modelo_renova}
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
@@ -1947,6 +1956,9 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     # def form_invalid(self, form):
     #     messages.warning(self.request, form.errors)
     #     return super().form_invalid(form)
+    
+
+    
 
 
 class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
@@ -1956,7 +1968,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_llanta"]
-
+    
     # def form_valid(self, form):
     #     # import pdb; pdb.set_trace()
     #     instance = form.save(commit=False)
@@ -1972,11 +1984,11 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
 
     def get(self,*args, **kwargs):
         cubierta=CubiertaLlanta.objects.filter(id=self.object.cubierta.id).first()
-        print(self.object.ubicacion)
         form1=LlantaForm(instance=self.object)
         form2=CubiertaForm(instance=cubierta)
-        print(cubierta.categoria)
-        context={"form":form1,"form2":form2,"cubierta":cubierta,"obj":self.get_object()}
+        marca_llanta= MarcaLlanta.objects.all().values("id",'descripcion',"activo","eliminado")
+        modelo_renova = ModeloRenova.objects.all().values("id",'descripcion',"activo","eliminado")
+        context={"form":form1,"form2":form2,"cubierta":cubierta,"obj":self.get_object(),"marca_llanta":marca_llanta,"modelo_renova":modelo_renova}
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):

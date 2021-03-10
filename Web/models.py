@@ -332,7 +332,7 @@ class ModeloLlanta(models.Model):
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self,exclude=["created_by","modified_by"])
+      item = model_to_dict(self,exclude=["created_by","modified_by","activo","created_at","eliminado"])
       item=self.marca_llanta.toJSON()
       return item
       
@@ -536,7 +536,6 @@ class  CubiertaLlanta(models.Model):
       return item
 class Llanta(models.Model):
 
-   marca_llanta = models.ForeignKey(MarcaLlanta, on_delete=models.PROTECT,null=True)
 
    modelo_llanta = models.ForeignKey(ModeloLlanta, on_delete=models.PROTECT,null=True)
    medida_llanta = models.ForeignKey(MedidaLlanta, on_delete=models.PROTECT)
@@ -563,8 +562,7 @@ class Llanta(models.Model):
       return self.codigo
    def toJSON(self):
       item = model_to_dict(self,exclude=["almacen","estado","eliminado","activo","modified_at","eliminado","created_by","modified_by"])
-      item["marca_llanta"]=self.marca_llanta.descripcion
-      item["modelo_llanta"]=self.modelo_llanta.descripcion
+      item["modelo_llanta"]=self.modelo_llanta.toJSON()
       item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
       item["km"]=format(self.cubierta.km, '.2f')
       item["costo"]=format(self.cubierta.costo, '.2f')
@@ -575,8 +573,9 @@ class Llanta(models.Model):
       return item
    def toJSON2(self):
       item = model_to_dict(self,exclude=["medida_llanta","posicion","repuesto","almacen","cubierta","estado","eliminado","activo","modified_at","eliminado","created_by","modified_by"])
-      item["marca_llanta"]=self.marca_llanta.descripcion
       item["modelo_llanta"]=self.modelo_llanta.descripcion
+      item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
+
       if self.medida_llanta.capas:
          item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
       else:

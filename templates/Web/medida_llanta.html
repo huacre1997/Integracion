@@ -27,11 +27,18 @@
               </div-->
           <div class="form-row">
             <div class="form-group col-lg-6">
-              <label for="">Marca</label>
-              {{form.marca}}
-              <div class="invalid-feedback" id="invalid_marca">Este campo es requerido.</div>
-
-            </div>
+                	<label>Marca</label>
+               <select name="marca_llanta" id="id_marca" class="form-select" onchange="actualizar_modelo()">
+                <option value=""></option>
+                
+                  {% for i in marca_llanta  %}
+                  {% if  i.activo and not i.eliminado or obj.modelo_llanta.marca_llanta.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.modelo_llanta.marca_llanta.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                </div>
           </div>
           <div class="form-row">
             <div class="form-group col-lg-6">
@@ -202,9 +209,64 @@ if (profundidad.trim() == "") {
       }, false)
     })
 })()
-  $('#id_marca  option[value="{{instance.modelo_llanta.marca_llanta.pk}}"]').prop("selected", true);
+
+
+  let array=document.getElementById("id_marca").options
+  let options=[]
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i].value;
+    options.push(element)
+  }
+    let array3=document.getElementById("id_modelo_llanta").options
+  let options3=[]
+  for (let i = 0; i < array3.length; i++) {
+    const element3 = array3[i].value;
+    options3.push(element3)
+  }
+  console.log(options3)
+ {% if obj %}
+  let modelo="{{obj.modelo_llanta.id}}"
+  if (options3.includes(modelo)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.modelo_llanta.descripcion}}"
+  option3.selected=true
+    option3.value=modelo
+
+  $("#id_modelo_llanta").append(option3)
+
+  }else{
+    document.getElementById('id_modelo_llanta').value=modelo;
+
+  }
+  let marca="{{obj.modelo_llanta.marca_llanta.id}}"
+  if (options.includes(marca)!=true) {
+
+  let option=document.createElement("option")
+  option.textContent="{{obj.modelo_llanta.marca_llanta.descripcion}}"
+  option.selected=true
+    option.value=marca
+
+  $("#id_marca").append(option)
+
+
+  
+
+  }else{
+    // $('#id_marca  option[value="'+marca+'"]').prop("selected", true);
+
+    document.getElementById('id_marca').value=marca;
+
+
+  }
+  {%endif%}
+
+
+
+actualizar_modelo()
 
   function actualizar_modelo() {
+    
     $('#id_modelo_llanta').empty();
     $('#id_modelo_llanta').append($("<option>", {
       value: "",
@@ -218,12 +280,39 @@ if (profundidad.trim() == "") {
         'id_marca': $('#id_marca').val()
       },
       'success': function (data) {
+        let modelo2="{{obj.modelo_llanta.id}}"
+        let marca2="{{obj.modelo_llanta.marca_llanta.id}}"
         $.each(data, function (index, valuex) {
-          $('#id_modelo_llanta').append($("<option>", {
-            value: valuex.id,
-            text: valuex.descripcion
-          }));
+              if(!valuex.eliminado && valuex.activo){
+                let opcion=document.createElement("option")
+                  opcion.value=valuex.id
+                opcion.textContent=valuex.descripcion
+                  document.getElementById("id_modelo_llanta").append(opcion)
+                  
+              } 
         });
+        if($("#id_marca").val()==marca2){
+          let array4=document.getElementById("id_modelo_llanta").options
+            let options4=[]
+            for (let i = 0; i < array4.length; i++) {
+              const element4 = array4[i].value;
+              options4.push(element4)
+            }
+
+            if (options4.includes(modelo2)!=true) {
+
+              let option4=document.createElement("option")
+              option4.textContent="{{obj.modelo_llanta.descripcion}}"
+              option4.selected=true
+                option4.value=modelo2
+
+              $("#id_modelo_llanta").append(option4)
+
+              }else{
+                document.getElementById('id_modelo_llanta').value=modelo2;
+
+              }
+        }
       },
       'error': function (request, error) {
         //alert("Request: "+JSON.stringify(request));

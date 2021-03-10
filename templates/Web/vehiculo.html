@@ -355,10 +355,10 @@ function actualizarmodelo(){
           'type' : 'GET',
           'data' : {'id_marca' : $('#id_marca').val()},
           'success' : function(data) {
+             let modelo2="{{obj.modelo_vehiculo.id}}"
+                let marca12="{{obj.modelo_vehiculo.marca_vehiculo.id}}"
           $.each(data, function( index, valuex ) {
-            console.log(data);
-            let idm="{{obj.modelo_vehiculo.id}}"
-            console.log(idm);
+               
               if(!valuex.eliminado && valuex.activo){
                 let opcion=document.createElement("option")
                   opcion.value=valuex.id
@@ -368,13 +368,14 @@ function actualizarmodelo(){
                   
               }        
           });
+                  if($("#id_marca").val()==marca12){
+
           let array4=document.getElementById("id_modelo_vehiculo").options
             let options4=[]
             for (let i = 0; i < array4.length; i++) {
               const element4 = array4[i].value;
               options4.push(element4)
             }
-            let modelo2="{{obj.modelo_vehiculo.id}}"
 
             if (options4.includes(modelo2)!=true) {
 
@@ -391,7 +392,7 @@ function actualizarmodelo(){
               }
 
 
-
+                  }
             $('#id_modelo_vehiculo').removeAttr("disabled")
           },
           'error' : function(request,error){

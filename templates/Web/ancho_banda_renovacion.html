@@ -134,9 +134,10 @@ function actualizar_modelo(){
       'async': false,
       'data' : {'id_marca' : $('#id_marca').val()},
       'success' : function(data) {
+        let modelo2="{{obj.modelo_renova.id}}"
+        let marca2="{{obj.modelo_renova.marca_renova.id}}"
+
        $.each(data, function( index, valuex ) {
-              let idm="{{obj.modelo_renova.id}}"
-            console.log(idm);
               if(!valuex.eliminado && valuex.activo){
                 let opcion=document.createElement("option")
                   opcion.value=valuex.id
@@ -147,6 +148,7 @@ function actualizar_modelo(){
               }           
              
        });
+        if($("#id_marca").val()==marca2){
 
        let array4=document.getElementById("id_modelo_renova").options
             let options4=[]
@@ -170,7 +172,7 @@ function actualizar_modelo(){
 
               }
               
-
+        }
       },
       'error' : function(request,error){
         //alert("Request: "+JSON.stringify(request));

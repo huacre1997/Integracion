@@ -100,16 +100,16 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "bdprueba",
-#         "HOST": "localhost",
-#         "USER": "root",
-#         "PASSWORD": "",
-#         "PORT": ""
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "bdprueba",
+        "HOST": "localhost",
+        "USER": "root",
+        "PASSWORD": "",
+        "PORT": ""
+    }
+}
 
 
 
@@ -193,7 +193,7 @@ LOGGING = {
 }
 
 LOGIN_REDIRECT_URL="/"
-LOGOUT_URL="/login/"
+LOGIN_URL="/login/"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_ROOT = ''
