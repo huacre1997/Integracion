@@ -218,9 +218,11 @@
 
           render: function (row, data, index) {
               var buttons =
-                ' {% if "Web.change_vehiculo" in perm %}<a class="btn btn-warning mr-1"  role="button" href="../vehiculo/'+ index.id +
+                ' {% if "Web.change_vehiculo" in perm %}<a class="btn btn-light mr-1" href="../ver-vehiculo/'+index.id+'/"><i class="fas fa-tools"></i>&nbsp;Operaciones</a><a class="btn btn-warning mr-1"  role="button" href="../vehiculo/'+ index.id +
     
-                '"><i class="far fa-edit" ></i></a>{%endif%}' +
+                '"><i class="far fa-edit" ></i>Editar</a>'+
+                
+                '{%endif%}' +
                   ' {% if "Web.delete_vehiculo" in perm %}<button class="btn btn-danger mr-1 btn-eliminar-vehiculo"'+      
                 '"><i class="fa fa-ban" ></i></button>{%endif%}';
               return buttons;
