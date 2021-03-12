@@ -3602,14 +3602,14 @@
 
 .P-C2-ride1 {
   grid-column-start: 7;
-  grid-row-start: 3;
+  grid-row-start: 7;
   align-self: flex-end;
   justify-self: end;
   margin-right: 20px;
 }
 .P-C2-ride2 {
   grid-column-start: 7;
-  grid-row-start: 7;
+  grid-row-start: 3;
   align-self: flex-end;
   justify-self: end;
   margin-right: 20px;
