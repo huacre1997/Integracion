@@ -1835,7 +1835,8 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
                     response=search.filter(created_at__contains=start_date)            
             data=[]
             for i in response:
-                data.append(i.toJSON())   
+                data.append(i.toJSON())  
+                 
             return JsonResponse(data, safe=False)
  
         except Exception as e:

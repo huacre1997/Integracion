@@ -573,7 +573,8 @@ class Llanta(models.Model):
       item["costo"]=format(self.cubierta.costo, '.2f')
       item["modelo_llanta"]=self.modelo_llanta.descripcion
       item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
-      
+      if self.ubicacion: 
+         item["ubicacion"]=self.ubicacion.descripcion 
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
       if self.vehiculo: 
          item["vehiculo"]=self.vehiculo.placa
@@ -589,8 +590,7 @@ class Llanta(models.Model):
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
       if self.vehiculo: 
          item["vehiculo"]=self.vehiculo.placa
-      if self.ubicacion: 
-         item["ubicacion"]=self.ubicacion.descripcion    
+     
       return item
    @property
    def code(self):
