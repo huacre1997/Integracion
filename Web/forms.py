@@ -570,7 +570,7 @@ class LlantaForm(forms.ModelForm):
     def clean_ubicacion(self):
         data=self.cleaned_data["ubicacion"]
         print(data)
-        if data.id==1 :
+        if data.descripcion=="MONTADO" :
             print("aaea")
             self.fields['vehiculo'].required = True
             self.fields['codigo'].required = True
