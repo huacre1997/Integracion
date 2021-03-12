@@ -2585,7 +2585,7 @@ class InspeccionLlantasView(LoginRequiredMixin,ValidateMixin,TemplateView):
    
     def get_context_data(self, **kwargs):
         context = super(InspeccionLlantasView, self).get_context_data(**kwargs)
-        context["placa"]=Vehiculo.objects.all().values("id","placa")
+        context["placa"]=Vehiculo.objects.all().values("id","placa").filter(eliminado=False,activo=True)
         return context
 class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
     permission_required=["Web.view_inpeccionllantas"]
@@ -2671,3 +2671,6 @@ def AgregarInspeccion(request):
     context={"obs":CHOICES_OBSERVACION,"accion":CHOICES_ACCION,"cubierta":CHOICES_CUBIERTA_INSPECCION}
 
     return render(request,template_name,context)
+class HistorialLlantas(ListView,LoginRequiredMixin):
+    template_name="Web/historial.html"
+    model=HistorialLLantas

@@ -614,12 +614,11 @@ class HistorialLLantas(models.Model):
    profundidad=models.CharField(max_length=20,blank=True,null=True)
    vehiculo=models.ForeignKey(Vehiculo, verbose_name=_("Vehículo"), on_delete=models.PROTECT,blank=True,null=True)
    posicion=models.CharField(max_length=5,blank=True,null=True)
-   estado=models.ForeignKey(EstadoLlanta,on_delete=models.PROTECT,blank=True,null=True)
+   estado=models.CharField(max_length=2,choices=CHOICES_ESTADO_LLANTA)
    obs=models.CharField(max_length=50,choices=CHOICES_OBSERVACION,blank=True,null=True)
    ubicacion=models.ForeignKey(Ubicacion,on_delete=models.PROTECT,blank=True,null=True)
    activo = models.BooleanField(default=True)
    eliminado=models.BooleanField(default=False,editable=False)
-
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')

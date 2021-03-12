@@ -200,7 +200,7 @@ textarea, .vTextField {
           <i class="fas fa-fw fa-cog"></i>
           <span>PROCESOS</span>
         </a>
-        <div id="collapseOne" class="{% block collapseProcesos %}collapse{% endblock %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div id="collapseOne" class="{% block blockReportes %}collapse{% endblock %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="{% block movimientos %}collapse-item{% endblock %}" href="{% url 'Web:hoja-movimientos' %}">Hoja de movimientos</a>
             <a class="{% block inspeccion %}collapse-item{% endblock %}"  href="{% url 'Web:inspeccion-llantas' %}">Inspección de llantas</a>
@@ -224,15 +224,15 @@ textarea, .vTextField {
       </div> -->
 
       <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item">
+      <li class="{% block blockHistorial %}nav-item{% endblock %}">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
           <i class="fas fa-fw fa-folder"></i>
           <span>REPORTES</span>
         </a>
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+        <div id="collapsePages" class="{% block collapseHistorial %}collapse{% endblock %}" aria-labelledby="headingPages" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <!-- <h6 class="collapse-header">Login Screens:</h6> -->
-            <a class="collapse-item" href="#">Historial</a>
+            <a class="{% block historial %}collapse-item{% endblock %} " href="{% url 'Web:ver-historial' %}">Historial</a>
             <a class="collapse-item" href="#">Indicadores</a>
            
           </div>

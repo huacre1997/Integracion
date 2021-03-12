@@ -136,7 +136,7 @@ urlpatterns = [
     path('inspeccion-agregar/', views.AgregarInspeccion, name='inspeccion-agregar'),
     path('getTipo/<int:id>/', views.getTipo, name='get-tipo'),
 
-    path('inspeccion-llantas/detalles/<int:pk>/', views.InsepccionDetalleView.as_view(), name='inspeccion-detalle'),
+    path('historial/', views.HistorialLlantas.as_view(), name='ver-historial'),
 
     # path('get-vehiculo/', views.getVehiculo, name='ver-vehiculo'),
 
