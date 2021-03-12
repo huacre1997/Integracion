@@ -351,7 +351,10 @@ class MedidaLlanta(models.Model):
    eliminado=models.BooleanField(default=False,editable=False)
 
    def __str__(self):
-      return 'Medida {} - {} - {}'.format(str(self.medida), str(self.profundidad), str(self.capas))
+      if self.capas:
+         return 'Medida {} - {} - {}'.format(str(self.medida), str(format(self.profundidad, '.2f')), str(format(self.capas, '.2f')))
+      else:
+         return 'Medida {} - {} '.format(str(self.medida), str(format(self.profundidad, '.2f')))   
    def toJSON(self):
       item = model_to_dict(self,exclude=["modified_by","created_by"])
       item["modelo_llanta"]= self.modelo_llanta.toJSON()
@@ -543,14 +546,14 @@ class Llanta(models.Model):
    cubierta=models.ForeignKey(CubiertaLlanta, verbose_name=_("Cubierta"), on_delete=models.PROTECT,null=True,blank=True)
    ubicacion = models.ForeignKey(Ubicacion,on_delete=models.PROTECT,null=True,blank=True)
 
-   vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True,blank=True,default=None)
+   vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True,blank=True)
    
    codigo = models.CharField(max_length=100, null=True, blank=True)
    posicion=models.IntegerField(blank=True,null=True,default=None)
    repuesto=models.BooleanField(default=False)
 
    almacen = models.ForeignKey(Almacen, null=True, on_delete=models.PROTECT,blank=True)
-   estado = models.ForeignKey(EstadoLlanta, on_delete=models.PROTECT, null=True)
+   estado = models.CharField(max_length=9,choices=CHOICES_ESTADO_LLANTA)
    
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -561,26 +564,26 @@ class Llanta(models.Model):
    def __str__(self):
       return self.codigo
    def toJSON(self):
-      item = model_to_dict(self,exclude=["almacen","estado","eliminado","activo","modified_at","eliminado","created_by","modified_by"])
-      item["modelo_llanta"]=self.modelo_llanta.toJSON()
-      item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
+      item = model_to_dict(self,exclude=["almacen","estado","eliminado","modified_at","eliminado","created_by","modified_by"])
+      if self.medida_llanta.capas:
+         item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
+      else:
+         item["medida"]='Medida {} - {} '.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')))
       item["km"]=format(self.cubierta.km, '.2f')
       item["costo"]=format(self.cubierta.costo, '.2f')
+      item["modelo_llanta"]=self.modelo_llanta.descripcion
+      item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
       
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
       if self.vehiculo: 
          item["vehiculo"]=self.vehiculo.placa
       return item
    def toJSON2(self):
-      item = model_to_dict(self,exclude=["medida_llanta","posicion","repuesto","almacen","cubierta","estado","eliminado","activo","modified_at","eliminado","created_by","modified_by"])
+      item = model_to_dict(self,exclude=["posicion","repuesto","medida_llanta","almacen","cubierta","estado","eliminado","modified_at","eliminado","created_by","modified_by"])
       item["modelo_llanta"]=self.modelo_llanta.descripcion
       item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
 
-      if self.medida_llanta.capas:
-         item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
-      else:
-         item["medida"]='Medida {} - {} '.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')))
- 
+    
       item["km"]=format(self.cubierta.km, '.2f')
       item["costo"]=format(self.cubierta.costo, '.2f')
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')  

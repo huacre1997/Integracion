@@ -34,8 +34,10 @@ def MenuUsuario(request):
         print(e)
         messages.error(request, str(e))
         #return HttpResponse('<script>location.href = "/Web/logout/";</script>')
-
-
+@register.filter(name="multiply")
+def multiply(value, arg):
+   value_as_int = int(value)
+   return int(value_as_int * arg)
 @register.filter(name="has_group")
 def has_group(usuario,grupo):
     return usuario.groups.filter(name__exact=grupo).exists()

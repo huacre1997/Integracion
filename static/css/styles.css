@@ -4587,7 +4587,7 @@ grid-row: 8/18;
   grid-row-start: 7;
   align-self: flex-end;
   justify-self: end;
-
+  margin-bottom: -20px;
 }
 
 .P-8x4-ride2 {
@@ -4595,6 +4595,8 @@ grid-row: 8/18;
   grid-row-start: 3;
   justify-self: end;
   margin-left: 30px;
+  margin-top: -20px;
+
 }
 
 .P-8x4-ride3 {
@@ -4602,7 +4604,8 @@ grid-row: 8/18;
   grid-row-start: 7;
   align-self: flex-end;
   justify-self: end;
-  margin-right:20px
+  margin-right:20px;
+  margin-bottom: -20px;
 
 }
 
@@ -4610,7 +4613,9 @@ grid-row: 8/18;
   grid-column-start: 9;
   grid-row-start: 3;
   justify-self: end;
-  margin-right:20px
+  margin-right:20px;
+  margin-top: -20px;
+
 }
 
 .P-8x4-ride5 {
@@ -4619,6 +4624,8 @@ grid-row: 8/18;
   justify-self: flex-end;
   align-self: flex-end;
   margin-right: -10px;
+  margin-bottom: -20px;
+
 }
 
 .P-8x4-ride6 {
@@ -4626,6 +4633,7 @@ grid-row: 8/18;
   grid-row-start: 6;
   justify-self: flex-end;
   margin-right: -10px;
+  margin-top: 20px;
 
 }
 
@@ -4635,6 +4643,7 @@ grid-row: 8/18;
   justify-self: flex-end;
   align-self: flex-end;
   margin-right: -10px;
+  margin-bottom: 20px;
 
 }
 
@@ -4644,6 +4653,7 @@ grid-row: 8/18;
   grid-row-start: 3;
   justify-self: flex-end;
   margin-right: -10px;
+  margin-top: -20px;
 
 }
 
@@ -4653,6 +4663,8 @@ grid-row: 8/18;
   align-self: flex-start;
   justify-self: flex-end;
   margin-right: -25px;
+  margin-top: 20px;
+
 }
 
 .P-8x4-ride10 {
@@ -4661,6 +4673,7 @@ grid-row: 8/18;
   align-self: flex-start;
   justify-self: flex-end;
   margin-right: -25px;
+  margin-top: 20px;
 
 }
 
@@ -4670,6 +4683,7 @@ grid-row: 8/18;
   align-self: flex-start;
   justify-self: flex-end;
   margin-right: -25px;
+  margin-top: -20px;
 
 }
 
@@ -4679,6 +4693,7 @@ grid-row: 8/18;
   align-self: flex-start;
   justify-self: flex-end;
   margin-right: -25px;
+  margin-top: -20px;
 
 }
 .P-8x4-ride13 {

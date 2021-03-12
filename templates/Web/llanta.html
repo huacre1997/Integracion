@@ -4,6 +4,7 @@
 {% block llantas %}collapse-item active{% endblock  %}
 {% load static %}
 {% block content %}
+{% load base_extras %}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
@@ -43,8 +44,15 @@
               <div class="form-group col-lg-6">
 
                 <label>Ubicación</label>
-                {{form.ubicacion}}
-                <div class="invalid-feedback" id="invalid_ubicacion">Este campo es requerido.</div>
+                <select name="ubicacion" id="id_ubicacion" class="form-select">
+                  
+                    {% for i in ubicacion  %}
+                    {% if  i.activo and not i.eliminado or obj.ubicacion.id == i.id %}
+                     <option value="{{i.id}}" {% if obj.ubicacion.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                    {% endif %}
+                     
+                    {% endfor %}
+                    </select>                <div class="invalid-feedback" id="invalid_ubicacion">Este campo es requerido.</div>
               </div>
               <div class="form-group col-lg-6">
                 <label class="label-control">Código</label>
@@ -55,7 +63,7 @@
             </div>
 
 {% if obj %}
-<div class="form-row section {% if obj.vehiculo %}activo{% endif %}" id="section_vehiculo">
+<div class="form-row section {% if obj.ubicacion.id == 1 %}activo{% endif %}" id="section_vehiculo">
 
 {% else %}
 <div class="form-row section activo" id="section_vehiculo">
@@ -64,8 +72,16 @@
   
               <div class="form-group col-lg-6">
                 <label for="">Seleccion Vehiculo:</label>
-                {{form.vehiculo}}
-                <div class="invalid-feedback" id="invalid_vehiculo">Este campo es requerido.</div>
+                <select name="vehiculo" id="id_vehiculo" class="form-select" >
+                  <option value=""></option>
+                  
+                    {% for i in vehiculo  %}
+                    {% if  i.activo and not i.eliminado or obj.vehiculo.id == i.id %}
+                     <option value="{{i.id}}" {% if obj.vehiculo.id == i.id %}selected{% endif %}>{{i.placa}}</option>
+                    {% endif %}
+                     
+                    {% endfor %}
+                    </select>                <div class="invalid-feedback" id="invalid_vehiculo">Este campo es requerido.</div>
 
               </div>
 
@@ -105,7 +121,16 @@
               <div class="form-group col-lg-6">
 
                 <label>Medida</label>
-                {{form.medida_llanta}}
+                <select name="medida_llanta" id="id_medida_llanta" class="form-select">
+                <option value=""></option>
+                
+                  {% for i in medida_llanta  %}
+                  {% if  i.activo and not i.eliminado or obj.medida_llanta.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.medida_llanta.id == i.id %}selected{% endif %}>Medida {{i.medida}}-{{i.profundidad}}-{{i.capas}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
                 <div class="invalid-feedback" id="invalid_medida_llanta">Este campo es requerido.</div>
               </div>
                 <div class="form-group col-lg-6">
@@ -137,15 +162,31 @@
             <div class="col-lg-2">Km</div>
             <div class="col-lg-3">{{form.km}}</div>
           </div> -->
-            <div class="row">
+            <div class="form-row">
               <div class="form-group col-lg-6">
                 <label for="">Estado</label>
                 {{form.estado}}
                 <div class="invalid-feedback" id="invalid_estado">Este campo es requerido.</div>
               </div>
               <div class="form-group col-lg-6">
+                <label for="" style="visibility: hidden;">ss</label>
+             <div class="form-check">
+               
+               {% if obj %}
+               <input type="checkbox" name="activo" class="form-check-input" id="id_activo" 
+               {% if obj.activo %}checked{% endif %}>
+               {% else %}
+               <input type="checkbox" checked name="activo" class="form-check-input" id="id_activo" 
+              >
+               {% endif %}
+                 
+             
+                  <label class="form-check-label" for="id_activo">Activo</label>
+                  <div class="invalid-feedback">Este campo es requerido</div> 
 
+                </div> 
               </div>
+                
 
 
             </div>
@@ -279,7 +320,16 @@
                 <div class="col-lg-4">
                   <label for="">Ancho de la banda</label>
                   <div class="input-group">
-                    {{form2.ancho_banda}}
+                    <select name="ancho_banda" id="id_ancho_banda" class="form-select">
+                      <option value=""></option>
+                      
+                        {% for i in ancho_banda  %}
+                        {% if  i.activo and not i.eliminado  %}
+                         <option value="{{i.id}}" {% if obj.cubierta.ancho_banda.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                        {% endif %}
+                         
+                        {% endfor %}
+                        </select>
                     <div class="invalid-feedback" id="invalid_ancho_banda">Este campo es requerido.</div>
 
                   </div>
@@ -453,9 +503,7 @@
 
 
 
-    ubicacion.addEventListener("change", function () {
-      ubicacion.classList.remove("is-invalid")
-    })
+
     estado.addEventListener("change", function () {
       estado.classList.remove("is-invalid")
     })
@@ -583,9 +631,11 @@
       modelo_renova.classList.remove("is-invalid")
     })
     ubicacion.addEventListener("change", function (e) {
+      ubicacion.classList.remove("is-invalid")
+
       var strUser = e.target.options[e.target.selectedIndex].value;
       console.log(strUser);
-      if (strUser === "") {
+      if (strUser === "1") {
         document.getElementById("section_vehiculo").classList.add("activo")
         document.getElementById("id_repuesto").removeAttribute("disabled")
 
@@ -608,19 +658,7 @@
         method: "POST",
 
         body: formData
-      }).then(data => data.json()).then(
-        function name(params) {
-          var strUser = ubicacion.options[ubicacion.selectedIndex].value;
-          if (strUser ==="" && vehiculo.value=="" && posicion.value=="") {
-            console.log("if");
-            params.form.vehiculo = "Este campo es obligatorio."
-            params.form.posicion = "Este campo es obligatorio."
-
-          }
-          return params
-        }
-
-      ).then(response => {
+      }).then(data => data.json()).then(response => {
         console.log(response);
 
         if (response.status == 500) {
@@ -753,7 +791,33 @@
   for (let i = 0; i < array5.length; i++) {
     const element = array5[i].value;
     options5.push(element)}
+    let array6=document.getElementById("id_ancho_banda").options
+  let options6=[]
+  for (let i = 0; i < array6.length; i++) {
+    const element = array6[i].value;
+    options6.push(element)}
+
+    console.log(options6);
  {% if obj %}
+ let modelo6="{{obj.cubierta.ancho_banda.id}}"
+ console.log(modelo6);
+  if (options6.includes(modelo6)!=true) {
+    console.log("if");
+  let option6=document.createElement("option")
+  option6.textContent="{{obj.cubierta.ancho_banda.descripcion}}"
+  option6.selected=true
+  option6.value=modelo6
+
+  $("#id_ancho_banda").append(option6)
+
+  }else{
+    console.log("else");
+    document.getElementById('id_ancho_banda').value=modelo6;
+
+  }
+
+
+
   let modelo="{{obj.modelo_llanta.id}}"
   if (options3.includes(modelo)!=true) {
 
@@ -791,7 +855,6 @@
  
       let modelo5="{{obj.cubierta.modelo_renova.id}}"
   if (options5.includes(modelo5)!=true) {
-    console.log("if")
 
   let option5=document.createElement("option")
   option5.textContent="{{obj.cubierta.modelo_renova.descripcion}}"

@@ -542,39 +542,53 @@ class CubiertaForm(forms.ModelForm):
 
 class LlantaForm(forms.ModelForm):
  
-    ubicacion = forms.ModelChoiceField(queryset=Ubicacion.objects.filter(eliminado=False,activo=True),empty_label="MONTADO",
-                                     widget=forms.Select( attrs={'class':'form-select'}) , required=False)
+ 
 
-    estado = forms.ModelChoiceField(queryset=EstadoLlanta.objects.filter(eliminado=0,activo=True), required=True,
-        widget=forms.Select( attrs={'class':'form-select'}) )
     repuesto = forms.BooleanField(initial=False, required=False)
 
     class Meta:	
         model = Llanta
-        fields = ('vehiculo','ubicacion' ,'modelo_llanta','almacen',"repuesto", 'estado', 'medida_llanta',"codigo","posicion")
+        exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
         widgets = {
-            'vehiculo': forms.Select(attrs={'class':'form-select'}),
             'modelo_llanta': forms.Select( attrs={'class':'form-select'}),
             'medida_llanta': forms.Select( attrs={'class':'form-select'}),
             'ubicacion': forms.Select( attrs={'class':'form-control'}),
             'codigo': forms.TextInput( attrs={'class':'form-control'}),
             'posicion': forms.TextInput( attrs={'class':'form-control'}),
+            'estado': forms.Select( attrs={'class':'form-select'}),
 
         }
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['vehiculo'].queryset = Vehiculo.objects.filter(eliminado=False,activo=True)
-        self.fields['almacen'].required = False
-        self.fields['codigo'].required = True
+            # for field in iter(self.fields):
+            #     self.fields[field].widget.attrs.update({
+            #         "class": "form-control",
+            #     })
+        # self.fields['almacen'].required = False
+
+    def clean_ubicacion(self):
+        data=self.cleaned_data["ubicacion"]
+        print(data)
+        if data.id==1 :
+            print("aaea")
+            self.fields['vehiculo'].required = True
+            self.fields['codigo'].required = True
+
+            self.fields['posicion'].required = True
+
+        return data
+    # def clean_vehiculo(self):
+    #     data=self.cleaned_data["vehiculo"]
+    #     if data.id!=None:
+    #         self.fields['posicion'].required = True
 
     def clean(self):
-        if self.cleaned_data.get('ubicacion')==None:
+        if self.cleaned_data.get('ubicacion')!=1:
         
             subject = self.cleaned_data.get('posicion')
             subject1 = self.cleaned_data.get('vehiculo')
             repuesto = self.cleaned_data.get('repuesto')
-            print(repuesto)
 
             if self.instance.posicion!=subject:
                 dataLlanta=Llanta.objects.filter(vehiculo=subject1,posicion=subject)
@@ -583,7 +597,9 @@ class LlantaForm(forms.ModelForm):
                     self.add_error("posicion",f"El vehiculo {subject1} ya tiene asiganada una llanta en la posición {subject} .")
             
                 else:
+
                     data=Vehiculo.objects.get(pk=subject1.id)
+
                     nrollantas=data.tipo_vehiculo.nro_llantas
                     nrorepuesto=data.nro_llantas_repuesto
                     total=int(nrollantas)+int(nrorepuesto)
@@ -615,8 +631,8 @@ class VehiculoForm(forms.ModelForm):
 
     class Meta:	
         model = Vehiculo
-        fields = ('ano','modelo_vehiculo','tipo_vehiculo','propiedad','placa',
-            'operacion','km','nro_llantas_repuesto','obs', 'ubicacionv' )
+        exclude=["nro_ejes","vehiculo","eliminado","modified_at","created_at","modified_by"]
+
         widgets = {
             'ano': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'1950', 'step':'1'}),
             'modelo_vehiculo': forms.Select( attrs={'class':'form-control'}),

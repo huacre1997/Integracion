@@ -1810,7 +1810,6 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
    
     def post(self,request,*args, **kwargs):
         try:
-            print(self.request.POST)
             start_date=self.request.POST["start_date"]
             end_date=self.request.POST["end_date"]
             modelo=self.request.POST["modelo"]
@@ -1818,7 +1817,7 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
 
             marca=self.request.POST["marca"]
 
-            search=Llanta.objects.filter(eliminado=False) 
+            search=Llanta.objects.filter(eliminado=False).order_by("-created_at") 
             response=search 
             if marca:
                 response=search.filter(modelo_llanta__marca_llanta_id=marca)
@@ -1836,8 +1835,7 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
                     response=search.filter(created_at__contains=start_date)            
             data=[]
             for i in response:
-                data.append(i.toJSON2())   
-            
+                data.append(i.toJSON())   
             return JsonResponse(data, safe=False)
  
         except Exception as e:
@@ -1888,12 +1886,27 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         cubierta=CubiertaForm()
         marca_llanta = MarcaLlanta.objects.all().values("id",'descripcion',"activo","eliminado")
         modelo_renova = ModeloRenova.objects.all().values("id",'descripcion',"activo","eliminado")
+        ancho_banda = AnchoBandaRenova.objects.all().values("id",'descripcion',"activo","eliminado")
+        ubicacion=Ubicacion.objects.all().values("id",'descripcion',"activo","eliminado")
+        vehiculo=Vehiculo.objects.all().values("id",'placa',"activo","eliminado")
+        medida_llanta=MedidaLlanta.objects.all().values("id","medida","profundidad","capas","eliminado","activo")
 
-        context={"form":Llanta,"form2":cubierta,"marca_llanta":marca_llanta,"modelo_renova":modelo_renova}
+        context={
+            "form":Llanta,
+            "form2":cubierta,
+            "ubicacion":ubicacion,
+            "marca_llanta":marca_llanta,
+            "modelo_renova":modelo_renova,
+            "ancho_banda":ancho_banda,
+            "vehiculo":vehiculo,
+            "medida_llanta":medida_llanta
+
+            }
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
         try:
+            print(request.POST)
             form1=LlantaForm(request.POST)
 
             form2=CubiertaForm(request.POST)
@@ -1919,7 +1932,10 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
                     instance.repuesto=True
                 else:
                     instance.repuesto=False
-
+                if "activo" in request.POST:
+                    instance.activo=True
+                else:
+                    instance.activo=False
                 instance.created_by = self.request.user
                 instance.save()
                 if self.request.POST["ubicacion"]=="":
@@ -1934,7 +1950,7 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
                     det.llanta_id=instance.id
                     det.posicion=self.request.POST["posicion"]
                     det.save()
-                return JsonResponse({"status":200,"url":reverse_lazy("Web:llanta")})
+                return JsonResponse({"status":200,"form":{},"form2":{},"url":reverse_lazy("Web:llanta")})
             else:
                 data = {
                     "form":form1.errors,
@@ -1977,49 +1993,70 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
     #     messages.success(self.request, 'Operación realizada correctamente.')
     #     return super().form_valid(form)
 
-    def dispatch(self,request,*args, **kwargs):
-        self.object=self.get_object() 
-        
+    def dispatch(self,request,*args, **kwargs):        
         return super().dispatch(request,*args,**kwargs)
 
 
     def get(self,*args, **kwargs):
-        cubierta=CubiertaLlanta.objects.filter(id=self.object.cubierta.id).first()
-        form1=LlantaForm(instance=self.object)
+        cubierta=CubiertaLlanta.objects.filter(id=self.get_object().cubierta.id).first()
+        form1=LlantaForm(instance=self.get_object())
         form2=CubiertaForm(instance=cubierta)
         marca_llanta= MarcaLlanta.objects.all().values("id",'descripcion',"activo","eliminado")
         modelo_renova = ModeloRenova.objects.all().values("id",'descripcion',"activo","eliminado")
-        context={"form":form1,"form2":form2,"cubierta":cubierta,"obj":self.get_object(),"marca_llanta":marca_llanta,"modelo_renova":modelo_renova}
+        ancho_banda = AnchoBandaRenova.objects.all().values("id",'descripcion',"activo","eliminado")
+        ubicacion=Ubicacion.objects.all().values("id",'descripcion',"activo","eliminado")
+        vehiculo=Vehiculo.objects.all().values("id",'placa',"activo","eliminado")
+        medida_llanta=MedidaLlanta.objects.all().values("id","medida","profundidad","capas","eliminado","activo")
+
+        context={
+           "form":form1,
+            "vehiculo":vehiculo,
+            "form2":form2,
+            "cubierta":cubierta,
+            "obj":self.get_object(),
+            "marca_llanta":marca_llanta,
+            "modelo_renova":modelo_renova,
+            "ubicacion":ubicacion,
+            "ancho_banda":ancho_banda,
+            "medida_llanta":medida_llanta
+                }
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
-        print(self.request.POST)
+        print(self.get_object())
         try:
             form2=CubiertaForm(request.POST)
-
-            form1=LlantaForm(request.POST,instance=self.object)
+            form1=LlantaForm(request.POST,instance=self.get_object())
+            
             if form1.is_valid() and form2.is_valid():
-                instance2=CubiertaLlanta.objects.filter(id=self.object.cubierta.id).first()
-                instance2.modified_by = self.request.user
-                instance2.km=self.request.POST["km"]
-                instance2.costo=self.request.POST["costo"]
-                instance2.fech_ren=self.request.POST["fech_ren"]
-                instance2.nro_ren=self.request.POST["nro_ren"]
-                instance2.a_final=self.request.POST["a_final"]
-                instance2.a_inicial=self.request.POST["a_inicial"]
-                instance2.a_promedio=self.request.POST["a_promedio"]
-                instance2.modelo_renova_id=self.request.POST["modelo_renova"]
-                instance2.ancho_banda_id=self.request.POST["ancho_banda"]
-                instance2.renovadora_id=self.request.POST["renovadora"]
-                instance2.categoria=self.request.POST["categoria"]
-   
-                instance2.save()
+                if self.get_object().cubierta:
+                    print("entro al self cubierta")
+                    instance2=CubiertaLlanta.objects.filter(id=self.get_object().cubierta.id).first()
+
+                    instance2.modified_by = self.request.user
+                    instance2.km=self.request.POST["km"]
+                    instance2.costo=self.request.POST["costo"]
+                    instance2.fech_ren=self.request.POST["fech_ren"]
+                    instance2.nro_ren=self.request.POST["nro_ren"]
+                    instance2.a_final=self.request.POST["a_final"]
+                    instance2.a_inicial=self.request.POST["a_inicial"]
+                    instance2.a_promedio=self.request.POST["a_promedio"]
+
+                    instance2.modelo_renova_id=self.request.POST["modelo_renova"]
+
+                    instance2.ancho_banda_id=self.request.POST["ancho_banda"]
+
+                    instance2.renovadora_id=self.request.POST["renovadora"]
+
+                    instance2.categoria=self.request.POST["categoria"]
+    
+                    instance2.save()
+               
                 instance=self.get_object()
                 instance.codigo=self.request.POST["codigo"]
-                if self.request.POST["vehiculo"]!="":
-                    instance.vehiculo_id=self.request.POST["vehiculo"]
-                else:
-                    instance.vehiculo_id=None
+                instance.vehiculo_id=self.request.POST["vehiculo"]
+                
+
                 instance.medida_llanta_id=self.request.POST["medida_llanta"]
                 instance.modelo_llanta_id=self.request.POST["modelo_llanta"]
                 instance.marca_llanta_id=self.request.POST["marca_llanta"]
@@ -2027,18 +2064,26 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                     instance.repuesto=True
                 else:
                     instance.repuesto=False
-                
-                if self.request.POST["posicion"]=="":
-                    instance.posicion=None
+                if "activo" in request.POST:
+                    instance.activo=True
                 else:
+                    instance.activo=False
+                instance.estado=self.request.POST["estado"]
+                if self.request.POST["posicion"]!="":
                     instance.posicion=self.request.POST["posicion"]
-                instance.ubicacion_id=self.request.POST["ubicacion"]
-                instance.estado_id=self.request.POST["estado"]
+                else:
+                    instance.posicion=None
 
-                instance.cubierta=instance2
+                print("1")
+                instance.ubicacion_id=self.request.POST["ubicacion"]
+                print("2")
+
+                instance.estado=self.request.POST["estado"]
+                if self.get_object().cubierta:
+                    instance.cubierta=instance2
                 instance.modified_by = self.request.user
                 instance.save()
-                return JsonResponse({"status":200,"url":self.success_url})
+                return JsonResponse({"status":200,"form":{},"form2":{},"url":self.success_url})
             else:
                 data = {
                     "form":form1.errors,
@@ -2291,6 +2336,7 @@ def getLlanta(request):
         post = json.loads(request.body.decode("utf-8"))
         print(f'El id es {post}')
         qs = Llanta.objects.get(id=int(post)).toJSON()
+        print(qs)
         return JsonResponse(qs, content_type='application/json')
 def getVehiculo(request):
     if request.method=="POST":
@@ -2491,7 +2537,7 @@ class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
             qs = Vehiculo.objects.get(id=post["id"]).toJSON()
             nm = Llanta.objects.filter(vehiculo=post["id"]).order_by("posicion")
             for i in nm:
-                lala=i.toJSON2()
+                lala=i.toJSON()
               
                 data.append(lala)   
 
@@ -2500,7 +2546,7 @@ class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HojaDeMovimientosView, self).get_context_data(**kwargs)
-        context["placa"]=Vehiculo.objects.all().values("id","placa")
+        context["placa"]=Vehiculo.objects.all().values("id","placa").filter(eliminado=False,activo=True)
         context["ubicaciones"]=Ubicacion.objects.filter(eliminado=False,activo=True)
         return context
 class InspeccionLlantasView(LoginRequiredMixin,ValidateMixin,TemplateView):
@@ -2575,7 +2621,6 @@ class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 print("1")
                 objeto=json.loads(self.request.POST["objeto"])
                 print("2")
-
                 inspeccion=self.get_object()
                 print("3")
                 print(self.request.POST["fech_ins"])

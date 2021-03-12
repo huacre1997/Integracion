@@ -72,6 +72,8 @@ $(document).ready(function () {
         body: JSON.stringify(data)
       }).then(data => data.json()).then(
         function (response) {
+          console.log(response);
+
           if(response.status==200){
           let pos = []
           let posrep = []
@@ -82,7 +84,7 @@ $(document).ready(function () {
           let nro_llantas=response.vehiculo.tipo_vehiculo.nro_llantas
           let nro_repuesto=response.vehiculo.nro_llantas_repuesto
           let total=nro_llantas+nro_repuesto
-          // console.log(total);
+          console.log(total);
           for (let index = 0; index < nro_llantas_array; index++) {
             if(response.llantas[index].repuesto==true){
               posrep.push(response.llantas[index].posicion)
@@ -91,8 +93,8 @@ $(document).ready(function () {
 
             }
           }
-      //  console.log(pos);
-      //  console.log(posrep);
+       console.log(pos);
+       console.log(posrep);
           if (response.llantas != nro_llantas) {
 
             for (let i = 1; i < nro_llantas + 1; i++) {
@@ -133,7 +135,6 @@ $(document).ready(function () {
                 }
           }
     
-          console.log(response);
 
         }
         return response

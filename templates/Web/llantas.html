@@ -75,6 +75,8 @@
                 <th>KM</th>
                 <th>F. Registro</th>
                 <th>Vehículo</th>
+                <th>Est.</th>
+
                 <th style="width: 12%;"></th>
               </tr>
             </thead>
@@ -148,7 +150,7 @@
       responsive: true,
       stateSave: true,
       destroy: true,
-
+      ordering:false,
       "lengthMenu": [
         [5, 10, 25, 50, -1],
         [5, 10, 25, 50, "All"]
@@ -219,6 +221,17 @@
               return "----------"
             }
             return data
+          }
+        },
+          {
+          "data": 'activo',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
           }
         },
         {

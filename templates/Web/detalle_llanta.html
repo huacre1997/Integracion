@@ -22,8 +22,8 @@
     </div>
     <div class="form-row">
         <div class="form-group col-lg-6">
-            <label for="">Medida Llanta</label>
-            <input disabled type="text" class="form-control" value="{{obj.marca_llanta}}">
+            <label for="">Marca Llanta</label>
+            <input disabled type="text" class="form-control" value="{{obj.modelo_llanta.marca_llanta.descripcion}}">
         </div>
         <div class="form-group col-lg-6">
             <label for="">Modelo Llanta</label>
@@ -39,7 +39,7 @@
     <div class="form-row">
         <div class="form-group col-lg-12">
             <label for="">Estado</label>
-            <input disabled type="text" class="form-control" value="{{obj.estado}}">
+            <input disabled type="text" class="form-control" value="{% if obj.estado == '1' %}BAJA{% elif obj.estado == 2 %}USADO{% elif obj.estado == 3 %}REPARACIÓN{% elif obj.estado == 4 %}ALMACÉN{% elif obj.estado == 5 %}EVALUACIÓN{% elif obj.estado == 6 %}TALLER MNTTO{% elif obj.estado == 7 %}REENCAUCHADO{% elif obj.estado == 8  %}REPARADO{%elif obj.estado == 9 %}NUEVO{% endif %}">
         </div>  
     </div>
     <div class="form-row">

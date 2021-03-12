@@ -67,10 +67,12 @@
                       <th class="middle text-center" >Modelo</th>
                       <th class="middle text-center" >Año</th>
                       <th class="middle text-center" >N° Llantas</th>
-                      <th class="middle text-center" >Llantas Repuesto</th>
+                      <th class="middle text-center" >N° Repuesto</th>
 
                       <th class="middle text-center">KM</th>
                       <th class="middle text-center" >F. Registro</th>
+                                            <th class="middle text-center" >Est.</th>
+
                       <th></th>
                     </tr>
                   </thead>
@@ -208,6 +210,17 @@
           "data": "created_at",
             className: "middle text-center"
         },
+           {
+          "data": 'activo',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        },
           {
           "data": "null",
             className: "middle text-center"
@@ -220,7 +233,7 @@
               var buttons =
                 ' {% if "Web.change_vehiculo" in perm %}<a class="btn btn-light mr-1" href="../ver-vehiculo/'+index.id+'/"><i class="fas fa-tools"></i>&nbsp;Operaciones</a><a class="btn btn-warning mr-1"  role="button" href="../vehiculo/'+ index.id +
     
-                '"><i class="far fa-edit" ></i>Editar</a>'+
+                '"><i class="far fa-edit" ></i></a>'+
                 
                 '{%endif%}' +
                   ' {% if "Web.delete_vehiculo" in perm %}<button class="btn btn-danger mr-1 btn-eliminar-vehiculo"'+      
