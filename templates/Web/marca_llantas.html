@@ -8,63 +8,32 @@
   <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Marcas de Llantas</h6>
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Marcas de Neumáticos</h6>
+
+                     {% if 'Web.add_marcallanta' in perm %}
+                      <button id="btn-add-marca" class="btn btn-primary"><i class="fa fa-plus-circle "></i>&nbsp;Crear Nuevo</button>
+        {% endif %}
             </div>
             <div class="card-body">
 
-                <form method="GET" action="" id="frmlist">
-                {% csrf_token %}
-                  <div class="row">     
-                    <div class="col-lg-3">
-                      <label>Descripción</label>
-                      <input type="text" class="form-control" name="q" value="{{request.GET.q}}" />
-                    </div>
-                    <div class="col-lg-2">
-                        <label>&nbsp;</label></br>
-                        <button class="btn btn-primary" id="btnBuscar">
-                          <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                          <i class="fa fa-search"></i>Buscar
-                        </button>
-                    </div>
-                     {% if 'Web.add_marcallanta' in perm %}
-                    <div class="col-lg-3">
-                      <label>&nbsp;</label></br>
-                      <button id="btn-add-marca" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</button>
-                    </div>
-        {% endif %}
-                </div>
-                <br>
+              
                 <div class="table-responsive">               
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th  class="text-center middle"></th>
                       <th  class="text-center middle">N° de marca</th>
-                      <th>Nombre</th>
+                      <th class="text-center middle">Marca del Neumático</th>
                         <th  class="text-center middle">Estado</th>
                       <th style="width: 20%;">Acciones</th>
                     </tr>
                   </thead>
                   
-                  {% comment %}
-                  <tbody>
-                    <tr>
-                      <td>{{obj.descripcion}}</td>
-                      <td>{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
-                      <td>
-                        <a href="{% url 'Web:marca-llanta' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
-                        <button type="button" onclick='eliminateMarca("{% url 'Web:marca-llanta-delete' obj.pk %}")' data-id="{{obj.pk}}" class="btn btn-danger btn-sm btn-desactivate-marca"
-                      ><i class="fa fa-ban"></i></button>
-                      </td>
-                    </tr>
-                  </tbody>
-                  {% endcomment %}
+         
                     
                  
                 </table>
                 </div>
-              </form>
 
             </div>
           </div>
@@ -79,7 +48,6 @@
     $(document).ready(function() {
       tablaMarcas = $("#dataTable").DataTable({
      responsive:true,
-     ordering:false,
       ajax: {
         url: "{% url 'Web:marca-llantas' %}",
         type: "POST",
@@ -97,19 +65,16 @@
           },
   
       columns: [
-      {
-          "data": null,
-        },
+    
         {
           "data": 'id',className: "middle text-center"
         },
         
         {
-          "data": 'descripcion',className: "middle"
+          "data": 'descripcion',className: "middle text-center"
         },
         
-     
-       {
+          {
           "data": 'activo',
           className: "estado middle  text-center",
           render: function (data, type, row) {
@@ -126,17 +91,28 @@
 
 
       ],
-      columnDefs: [{
+       "order": [[ 1, 'asc' ]],		
+      columnDefs: [ {
+
+          "targets": [0],
+          "visible": false
+        },{
                
           targets: [-1],
+   render: function (row, data, index) {
+            var buttons ='{% if 'Web.change_marcallanta' in perm %}<a href="../marca-llanta/'+index.id+'/" class="btn btn-warning btn-sm btn-edit-marca"><i class="fa fa-edit"></i>Editar</a>'+
+              '</a> {% endif %}';
 
-          render: function (row, data, index) {
+            return buttons;
+
+          },
+          {% comment %} render: function (row, data, index) {
             var buttons ='{% if 'Web.change_marcallanta' in perm %}<a href="../marca-llanta/'+index.id+'/" class="btn btn-warning btn-sm btn-edit-marca"><i class="fa fa-edit"></i>Editar</a>'+
               '</a> {% endif %}{% if 'Web.delete_marcallanta' in perm %}<button type="button" onclick="eliminateMarca('+index.id+')" data-id="marca-llanta/'+index.id+'/delete/" class="btn btn-danger btn-sm btn-desactivate-marca"><i class="fa fa-ban"></i></button>{% endif %}';
 
             return buttons;
 
-          },
+          }, {% endcomment %}
 
         },
 
@@ -154,20 +130,8 @@
 
   }
     });
-    tablaMarcas.on( 'order.dt search.dt', function () {
-        tablaMarcas.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-            cell.innerHTML = i+1;
-        } );
-    } ).draw();
+ 
 
-      $("#btnBuscar").click(function() {
-        $('#frmlist').submit();
-        let spinner = $(this.currentTarget).find('span')
-        spinner.removeClass('d-none')
-        setTimeout(_ => spinner.addClass('d-none'), 2000)
-        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
-        $(this).prop("disabled", true);
-      });
         document.getElementById('btn-add-marca').addEventListener("click", function (e) {  
     e.preventDefault()
     let url = "{% url 'Web:marca-llanta' %}";
@@ -271,6 +235,6 @@
     });
     
 
-  </scrip|t>
+  </script>
   {% endblock %}
   

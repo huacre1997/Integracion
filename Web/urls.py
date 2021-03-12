@@ -42,10 +42,10 @@ urlpatterns = [
     path('almacen/<int:pk>/', views.AlmacenUpdateView.as_view(), name='almacen'),
     path('almacen/<int:pk>/delete/', views.AlmacenDeleteView.as_view(), name='almacen-delete'),
 
-    path('lugares/', views.LugaresListView.as_view(), name='lugares'),
-    path('lugar/', views.LugarCreateView.as_view(), name='lugar'),
-    path('lugar/<int:pk>/', views.LugarUpdateView.as_view(), name='lugar'),
-    path('lugar/<int:pk>/delete/', views.LugarDeleteView.as_view(), name='lugar-delete'),
+    path('ubicaciones-vehiculos/', views.LugaresListView.as_view(), name='lugares'),
+    path('ubicacion-vehiculo/', views.LugarCreateView.as_view(), name='lugar'),
+    path('ubicacion-vehiculo/<int:pk>/', views.LugarUpdateView.as_view(), name='lugar'),
+    path('ubicacion-vehiculo/<int:pk>/delete/', views.LugarDeleteView.as_view(), name='lugar-delete'),
 
     path('marca-renovaciones/', views.MarcaRenovacionesListView.as_view(), name='marca-renovaciones'),
     path('marca-renovacion/', views.MarcaRenovacionCreateView.as_view(), name='marca-renovacion'),
@@ -133,6 +133,9 @@ urlpatterns = [
 
     path('hoja-movimientos/', views.HojaDeMovimientosView.as_view(), name='hoja-movimientos'),
     path('inspeccion-llantas/', views.InspeccionLlantasView.as_view(), name='inspeccion-llantas'),
+
+    
+    path('inspeccion-llantas/detalles/<int:pk>/', views.InsepccionDetalleView.as_view(), name='inspeccion-detalle'),
     path('inspeccion-agregar/', views.AgregarInspeccion, name='inspeccion-agregar'),
     path('getTipo/<int:id>/', views.getTipo, name='get-tipo'),
 

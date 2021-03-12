@@ -7,9 +7,9 @@ function validatePunto(num) {
 }
 
 function validatePlaca(num) {
-    const r = /^([A-Z]{3})-([0-9]{3})$/;
+    // const r = /^([A-Z]{3})-([0-9]{3})$/;
 
-    if (r.test(num)) {
+    if (num.length==8) {
         return true
     }
     return false

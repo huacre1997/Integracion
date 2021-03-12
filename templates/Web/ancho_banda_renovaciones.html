@@ -9,45 +9,24 @@
   <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Ancho Banda de Renovación</h6>
+            <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Anchos de Bandas</h6>
+
+                <a class="btn btn-primary " href="{% url 'Web:ancho-banda-renovacion' %}"><i
+                    class="fa fa-plus-circle "></i>&nbsp;Crear Nuevo</a>
             </div>
-            <div class="card-body">
-
-                <form method="GET" action="" id="frmlist">
-                {% csrf_token %}
-                  <div class="row">     
-                    <div class="col-lg-3">
-                      <label>Descripción</label>
-                      <input type="text" class="form-control" name="q" value="{{request.GET.q}}" />
-                    </div>
-                    <div class="col-lg-2">
-                        <label>&nbsp;</label></br>
-                        <button class="btn btn-primary" id="btnBuscar">
-                          <span class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                          <i class="fa fa-search"></i>Buscar
-                        </button>
-                    </div>
-                                            {% if 'Web.add_anchobandarenova' in perm %}
-
-                    <div class="col-lg-3">
-                      <label>&nbsp;</label></br>
-                      <a href="{% url 'Web:ancho-banda-renovacion' %}" class="btn btn-success"><i class="fa fa-file-o"></i>  Crear Nuevo</a>
-                    </div>
-{% endif %}
-                </div>
-                <br>                  
+            <div class="card-body">                 
                 <div class="table-responsive">
                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th  class="text-center middle">#</th>
                       <th  class="text-center middle">Descripción</th>
-                      <th  class="text-center middle">Marca</th>
-                      <th  class="text-center middle">Modelo</th>
+                      <th  class="text-center middle">Reencauchadora</th>
+                      <th  class="text-center middle">Modelo de Banda</th>
                       <th  class="text-center middle">Ancho de Banda</th>
-                      <th  class="text-center middle">Activo</th>
-                      <th style="width: 20%;"></th>
+                      <th  class="text-center middle">Estado</th>
+                      <th ></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -55,24 +34,23 @@
                     <tr>
                       <td  class="text-center middle">{{obj.id}}</td>
                       <td>{{obj.descripcion}}</td>
-                      <td  class="text-center middle">{{obj.modelo_renova.marca_renova}}</td>
-                      <td  class="text-center middle">{{obj.modelo_renova}}</td>
+                      <td  class=" middle">{{obj.modelo_renova.marca_renova}}</td>
+                      <td  class=" middle">{{obj.modelo_renova}}</td>
                       <td  class="text-center middle">{{obj.ancho_banda|unlocalize}}</td>
-                      <td  class="text-center middle">{% if obj.activo %}<i class="fa fa-check text-success"></i>{% else %} <i class="fa fa-ban text-danger"></i> {% endif %} </td>
-                      <td>
+                      <td  class="text-center middle">{% if obj.activo %}<i class="fa fa-check-circle text-success"></i>{% else %} <i class="fas fa-times-circle text-danger"></i> {% endif %} </td>
+                      <td class="middle text-center">
                         {% if 'Web.change_anchobandarenova' in perm %}
- <a href="{% url 'Web:ancho-banda-renovacion' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
-                                  {% if 'Web.delete_anchobandarenova' in perm %}
+ <a href="{% url 'Web:ancho-banda-renovacion' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
+                                  {% comment %} {% if 'Web.delete_anchobandarenova' in perm %}
   <a href="{% url 'Web:ancho-banda-renovacion-delete' obj.pk %}" class="btn btn-danger btn-sm"
                         data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
-                        {% include 'Web/fragments/eliminar_anchobandarenovacion.html' %}
+                        {% include 'Web/fragments/eliminar_anchobandarenovacion.html' %} {% endcomment %}
                       </td>
                     </tr>
                     {% endfor %}
                   </tbody>
                 </table>
                 </div>
-              </form>
 
             </div>
           </div>
@@ -86,21 +64,21 @@
     $(document).ready(function() {
       $('#dataTable').DataTable({
             responsive: true,
-          "ordering": false,
-				   language:{
+ "order": [[ 0, 'asc' ]],		
+ 		   language:{
                     "url": "{% static 'language.json' %}",
 
           },
+        "columnDefs": [ 
+
+            {
+                
+                "targets": [0],
+                "visible": false
+            }],
       });
 
-      $("#btnBuscar").click(function() {
-        $('#frmlist').submit();
-        let spinner = $(this.currentTarget).find('span')
-        spinner.removeClass('d-none')
-        setTimeout(_ => spinner.addClass('d-none'), 2000)
-        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
-        $(this).prop("disabled", true);
-      });
+
     });
   </script>
   {% endblock %}

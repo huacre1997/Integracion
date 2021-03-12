@@ -6,22 +6,15 @@
 {% load base_extras %}
 {% load l10n %}
 {% block content %}  
-<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
-<link href="{% static "vendor/select2/select2.min.css" %}" rel="stylesheet" />
-<style>
-  table.dataTable tbody th, table.dataTable tbody td {
-      padding: 3px 3px; /* e.g. change 8x to 4px here */
-  }
-  </style>  
+
+ 
 <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <div class="d-flex justify-content-between">
-               <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Vehiculos</h6>
-                                                                                     {% if 'Web.add_vehiculo' in perm %}
-<a href="{% url 'Web:vehiculo' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nuevo Vehiculo</a>{% endif %}
-              </div>
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+             <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Vehiculos</h6>
+                 {% if 'Web.add_vehiculo' in perm %}
+                <a href="{% url 'Web:vehiculo' %}" class="btn btn-primary"><i class="fa fa-plus-circle"></i> </i> Regitrar Nuevo Vehiculo</a>{% endif %}
 
             </div>
             <div class="card-body">
@@ -76,36 +69,7 @@
                       <th></th>
                     </tr>
                   </thead>
-                  {% comment %} <tbody>
-                    {% for obj in objetos %}
-                    <tr>
-                      <td class="middle text-center">{{pag}}</td>
-                      <td class="middle text-center">{{obj.placa}}</td>
-                      <td class="middle text-center">{{obj.modelo_vehiculo.marca_vehiculo}}</td>
-                      <td class="middle ">{{obj.modelo_vehiculo}}</td>
-                      <td class="middle text-center">{{obj.ano}}</td>
-                      <!--td>{{obj.ubicacion}} {% if obj.almacen %} / {{obj.almacen}} {% endif %}</td-->
-                      <td class="middle text-center">{{obj.tipo_vehiculo.nro_llantas}}</td>
-                      <td class="middle text-center">{{obj.nro_llantas_repuesto}}</td>
-
-                      <td class="middle text-center">{{obj.km|unlocalize}}</td>
-                      <td class="middle text-center">{{obj.created_at|date:'d/m/Y'}}</td>
-                      <td>
-                        <a href="{% url 'Web:ver-vehiculo' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-tools"></i>Operaciones</a>
-                      {% if 'Web.change_vehiculo' in perm %}
-                        <a href="{% url 'Web:vehiculo' obj.pk %}" class="btn btn-success btn-sm"><i class="fa fa-edit"></i>Editar</a>
-                      {% endif %}
-
-
-                    {% if 'Web.delete_vehiculo' in perm %}
-                        <a href="#" class="btn btn-danger btn-sm"   data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>
-                        
-                      {% endif %}
-                        {% include 'Web/fragments/eliminar_vehiculo.html' %}
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody> {% endcomment %}
+       
                 </table>
                 </div>
               </form>
@@ -127,14 +91,6 @@
 
        $('#modelo').select2();
 
-      $("#btnBuscar").click(function() {
-        $('#frmlist').submit();
-        let spinner = $(this.currentTarget).find('span')
-        spinner.removeClass('d-none')
-        setTimeout(_ => spinner.addClass('d-none'), 2000)
-        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
-        $(this).prop("disabled", true);
-      });
  var date_range = null
   var date_now = new moment().format('YYYY-MM-DD');
   var parameters = {
@@ -150,9 +106,7 @@
     
     tabla = $("#tablaVehiculo").DataTable({
       processing:"true",
-      ordering:false,
     responsive: true,
-      stateSave: true,
             destroy: true,
 
       "lengthMenu": [
@@ -166,11 +120,7 @@
         data: parameters,
         dataSrc: ""
       },
-      "lengthMenu": [
-        [5, 10, 25, 50, -1],
-        [5, 10, 25, 50, "All"]
-      ],
-   
+      
 
       columns: [
        {
@@ -226,10 +176,27 @@
             className: "middle text-center"
         },
        ],
-       columnDefs: [{
-          targets: [-1],
+                  "order": [[ 1, 'asc' ]],		
 
-          render: function (row, data, index) {
+       columnDefs: [
+         {
+
+              "targets": [0],
+              "visible": false
+            },
+       {
+          targets: [-1],
+    render: function (row, data, index) {
+              var buttons =
+                ' {% if "Web.change_vehiculo" in perm %}<a class="btn btn-success" href="../ver-vehiculo/'+index.id+'/"><i class="fas fa-tools"></i>&nbsp;Operaciones</a><a class="btn btn-warning"  role="button" href="../vehiculo/'+ index.id +
+    
+                '"><i class="far fa-edit" ></i></a>'+
+                
+                '{%endif%}'
+              return buttons;
+            
+          },
+          {% comment %} render: function (row, data, index) {
               var buttons =
                 ' {% if "Web.change_vehiculo" in perm %}<a class="btn btn-light mr-1" href="../ver-vehiculo/'+index.id+'/"><i class="fas fa-tools"></i>&nbsp;Operaciones</a><a class="btn btn-warning mr-1"  role="button" href="../vehiculo/'+ index.id +
     
@@ -240,7 +207,7 @@
                 '"><i class="fa fa-ban" ></i></button>{%endif%}';
               return buttons;
             
-          },
+          }, {% endcomment %}
 
         }]
   

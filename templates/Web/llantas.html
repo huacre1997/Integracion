@@ -13,24 +13,18 @@
 <div id="wrapper">
   <div class="container-fluid">
     <div class="card shadow mb-4">
-      <div class="card-header py-3">
-        <div class="row align-items-center">
-          <div class="col-lg-9">
-            <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Llantas</h6>
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Neumaticos</h6>
 
-          </div>
-          <div class="col-lg-3">
-            <a href="{% url 'Web:llanta' %}" class="btn btn-success"><i class="fa fa-file-o"></i> Regitrar Nueva
-              Llanta</a>
-          </div>
-        </div>
+        <a class="btn btn-primary " href="{% url 'Web:llanta' %}"><i class="fa fa-plus-circle "></i>&nbsp;Registrar
+          Nueva LLanta</a>
 
       </div>
       <div class="card-body">
 
         <div class="form-row">
           <div class="form-group col-lg-3">
-            <label for="">Medida</label>
+            <label for="">Filtrar por Medida</label>
             <select name="medida" id="medida" class="form-select">
               <option value=""></option>
               {% for i in medida %}
@@ -41,7 +35,7 @@
 
           </div>
           <div class="form-group col-lg-3">
-            <label for="">Marca</label>
+            <label for="">Filtrar por Marca</label>
             <select name="marca" id="marca" class="form-select">
               <option value=""></option>
               {% for i in marca %}
@@ -50,7 +44,7 @@
             </select>
           </div>
           <div class="form-group col-lg-3">
-            <label for="">Modelo</label>
+            <label for="">Filtrar por modelo</label>
             <select name="modelo" id="modelo" class="form-select">
 
             </select>
@@ -77,38 +71,10 @@
                 <th>Vehículo</th>
                 <th>Est.</th>
 
-                <th style="width: 12%;"></th>
+                <th></th>
               </tr>
             </thead>
-            {% comment %}
-
-
-            {% for obj in objetos %}
-            <tr>
-              <td class="middle text-center">{{obj.id}}</td>
-              <td class="middle text-center">{{obj.codigo}}</td>
-              <td class="middle text-center">{{obj.modelo_llanta.marca_llanta}}</td>
-              <td class="middle text-center">{{obj.modelo_llanta}}</td>
-              <td>{{obj.medida_llanta}}</td>
-              <td class="middle text-center">{{obj.ubicacion}}</td>
-              <td class="middle text-center">{{obj.cubierta.costo|unlocalize}}</td>
-              <td class="middle text-center">{{obj.cubierta.km|unlocalize}}</td>
-              <td class="middle text-center">{{obj.created_at|date:'Y-m-d'}}</td>
-              <td class="middle text-center">{{obj.vehiculo|default_if_none:'---------'}} </td>
-              <td>
-                {% if 'Web.change_llanta' in perm %}
-
-                <a href="{% url 'Web:llanta' obj.pk %}" class="btn btn-success btn-sm"><i
-                    class="fa fa-edit"></i>Editar</a>{% endif %}
-                {% if 'Web.delete_llanta' in perm %}
-                <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i
-                    class="fa fa-ban"></i></a>{% endif %}
-                {% include 'Web/fragments/eliminar_llanta.html' %}
-              </td>
-            </tr>
-            {% endfor %}
-            {% endcomment %}
-
+    
 
           </table>
         </div>
@@ -148,9 +114,8 @@
     tabla = $("#tablaLlanta").DataTable({
       processing: "true",
       responsive: true,
-      stateSave: true,
       destroy: true,
-      ordering:false,
+
       "lengthMenu": [
         [5, 10, 25, 50, -1],
         [5, 10, 25, 50, "All"]
@@ -164,10 +129,6 @@
         data: parameters,
         dataSrc: ""
       },
-      "lengthMenu": [
-        [5, 10, 25, 50, -1],
-        [5, 10, 25, 50, "All"]
-      ],
 
 
       columns: [{
@@ -223,7 +184,7 @@
             return data
           }
         },
-          {
+        {
           "data": 'activo',
           className: "estado middle  text-center",
           render: function (data, type, row) {
@@ -239,22 +200,31 @@
           className: "middle text-center"
         },
       ],
-      columnDefs: [{
-        targets: [-1],
+      columnDefs: [
 
-        render: function (row, data, index) {
-          var buttons =
-            ' {% if "Web.change_llanta" in perm %}<a class="btn btn-warning"  role="button" href="../llanta/' +
-            index.id +
+        {
+          targets: [-1],
 
-            '"><i class="far fa-edit" ></i></a>{%endif%}' +
-            ' {% if "Web.delete_llanta" in perm %}<button class="btn btn-danger mr-1 btn-delete-llanta"' +
-            '"><i class="fa fa-ban" ></i></button>{%endif%}';
-          return buttons;
+          render: function (row, data, index) {
+            var buttons =
+              ' {% if "Web.change_llanta" in perm %}<a class="btn btn-warning"  role="button" href="../llanta/' +
+              index.id +
 
+              '"><i class="fa fa-edit" ></i></a>{%endif%}' 
+              // ' {% if "Web.delete_llanta" in perm %}<button class="btn btn-danger mr-1 btn-delete-llanta"' +
+              // '"><i class="fa fa-ban" ></i></button>{%endif%}';
+            return buttons;
+
+          },
+
+        }, {
+
+          "targets": [0],
+          "visible": false
         },
 
-      }]
+      ], "order": [[ 1, 'asc' ]],		
+
 
 
     });
@@ -279,11 +249,11 @@
 
   }).on('cancel.daterangepicker', function (ev, picker) {
     $(this).val("");
-    parameters["start_date"]=""
-    parameters["end_date"]=""
-    parameters["medida"]=""
-    parameters["modelo"]=""
-    parameters["marca"]=""
+    parameters["start_date"] = ""
+    parameters["end_date"] = ""
+    parameters["medida"] = ""
+    parameters["modelo"] = ""
+    parameters["marca"] = ""
 
     date_range = picker;
     generate_reports();
@@ -339,11 +309,11 @@
       $('#modelo').prop("disabled", false)
       $('#modelo').empty();
     }
-    parameters["start_date"]=""
-      parameters["end_date"]=""
-      parameters["medida"] = $("#medida").val()
-      parameters["marca"] = ""
-      parameters["modelo"] =""
+    parameters["start_date"] = ""
+    parameters["end_date"] = ""
+    parameters["medida"] = $("#medida").val()
+    parameters["marca"] = ""
+    parameters["modelo"] = ""
 
     generate_reports();
 

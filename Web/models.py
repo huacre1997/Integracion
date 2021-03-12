@@ -453,16 +453,14 @@ class TipoVehiculo(models.Model):
       return item
 
 class Vehiculo(models.Model):
-   class Operacion(models.TextChoices):
-        COMBUSTIBLE = "1", _('COMBUSTIBLE')
-        MINERALES = "2", _('MINERALES')
+
    ano = models.IntegerField(null=True)
    modelo_vehiculo = models.ForeignKey(ModeloVehiculo, on_delete=models.PROTECT)
    tipo_vehiculo = models.ForeignKey(TipoVehiculo, on_delete=models.PROTECT)
    ubicacionv = models.ForeignKey(Lugar, verbose_name="Lugar", on_delete=models.PROTECT, null=True, blank=True)
    propiedad = models.CharField(max_length=50, null=True)
-   placa = models.CharField(max_length=50, null=True, blank=True)
-   operacion = models.CharField(max_length=2,choices=Operacion.choices, null=True, blank=True)
+   placa = models.CharField(max_length=8, null=True, blank=True)
+   operacion = models.CharField(max_length=50, null=True, blank=True)
    km = models.DecimalField(max_digits=10, decimal_places=2)
    nro_ejes = models.IntegerField(null=True)
    nro_llantas_repuesto = models.IntegerField(null=True)
