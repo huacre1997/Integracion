@@ -11,7 +11,7 @@ from django.views.generic import FormView
 from django.contrib.auth.models import Group,Permission
 from .forms import (UserGroupForm,UserPasswordResetForm,LoginForm, PersonaForm, UsuarioForm,
     UbicacionForm, MarcaRenovaForm, ModeloRenovaForm, AnchoBandaRenovaForm,InspeccionForm, 
-    MarcaLlantaForm ,ModeloLlantaForm, MedidaLlantaForm, AlmacenForm, LugarForm, EstadoLlantaForm,
+    MarcaLlantaForm ,ModeloLlantaForm, MedidaLlantaForm, AlmacenForm, LugarForm,
     TipoPisoForm, TipoServicioForm, MarcaVehiculoForm, ModeloVehiculoForm, LlantaForm, VehiculoForm,TipoVehiculoForm,CubiertaForm)
 from django.http.response import HttpResponseRedirect
 from django.contrib import messages, auth
@@ -1319,83 +1319,83 @@ def RenderOptionLlanta(request):
     else:
         return JsonResponse({"response":"seleccione marca"},safe=False)
 
-class EstadoLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/estado_llantas.html'
-    model = EstadoLlanta
-    context_object_name = 'objetos'
-    login_url=reverse_lazy("Web:login")
-    permission_required=["Web.view_estadollanta"]
+# class EstadoLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
+#     template_name = 'Web/estado_llantas.html'
+#     model = EstadoLlanta
+#     context_object_name = 'objetos'
+#     login_url=reverse_lazy("Web:login")
+#     permission_required=["Web.view_estadollanta"]
 
-    def get_queryset(self):
-        # import pdb; pdb.set_trace();
-        qs = super().get_queryset()
-        qs = qs.filter(eliminado=False)
-        q = self.request.GET.get('q','')
-        qs = qs.filter(descripcion__icontains=q)
-        return qs.order_by('descripcion')
+#     def get_queryset(self):
+#         # import pdb; pdb.set_trace();
+#         qs = super().get_queryset()
+#         qs = qs.filter(eliminado=False)
+#         q = self.request.GET.get('q','')
+#         qs = qs.filter(descripcion__icontains=q)
+#         return qs.order_by('descripcion')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
-class EstadoLlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
-    form_class = EstadoLlantaForm
-    template_name = 'Web/estado_llanta.html'
-    success_url = reverse_lazy("Web:estado-llantas")
-    action = ACCION_NUEVO
-    login_url=reverse_lazy("Web:login")
-    permission_required=["Web.add_estadollanta"]
-
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.created_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.warning(self.request, form.errors)
-        return super().form_invalid(form)
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         return context
 
 
-class EstadoLlantaUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
-    form_class = EstadoLlantaForm
-    model = EstadoLlanta
-    template_name = 'Web/estado_llanta.html'
-    success_url = reverse_lazy("Web:estado-llantas")
-    action = ACCION_EDITAR
-    login_url=reverse_lazy("Web:login")
-    permission_required=["Web.change_estadollanta"]
+# class EstadoLlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
+#     form_class = EstadoLlantaForm
+#     template_name = 'Web/estado_llanta.html'
+#     success_url = reverse_lazy("Web:estado-llantas")
+#     action = ACCION_NUEVO
+#     login_url=reverse_lazy("Web:login")
+#     permission_required=["Web.add_estadollanta"]
 
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.modified_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         instance = form.save(commit=False)
+#         instance.created_by = self.request.user
+#         messages.success(self.request, 'Operación realizada correctamente.')
+#         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        messages.warning(self.request, form.errors)
-        return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['update'] = True
-        return context
+#     def form_invalid(self, form):
+#         messages.warning(self.request, form.errors)
+#         return super().form_invalid(form)
 
 
-class EstadoLlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
-    action = ACCION_EDITAR
-    login_url=reverse_lazy("Web:login")
-    permission_required=["Web.delete_estadollanta"]
+# class EstadoLlantaUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
+#     form_class = EstadoLlantaForm
+#     model = EstadoLlanta
+#     template_name = 'Web/estado_llanta.html'
+#     success_url = reverse_lazy("Web:estado-llantas")
+#     action = ACCION_EDITAR
+#     login_url=reverse_lazy("Web:login")
+#     permission_required=["Web.change_estadollanta"]
 
-    def get(self, request, *args, **kwargs):
-        id = self.kwargs['pk']
-        obj = EstadoLlanta.objects.get(pk=id)
-        obj.modified_by=request.user
-        obj.eliminado = True
-        obj.save()
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return HttpResponseRedirect(reverse('Web:estado-llantas',))
+#     def form_valid(self, form):
+#         instance = form.save(commit=False)
+#         instance.modified_by = self.request.user
+#         messages.success(self.request, 'Operación realizada correctamente.')
+#         return super().form_valid(form)
+
+#     def form_invalid(self, form):
+#         messages.warning(self.request, form.errors)
+#         return super().form_invalid(form)
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['update'] = True
+#         return context
+
+
+# class EstadoLlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
+#     action = ACCION_EDITAR
+#     login_url=reverse_lazy("Web:login")
+#     permission_required=["Web.delete_estadollanta"]
+
+#     def get(self, request, *args, **kwargs):
+#         id = self.kwargs['pk']
+#         obj = EstadoLlanta.objects.get(pk=id)
+#         obj.modified_by=request.user
+#         obj.eliminado = True
+#         obj.save()
+#         messages.success(self.request, 'Operación realizada correctamente.')
+#         return HttpResponseRedirect(reverse('Web:estado-llantas',))
 
 
 class TipoServiciosListView(LoginRequiredMixin,ValidateMixin, ListView):

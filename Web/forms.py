@@ -438,19 +438,19 @@ class MedidaLlantaForm(forms.ModelForm):
             if MedidaLlanta.objects.filter(medida=subject,modelo_llanta=subject1).exists():
                 self.add_error("medida",f" : La medida {subject1} ya tiene una modelo {subject} .")
         return self.cleaned_data   
-class EstadoLlantaForm(forms.ModelForm):
-    class Meta:
-        model = EstadoLlanta
-        fields = ('descripcion', 'activo')
-        widgets = {
-            'descripcion': forms.TextInput( attrs={'class':'form-control'}),
-        }
-    def clean_descripcion(self):
-        data=self.cleaned_data["descripcion"]
-        if self.instance.descripcion!=data:
-            if EstadoLlanta.objects.filter(descripcion=data).exists():
-                self.add_error("descripcion",f" : El estado {data} ya se encuentra registrado .")
-        return data
+# class EstadoLlantaForm(forms.ModelForm):
+#     class Meta:
+#         model = EstadoLlanta
+#         fields = ('descripcion', 'activo')
+#         widgets = {
+#             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+#         }
+#     def clean_descripcion(self):
+#         data=self.cleaned_data["descripcion"]
+#         if self.instance.descripcion!=data:
+#             if EstadoLlanta.objects.filter(descripcion=data).exists():
+#                 self.add_error("descripcion",f" : El estado {data} ya se encuentra registrado .")
+#         return data
 
 class TipoServicioForm(forms.ModelForm):
     class Meta:

@@ -46,9 +46,9 @@ admin.site.register(Distrito, DistritoAdmin)
 class PermisosAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(Permission, PermisosAdmin)
-class EstadoLlantaAdmin(admin.ModelAdmin):
-	pass
-admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
+# class EstadoLlantaAdmin(admin.ModelAdmin):
+# 	pass
+# admin.site.register(EstadoLlanta, EstadoLlantaAdmin)
 
 class TipoPisoAdmin(admin.ModelAdmin):
 	pass
@@ -62,9 +62,6 @@ admin.site.register(Almacen, AlmacenAdmin)
 class MarcaVehiculoAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(MarcaVehiculo, MarcaVehiculoAdmin)
-class RenovadoraAdmin(admin.ModelAdmin):
-	pass
-admin.site.register(Renovadora, RenovadoraAdmin)
 
 class TipoServicioAdmin(admin.ModelAdmin):
 	pass

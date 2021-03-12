@@ -79,10 +79,10 @@ urlpatterns = [
     path('medida-llanta/<int:pk>/delete/', views.MedidaLlantaDeleteView.as_view(), name='medida-llanta-delete'),
     path('render-option-llanta', views.RenderOptionLlanta, name="render-option-llanta"),
 
-    path('estado-llantas/', views.EstadoLlantasListView.as_view(), name='estado-llantas'),
-    path('estado-llanta/', views.EstadoLlantaCreateView.as_view(), name='estado-llanta'),
-    path('estado-llanta/<int:pk>/', views.EstadoLlantaUpdateView.as_view(), name='estado-llanta'),
-    path('estado-llanta/<int:pk>/delete/', views.EstadoLlantaDeleteView.as_view(), name='estado-llanta-delete'),
+    # path('estado-llantas/', views.EstadoLlantasListView.as_view(), name='estado-llantas'),
+    # path('estado-llanta/', views.EstadoLlantaCreateView.as_view(), name='estado-llanta'),
+    # path('estado-llanta/<int:pk>/', views.EstadoLlantaUpdateView.as_view(), name='estado-llanta'),
+    # path('estado-llanta/<int:pk>/delete/', views.EstadoLlantaDeleteView.as_view(), name='estado-llanta-delete'),
 
     path('tipo-servicios/', views.TipoServiciosListView.as_view(), name='tipo-servicios'),
     path('tipo-servicio/', views.TipoServicioCreateView.as_view(), name='tipo-servicio'),
