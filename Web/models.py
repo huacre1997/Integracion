@@ -8,14 +8,15 @@ import os
 from datetime import datetime
 from django.contrib.auth.models import AbstractUser
 from django.forms import model_to_dict
-from django.contrib.auth.models import Group,Permission
+from django.contrib.auth.models import Group, Permission, BaseUserManager
 from django.conf import settings
-from django.db.models.signals import post_save,pre_save,post_delete
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
+
 def _update_filename(instance, filename, path):
-	filename_aux=''
+	filename_aux = ''
 	for c in filename:
 		if c in letters:
 			filename_aux = filename_aux + c
@@ -28,7 +29,8 @@ def upload_to(path):
 
 
 class Empresa(models.Model):
-   uuid_empresa=models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+   uuid_empresa = models.UUIDField(
+       default=uuid.uuid4, editable=False, unique=True)
    nombre = models.CharField(max_length=200, null=True)
    direccion = models.CharField(max_length=200, null=True)
    telefono = models.CharField(max_length=20, null=True)
@@ -37,10 +39,9 @@ class Empresa(models.Model):
    banco_abr = models.CharField(max_length=100, null=True)
    cta_corriente = models.CharField(max_length=100, null=True)
    cci = models.CharField(max_length=100, null=True)
-   
+
    def __unicode__(self):
       return self.nombre
-
 
 
 class TipoServicio(models.Model):
@@ -48,12 +49,15 @@ class TipoServicio(models.Model):
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
-   
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                   null=True, editable=False, related_name='%(class)s_modified')
+   eliminado = models.BooleanField(default=False, editable=False)
+
    def __str__(self):
       return self.descripcion
+
 
 class Departamento(models.Model):
 	code = models.CharField(max_length=5)
@@ -61,6 +65,7 @@ class Departamento(models.Model):
 
 	def __str__(self):
 		return self.descripcion
+
 
 class Provincia(models.Model):
 	departamento = models.ForeignKey(Departamento, on_delete=models.PROTECT)
@@ -70,6 +75,7 @@ class Provincia(models.Model):
 	def __str__(self):
 		return self.descripcion
 
+
 class Distrito(models.Model):
 	provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT)
 	code = models.CharField(max_length=5)
@@ -77,100 +83,148 @@ class Distrito(models.Model):
 
 	def __str__(self):
 		return self.descripcion
-class Contacto(models.Model):
-   
-   first_name=models.CharField(_("Nombres"), max_length=50)
-   last_name=models.CharField(_("Apellidos"), max_length=50)
-   tel=models.CharField(_("telefono"), max_length=8)
-   cel=models.CharField(_("Celular"), max_length=9)
-   email=models.EmailField(_("Email"), max_length=100)
-   
-class Direccion(models.Model):
-   direccion=models.CharField(_("Direccion"), max_length=150)
-   referecias=models.CharField(_("Referencias"), max_length=150)
-   departa=models.ForeignKey(Departamento, verbose_name=_("departamento"), on_delete=models.PROTECT)
-   provincia=models.ForeignKey(Provincia, verbose_name=_("Provincia"), on_delete=models.PROTECT)
-   distrito=models.ForeignKey(Distrito, verbose_name=_("Provincia"), on_delete=models.PROTECT)
 
-   
+
+class Contacto(models.Model):
+
+   first_name = models.CharField(_("Nombres"), max_length=50)
+   last_name = models.CharField(_("Apellidos"), max_length=50)
+   tel = models.CharField(_("telefono"), max_length=8)
+   cel = models.CharField(_("Celular"), max_length=9)
+   email = models.EmailField(_("Email"), max_length=100)
+
+
+class Direccion(models.Model):
+   direccion = models.CharField(_("Direccion"), max_length=150)
+   referecias = models.CharField(_("Referencias"), max_length=150)
+   departa = models.ForeignKey(Departamento, verbose_name=_(
+       "departamento"), on_delete=models.PROTECT)
+   provincia = models.ForeignKey(Provincia, verbose_name=_(
+       "Provincia"), on_delete=models.PROTECT)
+   distrito = models.ForeignKey(Distrito, verbose_name=_(
+       "Provincia"), on_delete=models.PROTECT)
+
 
 class Cliente(models.Model):
-   
-   tip_doc=models.CharField(choices=CHOICES_TIPO_DOC2, max_length=50)
-   nr_doc=models.CharField(_(""), max_length=20)
-   contacto=models.ForeignKey(Contacto, verbose_name=_("Contacto"), on_delete=models.PROTECT)
-   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
-class Proveedor(models.Model):
-   ruc=models.CharField(_("ruc"), max_length=11)
-   rsocial=models.CharField(_("Razon Social"), max_length=100)
-   servicio=models.ForeignKey(TipoServicio, verbose_name=_("Servicio"), on_delete=models.PROTECT)
-   contacto=models.ForeignKey(Contacto, verbose_name=_("Contacto"), on_delete=models.PROTECT)
-   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
-class ProveedorDireccion(models.Model):
-   prov=models.ForeignKey(Proveedor, on_delete=models.PROTECT,null=True,default=True)
-   direc=models.ForeignKey(Direccion,on_delete=models.PROTECT,null=True,default=True)
-   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
-class ClienteDireccion(models.Model):
-   cliente=models.ForeignKey(Cliente, verbose_name=_("cliente"), on_delete=models.PROTECT)
-   direc=models.ForeignKey(Direccion, verbose_name=_("direccion"), on_delete=models.PROTECT)
-   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
-class Persona(models.Model):
-   uuid=models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-   tip_doc = models.IntegerField(choices=CHOICES_TIPO_DOC2, default=TIPO_DOC_DNI)
-   nro_doc=models.CharField(max_length=15)
-   nom=models.CharField(max_length=100)
-   apep=models.CharField(max_length=100)
-   apem=models.CharField(max_length=100, null=True, blank=True)
-   fech_nac=models.DateField(null=True,blank=True)
-   fech_inicio=models.DateField(null=True,blank=True)
-   fech_fin=models.DateField(null=True,blank=True)
 
-   sexo=models.IntegerField(choices=CHOICES_SEXO, blank=True, null=True)
-   departamento = models.ForeignKey(Departamento, on_delete=models.PROTECT, null=True, blank=True)
-   provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT, null=True, blank=True)
-   distrito = models.ForeignKey(Distrito, on_delete=models.PROTECT, null=True, blank=True)
+   tip_doc = models.CharField(choices=CHOICES_TIPO_DOC2, max_length=50)
+   nr_doc = models.CharField(_(""), max_length=20)
+   contacto = models.ForeignKey(Contacto, verbose_name=_(
+       "Contacto"), on_delete=models.PROTECT)
+   created_at = models.DateTimeField(
+       auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                   null=True, editable=False, related_name='%(class)s_modified')
+   eliminado = models.BooleanField(default=False, editable=False)
+
+
+class Proveedor(models.Model):
+   ruc = models.CharField(_("ruc"), max_length=11)
+   rsocial = models.CharField(_("Razon Social"), max_length=100)
+   servicio = models.ForeignKey(TipoServicio, verbose_name=_(
+       "Servicio"), on_delete=models.PROTECT)
+   contacto = models.ForeignKey(Contacto, verbose_name=_(
+       "Contacto"), on_delete=models.PROTECT)
+   created_at = models.DateTimeField(
+       auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                   null=True, editable=False, related_name='%(class)s_modified')
+   eliminado = models.BooleanField(default=False, editable=False)
+
+
+class ProveedorDireccion(models.Model):
+   prov = models.ForeignKey(
+       Proveedor, on_delete=models.PROTECT, null=True, default=True)
+   direc = models.ForeignKey(
+       Direccion, on_delete=models.PROTECT, null=True, default=True)
+   created_at = models.DateTimeField(
+       auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                   null=True, editable=False, related_name='%(class)s_modified')
+   eliminado = models.BooleanField(default=False, editable=False)
+
+
+class ClienteDireccion(models.Model):
+   cliente = models.ForeignKey(Cliente, verbose_name=_(
+       "cliente"), on_delete=models.PROTECT)
+   address = models.ForeignKey(Direccion, verbose_name=_(
+       "direccion"), on_delete=models.PROTECT)
+   created_at = models.DateTimeField(
+       auto_now_add=True, null=True, editable=False)
+   modified_at = models.DateTimeField(auto_now=True, editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                   null=True, editable=False, related_name='%(class)s_modified')
+   eliminado = models.BooleanField(default=False, editable=False)
+
+
+class Persona(models.Model):
+   uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+   tip_doc = models.IntegerField(
+       choices=CHOICES_TIPO_DOC2, default=TIPO_DOC_DNI)
+   nro_doc = models.CharField(max_length=15)
+   nom = models.CharField(max_length=100)
+   apep = models.CharField(max_length=100)
+   apem = models.CharField(max_length=100, null=True, blank=True)
+   fech_nac = models.DateField(null=True, blank=True)
+   fech_inicio = models.DateField(null=True, blank=True)
+   fech_fin = models.DateField(null=True, blank=True)
+
+   sexo = models.IntegerField(choices=CHOICES_SEXO, blank=True, null=True)
+   departamento = models.ForeignKey(
+       Departamento, on_delete=models.PROTECT, null=True, blank=True)
+   provincia = models.ForeignKey(
+       Provincia, on_delete=models.PROTECT, null=True, blank=True)
+   distrito = models.ForeignKey(
+       Distrito, on_delete=models.PROTECT, null=True, blank=True)
    direccion = models.CharField(max_length=100, null=True, blank=True)
    referencia = models.CharField(max_length=300, null=True, blank=True)
    celular = models.CharField(max_length=9, null=True, blank=True)
    telefono = models.CharField(max_length=9, null=True, blank=True)
    correo = models.CharField(max_length=50, null=True, blank=True)
-   area=models.CharField( max_length=50,null=True,blank=True)
-   cargo=models.CharField( max_length=50,null=True,blank=True)
+   area = models.CharField(max_length=50, null=True, blank=True)
+   cargo = models.CharField(max_length=50, null=True, blank=True)
 
-   foto_nueva = models.FileField(upload_to = upload_to('documentos/fotos/'), null=True, blank=True)
-   created_at = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+   foto_nueva = models.FileField(upload_to=upload_to(
+       'documentos/fotos/'), null=True, blank=True)
+   created_at = models.DateTimeField(
+       auto_now_add=True, null=True, editable=False)
    modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                   null=True, editable=False, related_name='%(class)s_modified')
+   eliminado = models.BooleanField(default=False, editable=False)
+
    class Meta:
-      ordering =["-created_at"]
+      ordering = ["-created_at"]
+
    def get_image(self):
         if self.foto_nueva:
-            return '{}{}'.format(settings.MEDIA_URL,self.foto_nueva)
-        return '{}{}'.format(settings.STATIC_URL,"img/img_avatar1.png")
+            return '{}{}'.format(settings.MEDIA_URL, self.foto_nueva)
+        return '{}{}'.format(settings.STATIC_URL, "img/img_avatar1.png")
+
    def __str__(self):
-      return self.apep + ' '  + self.apem + ' ' + self.nom
+      return self.apep + ' ' + self.apem + ' ' + self.nom
+
    def toJSON(self):
       item = model_to_dict(self)
-      item["foto_nueva"]=self.get_image()
+      item["foto_nueva"] = self.get_image()
       return item
+
+
+
+  
 class Usuario(AbstractUser):
    persona = models.OneToOneField(Persona, on_delete=models.CASCADE,null=True,blank=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -178,6 +232,7 @@ class Usuario(AbstractUser):
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
+
    def save(self, *args, **kwargs):
       if self.persona:
          self.email=self.persona.correo

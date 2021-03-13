@@ -1044,6 +1044,7 @@ class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
             if form.is_valid():
 
                 instance=form.save(commit=False)
+              
                 instance.created_by = self.request.user
                 instance.save()
                 data = {

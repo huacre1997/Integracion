@@ -366,7 +366,7 @@ class AnchoBandaRenovaForm(forms.ModelForm):
 class MarcaLlantaForm(forms.ModelForm):
     class Meta:
         model = MarcaLlanta
-        fields = ["descripcion","activo"]
+        exclude = ["created_by","modified_by"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
             "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})

@@ -101,16 +101,16 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "bdprueba",
-#         "HOST": "localhost",
-#         "USER": "root",
-#         "PASSWORD": "",
-#         "PORT": ""
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "bdprueba",
+        "HOST": "localhost",
+        "USER": "root",
+        "PASSWORD": "",
+        "PORT": ""
+    }
+}
 
 
 

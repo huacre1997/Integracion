@@ -149,7 +149,9 @@
           btnClass: 'btn-dark',
           action: function () {       
             form = this.$content
-            let data= new FormData(form[0].ownerDocument.forms[2])
+            console.log(form)
+            let data= new FormData(form[0].ownerDocument.forms[1])
+            console.log(data)
             fetch(url, {
               method: "POST",
               headers: {
