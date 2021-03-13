@@ -1,0 +1,107 @@
+{% extends 'Web/base.html' %}
+{% load base_extras %}
+
+{% block inicio %}
+   <li class="nav-item dropdown no-arrow mx-1 d-flex align-items-center justify-content-between">
+              <a class="btn btn-light" href="{% url 'Web:inicio' %}"> <i class="fa fa-home" aria-hidden="true">Inicio</i></a>
+
+            </li>
+{% endblock inicio %}
+  
+{% block sidebar %}
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style="transition:1s">
+
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fas fa-circle"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Inspeccion<sup>1.0</sup></div>
+      </a>
+      <hr class="sidebar-divider my-0">
+  
+      <hr class="sidebar-divider">
+
+      <!-- Heading -->
+
+
+      <li class="nav-item active">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-wrench"></i>
+          <span>CATÁLOGOS</span>
+        </a>
+        <div id="collapseUtilities" class="collapse show" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            {% if 'Web.view_marcavehiculo' in perm %}
+
+            <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca del Vehículo</a>
+            {%endif%} 
+                {% if 'Web.view_modelovehiculo' in perm %}
+
+            <a class="{% block modelo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:modelo-vehiculos' %}">Modelo del Vehículo</a>
+            {%endif%} 
+               {% if 'Web.view_tipovehiculo' in perm %}
+
+            <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">Configuración Vehicular</a>
+            {%endif%}
+             {% if 'Web.view_lugar' in perm %}
+
+            <a class="{% block lugares %}collapse-item{% endblock %}" href="{% url 'Web:lugares' %}">Ubicación del Vehículo</a>
+            {% endif %} 
+             {% if 'Web.view_vehiculo' in perm %}
+
+            <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Registro del Vehículo</a>
+            {%endif%}
+              {% if 'Web.view_marcallanta' in perm %}
+
+            <a class="{% block marca-llantas %}collapse-item{% endblock %}" href="{% url 'Web:marca-llantas' %}">Marca del Neumático</a>
+            {% endif %}
+            {% if 'Web.view_modelollanta' in perm %}
+
+            <a class="{% block modelo-llantas %}collapse-item{% endblock %}" href="{% url 'Web:modelo-llantas' %}">Modelo del Neumático</a>
+            {% endif %}
+            {% if 'Web.view_medidallanta' in perm %}
+
+            <a class="{% block medida-llantas %}collapse-item{% endblock %}" href="{% url 'Web:medida-llantas' %}">Medida del Neumático</a>
+            {% endif %}
+            {% if 'Web.view_marcarenova' in perm %}
+
+            <a class="{% block marca-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:marca-renovaciones' %}">Reencauchadora</a>
+            {% endif %}
+            {% if 'Web.view_modelorenova' in perm %}
+
+            <a class="{% block modelo-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:modelo-renovaciones' %}">Modelo de Banda</a>
+            {% endif %}
+            {% if 'Web.view_anchobandarenova' in perm %}
+
+            <a class="{% block ancho-banda-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:ancho-banda-renovaciones' %}">Ancho de Banda</a>
+            {% endif %}
+             {% if 'Web.view_ubicacion' in perm %}
+
+            <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicación del Neumático</a>
+            {%endif%} 
+           
+
+            {% if 'Web.view_llanta' in perm %}
+
+            <a class="{% block llantas %}collapse-item{% endblock %}" href="{% url 'Web:llantas' %}">Registro del Neumático</a>
+            {% endif %}
+        
+
+          </div>
+        </div>
+      </li>
+      
+   
+
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
+{% endblock sidebar %}
+
+{% block content %}
+  
+{% endblock content %}
+  

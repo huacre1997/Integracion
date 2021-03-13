@@ -1,0 +1,103 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block medida-llantas %}collapse-item active{% endblock  %}
+{% load static %}
+{% load base_extras %}
+{% load l10n %}
+{% block content %}  
+  <div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Medidas de los Neumáticos</h6>
+              {% if 'Web.add_medidallanta' in perm %}
+                <a href="{% url 'Web:medida-llanta' %}" class="btn btn-primary"><i class="fa fa-plus-circle"></i>  Crear Nuevo</a>
+              {% endif %}
+            
+            </div>
+            <div class="card-body">
+
+                         
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="tablaMedida" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <!--th>Descripción</th-->
+                     
+                      <th class="middle text-center">Medida</th>
+                      <th class="middle text-center">Profundidad</th>
+                      <th class="middle text-center">Capas</th>
+                      <th class="middle text-center">Marca Llanta</th>
+                      <th class="middle text-center">Modelo Llanta</th>
+                      <th class="middle text-center">Estado</th>
+                      <th class="middle text-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for obj in objetos %}
+                    <tr>
+                      <!--td>{{obj.descripcion}}</td-->
+                  
+                      <td class="middle text-center">{{obj.medida|unlocalize}}</td>
+                      <td class="middle text-center">{{obj.profundidad|unlocalize}}</td>
+                      {% if obj.capas != None %}
+                                <td class="middle text-center">{{obj.capas|unlocalize}}</td>
+                      {%else%}
+                      <td class="middle text-center">---------</td>
+                      {% endif %}
+    <td class="middle text-center">{{obj.modelo_llanta.marca_llanta}}</td>
+                      <td class="middle text-center">{{obj.modelo_llanta}}</td>
+                      <td class="middle text-center">{% if obj.activo %}<i class="fa fa-check-circle text-success"></i>{% else %} <i class="fas fa-times-circle text-danger"></i> {% endif %} </td>
+                      <td class="middle text-center">
+                                                                                {% if 'Web.change_medidallanta' in perm %}
+
+                        <a href="{% url 'Web:medida-llanta' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
+{% comment %}                         
+                                                                                            {% if 'Web.delete_medidallanta' in perm %}
+            
+                        
+                        <a href="{% url 'Web:medida-llanta-delete' obj.pk %}" class="btn btn-danger btn-sm"
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %} {% endcomment %}
+                        {% include 'Web/fragments/eliminar_medidallanta.html' %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                </div>
+
+            </div>
+          </div>
+        </div>
+  </div>
+  <!-- End of Page Wrapper -->
+  {% endblock %}
+  {% block bottom_scripts %}
+
+  <script>
+    $(document).ready(function() {
+      $('#tablaMedida').DataTable({
+            responsive: true,
+			"lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ], 
+               language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+      });
+
+      $("#btnBuscar").click(function() {
+        $('#frmlist').submit();
+        let spinner = $(this.currentTarget).find('span')
+        spinner.removeClass('d-none')
+        setTimeout(_ => spinner.addClass('d-none'), 2000)
+        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
+        $(this).prop("disabled", true);
+      });
+    });
+  </script>
+  {% endblock %}
+  

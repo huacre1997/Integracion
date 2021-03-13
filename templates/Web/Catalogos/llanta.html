@@ -1,0 +1,936 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block llantas %}collapse-item active{% endblock  %}
+{% load static %}
+{% block content %}
+{% load base_extras %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+  .section {
+    transition: opacity 0.5s ease-out;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .section.activo {
+    opacity: 1;
+    height: auto;
+  }
+</style>
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <div class="row">
+          <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i>
+            {% if update %} Editar Llanta {% else %} Crear Llanta {% endif %}</h6>
+        </div>
+      </div>
+
+      {% if obj %}
+      <form method="post" action="{% url 'Web:llanta' obj.pk  %}" class="needs-validation" id="LlantaForm" novalidate>
+
+        {% else %}
+        <form method="post" action="{% url 'Web:llanta' %}" class="needs-validation" id="LlantaForm" novalidate>
+
+          {% endif %}
+
+          {% csrf_token %}
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group col-lg-6">
+
+                <label>Ubicación</label>
+                <select name="ubicacion" id="id_ubicacion" class="form-select">
+                  
+                    {% for i in ubicacion  %}
+                    {% if  i.activo and not i.eliminado or obj.ubicacion.id == i.id %}
+                     <option value="{{i.id}}" {% if obj.ubicacion.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                    {% endif %}
+                     
+                    {% endfor %}
+                    </select>                <div class="invalid-feedback" id="invalid_ubicacion">Este campo es requerido.</div>
+              </div>
+              <div class="form-group col-lg-6">
+                <label class="label-control">Código</label>
+                {{form.codigo}}
+                <div class="invalid-feedback" id="invalid_codigo">Este campo es requerido.</div>
+              </div>
+
+            </div>
+
+{% if obj %}
+<div class="form-row section {% if obj.ubicacion.id == 1 %}activo{% endif %}" id="section_vehiculo">
+
+{% else %}
+<div class="form-row section activo" id="section_vehiculo">
+
+{% endif %}
+  
+              <div class="form-group col-lg-6">
+                <label for="">Seleccion Vehiculo:</label>
+                <select name="vehiculo" id="id_vehiculo" class="form-select" >
+                  <option value=""></option>
+                  
+                    {% for i in vehiculo  %}
+                    {% if  i.activo and not i.eliminado or obj.vehiculo.id == i.id %}
+                     <option value="{{i.id}}" {% if obj.vehiculo.id == i.id %}selected{% endif %}>{{i.placa}}</option>
+                    {% endif %}
+                     
+                    {% endfor %}
+                    </select>                <div class="invalid-feedback" id="invalid_vehiculo">Este campo es requerido.</div>
+
+              </div>
+
+              <div class="form-group col-lg-6">
+                <label>Posicion</label>
+                {{form.posicion}}
+                <div class="invalid-feedback" id="invalid_posicion">Este campo es requerido.</div>
+
+
+              </div>
+            </div>
+
+
+            <div class="form-row">
+               <div class="form-group col-lg-6">
+                	<label>Marca Llanta</label>
+               <select name="marca_llanta" id="id_marca_llanta" class="form-select" onchange="actualizar_modelo()">
+                <option value=""></option>
+                
+                  {% for i in marca_llanta  %}
+                  {% if  i.activo and not i.eliminado or obj.modelo_llanta.marca_llanta.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.modelo_llanta.marca_llanta.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                </div>
+              <div class="form-group col-lg-6">
+
+                <label>Modelo de la Llanta</label>
+                {{form.modelo_llanta}}
+                <div class="invalid-feedback" id="invalid_modelo_llanta">Este campo es requerido.</div>
+              </div>
+
+            </div>
+            <div class="form-row">
+              <div class="form-group col-lg-6">
+
+                <label>Medida</label>
+                <select name="medida_llanta" id="id_medida_llanta" class="form-select">
+                <option value=""></option>
+                
+                  {% for i in medida_llanta  %}
+                  {% if  i.activo and not i.eliminado or obj.medida_llanta.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.medida_llanta.id == i.id %}selected{% endif %}>Medida {{i.medida}}-{{i.profundidad}}-{{i.capas}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                <div class="invalid-feedback" id="invalid_medida_llanta">Este campo es requerido.</div>
+              </div>
+                <div class="form-group col-lg-6">
+                <label for="" style="visibility: hidden;">ss</label>
+             <div class="form-check">
+               
+               {% if obj %}
+               <input {% if obj.vehiculo == None %}disabled{% endif %} type="checkbox" name="repuesto" class="form-check-input" id="id_repuesto" 
+               {% if obj.repuesto %}checked{% endif %}>
+               {% else %}
+               <input type="checkbox" name="repuesto" class="form-check-input" id="id_repuesto" 
+              >
+               {% endif %}
+                 
+             
+                  <label class="form-check-label" for="id_repuesto">Repuesto</label>
+                  <div class="invalid-feedback">Este campo es requerido</div> 
+
+                </div> 
+              </div>
+                
+              
+            </div>
+
+
+            <!-- <div class="row">
+            <div class="col-lg-2">Costo</div>
+            <div class="col-lg-4">{{form.costo}}</div>
+            <div class="col-lg-2">Km</div>
+            <div class="col-lg-3">{{form.km}}</div>
+          </div> -->
+            <div class="form-row">
+              <div class="form-group col-lg-6">
+                <label for="">Estado</label>
+                {{form.estado}}
+                <div class="invalid-feedback" id="invalid_estado">Este campo es requerido.</div>
+              </div>
+              <div class="form-group col-lg-6">
+                <label for="" style="visibility: hidden;">ss</label>
+             <div class="form-check">
+               
+               {% if obj %}
+               <input type="checkbox" name="activo" class="form-check-input" id="id_activo" 
+               {% if obj.activo %}checked{% endif %}>
+               {% else %}
+               <input type="checkbox" checked name="activo" class="form-check-input" id="id_activo" 
+              >
+               {% endif %}
+                 
+             
+                  <label class="form-check-label" for="id_activo">Activo</label>
+                  <div class="invalid-feedback">Este campo es requerido</div> 
+
+                </div> 
+              </div>
+                
+
+
+            </div>
+            <div class="row">
+              <div class="form-group col-lg-6">
+
+              </div>
+
+            </div>
+
+
+          </div>
+          <div class="card-header py-3">
+            <div class="row">
+              <div class="col-lg-6">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i>
+                  Informacion de la cubierta actual</h6>
+              </div>
+              <div class="col-lg-6"><button id="openModal" type="button" class="btn btn-primary"><i
+                    class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp;Agregar</button></div>
+
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="col-lg-3 form-group">
+                <label for="">Cubierta:</label>
+                {{form2.categoria}}
+              </div>
+              <div class="col-lg-3 form-group">
+                <label for="">Km. </label>
+                {{form2.km}}
+                <div class="invalid-feedback" id="invalid_km">Este campo es requerido.</div>
+
+              </div>
+              <div class="col-lg-3 form-group">
+                <label for="">Costo</label>
+                {{form2.costo}}
+                <div class="invalid-feedback" id="invalid_costo">Este campo es requerido.</div>
+
+              </div>
+              <div class="col-lg-3 form-group">
+                <label for="">Fecha:</label>
+
+                <div class="input-group mb-3">
+                  {{form2.fech_ren}}
+                  <div class="invalid-feedback" id="invalid_fech_ren">Este campo es requerido.</div>
+
+                  <!-- <div class="input-group-append">
+                <button id="openCalendar" class="btn btn-outline-primary" type="button"><i
+                    class="fa fa-calendar"></i></button>
+              </div> -->
+                </div>
+
+              </div>
+            </div>
+            <div class="form-row">
+
+              <div class="col-lg-3 form-group">
+                <label for="">Altura Inicial</label>
+                {{form2.a_inicial}}
+                <div class="invalid-feedback" id="invalid_a_inicial">Este campo es requerido.</div>
+
+              </div>
+
+              <div class="col-lg-3 form-group">
+                <label for="">Altura</label>
+                {{form2.a_promedio}}
+                <div class="invalid-feedback" id="invalid_a_promedio">Este campo es requerido.</div>
+
+              </div>
+              <div class="col-lg-3 form-group">
+
+                <label for="">Altura Final</label>
+                {{form2.a_final}}
+                <div class="invalid-feedback" id="invalid_a_final">Este campo es requerido.</div>
+
+              </div>
+              <div
+                class="col-lg-3 form-group section {{cubierta.categoria}} {% if cubierta.categoria == '2' %}activo{%else%}aea{%endif%}"
+                id="section_nro">
+                <label for="">Numero Reencauchado</label>
+                {{form2.nro_ren}}
+                <div class="invalid-feedback" id="invalid_nro_ren">Este campo es requerido.</div>
+
+              </div>
+            </div>
+
+            {% if cubierta  %}
+            <div class="form-row section {% if cubierta.categoria == '2' %}activo{%endif%}" id="section_renovadora">
+              {% else %}
+              <div class="form-row section" id="section_renovadora">
+                {% endif %}
+
+
+                <div class="col-lg-4">
+                  <label for="">Nombre de la Reencauchadora</label>
+                  <div class="form-group">
+                    <!-- <input type="text" class="form-control" id="id_renovadora"  aria-describedby="btnSearch" name="renovadora">  -->
+                    <div class="input-group mb-3">
+
+                      <input disabled type="text"  class="form-control" id="id_renova"
+                        value="{% if cubierta.categoria == '2' %}{{cubierta.renovadora}}{%endif%}">
+                      <input type="hidden" name="renovadora" value="{{cubierta.renovadora.id}}" id="id_renovadora">
+                      <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
+                          aria-hidden="true"></i></button>
+                      <div class="invalid-feedback" id="invalid_renovadora">Este campo es requerido.</div>
+
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-lg-4">
+                  <label for="">Modelo de la banda {{obj.cubierta.modelo_renova.id}}</label>
+                  <div class="form-group">
+                 <select name="modelo_renova" id="id_modelo_renova" class="form-select">
+                <option value=""></option>
+                
+                  {% for i in modelo_renova  %}
+                  {% if  i.activo and not i.eliminado  %}
+                   <option value="{{i.id}}" {% if obj.cubierta.modelo_renova.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                    <div class="invalid-feedback" id="invalid_modelo_renova">Este campo es requerido.</div>
+
+                  </div>
+
+                </div>
+                <div class="col-lg-4">
+                  <label for="">Ancho de la banda</label>
+                  <div class="input-group">
+                    <select name="ancho_banda" id="id_ancho_banda" class="form-select">
+                      <option value=""></option>
+                      
+                        {% for i in ancho_banda  %}
+                        {% if  i.activo and not i.eliminado  %}
+                         <option value="{{i.id}}" {% if obj.cubierta.ancho_banda.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                        {% endif %}
+                         
+                        {% endfor %}
+                        </select>
+                    <div class="invalid-feedback" id="invalid_ancho_banda">Este campo es requerido.</div>
+
+                  </div>
+
+                </div>
+                <!--           
+
+            <div class="col-lg-3 form-group">
+              <label for="" style="visibility: hidden; width: 100%;">Costo</label>
+              <button type="button" class="btn btn-warning" id="openDetails">Detalles</button>
+            </div> -->
+              </div>
+            </div>
+
+            <input type="hidden" name="" id="idrenova">
+            <input type="hidden" id="idmodelo">
+            <input type="hidden" id=idancho>
+            <div class="card-footer text-muted">
+              <button type="button" id="btn-add-llanta" class="btn btn-primary">Grabar</button>
+              <a href="{% url 'Web:llantas' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+{% block bottom_scripts %}
+
+<script type="text/javascript" charset="utf-8">
+    $('#id_categoria').on('mousedown', function (e) {
+      e.preventDefault();
+      this.blur();
+      window.focus();
+    });
+  $('#id_nro_ren').on('mousedown', function (e) {
+      e.preventDefault();
+      this.blur();
+      window.focus();
+    });
+
+
+    let categroai = document.getElementById("id_categoria").value
+ 
+   
+    var de
+    var updateForm
+    $("#openModal").on("click", function () {
+      $.confirm({
+        title: "",
+        content: 'URL:{% url "Web:view-condicion" %}',
+        theme:"material",
+        buttons: {
+          formSubmit: {
+            text: 'Submit',
+            btnClass: 'btn-blue',
+            action: function () {
+              var name = this.$content.find('.form-select').val();
+              var nroReencauchado = this.$content.find('.valReencauchado').val();
+              if (parseInt(name) == 1) {
+
+                if (!isNaN(parseInt(nroReencauchado)) && parseInt(nroReencauchado) < 10 && parseInt(
+                    nroReencauchado) > 0) {
+                  console.log("if");
+                  $("#id_categoria").val("2")
+
+                  document.getElementById("section_nro").classList.add("activo")
+                  document.getElementById("section_renovadora").classList.add("activo")
+                  document.getElementById("id_nro_ren").value = nroReencauchado
+                } else {
+                  $.alert('Ingrese un número válido');
+                  return false;
+
+                }
+              } else
+              if (parseInt(name) == 0) {
+                console.log("entro al else");
+                console.log(name)
+                document.getElementById("section_nro").classList.remove("activo")
+                document.getElementById("section_renovadora").classList.remove("activo")
+                $("#id_km").prop("disabled", false).prop("value", "");
+                $("#id_categoria").val("1")
+
+
+                $("#openCalendar").prop("disabled", false);
+                $("#id_altura_fin").prop("disabled", false).prop("value", "");
+                $("#id_altura_ini").prop("disabled", false).prop("value", "");
+                $("#id_altura").prop("disabled", false).prop("value", "");
+                $("#id_fech").prop("disabled", false).prop("value", "");
+                $("#id_costo").prop("disabled", false).prop("value", "");
+                $("#id_renovadora").prop("disabled", false).prop("value", "");
+                $("#id_renova").prop("value", "");
+                $("#id_modelo_renova").prop("value", "");
+                $("#id_ancho_banda").prop("value", "");
+
+              }
+            }
+          },
+          cancel: function () {
+            //close
+          },
+        },
+        onContentReady: function () {
+          // bind to events
+          var jc = this;
+          this.$content.find('form').on('submit', function (e) {
+            // if the user submits the form by pressing enter in the field.
+            e.preventDefault();
+            jc.$$formSubmit.trigger('click'); // reference the button and click it
+          });
+        }
+      });
+    });
+
+    $("#btnSearch").click(function (e) {
+
+      e.preventDefault();
+      searchrenova = $.confirm({
+        title: 'Buscar renovadora+',
+        icon: "fa fa-search-plus",
+        type: "blue",
+        containerFluid: true,
+        content: "URL:{% url 'Web:search-renovadora'%}",
+        theme: "material",
+        columnClass: 'col-md-12 col-lg-8',
+
+        containerFluid: true,
+        buttons: {
+          formSubmit: {
+            text: 'Submit',
+            btnClass: 'btn-blue',
+            action: function () {
+              var name = this.$content.find('.form-select').val();
+              console.log(name);
+              console.log("if");
+              if (!name) {
+                $.alert('provide a valid name');
+                return false;
+              }
+              $.alert('Your name is ' + name);
+            }
+          },
+          cancel: function () {
+            //close
+          },
+        }
+      });
+
+    });
+    let estado = document.getElementById("id_estado")
+    let marca_llanta = document.getElementById("id_marca_llanta")
+    let medida_llanta = document.getElementById("id_medida_llanta")
+    let modelo_llanta = document.getElementById("id_modelo_llanta")
+    let codigo = document.getElementById("id_codigo")
+    let posicion = document.getElementById("id_posicion")
+    let vehiculo = document.getElementById("id_vehiculo")
+    let ubicacion = document.getElementById("id_ubicacion")
+    let a_final = document.getElementById("id_a_final")
+    let a_inicial = document.getElementById("id_a_inicial")
+    let a_promedio = document.getElementById("id_a_promedio")
+    let costo = document.getElementById("id_costo")
+    let fech_ren = document.getElementById("id_fech_ren")
+
+    let ancho_banda = document.getElementById("id_ancho_banda")
+    let km = document.getElementById("id_km")
+    let modelo_renova = document.getElementById("id_modelo_renova")
+    let renovadora = document.getElementById("id_renovadora")
+
+
+
+
+
+
+    estado.addEventListener("change", function () {
+      estado.classList.remove("is-invalid")
+    })
+    marca_llanta.addEventListener("change", function () {
+      marca_llanta.classList.remove("is-invalid")
+    })
+    medida_llanta.addEventListener("change", function () {
+      medida_llanta.classList.remove("is-invalid")
+    })
+    modelo_llanta.addEventListener("change", function () {
+      modelo_llanta.classList.remove("is-invalid")
+    })
+    codigo.addEventListener("keyup", function () {
+      codigo.classList.remove("is-invalid")
+    })
+    posicion.addEventListener("keyup", function () {
+      posicion.classList.remove("is-invalid")
+    })
+    vehiculo.addEventListener("change", function () {
+      vehiculo.classList.remove("is-invalid")
+    })
+
+    a_final.addEventListener("keyup", function () {
+      a_final.classList.remove("is-invalid")
+      let validate = validatePunto(a_final.value)
+
+      if (a_final.value.trim() == "") {
+        console.log("if");
+        document.getElementById("invalid_a_final").innerHTML = "Este campo es requerido"
+      } else
+      if (a_final.value.trim().startsWith(".")) {
+        console.log("if stars");
+        a_final.classList.remove("is-invalid")
+        document.getElementById("invalid_a_final").innerHTML = ""
+      } else {
+        if (validate) {
+          console.log("validate if fuera del form");
+          a_final.setCustomValidity("")
+          a_final.classList.remove("is-invalid")
+        } else {
+          console.log("validate else fuera del form");
+          a_final.classList.add("is-invalid")
+          document.getElementById("invalid_a_final").innerHTML =
+            "Este campo debe tener 2 decimales y un punto."
+            a_final.setCustomValidity("Este campo debe tener 2 decimales y un punto.")
+
+
+        }
+      }
+
+    })
+    a_inicial.addEventListener("keyup", function () {
+      a_inicial.classList.remove("is-invalid")
+      let validate = validatePunto(a_inicial.value)
+
+      if (a_inicial.value.trim() == "") {
+        console.log("if");
+        document.getElementById("invalid_a_inicial").innerHTML = "Este campo es requerido"
+      } else
+      if (a_inicial.value.trim().startsWith(".")) {
+        console.log("if stars");
+        a_inicial.classList.remove("is-invalid")
+        document.getElementById("invalid_a_inicial").innerHTML = ""
+      } else {
+        if (validate) {
+          console.log("validate if fuera del form");
+          a_inicial.setCustomValidity("")
+          a_inicial.classList.remove("is-invalid")
+        } else {
+          console.log("validate else fuera del form");
+          a_inicial.classList.add("is-invalid")
+          document.getElementById("invalid_a_inicial").innerHTML =
+            "Este campo debe tener 2 decimales y un punto."
+          a_inicial.setCustomValidity("Este campo debe tener 2 decimales y un punto.")
+
+
+        }
+      }
+
+    })
+    a_promedio.addEventListener("keyup", function () {
+      a_promedio.classList.remove("is-invalid")
+      let validate = validatePunto(a_promedio.value)
+
+      if (a_promedio.value.trim() == "") {
+        console.log("if");
+        document.getElementById("invalid_a_promedio").innerHTML = "Este campo es requerido"
+      } else
+      if (a_promedio.value.trim().startsWith(".")) {
+        console.log("if stars");
+        a_promedio.classList.remove("is-invalid")
+        document.getElementById("invalid_a_promedio").innerHTML = ""
+      } else {
+        if (validate) {
+          console.log("validate if fuera del form");
+          a_promedio.setCustomValidity("")
+          a_promedio.classList.remove("is-invalid")
+        } else {
+          console.log("validate else fuera del form");
+          a_promedio.classList.add("is-invalid")
+          document.getElementById("invalid_a_promedio").innerHTML =
+            "Este campo debe tener 2 decimales y un punto."
+            a_promedio.setCustomValidity("Este campo debe tener 2 decimales y un punto.")
+
+
+        }
+      }
+    })
+    costo.addEventListener("keyup", function () {
+      costo.classList.remove("is-invalid")
+    })
+    fech_ren.addEventListener("click", function () {
+      fech_ren.classList.remove("is-invalid")
+    })
+    ancho_banda.addEventListener("change", function () {
+      ancho_banda.classList.remove("is-invalid")
+    })
+    renovadora.addEventListener("change", function () {
+      renovadora.classList.remove("is-invalid")
+    })
+    km.addEventListener("keyup", function () {
+      km.classList.remove("is-invalid")
+    })
+    modelo_renova.addEventListener("change", function () {
+      modelo_renova.classList.remove("is-invalid")
+    })
+    ubicacion.addEventListener("change", function (e) {
+      ubicacion.classList.remove("is-invalid")
+
+      var strUser = e.target.options[e.target.selectedIndex].value;
+      console.log(strUser);
+      if (strUser === "1") {
+        document.getElementById("section_vehiculo").classList.add("activo")
+        document.getElementById("id_repuesto").removeAttribute("disabled")
+
+      } else {
+        document.getElementById("section_vehiculo").classList.remove("activo")
+        document.getElementById("id_repuesto").disabled="true"
+        vehiculo.value=""
+        posicion.value=""
+
+      }
+    })
+
+    document.getElementById("btn-add-llanta").addEventListener("click", function (e) {
+      document.getElementById("btn-add-llanta").setAttribute("disabled", true)
+      let url = document.getElementById("LlantaForm").getAttribute("action")
+      let form = document.querySelector("#LlantaForm")
+      let formData = new FormData(form)
+ 
+      fetch(url, {
+        method: "POST",
+
+        body: formData
+      }).then(data => data.json()).then(response => {
+        console.log(response);
+
+        if (response.status == 500) {
+          document.getElementById("btn-add-llanta").disabled = false
+
+          notificacion(1500, "Error", "error", "Revise los campos")
+
+          if (response.form.codigo) {
+            document.getElementById("invalid_codigo").innerHTML = response.form.codigo[0]
+            codigo.classList.add("is-invalid")
+
+          }
+          if (response.form.estado) {
+            document.getElementById("invalid_estado").innerHTML = response.form.estado[0]
+            estado.classList.add("is-invalid")
+
+          }
+          if (response.form.marca_llanta) {
+            document.getElementById("invalid_marca_llanta").innerHTML = response.form.marca_llanta[0]
+            marca_llanta.classList.add("is-invalid")
+
+          }
+          if (response.form.medida_llanta) {
+            document.getElementById("invalid_medida_llanta").innerHTML = response.form.medida_llanta[0]
+            medida_llanta.classList.add("is-invalid")
+
+          }
+          if (response.form.modelo_llanta) {
+            document.getElementById("invalid_modelo_llanta").innerHTML = response.form.modelo_llanta[0]
+            modelo_llanta.classList.add("is-invalid")
+
+          }
+          if (response.form.posicion) {
+            document.getElementById("invalid_posicion").innerHTML = response.form.posicion
+            posicion.classList.add("is-invalid")
+
+
+          }
+          if (response.form.ubicacion) {
+            document.getElementById("invalid_ubicacion").innerHTML = response.form.ubicacion[0]
+            ubicacion.classList.add("is-invalid")
+
+
+          }
+          if (response.form.vehiculo) {
+            document.getElementById("invalid_vehiculo").innerHTML = response.form.vehiculo
+            vehiculo.classList.add("is-invalid")
+
+          }
+
+          if (response.form2.a_final) {
+            document.getElementById("invalid_a_final").innerHTML = response.form2.a_final[0]
+            a_final.classList.add("is-invalid")
+
+          }
+          if (response.form2.a_inicial) {
+            document.getElementById("invalid_a_inicial").innerHTML = response.form2.a_inicial[0]
+            a_inicial.classList.add("is-invalid")
+
+          }
+
+          if (response.form2.a_promedio) {
+            document.getElementById("invalid_a_promedio").innerHTML = response.form2.a_promedio[0]
+            a_promedio.classList.add("is-invalid")
+
+          }
+          if (response.form2.costo) {
+            document.getElementById("invalid_costo").innerHTML = response.form2.costo[0]
+            costo.classList.add("is-invalid")
+
+          }
+          if (response.form2.fech_ren) {
+            document.getElementById("invalid_fech_ren").innerHTML = response.form2.fech_ren[0]
+            fech_ren.classList.add("is-invalid")
+
+          }
+          if (response.form2.km) {
+            document.getElementById("invalid_km").innerHTML = response.form2.km[0]
+            km.classList.add("is-invalid")
+
+          }
+          if (response.form2.modelo_renova) {
+            document.getElementById("invalid_modelo_renova").innerHTML = response.form2.modelo_renova[0]
+            modelo_renova.classList.add("is-invalid")
+
+          }
+          if (response.form2.ancho_banda) {
+            document.getElementById("invalid_ancho_banda").innerHTML = response.form2.ancho_banda[0]
+            ancho_banda.classList.add("is-invalid")
+
+
+          }
+          if (response.form2.renovadora) {
+            document.getElementById("invalid_renovadora").innerHTML = response.form2.renovadora[0]
+            renovadora.classList.add("is-invalid")
+
+          }
+        } else {
+          Swal.fire({
+            title: 'Éxito!',
+            text: "Llanta guardada!",
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            allowOutsideClick: false,
+
+            confirmButtonText: 'Ok!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = response.url
+            }
+          })
+        }
+      })
+    })
+
+  let array=document.getElementById("id_marca_llanta").options
+  let options=[]
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i].value;
+    options.push(element)
+  }
+    let array3=document.getElementById("id_modelo_llanta").options
+  let options3=[]
+  for (let i = 0; i < array3.length; i++) {
+    const element3 = array3[i].value;
+    options3.push(element3)
+  }
+       let array5=document.getElementById("id_modelo_renova").options
+  let options5=[]
+  for (let i = 0; i < array5.length; i++) {
+    const element = array5[i].value;
+    options5.push(element)}
+    let array6=document.getElementById("id_ancho_banda").options
+  let options6=[]
+  for (let i = 0; i < array6.length; i++) {
+    const element = array6[i].value;
+    options6.push(element)}
+
+    console.log(options6);
+ {% if obj %}
+ let modelo6="{{obj.cubierta.ancho_banda.id}}"
+ console.log(modelo6);
+  if (options6.includes(modelo6)!=true) {
+    console.log("if");
+  let option6=document.createElement("option")
+  option6.textContent="{{obj.cubierta.ancho_banda.descripcion}}"
+  option6.selected=true
+  option6.value=modelo6
+
+  $("#id_ancho_banda").append(option6)
+
+  }else{
+    console.log("else");
+    document.getElementById('id_ancho_banda').value=modelo6;
+
+  }
+
+
+
+  let modelo="{{obj.modelo_llanta.id}}"
+  if (options3.includes(modelo)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.modelo_llanta.descripcion}}"
+  option3.selected=true
+    option3.value=modelo
+
+  $("#id_modelo_llanta").append(option3)
+
+  }else{
+    document.getElementById('id_modelo_llanta').value=modelo;
+
+  }
+  let marca="{{obj.modelo_llanta.marca_llanta.id}}"
+  if (options.includes(marca)!=true) {
+
+  let option=document.createElement("option")
+  option.textContent="{{obj.modelo_llanta.marca_llanta.descripcion}}"
+  option.selected=true
+    option.value=marca
+
+  $("#id_marca_llanta").append(option)
+
+
+  
+
+  }else{
+
+    document.getElementById('id_marca_llanta').value=marca;
+
+
+  }
+      
+ 
+      let modelo5="{{obj.cubierta.modelo_renova.id}}"
+  if (options5.includes(modelo5)!=true) {
+
+  let option5=document.createElement("option")
+  option5.textContent="{{obj.cubierta.modelo_renova.descripcion}}"
+  option5.selected=true
+    option5.value=modelo5
+
+  $("#id_modelo_renova").append(option5)
+
+  }else{
+    document.getElementById('id_modelo_llanta').value=modelo5;
+
+  }
+  
+  {%endif%}
+
+  actualizar_modelo()
+
+  function actualizar_modelo() {
+    $('#id_modelo_llanta').prop("disabled",true)
+
+    $('#id_modelo_llanta').empty();
+    $('#id_modelo_llanta').append($("<option>", {
+      value: "",
+      text: " --------- "
+    }));
+    $.ajax({
+      'url':'/catalogos/render-option-llanta',
+      'type': 'GET',
+      'async': false,
+      'data': {
+        'id_marca': $('#id_marca_llanta').val()
+      },
+      'success': function (data) {
+        console.log(data)
+          let modelo2="{{obj.modelo_llanta.id}}"
+        let marca2="{{obj.modelo_llanta.marca_llanta.id}}"
+        $('#id_modelo_llanta').prop("disabled",false)
+        $.each(data, function (index, valuex) {
+                if(!valuex.eliminado && valuex.activo){
+                let opcion=document.createElement("option")
+                  opcion.value=valuex.id
+                opcion.textContent=valuex.descripcion
+                  document.getElementById("id_modelo_llanta").append(opcion)
+                  
+              } 
+        });
+              if($("#id_marca_llanta").val()==marca2){
+          let array4=document.getElementById("id_modelo_llanta").options
+            let options4=[]
+            for (let i = 0; i < array4.length; i++) {
+              const element4 = array4[i].value;
+              options4.push(element4)
+            }
+
+            if (options4.includes(modelo2)!=true) {
+
+              let option4=document.createElement("option")
+              option4.textContent="{{obj.modelo_llanta.descripcion}}"
+              option4.selected=true
+                option4.value=modelo2
+
+              $("#id_modelo_llanta").append(option4)
+
+              }else{
+                document.getElementById('id_modelo_llanta').value=modelo2;
+
+              }
+        }
+    
+            $('#id_modelo_llanta').prop("disabled",false)
+
+      },
+      'error': function (request, error) {
+        //alert("Request: "+JSON.stringify(request));
+      }
+    });
+  }
+</script>
+{% endblock %}

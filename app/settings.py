@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'pnfnh$12%rkgz*kf81$1jbzc$f-5)i5ago4f!#7si6m0jr5_(c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False    
+DEBUG = True    
 
 # ALLOWED_HOSTS = [".herokuapp.com"]
 ALLOWED_HOSTS = ["*",".herokuapp.com"]
@@ -131,13 +131,13 @@ CACHES = {
 #     }
 # }
 
-import dj_database_url
-from decouple import config
-DATABASES={
-    "default":dj_database_url.config(
-        default=config("DATABASE_URL")
-    )
-}
+# import dj_database_url
+# from decouple import config
+# DATABASES={
+#     "default":dj_database_url.config(
+#         default=config("DATABASE_URL")
+#     )
+# }
 
 
 # Password validation
@@ -177,21 +177,21 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#              'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+#         },
+#     },
+# }
 
 LOGIN_REDIRECT_URL="/"
 LOGIN_URL="/login/"

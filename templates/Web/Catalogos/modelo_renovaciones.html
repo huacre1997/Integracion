@@ -1,0 +1,96 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block modelo-renovaciones %}collapse-item active{% endblock  %}
+{% load static %}
+{% load base_extras %}
+{% block content %}  
+  <div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Modelos de Banda</h6>
+                 {% if 'Web.add_modelorenova' in perm %}
+
+                      <a href="{% url 'Web:modelo-renovacion' %}" class="btn btn-primary"><i class="fa fa-plus-circle "></i>&nbsp;Crear Nuevo</a>
+    {% endif %}
+            
+            </div>
+            <div class="card-body">                
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th class="text-center middle">#</th>
+                      <th class="text-center middle">Modelo de Banda</th>
+                      <th class="text-center middle">Renovadora</th>
+                      <th class="text-center middle">Profundidad</th>
+                      <th class="text-center middle">Estado</th>
+                      <th ></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for obj in objetos %}
+                    <tr>
+                      <td class="text-center middle">{{obj.id}}</td>
+                      <td class="middle">{{obj.descripcion}}</td>
+                      <td class="middle">{{obj.marca_renova}}</td>
+                      <td class="text-center middle">{{obj.profundidad}}</td>
+                      <td class="text-center middle">{% if obj.activo %}<i class="fa fa-check-circle text-success"></i>{% else %} <i class="fas fa-times-circle text-danger"></i> {% endif %} </td>
+                      <td class="text-center middle">
+                                                       {% if 'Web.change_modelorenova' in perm %}
+
+                        <a href="{% url 'Web:modelo-renovacion' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
+                                                     {% comment %} {% if 'Web.delete_modelorenova' in perm %}
+
+                        <a href="{% url 'Web:modelo-renovacion-delete' obj.pk %}" class="btn btn-danger btn-sm"
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
+                        {% include 'Web/fragments/eliminar_modelorenovacion.html' %} {% endcomment %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                </div>
+
+            </div>
+          </div>
+        </div>
+  </div>
+  <!-- End of Page Wrapper -->
+  {% endblock %}
+  {% block bottom_scripts %}
+
+  <script>
+    $(document).ready(function() {
+      $('#dataTable').DataTable({
+            responsive: true,
+			     "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+               language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+           columnDefs:[
+              {
+
+              "targets": [0],
+              "visible": false
+            },
+          ],
+           "order": [[ 1, 'asc' ]],		
+      });
+
+      $("#btnBuscar").click(function() {
+        $('#frmlist').submit();
+        let spinner = $(this.currentTarget).find('span')
+        spinner.removeClass('d-none')
+        setTimeout(_ => spinner.addClass('d-none'), 2000)
+        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  Buscando ...');
+        $(this).prop("disabled", true);
+      });
+    });
+  </script>
+  {% endblock %}
+  

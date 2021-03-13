@@ -1,0 +1,411 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block vehiculos %}collapse-item active{% endblock  %}
+{% load static %}
+{% block content %}  
+<style>
+
+</style>  
+<div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+            	<div class="row">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
+                  {% if update %} Editar Vehiculo {% else %} Crear Vehiculo {% endif %}</h6>
+            	</div>
+            </div>
+            <form method="post"  action="" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="card-body">
+              <div class="babge badge-info"> Datos Generales del Vehículo</div>
+              <div class="form-row">	
+                  <div class="form-group col-lg-4">
+                    <label for="">Configuración vehicular</label>
+                    {{form.tipo_vehiculo}}
+                    <div class="invalid-feedback" id="invalid_tipo">Este campo es requerido</div>
+                  </div>
+                  <div class="form-group col-lg-4">
+                   <label for="">Propiedad</label>
+                    {{form.propiedad}}
+                    <div class="invalid-feedback" id="invalid_propiedad">Este campo es requerido</div>
+                  </div>
+                  <div class="form-group col-lg-4">
+                   <label for="">Placa</label>
+                    {{form.placa}}
+                    <div class="invalid-feedback" id="invalid_placa">Este campo es requerido</div>
+                  </div>
+               
+              </div>
+                <div class="form-row">	
+                  <div class="form-group col-lg-4">
+                  <label for="">Marca</label>
+                     <select name="marca_vehiculo" id="id_marca" class="form-select" onchange="actualizarmodelo()">
+                <option value=""></option>
+                
+                  {% for i in marca_vehiculo  %}
+                  {% if  not i.eliminado  and i.activo  %}
+                   <option value="{{i.id}}" {% if obj.marca_vehiculo.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                  </div>
+                  <div class="form-group col-lg-4">
+                   <label for="">Modelo</label>
+                    {{form.modelo_vehiculo}}
+                    <div class="invalid-feedback" id="invalid_modelo_vehiculo">Este campo es requerido</div>
+                  </div>
+                  <div class="form-group col-lg-4">
+                   <label for="">Año</label>
+                    {{form.ano}}
+                    <div class="invalid-feedback" id="invalid_ano">Este campo es requerido</div>
+                  </div>
+               
+              </div>
+             
+            
+              <div class="babge badge-info"> Características de Operación</div>
+                <div class="form-row">	
+                  <div class="form-group col-lg-4">
+                    <label for="">Operación</label>
+                    {{form.operacion}}
+                    <div class="invalid-feedback" id="invalid_operacion">Este campo es requerido</div>
+                  </div>
+                  <div class="form-group col-lg-4">
+                    <label for="">Ubicacion </label>
+                       <select name="ubicacionv" id="id_ubicacionv" class="form-select">
+                  <option value=""></option>
+                        
+                    {% for i in ubicacion  %}
+                    {% if  not i.eliminado  and i.activo  %}
+                     <option value="{{i.id}}" {% if obj.ubicacionv.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                    {% endif %}
+                     
+                    {% endfor %}
+                    </select>
+                    </div>
+                    <div class="form-group col-lg-4">
+                                    <label for="" style="visibility: hidden;">ss</label>
+
+                                 <div class="form-check">
+
+                      {{form.activo}}
+                      
+                  <label class="form-check-label" for="id_activo">Activo</label>
+                  <div class="invalid-feedback">Este campo es requerido</div> 
+                      </div>
+                    </div>
+               
+              </div>
+              
+              
+              {% comment %} <div class="row">	
+                <div class="col-lg-4"><label>Operación</label>{{form.operacion}}</div>
+                <div class="col-lg-4"><label>Ubicación</label>{{form.ubicacion}}</div>
+                <div id="valueAlmacen" class="col-lg-4" 
+                {% if form.ubicacion.value == 1 %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                <label>Almacen</label>{{form.almacen}}
+                </div>
+              </div> {% endcomment %}
+
+                <div class="form-row">	
+                  <div class="form-group col-lg-4">
+                    <label for="">Km promedio</label>
+                    {{form.km}}
+                    <div class="invalid-feedback" id="invalid_km">Este campo es requerido</div>
+                  </div>
+                
+                  <div class="form-group col-lg-4">
+                   <label for="">Nro Llantas de repuesto</label>
+                    {{form.nro_llantas_repuesto}}
+                    <div class="invalid-feedback" id="invalid_repuesto">Este campo es requerido</div>
+                  </div>
+               
+              </div>
+             
+              <br>
+              <div class="d-flex">
+                <div class="babge badge-info" style="width:32%"> Observaciones </div>
+                <div class="babge badge-info" style="width:68%"> Imagen Referencial </div>
+              </div>
+
+              <br>
+              <div class="row">
+                <div class="col-lg-4">{{form.obs}}</div>
+                
+                  <div class="col-lg-6"><img class="img-vehiculo" src="" id="img-vehiculo" alt=""></div>
+
+              </div>
+         
+			
+            </div>
+            <div class="card-footer text-muted">
+                <button type="submit" class="btn btn-primary">Grabar</button>
+                <a href="{% url 'Web:vehiculos' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+          	</form>
+          </div>				
+        </div>
+</div>
+{% endblock %}
+{% block bottom_scripts %}
+
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+
+  fetch("../../../getTipo/"+document.getElementById("id_tipo_vehiculo").value+"/").then(data=>data.json())
+    .then(response=>{
+
+      document.getElementById("img-vehiculo").setAttribute("src","{% static 'img/vehiculos/' %}"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+    })
+console.log( );
+ document.getElementById("id_tipo_vehiculo").addEventListener("change",function (param) {
+   {% if update %}
+  let url="../../../getTipo/"+param.target.options[param.target.options.selectedIndex].value
+   {% else %}
+  let url="../../getTipo/"+param.target.options[param.target.options.selectedIndex].value
+
+   {% endif %}
+  document.getElementById("img-vehiculo").setAttribute("src","")
+    fetch(url).then(data=>data.json())
+    .then(response=>{
+      document.getElementById("img-vehiculo").setAttribute("src","../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+    })
+    })
+  document.getElementById("id_ano").addEventListener('input', function (event) {
+        document.getElementById("id_ano").classList.remove("is-invalid")
+        document.getElementById("id_ano").setCustomValidity("")
+
+  })
+  document.getElementById("id_placa").addEventListener('input', function (event) {
+  $('#id_placa').keyup(function () {
+    this.value = this.value.toLocaleUpperCase();
+  });
+
+    {% comment %} let placa = document.getElementById("id_placa").value
+    let validate = validatePlaca(placa)
+
+    if (placa.trim() == "") {
+      console.log("if");
+      document.getElementById("id_placa").classList.remove("is-invalid")
+      document.getElementById("invalid_placa").innerHTML = "Este campo es requerido."
+    } else{
+    
+      if (validate) {
+        console.log("validate if fuera del form");
+        document.getElementById("id_placa").setCustomValidity("")
+        document.getElementById("id_placa").classList.remove("is-invalid")
+          document.getElementById("invalid_placa").innerHTML = ""
+
+      } else {
+        console.log("validate else fuera del form");
+        document.getElementById("id_placa").classList.add("is-invalid")
+        document.getElementById("invalid_placa").innerHTML = "Escriba una placa válida."
+        document.getElementById("id_placa").setCustomValidity("Escriba una placa válida.")
+
+
+      }
+    
+    } {% endcomment %}
+
+  });
+ 
+  (function () {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+      .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+        document.getElementById("id_placa").setCustomValidity("")
+
+ let placa = document.getElementById("id_placa").value
+ let año = document.getElementById("id_ano").value
+
+    if(!validatePlaca(placa)){
+          document.getElementById("id_placa").classList.add("is-invalid")
+          document.getElementById("id_placa").setCustomValidity("Ingrese una placa válida.")
+          document.getElementById("invalid_placa").innerHTML = "Ingrese una placa válida."
+          notificacion(1500, "Error", "error", "Revise los campos!")
+
+        }
+
+         if(!validateAño(año)){
+          document.getElementById("id_ano").classList.add("is-invalid")
+          document.getElementById("id_ano").setCustomValidity("Ingrese un año válido.")
+          document.getElementById("invalid_ano").innerHTML = "Ingrese un año válido."
+          notificacion(1500, "Error", "error", "Revise los campos!")
+        } 
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+
+
+
+        }, false)
+      })
+  })()
+{% if  obj %} 
+    if(  $('#id_marca').val()!=""){
+           $('#id_modelo_vehiculo').prop("disabled",true)
+           $('#id_modelo_vehiculo').val("")
+       } {% endif %}
+$('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').prop("selected", true);
+
+
+  let array=document.getElementById("id_marca").options
+  let options=[]
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i].value;
+    options.push(element)
+  }
+  let array2=document.getElementById("id_ubicacionv").options
+  let options2=[]
+  for (let i = 0; i < array2.length; i++) {
+    const element2 = array2[i].value;
+    options2.push(element2)
+  }
+
+  let array3=document.getElementById("id_modelo_vehiculo").options
+  let options3=[]
+  for (let i = 0; i < array3.length; i++) {
+    const element3 = array3[i].value;
+    options3.push(element3)
+  }
+  console.log(options3);
+  actualizarmodelo()
+  {% if obj %}
+
+  let modelo="{{obj.modelo_vehiculo.id}}"
+  if (options3.includes(modelo)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.modelo_vehiculo.descripcion}}"
+  option3.selected=true
+    option3.value=modelo
+
+  $("#id_modelo_vehiculo").append(option3)
+
+  }else{
+    document.getElementById('id_modelo_vehiculo').value=modelo;
+
+  }
+
+
+
+
+  let ubicacionv="{{obj.ubicacionv.id}}"
+  if (options2.includes(ubicacionv)!=true) {
+
+  let option2=document.createElement("option")
+  option2.textContent="{{obj.ubicacionv.descripcion}}"
+  option2.selected=true
+    option2.value=ubicacionv
+
+  $("#id_ubicacionv").append(option2)
+
+  }else{
+    document.getElementById('id_ubicacionv').value=ubicacionv;
+
+  }
+
+  let marca="{{obj.modelo_vehiculo.marca_vehiculo.id}}"
+  if (options.includes(marca)!=true) {
+
+  let option=document.createElement("option")
+  option.textContent="{{obj.modelo_vehiculo.marca_vehiculo.descripcion}}"
+  option.selected="selected"
+    option.value=marca
+
+  $("#id_marca").append(option)
+
+
+  
+
+  }else{
+    // $('#id_marca  option[value="'+marca+'"]').prop("selected", true);
+
+    document.getElementById('id_marca').value=marca;
+
+
+  }
+  {%endif%}
+    
+})
+
+
+function actualizarmodelo(){
+        $(function () {
+          
+        
+          console.log($('#id_marca')[0].selectedIndex);
+
+    
+      if(  $('#id_marca').val()==""){
+        console.log("if");
+              $('#id_modelo_vehiculo').prop("disabled",true)
+              $('#id_modelo_vehiculo').empty();
+
+          }else{
+        $('#id_modelo_vehiculo').empty();
+        $('#id_modelo_vehiculo').append($("<option>", {value: "",text: " --------- "}));              
+        $.ajax({
+          'url' : '/catalogos/render-option-vehiculo',
+          'type' : 'GET',
+          'data' : {'id_marca' : $('#id_marca').val()},
+          'success' : function(data) {
+             let modelo2="{{obj.modelo_vehiculo.id}}"
+                let marca12="{{obj.modelo_vehiculo.marca_vehiculo.id}}"
+          $.each(data, function( index, valuex ) {
+               
+              if(!valuex.eliminado && valuex.activo){
+                let opcion=document.createElement("option")
+                  opcion.value=valuex.id
+                opcion.textContent=valuex.descripcion
+                console.log(opcion);
+                  document.getElementById("id_modelo_vehiculo").append(opcion)
+                  
+              }        
+          });
+                  if($("#id_marca").val()==marca12){
+
+          let array4=document.getElementById("id_modelo_vehiculo").options
+            let options4=[]
+            for (let i = 0; i < array4.length; i++) {
+              const element4 = array4[i].value;
+              options4.push(element4)
+            }
+
+            if (options4.includes(modelo2)!=true) {
+
+              let option4=document.createElement("option")
+              option4.textContent="{{obj.modelo_vehiculo.descripcion}}"
+              option4.selected=true
+                option4.value=modelo2
+
+              $("#id_modelo_vehiculo").append(option4)
+
+              }else{
+                document.getElementById('id_modelo_vehiculo').value=modelo2;
+
+              }
+
+
+                  }
+            $('#id_modelo_vehiculo').removeAttr("disabled")
+          },
+          'error' : function(request,error){
+            //alert("Request: "+JSON.stringify(request));
+          }
+        });}
+      });
+    }
+</script>
+{% endblock %}

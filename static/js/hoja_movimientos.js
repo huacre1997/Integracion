@@ -148,7 +148,7 @@ $(document).ready(function () {
         let backgroud_img = document.createElement("div")
         backgroud_img.classList.add("img")
         backgroud_img.id = "background_tipo"
-        backgroud_img.style.background = 'transparent url("../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoPosicion +
+        backgroud_img.style.background = 'transparent url("../../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoPosicion +
           '.png") no-repeat center center'
         document.getElementById("container-grid").append(backgroud_img)
         
@@ -156,7 +156,7 @@ $(document).ready(function () {
         let backgroud_img2 = document.createElement("div")
         backgroud_img2.classList.add("img2")
         backgroud_img2.id = "background_tipo2"
-        backgroud_img2.style.background = 'transparent url("../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoImagen +
+        backgroud_img2.style.background = 'transparent url("../../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoImagen +
         '.png") no-repeat center center'
       
         document.getElementById("container-grid").append(backgroud_img)

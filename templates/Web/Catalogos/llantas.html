@@ -1,0 +1,366 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block llantas %}collapse-item active{% endblock  %}
+{% load static %}
+{% load base_extras %}
+{% load l10n %}
+
+{% block content %}
+
+
+
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Neumaticos</h6>
+
+        <a class="btn btn-primary " href="{% url 'Web:llanta' %}"><i class="fa fa-plus-circle "></i>&nbsp;Registrar
+          Nueva LLanta</a>
+
+      </div>
+      <div class="card-body">
+
+        <div class="form-row">
+          <div class="form-group col-lg-3">
+            <label for="">Filtrar por Medida</label>
+            <select name="medida" id="medida" class="form-select">
+              <option value=""></option>
+              {% for i in medida %}
+              <option value="{{i.id}}">{{i}}</option>
+              {% endfor %}
+            </select>
+
+
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="">Filtrar por Marca</label>
+            <select name="marca" id="marca" class="form-select">
+              <option value=""></option>
+              {% for i in marca %}
+              <option value="{{i.id}}">{{i.descripcion}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="">Filtrar por modelo</label>
+            <select name="modelo" id="modelo" class="form-select">
+
+            </select>
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="">Rango de fecha de creación</label>
+            <input type="text" name="date_ranger" class="form-control" id="date_ranger" autocomplete="off">
+
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover" id="tablaLlanta" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th class="middle">#</th>
+                <th>Codigo</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Medida</th>
+                <th>Ubicación</th>
+                <th>Costo</th>
+                <th>KM</th>
+                <th>F. Registro</th>
+                <th>Vehículo</th>
+                <th>Est.</th>
+
+                <th></th>
+              </tr>
+            </thead>
+    
+
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Page Wrapper -->
+{% endblock %}
+
+{% block bottom_scripts %}
+
+
+
+<script>
+  var date_range = null
+  var date_now = new moment().format('YYYY-MM-DD');
+  var parameters = {
+    "start_date": "",
+    "end_date": "",
+    "medida": "",
+    "modelo": "",
+    "marca": ""
+
+  }
+  $('#medida').select2();
+  $('#marca').select2();
+
+  $('#modelo').select2();
+
+  generate_reports()
+
+  function generate_reports() {
+
+
+    tabla = $("#tablaLlanta").DataTable({
+      processing: "true",
+      responsive: true,
+      destroy: true,
+
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+      language: {
+        "url": "{% static 'language.json' %}"
+      },
+      ajax: {
+        url: window.location.pathname,
+        type: "POST",
+        data: parameters,
+        dataSrc: ""
+      },
+
+
+      columns: [{
+          "data": "id",
+          className: "middle text-center"
+
+        },
+        {
+          "data": "codigo",
+          className: "middle text-center"
+        },
+        {
+          "data": "marca_llanta",
+          className: "middle text-center"
+        },
+        {
+          "data": "modelo_llanta",
+          className: "middle text-center"
+        },
+        {
+          "data": "medida",
+          className: "middle"
+        },
+        {
+          "data": "ubicacion",
+          className: "middle text-center",
+          render: function (data) {
+            if (data == null) {
+              return "MONTADO"
+            }
+            return data
+          }
+        },
+        {
+          "data": "costo",
+          className: "middle text-center"
+        },
+        {
+          "data": "km",
+          className: "middle text-center"
+        },
+        {
+          "data": "created_at",
+          className: "middle text-center"
+        },
+        {
+          "data": "vehiculo",
+          className: "middle text-center",
+          render: function (data) {
+            if (data == null) {
+              return "----------"
+            }
+            return data
+          }
+        },
+        {
+          "data": 'activo',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        },
+        {
+          "data": null,
+          className: "middle text-center"
+        },
+      ],
+      columnDefs: [
+
+        {
+          targets: [-1],
+
+          render: function (row, data, index) {
+            var buttons =
+              ' {% if "Web.change_llanta" in perm %}<a class="btn btn-warning"  role="button" href="../llanta/' +
+              index.id +
+
+              '"><i class="fa fa-edit" ></i></a>{%endif%}' 
+              // ' {% if "Web.delete_llanta" in perm %}<button class="btn btn-danger mr-1 btn-delete-llanta"' +
+              // '"><i class="fa fa-ban" ></i></button>{%endif%}';
+            return buttons;
+
+          },
+
+        }, {
+
+          "targets": [0],
+          "visible": false
+        },
+
+      ], "order": [[ 1, 'asc' ]],		
+
+
+
+    });
+
+
+  }
+  $('input[name="date_ranger"]').daterangepicker({
+    autoUpdateInput: false,
+
+    locale: {
+      format: 'YYYY-MM-DD'
+    },
+    opens: 'right'
+  }).on("apply.daterangepicker", function (ev, picker) {
+    date_range = picker;
+
+    $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+
+    parameters["start_date"] = date_range.startDate.format("YYYY-MM-DD")
+    parameters["end_date"] = date_range.endDate.format("YYYY-MM-DD")
+    generate_reports()
+
+  }).on('cancel.daterangepicker', function (ev, picker) {
+    $(this).val("");
+    parameters["start_date"] = ""
+    parameters["end_date"] = ""
+    parameters["medida"] = ""
+    parameters["modelo"] = ""
+    parameters["marca"] = ""
+
+    date_range = picker;
+    generate_reports();
+  });
+  $(document).on("click", '.btn-delete-llanta', function (e) {
+
+    e.preventDefault()
+    var tr = tabla.cell($(this).closest("td")).index();
+    var data = tabla.row(tr.row).data();
+    Swal.fire({
+      title: 'Eliminar llanta',
+      icon: "warning",
+      text: "¿Está seguro que desea eliminar la llanta?",
+      showCancelButton: true,
+      confirmButtonColor: "#e74a3b",
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminarlo!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.showLoading()
+
+        fetch("../llanta/" + data.id + "/delete/", {
+          method: "POST",
+          headers: {
+            'X-CSRFToken': csrftoken
+          },
+        }).then(data => data.json()).then(response => {
+          if (response.status = 200) {
+            notificacion(1500, "Genial!", "success", "Llanta inhabilitada")
+            tabla.ajax.reload()
+          } else {
+            notificacion(1500, "Error", "error", "Esa llanta no existe")
+          }
+        })
+
+      }
+    })
+
+
+  });
+  $("#modelo").on("change", function (e) {
+    parameters["modelo"] = $("#modelo").val()
+    generate_reports();
+  })
+  $("#medida").on("change", function (e) {
+    $("#date_ranger").val("")
+    $('#marca').prop("disabled", true)
+    $('#date_ranger').prop("disabled", true)
+    if ($('#medida').val() == "") {
+
+      $('#marca').prop("disabled", false)
+      $('#date_ranger').prop("disabled", false)
+      $('#modelo').prop("disabled", false)
+      $('#modelo').empty();
+    }
+    parameters["start_date"] = ""
+    parameters["end_date"] = ""
+    parameters["medida"] = $("#medida").val()
+    parameters["marca"] = ""
+    parameters["modelo"] = ""
+
+    generate_reports();
+
+  })
+  $("#marca").on("change", function (e) {
+    parameters["marca"] = $("#marca").val()
+    generate_reports();
+    $('#medida').prop("disabled", true)
+    $('#date_ranger').prop("disabled", true)
+    $('#date_ranger').val("")
+
+    e.preventDefault();
+
+    if ($('#marca').val() == "") {
+      $('#medida').prop("disabled", false)
+      $('#date_ranger').prop("disabled", false)
+      $('#modelo').prop("disabled", true)
+      $('#modelo').empty();
+    } else {
+      $('#modelo').prop("disabled", true)
+
+      $('#modelo').empty();
+      $('#modelo').append($("<option>", {
+        value: "",
+        text: " --------- "
+      }));
+      $.ajax({
+        'url': '/catalogos/render-option-llanta',
+        'type': 'GET',
+        'async': false,
+        'data': {
+          'id_marca': $('#marca').val()
+        },
+        'success': function (data) {
+          $('#modelo').prop("disabled", false)
+          $.each(data, function (index, valuex) {
+            $('#modelo').append($("<option>", {
+              value: valuex.id,
+              text: valuex.descripcion
+            }));
+          });
+        },
+        'error': function (request, error) {
+          //alert("Request: "+JSON.stringify(request));
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -80,207 +80,11 @@ textarea, .vTextField {
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style="transition:1s">
-
-      <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-        <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-circle"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">Inspección<sup>1.0</sup></div>
-      </a>
-      <hr class="sidebar-divider my-0">
-  
-      <!-- Nav Item - Dashboard -->
-      {% comment %} <li class="nav-item active">
-        <a class="nav-link" href="index.html">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span></a>
-      </li> {% endcomment %}
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">MÓDULOS</div>
-
-         {% if request.user|has_group:"Catalogos" or request.user|has_group:"Administrador" %} 
-
-      <li class="{% block blockCatalogos %}nav-item{% endblock %}">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-          <i class="fas fa-fw fa-wrench"></i>
-          <span>CATÁLOGOS</span>
-        </a>
-        <div id="collapseUtilities" class="{% block collapseCatalogos %}collapse{% endblock %}" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            {% if 'Web.view_marcavehiculo' in perm %}
-
-            <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca del Vehículo</a>
-            {%endif%} 
-                {% if 'Web.view_modelovehiculo' in perm %}
-
-            <a class="{% block modelo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:modelo-vehiculos' %}">Modelo del Vehículo</a>
-            {%endif%} 
-               {% if 'Web.view_tipovehiculo' in perm %}
-
-            <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">Configuración Vehicular</a>
-            {%endif%}
-             {% if 'Web.view_lugar' in perm %}
-
-            <a class="{% block lugares %}collapse-item{% endblock %}" href="{% url 'Web:lugares' %}">Ubicación del Vehículo</a>
-            {% endif %} 
-             {% if 'Web.view_vehiculo' in perm %}
-
-            <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Registro del Vehículo</a>
-            {%endif%}
-              {% if 'Web.view_marcallanta' in perm %}
-
-            <a class="{% block marca-llantas %}collapse-item{% endblock %}" href="{% url 'Web:marca-llantas' %}">Marca del Neumático</a>
-            {% endif %}
-            {% if 'Web.view_modelollanta' in perm %}
-
-            <a class="{% block modelo-llantas %}collapse-item{% endblock %}" href="{% url 'Web:modelo-llantas' %}">Modelo del Neumático</a>
-            {% endif %}
-            {% if 'Web.view_medidallanta' in perm %}
-
-            <a class="{% block medida-llantas %}collapse-item{% endblock %}" href="{% url 'Web:medida-llantas' %}">Medida del Neumático</a>
-            {% endif %}
-            {% if 'Web.view_marcarenova' in perm %}
-
-            <a class="{% block marca-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:marca-renovaciones' %}">Reencauchadora</a>
-            {% endif %}
-            {% if 'Web.view_modelorenova' in perm %}
-
-            <a class="{% block modelo-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:modelo-renovaciones' %}">Modelo de Banda</a>
-            {% endif %}
-            {% if 'Web.view_anchobandarenova' in perm %}
-
-            <a class="{% block ancho-banda-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:ancho-banda-renovaciones' %}">Ancho de Banda</a>
-            {% endif %}
-             {% if 'Web.view_ubicacion' in perm %}
-
-            <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicación del Neumático</a>
-            {%endif%} 
-           
-
-            {% if 'Web.view_llanta' in perm %}
-
-            <a class="{% block llantas %}collapse-item{% endblock %}" href="{% url 'Web:llantas' %}">Registro del Neumático</a>
-            {% endif %}
-          {% comment %} {% if 'Web.view_tipopiso' in perm %}
-
-            <a class="{% block tipo-pisos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-pisos' %}">Tipo de pisos</a>
-            {%endif%} 
-           {% if 'Web.view_tiposervicio' in perm %}
-
-            <a class="{% block tipo-servicios %}collapse-item{% endblock %}" href="{% url 'Web:tipo-servicios' %}">Tipo de Servicios</a>
-            {%endif%} 
-          {% endcomment %}
-         
-{% comment %}   
-         
-          
-          {% if 'Web.view_almacen' in perm %}
-
-            <a class="{% block almacenes %}collapse-item{% endblock %}" href="{% url 'Web:almacenes' %}">Almacenes</a>
-            {% endif %}
-          {% endcomment %}
-
-          </div>
-        </div>
-      </li>
-  {% endif %}
+    
+    {% block sidebar %}
       
-   
-           {% if 'Web.view_historialllantas' in perm and 'Web.view_inpeccionllantas' in perm %}
-
-      <li class="{% block blockProcesos %}nav-item{% endblock %}">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fas fa-fw fa-cog"></i>
-          <span>PROCESOS</span>
-        </a>
-        <div id="collapseOne" class="{% block blockReportes %}collapse{% endblock %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <a class="{% block movimientos %}collapse-item{% endblock %}" href="{% url 'Web:hoja-movimientos' %}">Hoja de movimientos</a>
-            <a class="{% block inspeccion %}collapse-item{% endblock %}"  href="{% url 'Web:inspeccion-llantas' %}">Inspección de llantas</a>
-            <a class="collapse-item" href="#">Reparaciones en carretera</a>
-            <a class="collapse-item" href="#">Recepción de Reencauchado</a>
-            <a class="collapse-item" href="#">Transeferencia entre pilas</a>
-            <a class="collapse-item" href="#">Ajustar llantas</a>
-
-          </div>
-        </div>
-      </li>
-   
-      {% endif %}
- 
-      <!-- Divider -->
-      <!-- <hr class="sidebar-divider"> -->
-
-      <!-- Heading -->
-      <!-- <div class="sidebar-heading">
-        Addons
-      </div> -->
-
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="{% block blockHistorial %}nav-item{% endblock %}">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>REPORTES</span>
-        </a>
-        <div id="collapsePages" class="{% block collapseHistorial %}collapse{% endblock %}" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <!-- <h6 class="collapse-header">Login Screens:</h6> -->
-            <a class="{% block historial %}collapse-item{% endblock %} " href="{% url 'Web:ver-historial' %}">Historial</a>
-            <a class="collapse-item" href="#">Indicadores</a>
-           
-          </div>
-        </div>
-      </li>
-      {% if 'Web.view_usuario' in perm %}
+    {% endblock sidebar %}
       
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="{% block blockAdmin %}nav-item{% endblock %}">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fas fa-fw fa-cog"></i>
-          <span>ADMINISTRACIÓN</span>
-        </a>
-        <div id="collapseTwo" class="{% block collapseAdmin %}collapse{% endblock %}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <a class="{% block personas %}collapse-item{% endblock %}" href="{% url 'Web:Personas' %}">Personas</a>
-
-            <a class="{% block usuarios %}collapse-item{% endblock %}" href="{% url 'Web:Usuarios' %}">Usuarios</a>
-            <a class="{% block perfiles %}collapse-item{% endblock %}" href="{% url 'Web:Perfiles' %}">Perfiles</a>
-          </div>
-        </div>
-      </li>
-   
-      {% endif %}
-      
-      <!-- Divider -->
-    {%comment%}  <hr class="sidebar-divider my-0">
-
-      <!-- Nav Item - Dashboard -->
-      <li class="nav-item active">
-        <a class="nav-link" href="#">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Principal</span></a>
-      </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      {% autoescape off %}
-      {% MenuUsuario request %}
-      {% endautoescape %}
-{%endcomment%}
-
-      <!-- Sidebar Toggler (Sidebar) -->
-      <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-      </div>
-
-    </ul>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -298,8 +102,8 @@ textarea, .vTextField {
 
          
           <!-- Topbar Navbar -->
-          <ul class="navbar-nav ml-auto">
-
+          <ul class="navbar-nav ml-auto w-100" style="display: grid;grid-template-columns: repeat(8,1fr);">
+              
             <!-- Nav Item - Search Dropdown (Visible Only XS) -->
             <li class="nav-item dropdown no-arrow d-sm-none">
               <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -321,40 +125,18 @@ textarea, .vTextField {
             </li>
 
             <!-- Nav Item - Alerts -->
-            <li class="nav-item dropdown no-arrow mx-1">
-              <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-bell fa-fw"></i>
-                <!-- Counter - Alerts -->
-                <span class="badge badge-danger badge-counter">3+</span>
-              </a>
-              <!-- Dropdown - Alerts -->
-              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-                <h6 class="dropdown-header">
-                  Alerts Center
-                </h6>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                  <div class="mr-3">
-                    <div class="icon-circle bg-primary">
-                      <i class="fas fa-file-alt text-white"></i>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="small text-gray-500">December 12, 2019</div>
-                    <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                  </div>
-                </a>
-                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-              </div>
-            </li>
+            
+            {% block inicio %}
+              
+            {% endblock inicio %}
+              
 
             <!-- Nav Item - Messages -->
-            <li class="nav-item dropdown no-arrow mx-1">
+            <!-- <li class="nav-item dropdown no-arrow mx-1">
               <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-envelope fa-fw"></i>
-                <!-- Counter - Messages -->
                 <span class="badge badge-danger badge-counter">7</span>
               </a>
-              <!-- Dropdown - Messages -->
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
                 <h6 class="dropdown-header">
                   Message Center
@@ -371,12 +153,12 @@ textarea, .vTextField {
                 </a>
                 <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
               </div>
-            </li>
+            </li> -->
 
-            <div class="topbar-divider d-none d-sm-block"></div>
+            <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
 
             <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
+            <li class="nav-item dropdown no-arrow" style="grid-column-start: 8;">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{request.user.persona}}</span>
                 <img class="img-profile rounded-circle" src="{{ request.user.persona.get_image }}" >
@@ -405,11 +187,71 @@ textarea, .vTextField {
         <!-- End of Topbar -->
         <!-- Begin Page Content --><!-- /.container-fluid -->
      
+      <style>
+        .item-lock{
+          width:90%;
+          height:100px;
+          border: 1px white;
+          border-radius: 10px;
+          background-color:#4e73df;
 
-      {% block content %}
-      
-      {% for i in messages  %}
+        }
+     
     
+        .position-1{
+         grid-row: 2/3;
+         grid-column: 2/3;
+        }
+        .position-2{
+         grid-row: 2/3;
+         grid-column: 3/4;
+        }
+        .position-3{
+          grid-row: 2/3;
+         grid-column: 4/5;
+        }
+        .position-4{
+          grid-row: 2/3;
+         grid-column: 5/6;
+        }
+        .position-5{
+          grid-row: 3/4;
+          grid-column: 2/3;
+        }
+        .position-6{
+          grid-row: 3/4;
+          grid-column: 3/4;
+        }
+        .grid-index{
+          display: grid;
+    grid-template-columns: repeat(6,1fr);
+    grid-template-rows: repeat(4,1fr);
+    grid-gap:   10px;
+    
+        }
+      </style>
+      
+      {% block content %}
+           <div class="grid-index">
+            {% if request.user|has_group:"Catalogos" or request.user|has_group:"Administrador" %} 
+
+            <div class="shadow  item-lock position-1"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:catalogos' %}">Catálogos</a></div>
+            {%endif%}
+            {% if 'Web.view_historialllantas' in perm and 'Web.view_inpeccionllantas' in perm %}
+
+            <div class="shadow  item-lock  position-2"><a class="nav-link d-flex   text-white align-items-center justify-content-center h-100" href="{% url 'Web:operaciones' %}">Operaciones</a></div>
+            {%endif%}
+            <div class="shadow  item-lock position-3"><a class="nav-link d-flex   text-white align-items-center justify-content-center h-100" href="{% url 'Web:reportes' %}">Reportes</a></div>
+            {% if 'Web.view_usuario' in perm %}
+
+            <div class="shadow  item-lock position-4"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:seguridad' %}">Seguridad</a></div>
+            {%endif%}
+            <div class="shadow  item-lock position-5"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="#">Módulo</a></div>
+            <div class="shadow  item-lock position-6"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="#">Módulo</a> </div>
+           
+           </div>
+      {% for i in messages  %}
+
         
       {% endfor %}
         
@@ -488,6 +330,7 @@ textarea, .vTextField {
     <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js "></script>
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
   {% block bottom_scripts %}{% endblock %}
   <script>
     $(document).ready(function () {
@@ -579,6 +422,17 @@ function getCookie(name) {
     return cookieValue;
 }
 const csrftoken = getCookie('csrftoken');
+$(document).on("mouseenter", ".item-lock", function(){
+
+var $this = $(this);  
+TweenMax.to($this, 0.4, {scale:1.1});
+
+}).on("mouseleave", ".item-lock", function(){
+
+var $this = $(this);  
+TweenMax.to($this,0.4, {scale:1});
+
+});
   </script>
 </body>
 

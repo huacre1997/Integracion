@@ -1,0 +1,63 @@
+{% extends 'Web/Reportes/reportes_base.html' %}
+{% block blockHistorial%}nav-item active{% endblock  %}
+{% block collapseHistorial %}collapse show{% endblock  %}
+{% block historial %}collapse-item active{% endblock  %}
+{% load static %}
+{% load base_extras %}
+{% block content %}
+
+  <div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Historial de Movimientos</h6>
+            </div>
+            <div class="card-body">
+
+             
+                <div class="table-responsive">               
+                <table class="table table-bordered table-hover" id="tablaHistorial" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th  class="text-center middle"></th>
+                      <th  class="text-center middle">Código</th>
+                      <th>Placa</th>
+                        <th  class="text-center middle">KM</th>
+                      <th  class="text-center middle">Fech.Inspec.</th>
+                    <th  class="text-center middle">Fech.Reporte</th>
+                    <th class="text-center middle">Posición</th>
+                    <th class="text-center middle">Operación</th>
+                     <th class="text-center middle">Cubierta</th>
+                     <th class="text-center middle">Rem1</th>
+                     <th class="text-center middle">Rem2</th>
+                     <th class="text-center middle">Rem3</th>
+                     <th class="text-center middle">Prom</th>
+
+                     <th class="text-center middle">Pres.Inicial</th>
+                     <th class="text-center middle">Pres.Final</th>
+                     <th class="text-center middle">Observación</th>
+                     <th class="text-center middle">Acción</th>
+                     <th class="text-center middle">Técnico</th>
+                     <th class="text-center middle">Supervisor</th>
+                     <th class="text-center middle">Registro</th>
+
+                    </tr>
+                  </thead>
+                  
+            
+                    
+                 
+                </table>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+  </div>
+{% endblock %}
+  {% block bottom_scripts %}
+    <script>
+    $("#tablaHistorial").DataTable()
+    </script>
+{% endblock %}

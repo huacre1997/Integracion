@@ -1,0 +1,91 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block tipo-vehiculos %}collapse-item active{% endblock  %}
+{% load static %}
+{% load base_extras %}
+{% block content %}  
+  <div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+        <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Configuración Vehicular</h6>
+             {% if 'Web.add_tipovehiculo' in perm %}
+
+                      <a href="{% url 'Web:tipo-vehiculo' %}" class="btn btn-primary"><i class="fa fa-plus-circle"></i>   Crear Nuevo</a>
+{% endif %}
+            
+            </div>
+            <div class="card-body">
+
+      
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th class="text-center middle">Configuración Vehicular</th>
+                      <th class="text-center middle">Estado</th>
+                      <th style="width: 20%;"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for obj in objetos %}
+                    <tr>
+                      <td class="text-center middle">{{obj.descripcion}}</td>
+                      <td class="text-center middle">{% if obj.activo %}<i class="fa fa-check-circle text-success"></i>{% else %} <i class="fas fa-times-circle text-danger"></i> {% endif %} </td>
+                      <td class="text-center middle">
+                             {% if 'Web.change_tipovehiculo' in perm %}
+
+                        <a href="{% url 'Web:tipo-vehiculo' obj.pk %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a>{% endif %}
+                             {% comment %} {% if 'Web.delete_tipovehiculo' in perm %}
+
+                        <a href="{% url 'Web:tipo-vehiculo-delete' obj.pk %}" class="btn btn-danger btn-sm"
+                        data-toggle="modal" data-target="#mdEliminar{{obj.pk}}"><i class="fa fa-ban"></i></a>{% endif %}
+                                              {% include 'Web/fragments/eliminar_tipovehiculo.html' %} {% endcomment %}
+
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                </div>        
+              </form>
+
+            </div>
+          </div>
+        </div>
+  </div>
+  <!-- End of Page Wrapper -->
+  {% endblock %}
+  {% block bottom_scripts %}
+
+  <script>
+    $(document).ready(function() {
+      $('#dataTable').DataTable({
+            responsive: true,
+             "lengthMenu": [
+              [5, 10, 25, 50, -1],
+              [5, 10, 25, 50, "All"]
+            ],
+            columnDefs: {
+
+              "targets": [0],
+              "visible": false
+            },
+          language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+          "initComplete": function (settings, json) {
+    $('select[name="dataTable_length"]').removeClass("form-control").removeClass("form-control-sm")
+
+  
+
+      }
+      });
+
+
+    });
+  </script>
+  {% endblock %}
+  

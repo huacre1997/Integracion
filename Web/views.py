@@ -76,6 +76,15 @@ class PasswordResetToken(PasswordResetTokenGenerator):
 
 account_activation_token = AccountActivationTokenGenerator()
 password_reset_token = PasswordResetToken()
+class CatalogosView(LoginRequiredMixin,ValidateMixin,TemplateView):
+    template_name="Web/Catalogos/catalogos_base.html"
+    permission_required=["auth.view_catalogos"]
+class SeguridadView(LoginRequiredMixin,TemplateView):
+    template_name="Web/Seguridad/seguridad_base.html"
+class OperacionesView(LoginRequiredMixin,TemplateView):
+    template_name="Web/Operaciones/operaciones_base.html"
+class ReportesView(LoginRequiredMixin,TemplateView):
+    template_name="Web/Reportes/reportes_base.html"
 class LogueoView(FormView):
     form_class = LoginForm
     template_name = "Web/login.html"
@@ -123,7 +132,7 @@ class LogoutView(LoginSelectPerfilView, View):
 
 
 class PerfilesTemplateView(LoginRequiredMixin,ValidateMixin ,TemplateView):
-    template_name = "Web/perfiles.html"
+    template_name = "Web/Seguridad/perfiles.html"
     context_object_name = 'perfiles'
     login_url=reverse_lazy("Web:login")
     permission_required=["auth.view_group"]
@@ -150,7 +159,7 @@ class PerfilesTemplateView(LoginRequiredMixin,ValidateMixin ,TemplateView):
 class PerfilCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     model=Group
     form_class = UserGroupForm
-    template_name = 'Web/perfil.html'
+    template_name = 'Web/Seguridad/perfil.html'
     success_url = reverse_lazy("Web:Perfiles") 
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -181,7 +190,7 @@ class PerfilCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class PerfilUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = UserGroupForm
     model = Group
-    template_name = "Web/perfil.html"
+    template_name = "Web/Seguridad/perfil.html"
     context_object_name="perfil"
     success_url = reverse_lazy("Web:Perfiles")
     action = ACCION_EDITAR
@@ -207,7 +216,7 @@ class PerfilUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
             return HttpResponseRedirect(self.success_url)
 
 class PersonaListView(LoginRequiredMixin,ValidateMixin,ListView):
-    template_name = 'Web/personas.html'
+    template_name = 'Web/Seguridad/personas.html'
     model = Persona
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_persona"]
@@ -233,7 +242,7 @@ class PersonaListView(LoginRequiredMixin,ValidateMixin,ListView):
    
 class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
     model = Persona
-    template_name="Web/persona.html"
+    template_name="Web/Seguridad/persona.html"
     context_object_name = "persona" 
     form_class = PersonaForm
     permission_required=["Web.change_persona"]
@@ -282,7 +291,7 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
     
 class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
     model=Persona
-    template_name = 'Web/persona.html'
+    template_name = 'Web/Seguridad/persona.html'
     form_class=PersonaForm
     login_url=reverse_lazy("Web:login")
     action = ACCION_NUEVO
@@ -316,7 +325,7 @@ class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
 
 
 class UsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/list_usuarios.html'
+    template_name = 'Web/Seguridad/list_usuarios.html'
     model = Usuario
     context_object_name = 'usuarios'
     permission_required=["Web.view_usuario"]
@@ -351,7 +360,7 @@ class UsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 class UsuarioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     model=Usuario
-    template_name = 'Web/usuario.html'
+    template_name = 'Web/Seguridad/usuario.html'
     success_url = reverse_lazy("Web:Usuarios")
     action = ACCION_NUEVO
     form_class=UsuarioForm
@@ -396,7 +405,7 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     login_url=reverse_lazy("Web:login")
 
     model = Usuario
-    template_name = 'Web/usuarioEdit.html'
+    template_name = 'Web/Seguridad/usuarioEdit.html'
     context_object_name="usuario"
     form_class=UsuarioEditForm
     success_url=reverse_lazy("Web:Usuarios")
@@ -450,7 +459,7 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 class UsuarioUpdatePasswordView(LoginRequiredMixin,ValidateMixin,UpdateView):
     # login_url=reverse_lazy("Web:login")
     model = Usuario
-    template_name = 'Web/usuarioChangePassword.html'
+    template_name = 'Web/Seguridad/usuarioChangePassword.html'
     form_class = UserPasswordResetForm
     success_url = reverse_lazy("Web:Usuarios")
     permission_required=["Web.change_usuario"]
@@ -506,7 +515,7 @@ def UsuarioActivate(request,pk):
             
         
 class ListUbicacionesListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/ubicaciones.html'
+    template_name = 'Web/Catalogos/ubicaciones.html'
     model = Ubicacion
     context_object_name = 'ubicaciones'
     permission_required=["Web.view_ubicacion"]
@@ -526,7 +535,7 @@ class ListUbicacionesListView(LoginRequiredMixin,ValidateMixin, ListView):
 
 class UbicacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = UbicacionForm
-    template_name = 'Web/ubicacion.html'
+    template_name = 'Web/Catalogos/ubicacion.html'
     success_url = reverse_lazy("Web:Ubicaciones")
     action = ACCION_NUEVO
     permission_required=["Web.add_ubicacion"]
@@ -546,7 +555,7 @@ class UbicacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class UbicacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = UbicacionForm
     model = Ubicacion
-    template_name = 'Web/ubicacion.html'
+    template_name = 'Web/Catalogos//ubicacion.html'
     success_url = reverse_lazy("Web:lugares")
     action = ACCION_EDITAR
 
@@ -585,7 +594,7 @@ class UbicacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 
 class AlmacenesListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/almacenes.html'
+    template_name = 'Web/Catalogos/almacenes.html'
     model = Almacen
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -606,7 +615,7 @@ class AlmacenesListView(LoginRequiredMixin,ValidateMixin, ListView):
 
 class AlmacenCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = AlmacenForm
-    template_name = 'Web/almacen.html'
+    template_name = 'Web/Catalogos/almacen.html'
     success_url = reverse_lazy("Web:almacenes")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -626,7 +635,7 @@ class AlmacenCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class AlmacenUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = AlmacenForm
     model = Almacen
-    template_name = 'Web/almacen.html'
+    template_name = 'Web/Catalogos/almacen.html'
     success_url = reverse_lazy("Web:almacenes")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -665,7 +674,7 @@ class AlmacenDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 
 class LugaresListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/lugares.html'
+    template_name = 'Web/Catalogos/lugares.html'
     model = Lugar
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -686,7 +695,7 @@ class LugaresListView(LoginRequiredMixin,ValidateMixin, ListView):
 
 class LugarCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = LugarForm
-    template_name = 'Web/lugar.html'
+    template_name = 'Web/Catalogos/lugar.html'
     success_url = reverse_lazy("Web:lugares")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -706,7 +715,7 @@ class LugarCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class LugarUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = LugarForm
     model = Lugar
-    template_name = 'Web/lugar.html'
+    template_name = 'Web/Catalogos/lugar.html'
     success_url = reverse_lazy("Web:lugares")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -744,7 +753,7 @@ class LugarDeleteView(LoginRequiredMixin,ValidateMixin ,View):
 
 
 class MarcaRenovacionesListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/marca_renovaciones.html'
+    template_name = 'Web/Catalogos/marca_renovaciones.html'
     model = MarcaRenova
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -765,7 +774,7 @@ class MarcaRenovacionesListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 class MarcaRenovacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = MarcaRenovaForm
-    template_name = 'Web/marca_renovacion.html'
+    template_name = 'Web/Catalogos/marca_renovacion.html'
     success_url = reverse_lazy("Web:marca-renovaciones")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -785,7 +794,7 @@ class MarcaRenovacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class MarcaRenovacionUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = MarcaRenovaForm
     model = MarcaRenova
-    template_name = 'Web/marca_renovacion.html'
+    template_name = 'Web/Catalogos/marca_renovacion.html'
     success_url = reverse_lazy("Web:marca-renovaciones")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -823,7 +832,7 @@ class MarcaRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 
 class ModeloRenovacionesListView(LoginRequiredMixin, ListView):
-    template_name = 'Web/modelo_renovaciones.html'
+    template_name = 'Web/Catalogos/modelo_renovaciones.html'
     model = ModeloRenova
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -843,7 +852,7 @@ class ModeloRenovacionesListView(LoginRequiredMixin, ListView):
 
 class ModeloRenovacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = ModeloRenovaForm
-    template_name = 'Web/modelo_renovacion.html'
+    template_name = 'Web/Catalogos/modelo_renovacion.html'
     success_url = reverse_lazy("Web:modelo-renovaciones")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -867,7 +876,7 @@ class ModeloRenovacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class ModeloRenovacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = ModeloRenovaForm
     model = ModeloRenova
-    template_name = 'Web/modelo_renovacion.html'
+    template_name = 'Web/Catalogos/modelo_renovacion.html'
     success_url = reverse_lazy("Web:modelo-renovaciones")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -907,7 +916,7 @@ class ModeloRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 
 class AnchoBandaRenovacionesListView(LoginRequiredMixin,ValidateMixin ,ListView):
-    template_name = 'Web/ancho_banda_renovaciones.html'
+    template_name = 'Web/Catalogos/ancho_banda_renovaciones.html'
     model = AnchoBandaRenova
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -925,7 +934,7 @@ class AnchoBandaRenovacionesListView(LoginRequiredMixin,ValidateMixin ,ListView)
 
 class AnchoBandaRenovacionCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     form_class = AnchoBandaRenovaForm
-    template_name = 'Web/ancho_banda_renovacion.html'
+    template_name = 'Web/Catalogos/ancho_banda_renovacion.html'
     success_url = reverse_lazy("Web:ancho-banda-renovaciones")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -950,7 +959,7 @@ class AnchoBandaRenovacionCreateView(LoginRequiredMixin, ValidateMixin,CreateVie
 class AnchoBandaRenovacionUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = AnchoBandaRenovaForm
     model = AnchoBandaRenova
-    template_name = 'Web/ancho_banda_renovacion.html'
+    template_name = 'Web/Catalogos/ancho_banda_renovacion.html'
     success_url = reverse_lazy("Web:ancho-banda-renovaciones")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -996,7 +1005,7 @@ def RenderOption(request):
 
 
 class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/marca_llantas.html'
+    template_name = 'Web/Catalogos/marca_llantas.html'
     model = MarcaLlanta
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_marcallanta"]
@@ -1026,7 +1035,7 @@ class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     form_class = MarcaLlantaForm
-    template_name = 'Web/marca_llanta.html'
+    template_name = 'Web/Catalogos/marca_llanta.html'
     success_url = reverse_lazy("Web:marca-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1074,7 +1083,7 @@ class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
 class MarcaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = MarcaLlantaForm
     model = MarcaLlanta
-    template_name = 'Web/marca_llanta.html'
+    template_name = 'Web/Catalogos/marca_llanta.html'
     success_url = reverse_lazy("Web:marca-llantas")
     action = ACCION_EDITAR
     context_object_name="marcallanta"
@@ -1140,7 +1149,7 @@ class MarcaLlantaDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 
 class ModeloLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/modelo_llantas.html'
+    template_name = 'Web/Catalogos/modelo_llantas.html'
     model = ModeloLlanta
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1162,7 +1171,7 @@ class ModeloLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 class ModeloLlantaCreateView(LoginRequiredMixin,ValidateMixin ,CreateView):
     form_class = ModeloLlantaForm
-    template_name = 'Web/modelo_llanta.html'
+    template_name = 'Web/Catalogos/modelo_llanta.html'
     success_url = reverse_lazy("Web:modelo-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1186,7 +1195,7 @@ class ModeloLlantaCreateView(LoginRequiredMixin,ValidateMixin ,CreateView):
 class ModeloLlantaUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = ModeloLlantaForm
     model = ModeloLlanta
-    template_name = 'Web/modelo_llanta.html'
+    template_name = 'Web/Catalogos/modelo_llanta.html'
     success_url = reverse_lazy("Web:modelo-llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -1226,7 +1235,7 @@ class ModeloLlantaDeleteView(LoginRequiredMixin,ValidateMixin ,View):
 
 
 class MedidaLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/medida_llantas.html'
+    template_name = 'Web/Catalogos/medida_llantas.html'
     model = MedidaLlanta
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1247,7 +1256,7 @@ class MedidaLlantasListView(LoginRequiredMixin,ValidateMixin, ListView):
 
 class MedidaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     form_class = MedidaLlantaForm
-    template_name = 'Web/medida_llanta.html'
+    template_name = 'Web/Catalogos/medida_llanta.html'
     success_url = reverse_lazy("Web:medida-llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1272,7 +1281,7 @@ class MedidaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
 class MedidaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = MedidaLlantaForm
     model = MedidaLlanta
-    template_name = 'Web/medida_llanta.html'
+    template_name = 'Web/Catalogos/medida_llanta.html'
     success_url = reverse_lazy("Web:medida-llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -1400,7 +1409,7 @@ def RenderOptionLlanta(request):
 
 
 class TipoServiciosListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/tipo_servicios.html'
+    template_name = 'Web/Catalogos/tipo_servicios.html'
     model = TipoServicio
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1421,7 +1430,7 @@ class TipoServiciosListView(LoginRequiredMixin,ValidateMixin, ListView):
 
 class TipoServicioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = TipoServicioForm
-    template_name = 'Web/tipo_servicio.html'
+    template_name = 'Web/Catalogos/tipo_servicio.html'
     success_url = reverse_lazy("Web:tipo-servicios")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1441,7 +1450,7 @@ class TipoServicioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class TipoServicioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = TipoServicioForm
     model = TipoServicio
-    template_name = 'Web/tipo_servicio.html'
+    template_name = 'Web/Catalogos/tipo_servicio.html'
     success_url = reverse_lazy("Web:tipo-servicios")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -1479,7 +1488,7 @@ class TipoServicioDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 
 class TipoPisosListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/tipo_pisos.html'
+    template_name = 'Web/Catalogos/tipo_pisos.html'
     model = TipoPiso
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1500,7 +1509,7 @@ class TipoPisosListView(LoginRequiredMixin,ValidateMixin, ListView):
 
 class TipoPisoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = TipoPisoForm
-    template_name = 'Web/tipo_piso.html'
+    template_name = 'Web/Catalogos/tipo_piso.html'
     success_url = reverse_lazy("Web:tipo-pisos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1520,7 +1529,7 @@ class TipoPisoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class TipoPisoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = TipoPisoForm
     model = TipoPiso
-    template_name = 'Web/tipo_piso.html'
+    template_name = 'Web/Catalogos/tipo_piso.html'
     success_url = reverse_lazy("Web:tipo-pisos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -1558,7 +1567,7 @@ class TipoPisoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
 
 class MarcaVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/marca_vehiculos.html'
+    template_name = 'Web/Catalogos/marca_vehiculos.html'
     model = MarcaVehiculo
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1581,7 +1590,7 @@ class MarcaVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
 
 class MarcaVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = MarcaVehiculoForm
-    template_name = 'Web/marca_vehiculo.html'
+    template_name = 'Web/Catalogos/marca_vehiculo.html'
     success_url = reverse_lazy("Web:marca-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1601,7 +1610,7 @@ class MarcaVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class MarcaVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = MarcaVehiculoForm
     model = MarcaVehiculo
-    template_name = 'Web/marca_vehiculo.html'
+    template_name = 'Web/Catalogos/marca_vehiculo.html'
     success_url = reverse_lazy("Web:marca-vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -1638,7 +1647,7 @@ class MarcaVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
         return HttpResponseRedirect(reverse('Web:marca-vehiculos',))
     
 class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
-    template_name = 'Web/tipo_vehiculos.html'
+    template_name = 'Web/Catalogos/tipo_vehiculos.html'
     model = TipoVehiculo
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1656,7 +1665,7 @@ class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
         return context
 class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = TipoVehiculoForm
-    template_name = 'Web/tipo_vehiculo.html'
+    template_name = 'Web/Catalogos/tipo_vehiculo.html'
     success_url = reverse_lazy("Web:tipo-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1674,7 +1683,7 @@ class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = TipoVehiculoForm
     model = TipoVehiculo
-    template_name = 'Web/tipo_vehiculo.html'
+    template_name = 'Web/Catalogos/tipo_vehiculo.html'
     success_url = reverse_lazy("Web:tipo-vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -1712,7 +1721,7 @@ class TipoVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
 
 class ModeloVehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/modelo_vehiculos.html'
+    template_name = 'Web/Catalogos/modelo_vehiculos.html'
     model = ModeloVehiculo
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1733,7 +1742,7 @@ class ModeloVehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 class ModeloVehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     form_class = ModeloVehiculoForm
-    template_name = 'Web/modelo_vehiculo.html'
+    template_name = 'Web/Catalogos/modelo_vehiculo.html'
     success_url = reverse_lazy("Web:modelo-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1757,7 +1766,7 @@ class ModeloVehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
 class ModeloVehiculoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = ModeloVehiculoForm
     model = ModeloVehiculo
-    template_name = 'Web/modelo_vehiculo.html'
+    template_name = 'Web/Catalogos/modelo_vehiculo.html'
     success_url = reverse_lazy("Web:modelo-vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -1798,7 +1807,7 @@ class ModeloVehiculoDeleteView(LoginRequiredMixin,ValidateMixin, View):
 from django.views.decorators.cache import never_cache
 
 class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/llantas.html'
+    template_name = 'Web/Catalogos/llantas.html'
     model = Llanta
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -1878,7 +1887,7 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 
 class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
-    template_name = 'Web/llanta.html'
+    template_name = 'Web/Catalogos/llanta.html'
     success_url = reverse_lazy("Web:llantas")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -1982,7 +1991,7 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
 class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
     model = Llanta
-    template_name = 'Web/llanta.html'
+    template_name = 'Web/Catalogos/llanta.html'
     success_url = reverse_lazy("Web:llantas")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -2076,11 +2085,8 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 else:
                     instance.posicion=None
 
-                print("1")
                 instance.ubicacion_id=self.request.POST["ubicacion"]
-                print("2")
 
-                instance.estado=self.request.POST["estado"]
                 if self.get_object().cubierta:
                     instance.cubierta=instance2
                 instance.modified_by = self.request.user
@@ -2129,7 +2135,7 @@ from datetime import date
 from datetime import datetime
 from time import strptime
 class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/vehiculos.html'
+    template_name = 'Web/Catalogos/vehiculos.html'
     model = Vehiculo
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
@@ -2189,7 +2195,7 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
 
 class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     form_class = VehiculoForm
-    template_name = 'Web/vehiculo.html'
+    template_name = 'Web/Catalogos/vehiculo.html'
     success_url = reverse_lazy("Web:vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
@@ -2214,7 +2220,7 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
 class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = VehiculoForm
     model = Vehiculo
-    template_name = 'Web/vehiculo.html'
+    template_name = 'Web/Catalogos/vehiculo.html'
     success_url = reverse_lazy("Web:vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
@@ -2265,7 +2271,7 @@ def RenderOptionVehiculo(request):
 
 
 class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
-    template_name = 'Web/ver_vehiculo.html'
+    template_name = 'Web/Catalogos/ver_vehiculo.html'
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_vehiculo"]
@@ -2331,7 +2337,7 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
 
 class DetalleLlantaView(LoginRequiredMixin,DetailView):
     model = Llanta
-    template_name = "Web/detalle_llanta.html"
+    template_name = "Web/Operaciones/detalle_llanta.html"
     context_object_name="obj"
 def getLlanta(request):
     if request.method=="POST":
@@ -2348,7 +2354,7 @@ def getVehiculo(request):
         qs_json = serializers.serialize('json', [qs],  use_natural_foreign_keys=True,use_natural_primary_keys=True)
         return HttpResponse(qs_json, content_type='application/json')
 def AnchoBandaRenovaSearch(request):
-    template_name="Web/buscarrenova.html"
+    template_name="Web/Catalogos/buscarrenova.html"
     product=MarcaRenova.objects.filter(eliminado=False,activo=True).values("id","descripcion","activo")
     contexto={"obj":product}
     return render(request,template_name,contexto)
@@ -2363,7 +2369,7 @@ def getTipo(request,id):
         data={"status":500}
     return JsonResponse(data,safe=False)
 def LlantaSearch(request):
-    template_name="Web/buscarLlanta.html"
+    template_name="Web/Catalogos/buscarLlanta.html"
     llantas=Llanta.objects.exclude(ubicacion=None,activo=True,eliminado=False)
     contexto={"obj":llantas}
     return render(request,template_name,contexto)
@@ -2372,7 +2378,7 @@ def view_condicion(request):
     return render(request,template_name)
 
 def view_renova(request):
-    template_name="Web/reencauchado.html"
+    template_name="Web/Catalagos/reencauchado.html"
     form=CubiertaForm()
     context={"form":form}
     return render(request,template_name,context)
@@ -2416,7 +2422,7 @@ from .constanst import  CHOICES_OBSERVACION,CHOICES_ACCION
 from django.db import transaction
 
 class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
-    template_name = "Web/desmontaje_llanta.html"
+    template_name = "Web/Operaciones/desmontaje_llanta.html"
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
@@ -2434,14 +2440,14 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
                     objeto=llanta.first()
                     objeto.vehiculo=None
                     objeto.posicion=None
-                    objeto.estado_id=request.POST["estado"]
+                    objeto.estado=request.POST["estado"]
 
                     objeto.ubicacion_id=request.POST["ubicacion"]
                     objeto.save()
                     historial=HistorialLLantas()
                     historial.llanta=objeto
                     historial.km=request.POST["kilometros"]
-                    historial.estado_id=request.POST["estado"]
+                    historial.estado=request.POST["estado"]
                     historial.obs=request.POST["obs"]
                     if request.POST["repuesto"]=="true":
                         historial.posicion="R"
@@ -2469,14 +2475,12 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
             messages.error(self.request, 'Ha ocurrido un error.')
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 class MontajeLlantasView(LoginRequiredMixin,TemplateView):
-    template_name = "Web/montaje_llanta.html"
+    template_name = "Web/Operaciones/montaje_llanta.html"
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
-        estado=EstadoLlanta.objects.all().values("id","descripcion")
-        print(f'el get esta en {request.GET}')
-        context={"obj":request.GET}
-        return render(self.request,self.template_name,context)
+ 
+        return render(self.request,self.template_name)
     def post(self,request,*args, **kwargs):
         print(request.POST)
         try:
@@ -2528,7 +2532,7 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
             messages.error(self.request, 'Ha ocurrido un error.')
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
-    template_name="Web/hoja_movimientos.html"   
+    template_name="Web/Operaciones/hoja_movimientos.html"   
     permission_required=["Web.view_historialllantas"]
 
     def post(self,request,*args, **kwargs):
@@ -2554,7 +2558,7 @@ class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
 class InspeccionLlantasView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_inpeccionllantas"]
 
-    template_name="Web/inspeccion_llantas.html"
+    template_name="Web/Operaciones/inspeccion_llantas.html"
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -2592,7 +2596,7 @@ class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
     permission_required=["Web.view_inpeccionllantas"]
 
     model=InpeccionLlantas
-    template_name="Web/inspeccion_detalles.html"
+    template_name="Web/Operaciones/inspeccion_detalles.html"
     context_object_name="obj"
     form_class=InspeccionForm
    
@@ -2668,10 +2672,10 @@ class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
             messages.error(self.request, 'Ha ocurrido un error.')
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 def AgregarInspeccion(request):
-    template_name="Web/inspeccion-agregar.html"
+    template_name="Web/Operaciones/inspeccion-agregar.html"
     context={"obs":CHOICES_OBSERVACION,"accion":CHOICES_ACCION,"cubierta":CHOICES_CUBIERTA_INSPECCION}
 
     return render(request,template_name,context)
 class HistorialLlantas(ListView,LoginRequiredMixin):
-    template_name="Web/historial.html"
+    template_name="Web/reportes/historial.html"
     model=HistorialLLantas

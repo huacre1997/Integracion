@@ -1,0 +1,74 @@
+{% extends 'Web/Seguridad/seguridad_base.html' %}
+{% block blockAdmin %}nav-item active{% endblock  %}
+{% block collapseAdmin %}collapse show{% endblock  %}
+{% block perfiles %}collapse-item active{% endblock  %}
+{% load static %}
+{% block content %}
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Lista de perfiles</h6>
+        {% if 'auth.add_group' in perm %}
+
+        <a href="{% url 'Web:Perfil' %}" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Crear Nuevo
+          Perfil</a>
+        {% endif %}
+      </div>
+      <div class="card-body">
+
+
+
+
+
+        <div class="table-responsive">
+          <table class="table  table-hover  dt-responsive" id="tablaPerfiles" style="width: 100%;">
+            <thead>
+              <tr>
+                <th class="text-center middle">Tipo de Perfil</th>
+                <th class="text-center middle">h>Acciones</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in perfiles %}
+              <tr>
+                <td class="text-center middle">{{u.name}}</td>
+
+                <td class="text-center middle">
+                  {% if 'auth.change_group' in perm %}
+
+                  <a href="{% url 'Web:Perfil' u.pk %}" class="btn btn-warning btn-sm"><i
+                      class="fa fa-edit"></i>Editar</a>{% endif %}
+                  {% comment %} <a href="{#% url 'web:atender_solicitud' s.uuid %#}" class="btn btn-danger btn-sm"><i
+                      class="fa fa-ban"></i></a> {% endcomment %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+    </div>
+    </div>
+
+  </div>
+</div>
+<!-- End of Page Wrapper -->
+{% endblock %}
+{% block bottom_scripts %}
+
+<script>
+  $(document).ready(function () {
+    $('#tablaPerfiles').DataTable({
+      responsive: true,
+      "info": false,
+      language: {
+        "url": "{% static 'language.json' %}",
+
+      },
+    });
+
+  });
+</script>
+{% endblock %}

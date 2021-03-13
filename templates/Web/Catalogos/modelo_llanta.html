@@ -1,0 +1,74 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block modelo-llantas %}collapse-item active{% endblock  %}
+{% load static %}
+{% block content %}  
+<style>
+
+</style>  
+<div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+            	<div class="row">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
+                  {% if update %} Editar Modelo de Llanta {% else %}Crear Modelo de Llanta {% endif %}</h6>
+            	</div>
+            </div>
+            <form method="post" action="" enctype="multipart/form-data" >
+            {% csrf_token %}
+            <div class="card-body">
+             <div class="form-row">
+                <div class="form-group col-lg-4">
+                	<label>Marca</label>
+               <select name="marca_llanta" id="marca_llanta" class="form-select">
+                <option value=""></option>
+                
+                  {% for i in marca_llanta  %}
+                  {% if  i.activo or obj.marca_llanta.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.marca_llanta.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-lg-4">
+                	<label>Modelo</label>
+                  {{form.descripcion}}
+                </div>
+              </div>
+<div class="form-group">
+{{form.activo}}  <label class="form-check-label" for="flexCheckChecked">
+  Activo
+  </label>
+</div>             
+                     
+			
+            </div>
+            <div class="card-footer text-muted">
+                <button type="submit" class="btn btn-primary">Grabar</button>
+                <a href="{% url 'Web:modelo-llantas' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+          	</form>
+          </div>				
+        </div>
+</div>
+
+{% endblock %}
+{% block bottom_scripts %}
+
+<script>
+  $('.btn_x').on('click', function() {
+    //var $this = $(this);
+    //archivo = $('#id_solicitud').val()
+    //if (archivo!='') { $this.button('loading');}
+    $this.button('loading');
+  });
+
+   
+  </script>
+
+{% endblock %}

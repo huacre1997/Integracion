@@ -1,0 +1,746 @@
+{% extends 'Web/Operaciones/operaciones_base.html' %}
+{% block blockProcesos%}nav-item active{% endblock  %}
+{% block collapseProcesos %}collapse show{% endblock  %}
+{% block inspeccion %}collapse-item active{% endblock  %}
+{% block content %}
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <div class="row align-items-center">
+          <div class="col-lg-3 ">
+
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Inspección de llantas</h6>
+          </div>
+          {% comment %} {% if 'Web.add_persona' in perm %}
+
+          <div class="offset-lg-7 col-lg-2">
+            <button id="btn-add-persona" class="btn btn-secondary"><i class="fa fa-file-o"></i> Nueva Persona</button>
+          </div>
+          {% endif %} {% endcomment %}
+        </div>
+      </div>
+      <div class="card-body">
+        <form id="inspeccion-form" action="{% url 'Web:inspeccion-detalle' obj.id %}" method="POST">
+          {% csrf_token %}
+
+        <div class="form-row">
+          <div class="form-group col-lg-2">
+            <label for="" class="form-label">Placa</label>
+            <input type="text" value="{{obj.vehiculo.placa}}" class="form-control" disabled>
+          </div>
+
+        </div>
+        <div class="form-row">
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Fecha Inspección</label>
+            <input type="date" name="fech_ins" value="{{obj.fech_ins |date:'Y-m-d'}}" class="form-control">
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Km.Actuales</label>
+            <input type="number" min="0" name="km_act" value="{{obj.km_act}}" class="form-control">
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Km.Ult.Revisión</label>
+            <input type="number" min="0" name="km_ult" value="{{obj.km_ult}}" class="form-control">
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Fecha.Ult.Revisión</label>
+            <input type="date" name="fech_km_ant" value="{{obj.fech_km_ant |date:'Y-m-d'}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Km. Recorridos</label>
+            <input type="number" min="0" name="km_re" value="{{obj.km_re}}" class="form-control">
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Supervisor</label>
+            <select name="supervisor" id="" class="form-select">
+              <option value="0">Seleccione supervisor..</option>
+              {% for i  in user  %}
+              <option  {% if obj.supervisor.id == i.id %} selected {% endif %}  value="{{i.id}}">{{i.persona}}</option>
+
+              {% endfor %}
+
+            </select>
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Técnico</label>
+            <select name="tecnico" id="" class="form-select">
+              <option value="0">Seleccione técnico..</option>
+              {% for i  in user  %}
+              <option {% if obj.tecnico.id == i.id %} selected {% endif %}  value="{{i.id}}">{{i.persona}}</option>
+
+              {% endfor %}
+
+            </select>
+          </div>
+          <div class="form-group col-lg-3">
+            <label for="" class="form-label">Operación</label>
+            <select name="operacion" id="" class="form-select">
+              <option value="0">Seleccione operación..</option>
+              {% for i  in operacion  %}
+              <option {% if obj.operacion == i.0 %} selected {% endif %}  value="{{i.0}}">{{i.1}}</option>
+
+              {% endfor %}
+
+            </select>          </div>
+        </div>
+        <button type="submit" id="submit-form" style="display: none;" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+      <div class="card-header py-3">
+        <div class="row">
+          <div class="col-lg-6">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i>
+              Características de la Instalación e Inspección</h6>
+          </div>
+          <div class="col-lg-6"><button id="openModal2" type="button" class="btn btn-primary"><i
+                class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp;Agregar</button></div>
+
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table  table-hover dt-responsive" id="tablaInspeccion" style="width: 100%;">
+            <thead>
+              <tr>
+                <th style="width: 10%;">Codigo</th>
+
+                <th style="width: 5%;">Pos</th>
+                <th style="width: 9%;">Cubierta</th>
+
+                <th style="width: 7%;">Rem1</th>
+                <th style="width: 7%;">Rem2</th>
+                <th style="width: 7%;">Rem3</th>
+                <th style="width: 5%;">Promedio</th>
+                <th style="width: 5%;">Pres.Ini</th>
+                <th style="width: 5%;">Pres.Fin</th>
+                <th style="width: 20%;">Observación</th>
+                <th style="width: 20%;"> Accion a tomar</th>
+
+              </tr>
+            </thead>
+            <tbody>
+
+              <!-- {% for i in detail  %}
+              <tr>
+                <td>{{i.llanta.codigo}}</td>
+
+                <td>{{i.posicion}}</td>
+                <td>{{i.cubierta}}</td>
+                <td>{{i.rem1}}</td>
+                <td>{{i.rem2}}</td>
+                <td>{{i.rem3}}</td>
+                <td>{{i.rem_prom}}</td>
+                <td>{{i.pres_ini}}</td>
+                <td>{{i.pres_fin}}</td>
+                <td>{{i.obs}}</td>
+                <td>{{i.accion}}</td>
+              </tr>
+
+              {% endfor %} -->
+
+            </tbody>
+
+
+          </table>
+        </div>
+
+
+      </div>
+      <div class="card-footer">
+        <input type="button" value="Guardar" id="btn-click" class="btn btn-primary"> 
+        <a class="btn btn-secondary" href="{% url 'Web:inspeccion-llantas' %}">Volver</a>
+      </div>
+    </div>
+
+  </div>
+  {% endblock content %}
+  {% block bottom_scripts %}
+
+  <script>
+    $(document).ready(function () {
+      var nro_llantas="{{obj.vehiculo.nro_llantas}}"
+      var nro_repuesto="{{obj.vehiculo.nro_llantas_repuesto}}"
+      var total=parseInt(nro_llantas)+parseInt(nro_repuesto)
+   
+        console.log(nro_llantas);
+      $("#btn-click").on("click",function (param) {
+        document.getElementById("btn-click").disabled=true
+
+        $("#submit-form").click()
+        })
+      $("#inspeccion-form").on("submit", function (e) {
+        e.preventDefault()
+        if (objeto.items.length === 0) {
+          notificacion(2000, "Debes ingresar almenos na llanta!", "error")
+            return false;
+        }
+
+        var parameters = new FormData(this);
+        parameters.append("objeto", JSON.stringify(objeto.items))
+        $.ajax({
+            type: "POST",
+            url: $(this).attr("action"),
+            data: parameters,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                document.getElementById("btn-click").disabled=false
+                if (response.status = 200) {
+                notificacion(1500, "Genial!", "success", "Datos Guardados!")
+              } else {
+                notificacion(1500, "Error", "error", "Ese usuario no existe")
+
+              }}
+        }).done(function (data) {
+
+
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            alert("done:" + textStatus + ': ' + errorThrown);
+        }).always(function (data) {
+
+        });;
+
+    });
+      $("#sidebarToggle").click()
+
+      var tablaInspeccion
+      var  data={
+          repuesto:0,
+          llanta: "",
+          cubierta: "",
+          codigo: "",
+          posicion: "",
+          rem1: "",
+          rem2: "",
+          rem3: "",
+          rem_prom: 0.00,
+          rem_max: "",
+          rem_min: "",
+          pres_ini: "",
+          pres_fin: "",
+          obs: "",
+          accion: ""
+        }
+      var objeto = {
+       
+        items:[],
+        calculate: function () {
+
+            var promedio = 0.00
+            $.each(this.items, function (pos, dict) {
+                dict.rem_prom = (parseInt(dict.rem1) +parseInt(dict.rem2)+parseInt(dict.rem3))/3
+                promedio = dict.rem_prom;
+            });
+        
+            this.items.rem_prom = promedio.toFixed(2)
+
+            // $("input[name='rem_prom']").val( this.items.rem_prom.toFixed(2))
+
+        },
+        list: function () {
+          this.calculate()
+
+          tablaInspeccion = $("#tablaInspeccion").DataTable({
+            "autoWidth": false,
+
+            searching: false,
+            ordering: false,
+            paging: false,
+            data: this.items,
+            destroy: true,
+            columns: [
+
+              {
+                "data": 'codigo',
+                className: "middle"
+              },
+              {
+                "data": 'posicion',
+                className: "middle"
+              },
+              {
+                "data": "cubierta",
+                className: "middle"
+
+              },
+              {
+                "data": "rem1",
+                className: "middle"
+
+              },
+              {
+                "data": 'rem2',
+                className: "middle"
+              },
+              {
+                "data": 'rem3',
+                className: "middle"
+              },
+              {
+                "data": "rem_prom",
+                className: "middle"
+
+              },
+              {
+                "data": 'pres_ini',
+                className: "middle"
+              },
+              {
+                "data": 'pres_fin',
+                className: "middle"
+              },
+              {
+                "data": 'obs',
+                className: "middle"
+              },
+              {
+                "data": 'accion',
+                className: "middle"
+              },
+            ],
+            columnDefs: [{
+                targets: [2],
+                render: function (data, type, row) {
+                  var $select = $('<select name="cubierta"  class="form-select">' +
+                    ' <option value="0">Cubierta...</option>' +
+                    '{% for i in cubierta  %}' +
+                    '<option value="{{i.0}}">{{i.1}}</option>' +
+                    '{% endfor %}' +
+                    '</select>');
+                  $select.find('option[value="'+row.cubierta+'"]').attr('selected', 'selected');
+                  return $select[0].outerHTML
+                   
+
+                }
+              },
+              {
+                targets: [3],
+                render: function (data, type, row) {
+
+                  return `<input type="number" step="0.01" name="rem1" min="0"  class="form-control"  autocomplete="off" value="${data}">`;
+
+                }
+              },
+              {
+                targets: [4],
+                render: function (data, type, row) {
+
+                  return `<input type="number" step="0.01" name="rem2" min="0"  class="form-control"  autocomplete="off" value="${data}">`;
+
+                }
+              },
+              {
+                targets: [5],
+                render: function (data, type, row) {
+
+                  return `<input type="number" step="0.01" name="rem3" min="0"  class="form-control" autocomplete="off" value="${data}">`;
+
+                }
+              },
+              {
+                targets: [-5],
+                render: function (data, type, row) {
+
+                  return `<input type="text"  readonly step="0.01" name="rem_prom" min="0"  class="form-control" autocomplete="off" value="${data}">`;
+
+                }
+              },
+              {
+                targets: [7],
+                render: function (data, type, row) {
+
+                  return `<input type="number" step="0.01" name="pres_ini" min="0"  class="form-control" autocomplete="off" value="${data}">`;
+
+                }
+              },
+              {
+                targets: [8],
+                render: function (data, type, row) {
+
+                  return `<input type="number" step="0.01" name="pres_fin" min="0"  class="form-control" autocomplete="off" value="${data}">`;
+
+                }
+              },
+              {
+                targets: [9],
+                render: function (data, type, row) {
+                  var $select = $('<select name="obs"  class="form-select">' +
+                    ' <option value="0">Observacion...</option>' +
+                    '{% for i in obs  %}' +
+                    '<option value="{{i.0}}">{{i.1}}</option>' +
+                    '{% endfor %}' +
+                    '</select>');
+                  $select.find('option[value="'+row.obs+'"]').attr('selected', 'selected');
+                  return $select[0].outerHTML
+                   
+
+                }
+              },
+              {
+                targets: [10],
+                render: function (data, type, row) {
+                  var $select = $('<select name="accion"  class="form-select">' +
+                    ' <option value="0">Acción...</option>' +
+                    '{% for i in accion  %}' +
+                    '<option value="{{i.0}}">{{i.1}}</option>' +
+                    '{% endfor %}' +
+                    '</select>');
+                  $select.find('option[value="'+row.accion+'"]').attr('selected', 'selected');
+                  return $select[0].outerHTML
+                  return 
+
+                }
+              },
+            ],
+            "language": {
+
+              "processing": '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem; role="status"><span class="sr-only">Loading...</span></div>',
+              "lengthMenu": "Mostrar _MENU_ registros",
+              "zeroRecords": "No se encontraron resultados",
+              "emptyTable": "Ningún dato disponible en esta tabla",
+              "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+              "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+              "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+              "search": "Buscar:",
+              "infoThousands": ",",
+              "loadingRecords": "Cargando...",
+
+            },
+            initComplete: function (settings, json) {
+              $("#tablaInspeccion tbody").on("change keyup", "input[name='pres_ini']", function (e){
+                 e.preventDefault();
+                        var cant = parseInt($(this).val());
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].pres_ini = cant;
+                       
+                    })
+                    $("#tablaInspeccion tbody").on("change keyup", "input[name='pres_fin']", function (e){
+                 e.preventDefault();
+                        var cant = parseInt($(this).val());
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].pres_fin = cant;
+
+                    })
+                    $("#tablaInspeccion tbody").on("change", "select[name='obs']", function (e){
+                 e.preventDefault();
+
+                        var cant = parseInt($(this).val());
+                        console.log(cant);
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].obs = cant;
+                        console.log(objeto);
+                    })
+                    $("#tablaInspeccion tbody").on("change", "select[name='cubierta']", function (e){
+                 e.preventDefault();
+
+                        var cant = parseInt($(this).val());
+                        console.log(cant);
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].cubierta = cant;
+                        console.log(objeto);
+                    })
+                    $("#tablaInspeccion tbody").on("change keyup", "select[name='accion']", function (e){
+                 e.preventDefault();
+                        var cant = parseInt($(this).val());
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].accion = cant;
+                        console.log(objeto);
+
+                    })
+              $("#tablaInspeccion tbody").on("change keyup", "input[name='rem1']", function (e){
+                 e.preventDefault();
+                        var cant = parseInt($(this).val());
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].rem1 = cant;
+                        objeto.calculate()
+                        var input = document.createElement("input");
+                        input.name="rem_prom"
+                        input.type="number"
+                        input.step="0.01"
+                        input.min="0"
+                        input.readOnly="true"
+                        input.value=objeto.items[tr.row].rem_prom.toFixed(2)
+                        input.classList.add("form-control")
+                        $("td:eq(6)", tablaInspeccion.row(tr.row).node()).empty()
+                        $("td:eq(6)", tablaInspeccion.row(tr.row).node()).append(input)
+                        console.log(objeto);
+                    })
+                    $("#tablaInspeccion tbody").on("change keyup", "input[name='rem2']", function (e){
+                 e.preventDefault();
+                        var cant = parseInt($(this).val());
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].rem2 = cant;
+                        objeto.calculate()
+                        var input = document.createElement("input");
+                        input.name="rem_prom"
+                        input.type="number"
+                        input.step="0.01"
+                        input.min="0"
+                        input.readOnly="true"
+                        input.value=objeto.items[tr.row].rem_prom.toFixed(2)
+                        input.classList.add("form-control")
+                        $("td:eq(6)", tablaInspeccion.row(tr.row).node()).empty()
+                        $("td:eq(6)", tablaInspeccion.row(tr.row).node()).append(input)
+                    })
+                    $("#tablaInspeccion tbody").on("change keyup", "input[name='rem3']", function (e){
+                 e.preventDefault();
+                        var cant = parseInt($(this).val());
+                        var tr = tablaInspeccion.cell($(this).closest("td", "li")).index()
+                        objeto.items[tr.row].rem3 = cant;
+                        objeto.calculate()
+                        var input = document.createElement("input");
+                        input.name="rem_prom"
+                        input.type="number"
+                        input.step="0.01"
+                        input.min="0"
+                        input.readOnly="true"
+                        input.value=objeto.items[tr.row].rem_prom.toFixed(2)
+                        input.classList.add("form-control")
+                        $("td:eq(6)", tablaInspeccion.row(tr.row).node()).empty()
+                        $("td:eq(6)", tablaInspeccion.row(tr.row).node()).append(input)
+                    })
+                   }
+          });
+        }
+      }
+
+      $("#openModal2").on("click", function () {
+        $.confirm({
+          title: "Características de la Instalación e Inspección",
+          content: 'URL:{% url "Web:inspeccion-agregar" %}',
+          columnClass: 'col-md-12 col-lg-6',
+
+          theme: "material",
+          buttons: {
+            formSubmit: {
+              text: 'Submit',
+              btnClass: 'btn-blue',
+              action: function () {
+                let form = this.$content[0].ownerDocument
+                let posicion = form.getElementById("id_posicion")
+                let llanta = form.getElementById("id_llanta")
+                let error=0
+                let codigo = form.getElementById("id_neu")
+                let cubierta = form.getElementById("id_cubierta")
+                let rem1 = form.getElementById("id_rem_1")
+                let rem2 = form.getElementById("id_rem_2")
+                let rem3 = form.getElementById("id_rem_3")
+                let promedio = form.getElementById("id_rem_prom")
+                let rem_max = form.getElementById("id_rem_max")
+                let rem_min = form.getElementById("id_rem_min")
+                let pres_ini = form.getElementById("id_pres_ini")
+                let pres_fin = form.getElementById("id_pres_fin")
+                let obs = form.getElementById("id_obs")
+                let accion = form.getElementById("id_accion")
+                let repuesto = form.getElementById("id_repuesto")
+
+                cubierta.addEventListener("change",function (param) { cubierta.classList.remove("is-invalid")  })
+                obs.addEventListener("change",function (param) { obs.classList.remove("is-invalid")  })
+                accion.addEventListener("change",function (param) { accion.classList.remove("is-invalid")  })
+                form.getElementById("btnSearch").addEventListener("click",function (param) { form.getElementById("id_neu").classList.remove("is-invalid")  })
+                posicion.addEventListener("keyup",function (param) { 
+                  posicion.classList.remove("is-invalid") 
+                  })
+
+                rem1.addEventListener("keyup",function (param) { 
+                  rem1.classList.remove("is-invalid") 
+                  promedio.classList.remove("is-invalid") })
+
+                rem2.addEventListener("keyup",function (param) { rem2.classList.remove("is-invalid")
+                promedio.classList.remove("is-invalid")  })
+
+                rem3.addEventListener("keyup",function (param) { rem3.classList.remove("is-invalid")
+                promedio.classList.remove("is-invalid")  })
+
+
+                rem_min.addEventListener("keyup",function (param) { rem_min.classList.remove("is-invalid")  })
+
+                rem_max.addEventListener("keyup",function (param) { rem_max.classList.remove("is-invalid")  })
+
+                pres_fin.addEventListener("keyup",function (param) { pres_fin.classList.remove("is-invalid")  })
+
+                pres_ini.addEventListener("keyup",function (param) { pres_ini.classList.remove("is-invalid")  })
+                data.posicion=posicion.value
+                data.llanta=llanta.value
+                data.codigo=codigo.value
+                data.cubierta=cubierta.value
+                data.rem1=rem1.value
+                data.rem2=rem2.value
+                data.rem3=rem3.value
+                data.rem_prom=promedio.value
+                data.rem_max=rem_max.value
+                data.rem_min=rem_min.value
+                data.pres_ini=pres_ini.value
+                data.pres_fin=pres_fin.value
+                data.obs=obs.value
+                data.accion=accion.value
+                data.repuesto=repuesto.value
+                for (let index = 0; index < objeto.items.length; index++) {
+                  if(posicion.value== objeto.items[index].posicion){
+                    error=1
+                    posicion.classList.add("is-invalid");
+                   form.getElementById("invalid_posicion").innerHTML= "Esa posición ya se seleccionó."
+
+                  }
+                }
+                for (let index = 0; index < objeto.items.length; index++) {
+                  if(codigo.value== objeto.items[index].codigo){
+                    error=1
+                    codigo.classList.add("is-invalid")
+                    form.getElementById("invalid_posicion").innerHTML= "Esa llanta ya se seleccionó."
+                  }
+                }
+            
+                if(posicion.value>total){
+                 
+                  error=1
+                  posicion.classList.add("is-invalid");
+                   form.getElementById("invalid_posicion").innerHTML= "Este vehículo solo tiene 18 llantas."
+                }
+                if(cubierta.value==0){
+                  cubierta.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_cubierta").innerHTML= "Este campo es requerido."
+                }
+                if(obs.value==0){
+                  obs.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_obs").innerHTML= "Este campo es requerido."
+
+                }
+                if(accion.value==0){
+                  accion.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_accion").innerHTML= "Este campo es requerido."
+
+                }
+                if(posicion.value==""){
+                  posicion.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_posicion").innerHTML= "Este campo es requerido."
+
+                }
+                if(codigo.value==""){
+                  codigo.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_llanta").innerHTML= "Este campo es requerido."
+
+                }
+                if(rem1.value==""){
+                  rem1.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_rem1").innerHTML= "Este campo es requerido."
+
+                }
+                if(rem2.value==""){
+                  rem2.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_rem2").innerHTML= "Este campo es requerido."
+
+                }
+                if(rem3.value==""){
+                  rem3.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_rem3").innerHTML= "Este campo es requerido."
+
+                }
+                if(promedio.value==""){
+                  promedio.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_rem_prom").innerHTML= "Este campo es requerido."
+
+                }
+                if(pres_ini.value==""){
+                  pres_ini.classList.add("is-invalid")
+                  error=1
+
+                        form.getElementById("invalid_pres_ini").innerHTML= "Este campo es requerido."
+          }
+                if(pres_fin.value==""){
+                  pres_fin.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_pres_fin").innerHTML= "Este campo es requerido."
+
+                }
+                if(rem_max.value==""){
+                  rem_max.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_rem_max").innerHTML= "Este campo es requerido."
+
+                }
+                if(rem_min.value==""){
+                  rem_min.classList.add("is-invalid")
+                  error=1
+                  form.getElementById("invalid_rem_min").innerHTML= "Este campo es requerido."
+
+                }
+                if (error==0){
+                    objeto.items.push(data)                    
+                    objeto.list()
+                    console.log(objeto);
+                    data={}
+                    this.close()
+                } else {
+                            notificacion(2000, "Revise los campos!", "error")
+
+                          }
+              return false
+              }
+            },
+            cancel: function () {
+              //close
+            },
+          },
+          onContentReady: function () {
+            // bind to events
+            var self = this;
+            self.$content.find('.posicion').on("input",function (param) { 
+         
+              if($(this).val()>nro_llantas && $(this).val()<=total)
+                  {
+                    console.log("Es repuesto");
+
+                    self.$content.find('.repuesto').val("1")
+                  }
+                  else{
+                    console.log("No es repuesto");
+                    self.$content.find('.repuesto').val("0")
+
+                  }
+
+             })
+            console.log( self.$content.find('.repuesto'));
+
+            // let posicion= this.$content[0].ownerDocument.getElementById("id_posicion")
+            // posicion.addEventListener("keyup",function (param) { 
+            //       console.log(posicion.value);
+            //       console.log(total);
+        
+            //       if(posicion.value>nro_llantas && posicion.value<=total)
+            //       {
+            //         this.$content.find('.repuesto').val("1")
+            //       }
+            //       else{
+            //         console.log("2ewsd");
+            //         this.$content.find('.repuesto').val("0")
+
+            //       }
+            //       posicion.classList.remove("is-invalid")  
+            //     })
+          },
+          
+        });
+      });
+      {% if det %}
+    objeto.items = {{det | safe}} 
+    console.log(objeto);
+    {% endif %}
+    objeto.list()
+    });
+  </script>
+  {%endblock%}

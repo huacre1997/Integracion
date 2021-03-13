@@ -1,0 +1,186 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block ancho-banda-renovaciones %}collapse-item active{% endblock  %}
+{% load static %}
+{% block content %}  
+<style>
+  input[type=checkbox] {
+      transform: scale(2.5);
+  }
+</style>  
+<div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+            	<div class="row">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i> 
+                  {% if update %} Editar Ancho Banda de Renovación {% else %} Crear Ancho Banda de Renovación {% endif %}</h6>
+            	</div>
+            </div>
+            <form method="post" action="" enctype="multipart/form-data" >
+            {% csrf_token %}
+            <div class="card-body">
+             
+              <div class="form-row">
+               <div class="form-group col-lg-6">
+                	<label>Marca</label>
+               <select name="marca_renova" id="id_marca" class="form-select" onchange="actualizar_modelo()">
+                <option value=""></option>
+                
+                  {% for i in marca_renova  %}
+                  {% if  i.activo and not i.eliminado or obj.modelo_renova.marca_renova.id == i.id %}
+                   <option value="{{i.id}}" {% if obj.modelo_renova.marca_renova.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <br>
+              <div class="row">
+              	<div class="col-lg-2">Modelo</div>
+                <div class="col-lg-4">{{form.modelo_renova}}</div>
+              </div>
+              <br>
+               <div class="row">
+              	<div class="col-lg-2">Descripción</div>
+                <div class="col-lg-4">{{form.descripcion}}</div>
+              </div>
+              <br>
+              <div class="row">
+              	<div class="col-lg-2">Ancho de Banda</div>
+                <div class="col-lg-4">{{form.ancho_banda}}</div>
+              </div>
+              <br>
+              <div class="row">
+              	<div class="col-lg-2">Activo</div>
+                <div class="col-lg-2">{{form.activo}}</div>
+              </div>
+              <br>            
+			
+            </div>
+            {% if 'Web.add_anchobandarenova' in perm %}
+            <div class="card-footer text-muted">
+                <button type="submit" class="btn btn-primary">Grabar</button>
+                <a href="{% url 'Web:ancho-banda-renovaciones' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+            {% endif %}
+          	</form>
+          </div>				
+        </div>
+</div>
+{% endblock %}
+{% block bottom_scripts %}
+
+<script type="text/javascript" charset="utf-8">
+  let array=document.getElementById("id_marca").options
+  let options=[]
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i].value;
+    options.push(element)
+  }
+    let array3=document.getElementById("id_modelo_renova").options
+  let options3=[]
+  for (let i = 0; i < array3.length; i++) {
+    const element3 = array3[i].value;
+    options3.push(element3)
+  }
+ {% if obj %}
+
+  let modelo="{{obj.modelo_renova.id}}"
+  if (options3.includes(modelo)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.modelo_renova.descripcion}}"
+  option3.selected=true
+    option3.value=modelo
+
+  $("#id_modelo_renova").append(option3)
+
+  }else{
+    document.getElementById('id_modelo_renova').value=modelo;
+
+  }
+  let marca="{{obj.modelo_renova.marca_renova.id}}"
+  if (options.includes(marca)!=true) {
+
+  let option=document.createElement("option")
+  option.textContent="{{obj.modelo_renova.marca_renova.descripcion}}"
+  option.selected=true
+    option.value=marca
+
+  $("#id_marca").append(option)
+
+
+  
+
+  }else{
+    // $('#id_marca  option[value="'+marca+'"]').prop("selected", true);
+
+    document.getElementById('id_marca').value=marca;
+
+
+  }
+  {%endif%}
+actualizar_modelo()
+
+function actualizar_modelo(){
+    $('#id_modelo_renova').empty();
+    $('#id_modelo_renova').append($("<option>", {value: "",text: " --------- "}));              
+    $.ajax({
+      'url' : '/catalogos/render-option',
+      'type' : 'GET',
+      'async': false,
+      'data' : {'id_marca' : $('#id_marca').val()},
+      'success' : function(data) {
+        let modelo2="{{obj.modelo_renova.id}}"
+        let marca2="{{obj.modelo_renova.marca_renova.id}}"
+
+       $.each(data, function( index, valuex ) {
+              if(!valuex.eliminado && valuex.activo){
+                let opcion=document.createElement("option")
+                  opcion.value=valuex.id
+                opcion.textContent=valuex.descripcion
+                console.log(opcion);
+                  document.getElementById("id_modelo_renova").append(opcion)
+                  
+              }           
+             
+       });
+        if($("#id_marca").val()==marca2){
+
+       let array4=document.getElementById("id_modelo_renova").options
+            let options4=[]
+            for (let i = 0; i < array4.length; i++) {
+              const element4 = array4[i].value;
+              options4.push(element4)
+            }
+            let modelo2="{{obj.modelo_renova.id}}"
+
+            if (options4.includes(modelo2)!=true) {
+
+              let option4=document.createElement("option")
+              option4.textContent="{{obj.modelo_renova.descripcion}}"
+              option4.selected=true
+                option4.value=modelo2
+
+              $("#id_modelo_renova").append(option4)
+
+              }else{
+                document.getElementById('id_modelo_renova').value=modelo2;
+
+              }
+              
+        }
+      },
+      'error' : function(request,error){
+        //alert("Request: "+JSON.stringify(request));
+      }
+    });
+
+}
+
+
+</script>
+{% endblock %}

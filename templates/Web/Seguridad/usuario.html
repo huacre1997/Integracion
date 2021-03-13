@@ -1,0 +1,266 @@
+{% extends 'Web/Seguridad/seguridad_base.html' %}
+
+  <!-- Latest compiled and minified CSS -->
+
+  {% comment %}
+  {% if usuario %}
+  <form method="post" action="{% url 'Web:Usuario' usuario.pk %}" class="needs-validation" novalidate
+    enctype="multipart/form-data">
+
+    {% else %}
+    <form method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+
+      {% endif %}
+
+      {% csrf_token %}
+      <input type="hidden" name="action" value="{% if usuario %}edit{%else%}add{% endif %}">
+
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group col-lg-4 offset-lg-4">
+            <label for="">Persona:</label>
+            {{form.persona}}
+          </div>
+
+        </div>
+        <div class="form-row">
+          <div class="form-group col-lg-4">
+            <label for="">Usuario:</label>
+            {{form.username}}
+          </div>
+          <div class="form-group col-lg-4">
+            <label for="">Contraseña</label>
+            {{form.password}}
+          </div>
+          <div class="form-group col-lg-4">
+            <label for="">Repetir Contraseña</label>
+            {{form.password2}}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-lg-6">
+            <label for="">Perfiles:</label>
+            {{form.groups}}
+          </div>
+
+        </div>
+
+      </div>
+      <button type="submit" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
+
+    </form> {% endcomment %}
+    {% block blockAdmin %}nav-item active{% endblock  %}
+     {% load i18n %}
+{% block collapseAdmin %}collapse show{% endblock  %}
+{% block usuarios %}collapse-item active{% endblock  %}
+    {% block content %}
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css">
+
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/responsive.css">
+
+    <div class="container-fluid">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <div class="row align-items-center">
+            <div class="col-lg-3">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Crear Usuarios</h6>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="card-body">
+
+          <form method="post" id="formUsuario" action="{% url 'Web:Usuario' %}" class="needs-validation" novalidate
+            enctype="multipart/form-data">
+        
+         
+        
+                       <div class="module aligned">
+              {% csrf_token %}
+              <div class="form-row">
+                <div class="form-group col-lg-4 offset-lg-4">
+                  <label for="">Persona:</label>
+                  {{form.persona}}
+                  <div class="invalid-feedback" id="invalid_persona">Este campo es requerido.</div>
+
+                </div>
+
+              </div>
+              <div class="form-row">
+                <div class="form-group col-lg-4">
+                  <label for="">Usuario:</label>
+                  {{form.username}}
+                  <div class="invalid-feedback" id="invalid_username">Este campo es requerido.</div>
+
+                </div>
+                <div class="form-group col-lg-4">
+                  <label for="">Contraseña</label>
+                  {{form.password}}
+                  <div class="invalid-feedback" id="invalid_password">Este campo es requerido.</div>
+
+                </div>
+                <div class="form-group col-lg-4">
+                  <label for="">Repetir Contraseña</label>
+                  <input type="password" name="password2" class="form-control" placeholder="Confirmar contraseña" id="id_password2" maxlength="100">
+                  <div class="invalid-feedback" id="invalid_password2">Este campo es requerido.</div>
+
+                </div>
+              </div>
+
+              {% if error %}
+              <div class="alert alert-danger text-center" role="alert">
+                {% for field, error in error.items %}
+                {{ error | striptags }}
+                <br>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <div class="form-row field-permissions">
+
+
+                <div>
+
+
+                  <label for="id_permissions">Permisos:</label>
+
+                  <div class="related-widget-wrapper">
+
+
+
+                    {{form.groups}}
+
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <a class="btn btn-secondary" href="{% url 'Web:Usuarios' %}">Volver</a>
+              <button type="button" id="btn-add-usuario" 
+                class="btn btn-primary">Guardar usuario</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+
+      <script type="text/javascript" src="/admin/jsi18n/"></script>
+      <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+      <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+      <script type="text/javascript" src="/static/admin/js/core.js"></script>
+      <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+      <script type="text/javascript" src="/static/admin/js/SelectBox.js"></script>
+      <script type="text/javascript" src="/static/admin/js/SelectFilter2.js"></script>
+     
+    </div>
+
+
+    {% endblock content %}
+
+    {% block bottom_scripts %}
+    <script>
+      $(document).ready(function () {
+        let username = document.getElementById("id_username")
+        let password = document.getElementById("id_password")
+        let password2 = document.getElementById("id_password2")
+        let persona = document.getElementById("id_persona")
+
+        username.addEventListener("keyup", function () {
+          username.classList.remove("is-invalid")
+        })
+        password.addEventListener("keyup", function () {
+          password.classList.remove("is-invalid")
+        })
+        password2.addEventListener("keyup", function () {
+          password2.classList.remove("is-invalid")
+        })
+
+        document.getElementById("btn-add-usuario").addEventListener("click", function (e) {
+          e.preventDefault()
+          if (  document.getElementById("invalid_group")!=null) {
+            document.getElementById("invalid_group").innerHTML=""
+
+          }
+          let form = document.querySelector("#formUsuario")
+          let url = document.getElementById("formUsuario").getAttribute("action")
+
+          let formData = new FormData(form)
+          var sel = document.querySelector("#id_groups_to");
+          sel.classList.remove("is-invalid","form-select")
+
+          for (var i = 0, n = sel.options.length; i < n; i++) { // looping over the options
+            if (sel.options[i].value){
+              formData.append("groups", (sel.options[i].value))
+            }else{
+              
+            }
+
+          }
+
+          fetch(url, {
+            method: "POST",
+
+            body: formData
+          }).then(data => data.json()).then(response => {
+            console.log(response);
+            if (response.stat == 500) {
+              notificacion(1500,"Error","error","Revise los campos")
+              if (response.form.password2) {
+                document.getElementById("invalid_password2").innerHTML = response.form.password2[0]
+                password2.classList.add("is-invalid")
+                password2.value = ""
+                password.value = ""
+              }
+
+              if (response.form.password) {
+                document.getElementById("invalid_password").innerHTML = response.form.password[0]
+                password.classList.add("is-invalid")
+
+
+              }
+              if (response.form.username) {
+                document.getElementById("invalid_username").innerHTML = response.form.username[0]
+                username.classList.add("is-invalid")
+
+              }
+              if (response.form.persona) {
+                document.getElementById("invalid_persona").innerHTML = response.form.persona[0]
+                persona.classList.add("is-invalid")
+
+              }
+            
+              if (response.form.groups) {
+                let div=document.createElement("div")
+                div.classList.add("invalid-feedback")
+                div.setAttribute("id","invalid_group")
+                div.innerHTML= response.form.groups[0]
+                sel.after(div)
+                sel.classList.add("is-invalid","form-select")
+
+              }
+            } else {
+              Swal.fire({
+                title: 'Éxito!',
+                text: "Usuario guardado!",
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+
+                confirmButtonText: 'Ok!'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.href = response.url
+                }
+              })
+            }
+          })
+        })
+      })
+    </script>
+
+    {% endblock bottom_scripts %}
