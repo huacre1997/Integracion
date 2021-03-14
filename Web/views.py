@@ -79,10 +79,14 @@ password_reset_token = PasswordResetToken()
 class CatalogosView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name="Web/Catalogos/catalogos_base.html"
     permission_required=["auth.view_catalogos"]
-class SeguridadView(LoginRequiredMixin,TemplateView):
+class SeguridadView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name="Web/Seguridad/seguridad_base.html"
-class OperacionesView(LoginRequiredMixin,TemplateView):
+    permission_required=["auth.view_seguridad"]
+
+class OperacionesView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name="Web/Operaciones/operaciones_base.html"
+    permission_required=["auth.view_procesos"]
+
 class ReportesView(LoginRequiredMixin,TemplateView):
     template_name="Web/Reportes/reportes_base.html"
 class LogueoView(FormView):
@@ -2374,7 +2378,7 @@ def LlantaSearch(request):
     contexto={"obj":llantas}
     return render(request,template_name,contexto)
 def view_condicion(request):
-    template_name="Web/condicion.html"
+    template_name="Web/Catalogos/condicion.html"
     return render(request,template_name)
 
 def view_renova(request):

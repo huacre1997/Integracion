@@ -233,16 +233,16 @@ textarea, .vTextField {
       
       {% block content %}
            <div class="grid-index">
-            {% if request.user|has_group:"Catalogos" or request.user|has_group:"Administrador" %} 
+            {% if 'auth.view_catalogos' in perm %} 
 
             <div class="shadow  item-lock position-1"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:catalogos' %}">Catálogos</a></div>
             {%endif%}
-            {% if 'Web.view_historialllantas' in perm and 'Web.view_inpeccionllantas' in perm %}
+            {% if 'auth.view_procesos' in perm %} 
 
-            <div class="shadow  item-lock  position-2"><a class="nav-link d-flex   text-white align-items-center justify-content-center h-100" href="{% url 'Web:operaciones' %}">Operaciones</a></div>
+            <div class="shadow  item-lock  position-2"><a class="nav-link d-flex   text-white align-items-center justify-content-center h-100" href="{% url 'Web:operaciones' %}">Procesos</a></div>
             {%endif%}
             <div class="shadow  item-lock position-3"><a class="nav-link d-flex   text-white align-items-center justify-content-center h-100" href="{% url 'Web:reportes' %}">Reportes</a></div>
-            {% if 'Web.view_usuario' in perm %}
+            {% if 'auth.view_seguridad' in perm %}
 
             <div class="shadow  item-lock position-4"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:seguridad' %}">Seguridad</a></div>
             {%endif%}

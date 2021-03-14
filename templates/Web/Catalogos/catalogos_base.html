@@ -32,57 +32,57 @@
         </a>
         <div id="collapseUtilities" class="collapse show" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            {% if 'Web.view_marcavehiculo' in perm %}
+            {% if 'Web.view_marcavehiculo' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block marca-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:marca-vehiculos' %}">Marca del Vehículo</a>
             {%endif%} 
-                {% if 'Web.view_modelovehiculo' in perm %}
+                {% if 'Web.view_modelovehiculo' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block modelo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:modelo-vehiculos' %}">Modelo del Vehículo</a>
             {%endif%} 
-               {% if 'Web.view_tipovehiculo' in perm %}
+               {% if 'Web.view_tipovehiculo' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block tipo-vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:tipo-vehiculos' %}">Configuración Vehicular</a>
             {%endif%}
-             {% if 'Web.view_lugar' in perm %}
+             {% if 'Web.view_lugar' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block lugares %}collapse-item{% endblock %}" href="{% url 'Web:lugares' %}">Ubicación del Vehículo</a>
             {% endif %} 
-             {% if 'Web.view_vehiculo' in perm %}
+             {% if 'Web.view_vehiculo' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block vehiculos %}collapse-item{% endblock %}" href="{% url 'Web:vehiculos' %}">Registro del Vehículo</a>
             {%endif%}
-              {% if 'Web.view_marcallanta' in perm %}
+              {% if 'Web.view_marcallanta' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block marca-llantas %}collapse-item{% endblock %}" href="{% url 'Web:marca-llantas' %}">Marca del Neumático</a>
             {% endif %}
-            {% if 'Web.view_modelollanta' in perm %}
+            {% if 'Web.view_modelollanta' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block modelo-llantas %}collapse-item{% endblock %}" href="{% url 'Web:modelo-llantas' %}">Modelo del Neumático</a>
             {% endif %}
-            {% if 'Web.view_medidallanta' in perm %}
+            {% if 'Web.view_medidallanta' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block medida-llantas %}collapse-item{% endblock %}" href="{% url 'Web:medida-llantas' %}">Medida del Neumático</a>
             {% endif %}
-            {% if 'Web.view_marcarenova' in perm %}
+            {% if 'Web.view_marcarenova' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block marca-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:marca-renovaciones' %}">Reencauchadora</a>
             {% endif %}
-            {% if 'Web.view_modelorenova' in perm %}
+            {% if 'Web.view_modelorenova' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block modelo-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:modelo-renovaciones' %}">Modelo de Banda</a>
             {% endif %}
-            {% if 'Web.view_anchobandarenova' in perm %}
+            {% if 'Web.view_anchobandarenova' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block ancho-banda-renovaciones %}collapse-item{% endblock %}" href="{% url 'Web:ancho-banda-renovaciones' %}">Ancho de Banda</a>
             {% endif %}
-             {% if 'Web.view_ubicacion' in perm %}
+             {% if 'Web.view_ubicacion' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicación del Neumático</a>
             {%endif%} 
            
 
-            {% if 'Web.view_llanta' in perm %}
+            {% if 'Web.view_llanta' in perm or 'auth.view_catalogos' in perm %}
 
             <a class="{% block llantas %}collapse-item{% endblock %}" href="{% url 'Web:llantas' %}">Registro del Neumático</a>
             {% endif %}

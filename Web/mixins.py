@@ -29,6 +29,7 @@ class ValidateMixin(object):
                 return redirect(self.get_url_redirect())
             
         else:
+            print(self.request.user.get_group_permissions())
             if set(self.request.user.get_group_permissions())==set(self.get_perms()):
                 return super().dispatch(request, *args, **kwargs)
             else:
