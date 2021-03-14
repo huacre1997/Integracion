@@ -110,6 +110,21 @@ class PersonaForm(forms.ModelForm):
             if Persona.objects.filter(correo=data).exists():
                 raise forms.ValidationError(f"El correo {data} ya se encuentra registrado .")
         return data
+    def clean_nro_doc(self):
+        
+        data=self.cleaned_data["nro_doc"]
+        if self.instance.nro_doc!=data:
+            if Persona.objects.filter(nro_doc=data).exists():
+                raise forms.ValidationError(f"El documento {data} ya se encuentra registrado .")
+        return data
+    
+    def clean_celular(self):
+        
+        data=self.cleaned_data["celular"]
+        if self.instance.celular!=data:
+            if Persona.objects.filter(celular=data).exists():
+                raise forms.ValidationError(f"El celular {data} ya se encuentra registrado .")
+        return data
 class CalendarWidget(forms.TextInput):
     class Media:
         js = ('jQuery.js', 'calendar.js', 'noConflict.js',
@@ -561,22 +576,20 @@ class LlantaForm(forms.ModelForm):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
 
-            # for field in iter(self.fields):
-            #     self.fields[field].widget.attrs.update({
-            #         "class": "form-control",
-            #     })
-        # self.fields['almacen'].required = False
+            self.fields['codigo'].required = True
+            self.fields['ubicacion'].required = True
 
     def clean_ubicacion(self):
         data=self.cleaned_data["ubicacion"]
-        print(data)
-        if data.descripcion=="MONTADO" :
-            print("aaea")
-            self.fields['vehiculo'].required = True
-            self.fields['codigo'].required = True
+        if data!=None:
+            if data.descripcion=="MONTADO" :
+                print("aaea")
+                self.fields['vehiculo'].required = True
 
-            self.fields['posicion'].required = True
-
+                self.fields['posicion'].required = True
+        else:
+            self.add_error("ubicacion",f" : Este campo es requerido.")
+  
         return data
     # def clean_vehiculo(self):
     #     data=self.cleaned_data["vehiculo"]
@@ -623,9 +636,13 @@ class LlantaForm(forms.ModelForm):
     
     def clean_codigo(self):
         data=self.cleaned_data["codigo"]
-        if self.instance.codigo!=data:
-            if Llanta.objects.filter(codigo=data).exists():
-                self.add_error("codigo",f" : El código {data} ya se encuentra registrado .")
+        if data!=None:
+            if self.instance.codigo!=data:
+                if Llanta.objects.filter(codigo=data).exists():
+                    self.add_error("codigo",f" : El código {data} ya se encuentra registrado .")
+        else:
+            self.add_error("codigo",f" : Este campo es requerido.")
+
         return data
 class VehiculoForm(forms.ModelForm):
 

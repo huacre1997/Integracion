@@ -45,7 +45,7 @@
 
                 <label>Ubicación</label>
                 <select name="ubicacion" id="id_ubicacion" class="form-select">
-                  
+                  <option ></option>
                     {% for i in ubicacion  %}
                     {% if  i.activo and not i.eliminado or obj.ubicacion.id == i.id %}
                      <option value="{{i.id}}" {% if obj.ubicacion.id == i.id %}selected{% endif %}>{{i.descripcion}}</option>
@@ -63,10 +63,10 @@
             </div>
 
 {% if obj %}
-<div class="form-row section {% if obj.ubicacion.id == 1 %}activo{% endif %}" id="section_vehiculo">
+<div class="form-row section {% if obj.ubicacion.descripcion == 'MONTADO' %}activo{% endif %}" id="section_vehiculo">
 
 {% else %}
-<div class="form-row section activo" id="section_vehiculo">
+<div class="form-row section" id="section_vehiculo">
 
 {% endif %}
   
@@ -633,9 +633,9 @@
     ubicacion.addEventListener("change", function (e) {
       ubicacion.classList.remove("is-invalid")
 
-      var strUser = e.target.options[e.target.selectedIndex].value;
+      var strUser = e.target.options[e.target.selectedIndex].textContent;
       console.log(strUser);
-      if (strUser === "1") {
+      if (strUser === "MONTADO") {
         document.getElementById("section_vehiculo").classList.add("activo")
         document.getElementById("id_repuesto").removeAttribute("disabled")
 

@@ -270,7 +270,7 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                     form.save()
 
                     data = {
-                    'status': 200,"error":{}
+                    'status': 200
                    }
                 else:
                     data = {
@@ -2095,7 +2095,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                     instance.cubierta=instance2
                 instance.modified_by = self.request.user
                 instance.save()
-                return JsonResponse({"status":200,"form":{},"form2":{},"url":self.success_url})
+                return JsonResponse({"status":200,"url":self.success_url})
             else:
                 data = {
                     "form":form1.errors,

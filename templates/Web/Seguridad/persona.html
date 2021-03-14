@@ -264,6 +264,7 @@
               let fech_nac = document.getElementById("id_fech_nac")
               let fech_inicio = document.getElementById("id_fech_inicio")
               let fech_fin = document.getElementById("id_fech_fin")
+
               let departamento = document.getElementById("id_departamento")
               let provincia = document.getElementById("id_provincia")
               let distrito = document.getElementById("id_distrito")
@@ -283,6 +284,9 @@
         })
          apem.addEventListener("keyup", function () {
        apem.classList.remove("is-invalid")
+        })
+        telefono.addEventListener("keyup", function () {
+       telefono.classList.remove("is-invalid")
         })
          tip_doc.addEventListener("change", function (e) {
        tip_doc.classList.remove("is-invalid")
@@ -430,6 +434,7 @@ sexo.addEventListener("change", function () {
         selectDistrict.innerHTML = ""
         selectDistrict.disabled = false
         let selectfirst = document.createElement("option")
+        selectfirst.value=0
         selectfirst.innerText = "Seleccione ditrito..."
         selectDistrict.appendChild(selectfirst)
 
@@ -460,6 +465,227 @@ sexo.addEventListener("change", function () {
               
                     let passForm=docDigits(tip_doc.value,nro_doc.value)
                 let emailForm=validarEmail(correo)
+                let error=0
+                if (emailForm.status == 500) {
+                document.getElementById("invalid_correo").innerHTML = emailForm.mensaje
+                correo.classList.add("is-invalid")
+                error = 1
+              }
+              if (passForm.status == 500) {
+                nro_doc.removeAttribute("readonly")
+                document.getElementById("invalid_doc").innerHTML = passForm.mensaje
+
+                nro_doc.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (sexo.value == "") {
+                document.getElementById("invalid_sexo").innerHTML = "Este campo es requerido."
+                sexo.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (fech_nac.value == "") {
+                document.getElementById("invalid_fech_nac").innerHTML = "Este campo es requerido."
+                fech_nac.classList.add("is-invalid")
+                error = 1
+
+              }
+
+
+
+              if (apem.value == "") {
+                document.getElementById("invalid_apem").innerHTML = "Este campo es requerido."
+                apem.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (apep.value == "") {
+                document.getElementById("invalid_apep").innerHTML = "Este campo es requerido."
+                apep.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (name.value == "") {
+                document.getElementById("invalid_nom").innerHTML = "Este campo es requerido."
+                name.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (area.value == "") {
+                document.getElementById("invalid_area").innerHTML = "Este campo es requerido."
+                area.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (cargo.value == "") {
+                document.getElementById("invalid_cargo").innerHTML = "Este campo es requerido."
+                cargo.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (celular.value == "") {
+                document.getElementById("invalid_celular").innerHTML = "Este campo es requerido."
+                celular.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (numbersDigits(celular.value,9).status==500) {
+                document.getElementById("invalid_celular").innerHTML = numbersDigits(celular.value,9).mensaje
+                celular.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (correo.value == "") {
+                document.getElementById("invalid_correo").innerHTML = "Este campo es requerido."
+                correo.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (departamento.value == "") {
+                document.getElementById("invalid_departamento").innerHTML = "Este campo es requerido."
+                departamento.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (provincia.value == "0") {
+                console.log("if provi");
+
+                document.getElementById("invalid_provincia").innerHTML = "Este campo es requerido."
+                provincia.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (distrito.value == "0") {
+                console.log("if distri");
+
+                document.getElementById("invalid_distrito").innerHTML = "Este campo es requerido."
+                distrito.classList.add("is-invalid")
+                error = 1
+
+              }
+
+              if (direccion.value == "") {
+                console.log("if direccion");
+                error = 1
+
+                document.getElementById("invalid_direccion").innerHTML = "Este campo es requerido."
+                direccion.classList.add("is-invalid")
+
+              }
+              if (fech_inicio.value == "") {
+                console.log("if gech iniico");
+
+                document.getElementById("invalid_fech_inicio").innerHTML = "Este campo es requerido."
+                fech_inicio.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (fech_fin.value == "") {
+                console.log("if fecha fin");
+
+                document.getElementById("invalid_fech_fin").innerHTML = "Este campo es requerido."
+                fech_fin.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (tip_doc.value == "0") {
+                console.log("if tip doc");
+
+                document.getElementById("invalid_tip_doc").innerHTML = "Este campo es requerido."
+                tip_doc.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (nro_doc.value == "") {
+                console.log("if nro_doc");
+
+                document.getElementById("invalid_doc").innerHTML = "Este campo es requerido."
+                nro_doc.classList.add("is-invalid")
+                error = 1
+
+              }
+
+              if (numbersDigits(telefono.value,7).status==500) {
+                document.getElementById("invalid_telefono").innerHTML = numbersDigits(celular.value,7).mensaje
+                telefono.classList.add("is-invalid")
+                error = 1
+
+              }
+              if (telefono.value == "") {
+                document.getElementById("invalid_telefono").innerHTML = "Este campo es requerido."
+                telefono.classList.add("is-invalid")
+                error = 1
+
+              }
+
+          
+              if (error == 1) {
+                notificacion(1500, "Error", "error", "Revise los campos")
+                de.hideLoading()
+
+              } else {
+                fetch( "../Persona/" + id + "/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                },
+                body: parameters
+
+              }).then(data => data.json()).then(response => {
+                  console.log(response);
+                  if (response.status == 200) {
+                    de.showLoading()
+
+                    de.close()
+                    notificacion(2000, "Éxito", "success", "Persona guardada")
+
+                    tablaPersonas.ajax.reload()
+
+                  }else{
+                    de.hideLoading()
+
+                    notificacion(1500, "Error", "error", "Revise los campos")
+                    if (response.error.nro_doc) {
+                    console.log("if nro_doc");
+
+                    document.getElementById("invalid_doc").innerHTML = response.error.nro_doc[0]
+                    nro_doc.classList.add("is-invalid")
+
+                  }
+                  if (response.error.correo) {
+                    document.getElementById("invalid_correo").innerHTML = response.error.correo[0]
+                    correo.classList.add("is-invalid")
+
+                  }
+                  if (response.error.celular) {
+                    document.getElementById("invalid_celular").innerHTML = response.error.celular[0]
+                    celular.classList.add("is-invalid")
+
+                  }
+                  }
+                })
+
+              }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                   fetch( "../Persona/" + id + "/", {
                 method: "POST",
                 headers: {
@@ -468,162 +694,8 @@ sexo.addEventListener("change", function () {
                 body: parameters
 
               }).then(data => data.json())
-              .then(function(response){
-                if(emailForm.status==500){
-                  console.log("Entro a lstatus")
-                  response.status=500
-                  response.error.mailValid=emailForm.mensaje
-                }
-                if(passForm.status==500){
-                  response.status=500
-                  response.error.docValid=passForm.mensaje
-                  document.getElementById("id_nro_doc").removeAttribute("readonly")
-                }
-                if(sexo.value=="")
-                {
-                  response.status=500
-                  response.error.sexo="Este campo es requerido."
-                }
-                if(fech_nac.value=="")
-                {
-                  response.status=500
-                  response.error.fech_nac="Este campo es requerido."
-                }
-                
-                return response
-              })
-                     
-              .then(response => {
-                console.log(response);
-                if (response.status == 500) {
-                  notificacion(1500, "Error", "error", "Revise los campos")
-                  if (response.error.apem) {
-                    document.getElementById("invalid_apem").innerHTML = response.error.apem[0]
-                    apem.classList.add("is-invalid")
-
-                  }
-                  if (response.error.apep) {
-                    document.getElementById("invalid_apep").innerHTML = response.error.apep[0]
-                    apep.classList.add("is-invalid")
-
-                  }
-                  if (response.error.nom) {
-                    document.getElementById("invalid_nom").innerHTML = response.error.nom[0]
-                    name.classList.add("is-invalid")
-
-                  }
-                  if (response.error.area) {
-                    document.getElementById("invalid_area").innerHTML = response.error.area[0]
-                    area.classList.add("is-invalid")
-
-                  }
-                  if (response.error.cargo) {
-                    document.getElementById("invalid_cargo").innerHTML = response.error.cargo[0]
-                    cargo.classList.add("is-invalid")
-
-                  }
-                  if (response.error.celular) {
-                    document.getElementById("invalid_celular").innerHTML = response.error.celular[0]
-                    celular.classList.add("is-invalid")
-
-                  }
-                  if (response.error.correo) {
-                    document.getElementById("invalid_correo").innerHTML = response.error.correo[0]
-                    correo.classList.add("is-invalid")
-
-                  }
-                  if (response.error.departamento) {
-                    document.getElementById("invalid_departamento").innerHTML = response.error.departamento[0]
-                    departamento.classList.add("is-invalid")
-
-                  }
-                  if (response.error.provincia) {
-                    console.log("if provi");
-
-                    document.getElementById("invalid_provincia").innerHTML = response.error.provincia[0]
-                    provincia.classList.add("is-invalid")
-
-                  }
-                  if (response.error.distrito) {
-                    console.log("if distri");
-
-                    document.getElementById("invalid_distrito").innerHTML = response.error.distrito[0]
-                    distrito.classList.add("is-invalid")
-
-                  }
-                
-                  if (response.error.direccion) {
-                    console.log("if direccion");
-
-                    document.getElementById("invalid_direccion").innerHTML = response.error.direccion[0]
-                    direccion.classList.add("is-invalid")
-
-                  }
-                  if (response.error.fech_inicio) {
-                    console.log("if gech iniico");
-
-                    document.getElementById("invalid_fech_inicio").innerHTML = response.error.fech_inicio[0]
-                    fech_inicio.classList.add("is-invalid")
-
-                  }
-                  if (response.error.fech_fin) {
-                    console.log("if fecha fin");
-
-                    document.getElementById("invalid_fech_fin").innerHTML = response.error.fech_fin[0]
-                    fech_fin.classList.add("is-invalid")
-
-                  }
-                  if (response.error.tip_doc) {
-                    console.log("if tip doc");
-
-                    document.getElementById("invalid_tip_doc").innerHTML = response.error.tip_doc[0]
-                    tip_doc.classList.add("is-invalid")
-
-                  }
-                  if (response.error.nro_doc) {
-                    console.log("if nro_doc");
-
-                    document.getElementById("invalid_doc").innerHTML = response.error.nro_doc[0]
-                    nro_doc.classList.add("is-invalid")
-
-                  }
-                  if (response.error.docValid) {
-
-                    document.getElementById("invalid_doc").innerHTML = response.error.docValid
-                    nro_doc.classList.add("is-invalid")
-
-                  }
-                  if (response.error.mailValid) {
-                    document.getElementById("invalid_correo").innerHTML = response.error.mailValid
-                    correo.classList.add("is-invalid")
-
-                  }
-                  if (response.error.telefono) {
-                    document.getElementById("invalid_telefono").innerHTML = response.error.telefono
-                    telefono.classList.add("is-invalid")
-
-                  }
-                  if (response.error.sexo) {
-                    document.getElementById("invalid_sexo").innerHTML = response.error.sexo
-                    sexo.classList.add("is-invalid")
-
-                  }
-                  if (response.error.fech_nac) {
-                    document.getElementById("invalid_fech_nac").innerHTML = response.error.fech_nac
-                    fech_nac.classList.add("is-invalid")
-
-                  }
-                                    de.hideLoading()
-
-                } else {
-                  de.showLoading()
-
-                  de.close()
-                  notificacion(2000, "Éxito", "success", "Persona guardada")
-
-                  tablaPersonas.ajax.reload()
-                }
-              })
+            
+        
 
       return false;
     });

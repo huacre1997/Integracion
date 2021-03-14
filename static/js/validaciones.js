@@ -57,8 +57,27 @@ function AlfaNumerico(value) {
     return false
 }
 
+function numbersDigits(val, digitos) {
+    let value = val.trim()
+    var digits = /^[0-9]*$/;
+    let data = {
+        status: 200
+    }
+    if(value.length!=digitos){
+        data.status = 500
+        data.mensaje = `Este campo debe tener ${digitos} dígitos.`
+    }
+    if (!digits.test(value)) {
+        data.status = 500
+        data.mensaje = "Este número es inválido."
+    }
+    return data
+
+}
 function docDigits(tipo, num) {
     let value = num.trim()
+    var digits = /^[0-9]*$/;
+
     let data = {
         status: 200
     }
@@ -67,19 +86,30 @@ function docDigits(tipo, num) {
             data.status = 500
             data.mensaje = "El DNI tiene que tener 8 dígitos."
         }
+        if (!digits.test(value)) {
+            data.status = 500
+            data.mensaje = "El DNI es inválido."
+        }
     } else
     if (tipo == 2) {
         if (value.length != 9) {
             data.status = 500,
                 data.mensaje = "El Carnet de extranjería tiene que tener 9 dígitos."
         }
-
+        if (!digits.test(value)) {
+            data.status = 500
+            data.mensaje = "El DNI es inválido."
+        }
     } else
     if (tipo == 4) {
         if (value.length != 11) {
             data.status = 500,
                 data.mensaje = "El RUC debe tener 11 dígitos."
 
+        }
+        if (!digits.test(value)) {
+            data.status = 500
+            data.mensaje = "El RUC es inválido."
         }
     } else {
         data = {
