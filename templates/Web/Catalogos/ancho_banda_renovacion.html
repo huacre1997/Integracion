@@ -4,11 +4,7 @@
 {% block ancho-banda-renovaciones %}collapse-item active{% endblock  %}
 {% load static %}
 {% block content %}  
-<style>
-  input[type=checkbox] {
-      transform: scale(2.5);
-  }
-</style>  
+ 
 <div id="wrapper">
         <div class="container-fluid">
           <div class="card shadow mb-4">
@@ -23,8 +19,8 @@
             <div class="card-body">
              
               <div class="form-row">
-               <div class="form-group col-lg-6">
-                	<label>Marca</label>
+               <div class="form-group col-lg-4">
+                	<label>Renovadora</label>
                <select name="marca_renova" id="id_marca" class="form-select" onchange="actualizar_modelo()">
                 <option value=""></option>
                 
@@ -37,27 +33,33 @@
                   </select>
                 </div>
               </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Modelo</div>
-                <div class="col-lg-4">{{form.modelo_renova}}</div>
+              <div class="form-row">
+                             <div class="form-group col-lg-4">
+
+              	<label>Modelo</label>
+                {{form.modelo_renova}}
+                </div>
               </div>
-              <br>
-               <div class="row">
-              	<div class="col-lg-2">Descripción</div>
-                <div class="col-lg-4">{{form.descripcion}}</div>
+               <div class="form-row">
+                     <div class="form-group col-lg-4">
+
+              	<label>Descripción</label>
+                {{form.descripcion}}
+                </div>
               </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Ancho de Banda</div>
-                <div class="col-lg-4">{{form.ancho_banda}}</div>
+              <div class="form-row">
+                     <div class="form-group col-lg-4">
+
+              	<label>Ancho de Banda</label>
+                {{form.ancho_banda}}
+                </div>
               </div>
-              <br>
-              <div class="row">
-              	<div class="col-lg-2">Activo</div>
-                <div class="col-lg-2">{{form.activo}}</div>
-              </div>
-              <br>            
+              <div class="form-check">
+            {{form.activo}}
+            <label class="form-check-label" for="flexCheckDefault">
+              Activo
+            </label>
+          </div>      
 			
             </div>
             {% if 'Web.add_anchobandarenova' in perm %}

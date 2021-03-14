@@ -43,7 +43,7 @@
             <div class="form-row">
               <div class="form-group col-lg-6">
 
-                <label>Ubicación</label>
+                <label>Ubicación del Neumático</label>
                 <select name="ubicacion" id="id_ubicacion" class="form-select">
                   <option ></option>
                     {% for i in ubicacion  %}
@@ -55,7 +55,7 @@
                     </select>                <div class="invalid-feedback" id="invalid_ubicacion">Este campo es requerido.</div>
               </div>
               <div class="form-group col-lg-6">
-                <label class="label-control">Código</label>
+                <label class="label-control">Código del Neumático</label>
                 {{form.codigo}}
                 <div class="invalid-feedback" id="invalid_codigo">Este campo es requerido.</div>
               </div>
@@ -71,7 +71,7 @@
 {% endif %}
   
               <div class="form-group col-lg-6">
-                <label for="">Seleccion Vehiculo:</label>
+                <label for="">Vehículo</label>
                 <select name="vehiculo" id="id_vehiculo" class="form-select" >
                   <option value=""></option>
                   
@@ -86,7 +86,7 @@
               </div>
 
               <div class="form-group col-lg-6">
-                <label>Posicion</label>
+                <label>Posición del Neumático</label>
                 {{form.posicion}}
                 <div class="invalid-feedback" id="invalid_posicion">Este campo es requerido.</div>
 
@@ -97,7 +97,7 @@
 
             <div class="form-row">
                <div class="form-group col-lg-6">
-                	<label>Marca Llanta</label>
+                	<label>Marca del Neumático</label>
                <select name="marca_llanta" id="id_marca_llanta" class="form-select" onchange="actualizar_modelo()">
                 <option value=""></option>
                 
@@ -111,7 +111,7 @@
                 </div>
               <div class="form-group col-lg-6">
 
-                <label>Modelo de la Llanta</label>
+                <label>Modelo del Neumático</label>
                 {{form.modelo_llanta}}
                 <div class="invalid-feedback" id="invalid_modelo_llanta">Este campo es requerido.</div>
               </div>
@@ -120,7 +120,7 @@
             <div class="form-row">
               <div class="form-group col-lg-6">
 
-                <label>Medida</label>
+                <label>Medida del Neumático</label>
                 <select name="medida_llanta" id="id_medida_llanta" class="form-select">
                 <option value=""></option>
                 
@@ -141,7 +141,7 @@
                <input {% if obj.vehiculo == None %}disabled{% endif %} type="checkbox" name="repuesto" class="form-check-input" id="id_repuesto" 
                {% if obj.repuesto %}checked{% endif %}>
                {% else %}
-               <input type="checkbox" name="repuesto" class="form-check-input" id="id_repuesto" 
+               <input disabled type="checkbox" name="repuesto" class="form-check-input" id="id_repuesto" 
               >
                {% endif %}
                  
@@ -164,7 +164,7 @@
           </div> -->
             <div class="form-row">
               <div class="form-group col-lg-6">
-                <label for="">Estado</label>
+                <label for="">Estado del Neumático</label>
                 {{form.estado}}
                 <div class="invalid-feedback" id="invalid_estado">Este campo es requerido.</div>
               </div>

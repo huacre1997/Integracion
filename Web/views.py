@@ -1004,8 +1004,12 @@ class AnchoBandaRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 def RenderOption(request):
     id_marca = request.GET.get('id_marca')
-    modelos = ModeloRenova.objects.filter(marca_renova__pk=id_marca)
-    return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"eliminado","activo"))), content_type="application/json")
+    if id_marca!="":
+        id_marca = request.GET.get('id_marca')
+        modelos = ModeloRenova.objects.filter(marca_renova__pk=id_marca)
+        return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"eliminado","activo"))), content_type="application/json")
+    else:
+        return JsonResponse({"response":"seleccione marca"},safe=False)
 
 
 class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
@@ -2270,10 +2274,13 @@ class VehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
 def RenderOptionVehiculo(request):
     id_marca = request.GET.get('id_marca')
-    modelos = ModeloVehiculo.objects.filter(marca_vehiculo__pk=id_marca)
-    return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"activo","eliminado"))), content_type="application/json")
+    if id_marca!="":
+        id_marca = request.GET.get('id_marca')
+        modelos = ModeloVehiculo.objects.filter(marca_vehiculo__pk=id_marca)
+        return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"activo","eliminado"))), content_type="application/json")
 
-
+    else:
+        return JsonResponse({"response":"seleccione marca"},safe=False)
 class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
     template_name = 'Web/Catalogos/ver_vehiculo.html'
     action = ACCION_EDITAR

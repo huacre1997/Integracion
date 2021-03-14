@@ -284,6 +284,8 @@ class UbicacionForm(forms.ModelForm):
         fields = ('descripcion', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+                        "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
+
         }
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
@@ -298,6 +300,8 @@ class AlmacenForm(forms.ModelForm):
         fields = ('descripcion', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+                        "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
+
         }
 
     def clean_descripcion(self):
@@ -312,6 +316,8 @@ class LugarForm(forms.ModelForm):
         fields = ('descripcion', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+                        "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
+
         }
 
     def clean_descripcion(self):
@@ -326,6 +332,8 @@ class MarcaRenovaForm(forms.ModelForm):
         fields = ('descripcion', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+                                    "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
+
         }
 
     def clean_descripcion(self):
@@ -365,6 +373,7 @@ class AnchoBandaRenovaForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
             'ancho_banda': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             'modelo_renova': forms.Select( attrs={'class':'form-select'}),
+            "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
 
         }
 
@@ -513,6 +522,7 @@ class ModeloVehiculoForm(forms.ModelForm):
         fields = ('descripcion', 'marca_vehiculo', 'activo')
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
+            "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
         }
 
     def __init__(self, *args, **kwargs):
