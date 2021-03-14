@@ -5371,7 +5371,7 @@ grid-template-rows: repeat(10,50px);
   .P-8x4RB2,.P-B2,.P-B3,.P-B4,.P-R2,.P-R3,.P-R4,.P-T2,.P-S1,.P-S2{
 
     display: grid;
-    grid-template-columns: repeat(21, 50px) ;
+    grid-template-columns: repeat(21, 50px) ; 
     grid-template-rows: repeat(10,50px);
     
     
