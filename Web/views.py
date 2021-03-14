@@ -2426,9 +2426,7 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
-        estado=EstadoLlanta.objects.all().values("id","descripcion")
-        print(f'el get esta en {request.GET}')
-        context={"condicion":estado,"obs":CHOICES_OBSERVACION,"obj":request.GET}
+        context={"obs":CHOICES_OBSERVACION,"obj":request.GET}
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):
         # print(request.POST)
