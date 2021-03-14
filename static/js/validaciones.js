@@ -16,7 +16,7 @@ function validatePlaca(num) {
 }
 
 function validateAño(num) {
-    if (parseInt(num) > 1900 && parseInt(num) < 2010) {
+    if (parseInt(num) > 1700 && parseInt(num) <3000) {
         return true
     }
     return false

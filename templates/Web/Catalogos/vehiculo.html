@@ -227,13 +227,7 @@ console.log( );
  let placa = document.getElementById("id_placa").value
  let año = document.getElementById("id_ano").value
 
-    if(!validatePlaca(placa)){
-          document.getElementById("id_placa").classList.add("is-invalid")
-          document.getElementById("id_placa").setCustomValidity("Ingrese una placa válida.")
-          document.getElementById("invalid_placa").innerHTML = "Ingrese una placa válida."
-          notificacion(1500, "Error", "error", "Revise los campos!")
 
-        }
 
          if(!validateAño(año)){
           document.getElementById("id_ano").classList.add("is-invalid")
