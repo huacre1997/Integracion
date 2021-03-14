@@ -153,14 +153,35 @@ $(document).ready(function () {
         document.getElementById("container-grid").append(backgroud_img)
         
     
-        let backgroud_img2 = document.createElement("div")
+        let backgroud_img2 = document.createElement("img")
         backgroud_img2.classList.add("img2")
-        backgroud_img2.id = "background_tipo2"
-        backgroud_img2.style.background = 'transparent url("../../static/img/vehiculos/'+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoImagen +
-        '.png") no-repeat center center'
-      
+        backgroud_img2.id = "myImg"
+        backgroud_img2.src = "../../static/img/vehiculos/"+response.vehiculo.tipo_vehiculo.codigo+"/" + response.vehiculo.tipo_vehiculo.codigoImagen+".png"
+   
+        let modal = document.createElement("div")
+          modal.classList.add("modal")
+          modal.id="myModal"
+          let content=document.createElement("img")
+          content.classList.add("modal-content-vehiculo")
+          content.id="img01"
+          modal.append(content)
+          backgroud_img2.addEventListener("click",function(){
+            modal.style.display="block"
+            content.src=this.src
+          })
+          modal.addEventListener("click",function (param) {
+            img01.className += " out";
+
+            setTimeout(function() {
+              modal.style.display = "none";
+              img01.className = "modal-content-vehiculo";
+
+            }, 400);
+           
+            })
         document.getElementById("container-grid").append(backgroud_img)
         document.getElementById("container-grid").append(backgroud_img2)
+        document.getElementById("container-grid").append(modal)
 
 
 
