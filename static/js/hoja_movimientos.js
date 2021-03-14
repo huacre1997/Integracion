@@ -310,7 +310,7 @@ $(document).ready(function () {
                           }
 
                           if (error == 0) {
-                            fetch('../montaje/', {
+                            fetch('../../montaje/', {
                               method: "POST",
                               headers: {
                                 'X-CSRFToken': csrftoken
@@ -594,7 +594,7 @@ $(document).ready(function () {
 
                   }
                   if (error == 0) {
-                    fetch('../desmontaje/', {
+                    fetch('../../desmontaje/', {
                       method: "POST",
                       headers: {
                         'X-CSRFToken': csrftoken
@@ -683,7 +683,7 @@ $(document).ready(function () {
                           }
 
                           if (error == 0) {
-                            fetch('../montaje/', {
+                            fetch('../../montaje/', {
                               method: "POST",
                               headers: {
                                 'X-CSRFToken': csrftoken

@@ -661,7 +661,7 @@ class VehiculoForm(forms.ModelForm):
         exclude=["nro_ejes","vehiculo","eliminado","modified_at","created_at","modified_by"]
 
         widgets = {
-            'ano': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'1950', 'step':'1'}),
+            'ano': forms.TextInput( attrs={'class':'form-control','type':'number', 'step':'1'}),
             'modelo_vehiculo': forms.Select( attrs={'class':'form-control'}),
             'tipo_vehiculo': forms.Select( attrs={'class':'form-control'}),
             'propiedad': forms.TextInput( attrs={'class':'form-control'}),

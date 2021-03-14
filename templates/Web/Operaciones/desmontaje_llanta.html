@@ -40,13 +40,12 @@
             </div>
         </div>
         <div class="form-row">
-            <label for="">Condición</label>
+           <label for="">Condición</label>
             <select name="estado" id="id_estado" class="form-select">
-                <option value="0">Seleccione condicion...</option>
-                {% for i in condicion  %}
-                <option value="{{i.id}}">{{i.descripcion}}</option>
+                <option value="0">Seleccione Condición...</option>
+                {% for i in estado  %}
+                <option value="{{i.0}}">{{i.1}}</option>
                 {% endfor %}
-    
             </select>
                             <div class="invalid-feedback" id="invalid_estado"></div>
 

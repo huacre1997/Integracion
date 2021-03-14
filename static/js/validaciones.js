@@ -17,8 +17,10 @@ function validatePlaca(num) {
 
 function validateAño(num) {
     if (parseInt(num) > 1700 && parseInt(num) <3000) {
+        console.log("Año valido");
         return true
     }
+    console.log("año invalido");
     return false
 }
 

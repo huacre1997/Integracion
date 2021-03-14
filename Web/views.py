@@ -560,7 +560,7 @@ class UbicacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     form_class = UbicacionForm
     model = Ubicacion
     template_name = 'Web/Catalogos//ubicacion.html'
-    success_url = reverse_lazy("Web:lugares")
+    success_url = reverse_lazy("Web:Ubicaciones")
     action = ACCION_EDITAR
 
     permission_required=["Web.change_ubicacion"]
@@ -2042,7 +2042,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
-        print(self.get_object())
+        print(self.request.POST)
         try:
             form2=CubiertaForm(request.POST)
             form1=LlantaForm(request.POST,instance=self.get_object())
@@ -2081,19 +2081,29 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 instance.marca_llanta_id=self.request.POST["marca_llanta"]
                 if "repuesto" in request.POST:
                     instance.repuesto=True
+                    
                 else:
                     instance.repuesto=False
                 if "activo" in request.POST:
                     instance.activo=True
+                    instance.ubicacion_id=self.request.POST["ubicacion"]
+                    instance.estado=self.request.POST["estado"]
+                    if self.request.POST["posicion"]!="":
+                        instance.posicion=self.request.POST["posicion"]
+                    else:
+                        instance.posicion=None
+
                 else:
                     instance.activo=False
-                instance.estado=self.request.POST["estado"]
-                if self.request.POST["posicion"]!="":
-                    instance.posicion=self.request.POST["posicion"]
-                else:
-                    instance.posicion=None
 
-                instance.ubicacion_id=self.request.POST["ubicacion"]
+                    instance.vehiculo=None
+                    instance.posicion=None
+                    
+                    instance.repuesto=False
+
+            
+                    instance.ubicacion_id=3
+              
 
                 if self.get_object().cubierta:
                     instance.cubierta=instance2
@@ -2210,12 +2220,14 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     permission_required=["Web.add_vehiculo"]
     
     def form_valid(self, form):
+        print(self.request.POST)
         instance = form.save(commit=False)
         instance.created_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
     def form_invalid(self, form):
+        print(form.errors)
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
 
@@ -2381,7 +2393,7 @@ def getTipo(request,id):
     return JsonResponse(data,safe=False)
 def LlantaSearch(request):
     template_name="Web/Catalogos/buscarLlanta.html"
-    llantas=Llanta.objects.exclude(ubicacion=None,activo=True,eliminado=False)
+    llantas=Llanta.objects.filter(vehiculo=None,activo=True,eliminado=False)
     contexto={"obj":llantas}
     return render(request,template_name,contexto)
 def view_condicion(request):
@@ -2437,10 +2449,10 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
-        context={"obs":CHOICES_OBSERVACION,"obj":request.GET}
+        context={"obs":CHOICES_OBSERVACION,"obj":request.GET,"estado":CHOICES_ESTADO_LLANTA}
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):
-        # print(request.POST)
+        print(request.POST)
         try:
             llanta=Llanta.objects.filter(id=request.POST["llanta"])
             if llanta.exists():
@@ -2450,7 +2462,9 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
                     objeto.vehiculo=None
                     objeto.posicion=None
                     objeto.estado=request.POST["estado"]
+                    objeto.repuesto=False
 
+            
                     objeto.ubicacion_id=request.POST["ubicacion"]
                     objeto.save()
                     historial=HistorialLLantas()
@@ -2470,10 +2484,10 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
                     historial.ubicacion_id=request.POST["ubicacion"]
 
                     historial.save()
-                    ins=InpeccionLlantas.objects.get(vehiculo_id=request.POST["vehiculo"])
+                    # ins=InpeccionLlantas.objects.get(vehiculo_id=request.POST["vehiculo"])
                     
-                    det=DetalleInspeccion.objects.get(inspeccion=ins,posicion=request.POST["posicion"])
-                    det.delete()
+                    # det=DetalleInspeccion.objects.get(inspeccion=ins,posicion=request.POST["posicion"])
+                    # det.delete()
                     response={"status":200}
             else:
                 response={"status":500,"message":"Esa llanta no existe."}
@@ -2488,8 +2502,7 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
- 
-        return render(self.request,self.template_name)
+        return render(self.request,self.template_name,{"obj":request.GET})
     def post(self,request,*args, **kwargs):
         print(request.POST)
         try:
@@ -2504,7 +2517,7 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
                         pos=request.POST["posicion"]
                     
                     objeto=llanta.first()
-                    objeto.ubicacion_id=None
+                    objeto.ubicacion_id=1
 
                     objeto.vehiculo_id=request.POST["vehiculo"]
                     objeto.repuesto=rep
@@ -2521,16 +2534,16 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
                     historial.created_by=self.request.user
                     historial.ubicacion_id=None
                     historial.save()
-                    ins,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=request.POST["vehiculo"])
-                    detalle=DetalleInspeccion()
-                    detalle.inspeccion=ins
-                    detalle.posicion=request.POST["posicion"]
-                    if request.POST["repuesto"]=="1":
-                        detalle.repuesto=True
-                    else:
-                        detalle.repuesto=False
-                    detalle.llanta=objeto
-                    detalle.save()
+                    # ins,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=request.POST["vehiculo"])
+                    # detalle=DetalleInspeccion()
+                    # detalle.inspeccion=ins
+                    # detalle.posicion=request.POST["posicion"]
+                    # if request.POST["repuesto"]=="1":
+                    #     detalle.repuesto=True
+                    # else:
+                    #     detalle.repuesto=False
+                    # detalle.llanta=objeto
+                    # detalle.save()
                     response={"status":200,"id":objeto.id,"codigo":objeto.codigo,"posicion":request.POST["posicion"]}
             else:
                 response={"status":500,"message":"Esa llanta no existe."}
