@@ -158,7 +158,7 @@
   fetch("../../../getTipo/"+document.getElementById("id_tipo_vehiculo").value+"/").then(data=>data.json())
     .then(response=>{
 
-      document.getElementById("img-vehiculo").setAttribute("src","{% static 'img/vehiculos/' %}"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+      document.getElementById("img-vehiculo").setAttribute("src","../../..{% static 'img/vehiculos/' %}"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
     })
 console.log( );
  document.getElementById("id_tipo_vehiculo").addEventListener("change",function (param) {
@@ -171,7 +171,7 @@ console.log( );
   document.getElementById("img-vehiculo").setAttribute("src","")
     fetch(url).then(data=>data.json())
     .then(response=>{
-      document.getElementById("img-vehiculo").setAttribute("src","../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+      document.getElementById("img-vehiculo").setAttribute("src","../../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
     })
     })
   document.getElementById("id_ano").addEventListener('input', function (event) {

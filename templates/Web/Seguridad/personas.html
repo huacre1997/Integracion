@@ -65,7 +65,7 @@
     tablaPersonas = $("#TablaPersona").DataTable({
       responsive: true,
       processing: true,
-      "order": [],
+                      "order": [[0, "asc" ]],
 
       ajax: {
         url: "{% url 'Web:Personas' %}",
@@ -403,6 +403,7 @@
 
           },
         },
+
         onContentReady: function () {
           // when content is fetched & rendered in DOM
           this.$content.find('form').on('submit', function (e) {

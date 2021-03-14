@@ -10,10 +10,12 @@
 <style>
   .img2{
     
-  
-  background:transparent url('{% static "img/vehiculos/" %}/{{obj.tipo_vehiculo.codigo}}/{{obj.tipo_vehiculo.codigoImagen}}.png') no-repeat center center;  
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100px;
 
- 
+ width: auto;
 
    
   }
@@ -119,7 +121,7 @@
             <div class="{{obj.tipo_vehiculo.codigoPosicion}}">
           
               <div class="img"></div>
-              <div class="img2"></div>
+              <img class="img2"  alt="Error " id="myImg" src='{% static "img/vehiculos/" %}/{{obj.tipo_vehiculo.codigo}}/{{obj.tipo_vehiculo.codigoImagen}}.png'>
 
                 
          
@@ -142,7 +144,7 @@
               </div>
                   {% endfor %}
 
-                  <div style="display: grid; grid-column-start: 21;grid-row-start: 1;grid-row-end: 6;">
+                  <div style="display: grid; grid-column-start: 21;grid-row-start: 2;grid-row-end: 7;">
   
   
                   {% for i  in ubicaciones  %}
@@ -169,7 +171,10 @@
     </div>
   </div>
 </div>
-<!-- End of Page Wrapper -->
+<div id="myModal" class="modal">
+  <img class="modal-content-vehiculo" id="img01">
+</div>
+
 {% endblock %}
 {% block bottom_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
@@ -278,7 +283,7 @@ function dragged(e) {
       ondrop: function (event) {
         event.relatedTarget.classList.add('can-drop')
         console.log("ondrop");
- let url = " ../../desmontaje?" + new URLSearchParams({
+ let url = " ../../../desmontaje?" + new URLSearchParams({
           llanta:  event.relatedTarget.dataset.llanta,
           codigo: event.relatedTarget.dataset.codigo,
           posicion:  event.relatedTarget.dataset.posicion,
@@ -372,7 +377,7 @@ function dragged(e) {
                       event.relatedTarget.parentNode.addEventListener("click", function AbriModantaje(param) {
                           console.log("montaje despues de soltar llanta");
                             console.log(param)
-                          let url = " ../../montaje?" + new URLSearchParams({
+                          let url = " ../../../montaje?" + new URLSearchParams({
                             posicion: param.target.dataset.posicion,
                             vehiculo: "{{obj.id}}",
                             placa: "{{obj.placa}}"
@@ -605,7 +610,7 @@ Array.from(document.getElementsByClassName("bordeado")).forEach(el=>{
                   repuesto=0
                     titulo="Montar Llanta"
                 }
-                let url = " {% url 'Web:ver-montaje' %}?" + new URLSearchParams({
+                let url = " ../../..{% url 'Web:ver-montaje' %}?" + new URLSearchParams({
                   posicion: event.target.dataset.posicion,
                   repuesto,
                   vehiculo: "{{obj.id}}",

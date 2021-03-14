@@ -1028,7 +1028,7 @@ class MarcaLlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in MarcaLlanta.objects.filter(eliminado=False).order_by("created_at").reverse():
+                for i in MarcaLlanta.objects.filter(eliminado=False):
                     data.append(i.toJSON())
 
             else:

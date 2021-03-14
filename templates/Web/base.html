@@ -11,7 +11,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>.:Neumaticos:.</title>
+  <title>VG 365</title>
 
   <!-- Custom fonts for this template-->
   <!--link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"-->
@@ -66,10 +66,13 @@ textarea, .vTextField {
   .middle{
   vertical-align: middle !important;
 }
+
   .swal2-container {
     z-index: 999999999;
   }
-
+#content{
+  flex: 1 0 auto;
+}
 {% comment %} select {
   height: 30px;
 } {% endcomment %}
@@ -82,7 +85,8 @@ textarea, .vTextField {
     <!-- Sidebar -->
     
     {% block sidebar %}
-      
+    <ul class="navbar-nav sidebar sidebar-dark " id="accordionSidebar"  style="width: 0 !important;"></ul>
+
     {% endblock sidebar %}
       
     <!-- End of Sidebar -->
@@ -91,10 +95,10 @@ textarea, .vTextField {
     <div id="content-wrapper" class="d-flex flex-column">
 
       <!-- Main Content -->
-      <div id="contenedor">
+      <div id="content">
 
         <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        <nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow">
           <!-- Sidebar Toggle (Topbar) -->
           <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
             <i class="fa fa-bars"></i>
@@ -127,7 +131,6 @@ textarea, .vTextField {
             <!-- Nav Item - Alerts -->
             
             {% block inicio %}
-              
             {% endblock inicio %}
               
 
@@ -158,6 +161,17 @@ textarea, .vTextField {
             <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
 
             <!-- Nav Item - User Information -->
+            
+            {% block titleheader %}
+            <li class="nav-item dropdown no-arrow" style="grid-column: 1/4;" >
+              <a class="nav-link" role="button" aria-expanded="false">
+               <img src="{% static 'img/logo.png' %}" width="30%" alt="">
+              </a>
+           
+            </li>
+            {% endblock titleheader %}
+              
+          
             <li class="nav-item dropdown no-arrow" style="grid-column-start: 8;">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{request.user.persona}}</span>
@@ -189,11 +203,10 @@ textarea, .vTextField {
      
       <style>
         .item-lock{
-          width:90%;
-          height:100px;
+          height:120px;
           border: 1px white;
           border-radius: 10px;
-          background-color:#4e73df;
+          background-color:#d7dbdd;
 
         }
      
@@ -226,28 +239,74 @@ textarea, .vTextField {
           display: grid;
     grid-template-columns: repeat(6,1fr);
     grid-template-rows: repeat(4,1fr);
-    grid-gap:   10px;
+    grid-gap:   20px;
     
+        }
+        .justify-self-center{
+          justify-self: center;
         }
       </style>
       
       {% block content %}
            <div class="grid-index">
+            <div style="grid-column: 2/4; align-self: flex-end;">
+               <label for="" class="">Seleccione el Módulo al que va acceder:</label>
+ 
+              </div>
+              {% if 'auth.view_seguridad' in perm %}
+
+            <div class="position-1">
+             <div class="shadow  item-lock justify-self-center">
+              <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:seguridad' %}">
+                <img width="60%" height="100%" src="{% static 'img/iconos/seguridad.png' %}" alt="">
+              </a>
+              <label  style="color: #014782;font-weight: bold;" class="w-100 text-center">Seguridad</label>
+
+             </div>
+          </div>
+            {%endif%}
             {% if 'auth.view_catalogos' in perm %} 
 
-            <div class="shadow  item-lock position-1"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:catalogos' %}">Catálogos</a></div>
+            <div class="position-2">
+              <div class="shadow  item-lock justify-self-center">
+                <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:catalogos' %}">
+                  <img width="60%" height="100%" src="{% static 'img/iconos/catalogos.png' %}" alt="">
+
+
+                </a>
+                <label  style="color: #014782;font-weight: bold;" class="w-100 text-center">Catálogos</label>
+  
+               </div>
+            </div>
             {%endif%}
             {% if 'auth.view_procesos' in perm %} 
 
-            <div class="shadow  item-lock  position-2"><a class="nav-link d-flex   text-white align-items-center justify-content-center h-100" href="{% url 'Web:operaciones' %}">Procesos</a></div>
-            {%endif%}
-            <div class="shadow  item-lock position-3"><a class="nav-link d-flex   text-white align-items-center justify-content-center h-100" href="{% url 'Web:reportes' %}">Reportes</a></div>
-            {% if 'auth.view_seguridad' in perm %}
+            <div class="position-3">
+              <div class="shadow  item-lock justify-self-center">
+                <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:operaciones' %}">
+                  <img width="60%" height="100%" src="{% static 'img/iconos/neumaticos.png' %}" alt="">
 
-            <div class="shadow  item-lock position-4"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:seguridad' %}">Seguridad</a></div>
+
+
+                </a>
+                <label  style="color: #014782;font-weight: bold;" class="w-100 text-center ">Neumáticos</label>
+  
+               </div>
+            </div>
             {%endif%}
-            <div class="shadow  item-lock position-5"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="#">Módulo</a></div>
-            <div class="shadow  item-lock position-6"><a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="#">Módulo</a> </div>
+            <div class="position-4">
+              <div class="shadow  item-lock justify-self-center">
+                <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:reportes' %}">
+                  <img width="60%" height="100%" src="{% static 'img/iconos/reportes.png' %}" alt="">
+
+
+                </a>
+                <label for="" class="w-100 text-center"  style="color: #014782;font-weight: bold;">Reportes</label>
+  
+               </div>
+            </div>
+         
+          
            
            </div>
       {% for i in messages  %}
@@ -260,11 +319,11 @@ textarea, .vTextField {
       <!-- End of Main Content -->
 
       <!-- Footer -->
-      <footer class="sticky-footer bg-white">
+      <footer class="sticky-footer"  style="background-color: #014782;   padding: 0.88rem 0 !important; ">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; 2020 - Logistic & VG365</span>
-          </div>
+            <strong class="text-white">Copyright &copy; 2021 Sistema de Gestión de Vehículos</strong>       
+             </div>
         </div>
       </footer>
       <!-- End of Footer -->

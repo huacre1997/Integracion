@@ -1,5 +1,6 @@
  {% extends 'Web/base.html' %}
 {% load base_extras %}
+                   {% block titleheader %}{% endblock %}
 
 {% block inicio %}
    <li class="nav-item dropdown no-arrow mx-1 d-flex align-items-center justify-content-between">
@@ -10,7 +11,7 @@
  
 
 {% block sidebar %}
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style="transition:1s">
+    <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #014782; transition:1s;">
       
  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
         <div class="sidebar-brand-icon rotate-n-15">

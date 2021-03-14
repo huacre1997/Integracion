@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,77 +9,108 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Login</title>
+  <title>VG 365 - Login</title>
 
-  <!-- Custom fonts for this template-->
-  <link href="{% static "vendor/fontawesome-free/css/all.min.css" rel="stylesheet" %}" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
 
   <!-- Custom styles for this template-->
   <link href="{% static "css/sb-admin-2.min.css" %}" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
-<style>
-  .bg-login-imagex{
-    background:url({% static "img/logo_login.jpg" %});
-    background-position:center;
-    background-size:cover
+  <style>
+    html,body{
+      height: 100%;
+      overflow: hidden;
     }
-  .title{
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 20px;
-    margin-top: 20px;
-    text-align: center;
-    color:white;
-  }
-</style>
+    .title {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: 20px;
+      margin-top: 20px;
+      text-align: center;
+      color: white;
+    }
+    .bg{
+      background:transparent url('{% static "img/fondo.png" %}') no-repeat center center; 
+      background-size: cover; 
+    }
+  </style>
 </head>
 
-<body class="bg-gradient-default" style="height: 100vh;">
+<body class="bg-gradient-default" >
+<div id="wrapper" style="height: 100%;">
+  <div id="content-wrapper" class="bg d-flex flex-column">
 
-  <div class="container h-100 d-flex flex-wrap align-items-center">
+  <div class="container h-100 d-flex flex-wrap align-items-center justify-content-center">
 
     <!-- Outer Row -->
     <div class="row justify-content-center w-100">
 
-      <div class="col-xl-10 col-lg-12 col-md-9">
+      <div class="col-xl-4 col-lg-12 col-md-9">
 
-        <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card o-hidden border-0 my-5" style="background-color: #d7dbdd; border-radius: 1.1em;">
           <div class="card-body p-0">
             <!-- Nested Row within Card Body -->
             <div class="row">
-              <div class="col-lg-6 d-none d-lg-block bg-login-imagex">
-                <div class="title"></div>
-                
-              </div>
-              <div class="col-lg-6">
+
               {% block contentLogin %}
-                <div class="p-5">
-                  <div class="text-center">
-                    <h1 class="h3 text-gray-900 mb-4">Control de Neumáticos de Flota Pesada</h1>
-                  </div>
-                  <div class="text-center">
-                    <h1 class="h5 text-gray-900 mb-4">Credenciales de Acceso</h1>
-                  </div>
-                  <form class="user" method="POST">
-                    {% csrf_token %}
-                    <div class="form-group">
-                      {{ form }}
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-user btn-block">Ingresar</button>
-                    <br/>
-              
-
-
-                  </form>
-                  <hr>
-                  <div class="text-center">   
-                    <a class="small" href="{% url 'Web:password_reset' %}">¿Restablecer contraseña?</a>
-                  </div>
-                  
+              <div class="p-5">
+                <img width="60%" src="{% static 'img/logo.png' %}" class="mb-4 d-block m-auto" alt="">
+                <div class="text-center">
+                  <h1 class="h5 text-gray-900 mb-4">Credenciales de Acceso</h1>
                 </div>
-                {% endblock contentLogin %}
+                <form class="user" method="POST">
+                  {% csrf_token %}
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="fa fa-user"
+                        aria-hidden="true"></i></span>
+                    <input type="text" name="usuario" class="form-control" aria-label="Usuario"
+                      aria-describedby="basic-addon1" placeholder="Usuario" autocapitalize="none" required
+                      id="id_usuario"> 
+                    </div>
+
+                    <div class="input-group mb-3">
+                      <span class="input-group-text" id="basic-addon2"><i class="fa fa-lock"
+                          aria-hidden="true"></i></span>
+                      <input type="password" name="clave" class="form-control" aria-label="Contraseña"
+                        aria-describedby="basic-addon2" placeholder="Contraseña" autocapitalize="none" required
+                        id="id_clave"> 
+                      </div>
+
+                  <button type="submit" class="btn  btn-block text-white" style="background-color: #014782;">Iniciar Sesión</button>
+                  <br />
+
+
+
+                </form>
+                <hr>
+                <div class="row">
+                  <div class="col-lg-4 d-flex justify-content-center">
+                    <!-- Checkbox -->
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        value=""
+                        id="form1Example3"
+                        checked
+                      />
+                      <label class="form-check-label" for="form1Example3"> Remember </label>
+                    </div>
+                  </div>
+              
+                  <div class="col-lg-8  d-flex justify-content-center">
+                    <!-- Simple link -->
+                    <a style="text-decoration: none;" href="{% url 'Web:password_reset' %}">Olvidaste tu contraseña?</a>
+                  </div>
+                </div>
+
               </div>
+              {% endblock contentLogin %}
             </div>
           </div>
         </div>
@@ -86,9 +118,24 @@
       </div>
 
     </div>
+    <div class="row justify-content-center" >
+       <p>
+        <strong style="color: #014782;">Copyright &copy; 2021</strong>
+        <strong class="text-white" >Sistema de Gestión de Vehículos</strong>
+       </p>
 
+
+    </div>
+  
   </div>
-
+  <footer class="sticky-footer" style="background-color: #014782;   padding: 0.8rem 0 !important; ">
+    <div class="container my-auto">
+      <div class="copyright text-center my-auto">
+      </div>
+    </div>
+  </footer>
+</div>
+</div>
   <!-- Bootstrap core JavaScript-->
   <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
   <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
@@ -99,8 +146,8 @@
   <!-- Custom scripts for all pages-->
   <script src="{% static "js/sb-admin-2.min.js" %}"></script>
   <script>
-           const notificacion=(time,title,type,message)=>   {
-    Swal.fire({
+    const notificacion = (time, title, type, message) => {
+      Swal.fire({
         title: title,
         timer: time,
         timerProgressBar: true,
@@ -108,23 +155,21 @@
         showConfirmButton: false,
         text: message,
 
-    })
-  }
-    {% if messages %}
-    var html_message=""
-    var tipo=""
-        {% for mensaje in messages %}
-            html_message+="{{mensaje}}"
-            tipo+="{{mensaje.tags}}"
-        {%endfor%}
-        if(tipo=="success"){
-          notificacion(1500,"Genial!","success",html_message)
+      })
+    } {% if messages %}
+    var html_message = ""
+    var tipo = "" 
+    {% for mensaje in messages %}  
+     html_message += "{{mensaje}}"
+    tipo += "{{mensaje.tags}}" 
+    {% endfor %}
+    if (tipo == "success") {
+      notificacion(1500, "Genial!", "success", html_message)
 
-        }else{
-        notificacion(1500,"Ha ocurrido un error!","error",html_message)
-        }
-    {%endif%}
-
+    } else {
+      notificacion(1500, "Ha ocurrido un error!", "error", html_message)
+    } 
+    {% endif %}
   </script>
 </body>
 

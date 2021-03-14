@@ -52,17 +52,13 @@ class UserForgotPasswordForm(PasswordResetForm):
 class LoginForm(forms.Form):
     usuario = forms.CharField(widget=forms.TextInput(
         attrs={
-        'class': 'form-control form-control-user',
         'autofocus': 'autofocus',
-        'placeholder': 'Nombre de usuario',
         'autocapitalize': 'none'
         })
     )
     clave = forms.CharField(widget=forms.TextInput(
         attrs={
-        'class': 'form-control form-control-user',
         'autofocus': 'autofocus',
-        'placeholder': 'Clave',
         'autocapitalize': 'none',
         'type': 'password'
         })
