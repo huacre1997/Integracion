@@ -663,6 +663,9 @@ class VehiculoForm(forms.ModelForm):
             'propiedad': forms.TextInput( attrs={'class':'form-control'}),
             'placa': forms.TextInput( attrs={'class':'form-control',"maxlength":"8"}),
             'operacion': forms.TextInput( attrs={'class':'form-control'}),
+            'nro_chasis': forms.TextInput( attrs={'class':'form-control'}),
+            'nro_motor': forms.TextInput( attrs={'class':'form-control'}),
+
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             'nro_llantas_repuesto': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
             'obs': forms.Textarea( attrs={'class':'form-control',"cols":"3","rows":"2"}),

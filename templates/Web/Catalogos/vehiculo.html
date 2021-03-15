@@ -19,7 +19,7 @@
             <form method="post"  action="" class="needs-validation" novalidate>
             {% csrf_token %}
             <div class="card-body">
-              <div class="babge badge-info"> Datos Generales del Vehículo</div>
+              <div class="babge badge-info" style="padding:0.3rem"> Datos Generales del Vehículo</div>
               <div class="form-row">	
                <div class="form-group col-lg-3">
                    <label for="">Placa</label>
@@ -69,7 +69,7 @@
               </div>
              
             
-              <div class="babge badge-info"> Características de Operación</div>
+              <div class="babge badge-info" style="padding:0.3rem"> Características de Operación</div>
                 <div class="form-row">	
                   <div class="form-group col-lg-4">
                     <label for="">Operación</label>
@@ -114,27 +114,39 @@
               </div> {% endcomment %}
 
                 <div class="form-row">	
-                  <div class="form-group col-lg-4">
+                  <div class="form-group col-lg-3">
                     <label for="">Km promedio</label>
                     {{form.km}}
                     <div class="invalid-feedback" id="invalid_km">Este campo es requerido</div>
                   </div>
                 
-                  <div class="form-group col-lg-4">
+                  <div class="form-group col-lg-3">
                    <label for="">Nro Llantas de repuesto</label>
                     {{form.nro_llantas_repuesto}}
                     <div class="invalid-feedback" id="invalid_repuesto">Este campo es requerido</div>
                   </div>
-               
+               <div class="form-group col-lg-3">
+                    <label for="">N° Chasis</label>
+                    {{form.nro_chasis}}
+                    <div class="invalid-feedback" id="invalid_chasis">Este campo es requerido</div>
+                  </div>
+                
+                  <div class="form-group col-lg-3">
+                   <label for="">N° Motor</label>
+                    {{form.nro_motor}}
+                    <div class="invalid-feedback" id="invalid_motor">Este campo es requerido</div>
+                  </div>
               </div>
              
               <br>
-              <div class="babge badge-info" > Observaciones </div>
+              <div class="babge badge-info" style="padding:0.3rem" > Observaciones </div>
             <div class="row">
 
                     <div class="col-lg-12">{{form.obs}}</div>
-          </div>              <div class="d-flex">
-                <div class="babge badge-info" style="width:100%"> Imagen Referencial </div>
+          </div>             
+          <br>
+           <div class="d-flex">
+                <div class="babge badge-info" style="padding:0.3rem;width:100%"> Imagen Referencial </div>
               </div>
 
               <br>
@@ -174,7 +186,8 @@
     })
     {%endif%}
 console.log( );
- document.getElementById("id_tipo_vehiculo").addEventListener("change",function (param) {
+$("#id_tipo_vehiculo").on("change",function (param) {
+   console.log("DASDASDASDASD")
    {% if update %}
   let url="../../../getTipo/"+param.target.options[param.target.options.selectedIndex].value
    {% else %}

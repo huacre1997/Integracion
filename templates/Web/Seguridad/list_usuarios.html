@@ -21,10 +21,8 @@
       </div>
       <div class="card-body">
 
-        <form method="GET" action="" id="frmlist">
-          {% csrf_token %}
+      
 
-          <br>
           <div class="table-responsive">
             <table class="table  table-hover  dt-responsive" id="TablaUsuarios" style="width: 100%;">
               <thead>
@@ -43,7 +41,6 @@
               </tbody>
             </table>
           </div>
-        </form>
 
       </div>
     </div>
@@ -111,7 +108,7 @@
         
         {
           "data": 'is_active',
-          className: "estado middle",
+          className: "estado middle text-center",
           render: function (data, type, row) {
             console.log(data);
             if (data) {
@@ -250,8 +247,9 @@
               },
             }).then(data => data.json()).then(response => {
               if (response.status = 200) {
-                notificacion(1500, "Genial!", "success", "Usuario inhabilitado")
                 TablaUsuarios.ajax.reload()
+
+                notificacion(1500, "Genial!", "success", "Usuario inhabilitado")
               } else
               if (response == 404) {
                 notificacion(1500, "Error", "error", "Ese usuario no existe")
