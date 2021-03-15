@@ -5426,8 +5426,9 @@ grid-template-rows: repeat(10,50px);
 
 } 
 .img-vehiculo{
-  height: 150px;
-  width: auto;
+  height: 140px;
+  width: 100%;
+  object-fit: contain;
 }
 
 #myImg {

@@ -59,10 +59,11 @@
     $(document).ready(function() {
      tablaUbicaciones=$('#dataTable').DataTable({
             responsive: true,
-            "lengthMenu": [
-              [5, 10, 25, 50, -1],
-              [5, 10, 25, 50, "All"]
-            ],
+              stateSave: true,
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
                language:{
                     "url": "{% static 'language.json' %}",
 

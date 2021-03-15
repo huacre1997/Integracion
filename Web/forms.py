@@ -665,7 +665,7 @@ class VehiculoForm(forms.ModelForm):
             'operacion': forms.TextInput( attrs={'class':'form-control'}),
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             'nro_llantas_repuesto': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
-            'obs': forms.Textarea( attrs={'class':'form-control',"cols":"3","rows":"6"}),
+            'obs': forms.Textarea( attrs={'class':'form-control',"cols":"3","rows":"2"}),
         }
 
     def __init__(self, *args, **kwargs):

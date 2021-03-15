@@ -21,25 +21,12 @@
             <div class="card-body">
               <div class="babge badge-info"> Datos Generales del Vehículo</div>
               <div class="form-row">	
-                  <div class="form-group col-lg-4">
-                    <label for="">Configuración vehicular</label>
-                    {{form.tipo_vehiculo}}
-                    <div class="invalid-feedback" id="invalid_tipo">Este campo es requerido</div>
-                  </div>
-                  <div class="form-group col-lg-4">
-                   <label for="">Propiedad</label>
-                    {{form.propiedad}}
-                    <div class="invalid-feedback" id="invalid_propiedad">Este campo es requerido</div>
-                  </div>
-                  <div class="form-group col-lg-4">
+               <div class="form-group col-lg-3">
                    <label for="">Placa</label>
                     {{form.placa}}
                     <div class="invalid-feedback" id="invalid_placa">Este campo es requerido</div>
                   </div>
-               
-              </div>
-                <div class="form-row">	
-                  <div class="form-group col-lg-4">
+                        <div class="form-group col-lg-3">
                   <label for="">Marca del Vehículo</label>
                      <select name="marca_vehiculo" id="id_marca" class="form-select" onchange="actualizarmodelo()">
                 <option value=""></option>
@@ -52,16 +39,32 @@
                   {% endfor %}
                   </select>
                   </div>
-                  <div class="form-group col-lg-4">
+                     <div class="form-group col-lg-3">
                    <label for="">Modelo del Vehículo</label>
                     {{form.modelo_vehiculo}}
                     <div class="invalid-feedback" id="invalid_modelo_vehiculo">Este campo es requerido</div>
                   </div>
-                  <div class="form-group col-lg-4">
+                    <div class="form-group col-lg-3">
                    <label for="">Año</label>
                     {{form.ano}}
                     <div class="invalid-feedback" id="invalid_ano">Este campo es requerido</div>
                   </div>
+               
+              </div>
+                <div class="form-row">	
+            
+             
+                    <div class="form-group col-lg-3">
+                    <label for="">Configuración vehicular</label>
+                    {{form.tipo_vehiculo}}
+                    <div class="invalid-feedback" id="invalid_tipo">Este campo es requerido</div>
+                  </div>
+                  <div class="form-group col-lg-3">
+                   <label for="">Propiedad</label>
+                    {{form.propiedad}}
+                    <div class="invalid-feedback" id="invalid_propiedad">Este campo es requerido</div>
+                  </div>
+               
                
               </div>
              
@@ -126,20 +129,22 @@
               </div>
              
               <br>
-              <div class="d-flex">
-                <div class="babge badge-info" style="width:32%"> Observaciones </div>
-                <div class="babge badge-info" style="width:68%"> Imagen Referencial </div>
+              <div class="babge badge-info" > Observaciones </div>
+            <div class="row">
+
+                    <div class="col-lg-12">{{form.obs}}</div>
+          </div>              <div class="d-flex">
+                <div class="babge badge-info" style="width:100%"> Imagen Referencial </div>
               </div>
 
               <br>
               <div class="row">
-                <div class="col-lg-4">{{form.obs}}</div>
-                
-                  <div class="col-lg-6"><img class="img-vehiculo" src="" id="img-vehiculo" alt=""></div>
+                  <div class="col-lg-6"><img class="img-vehiculo"  id="img-vehiculo2"></div>
+
+                  <div class="col-lg-6"><img class="img-vehiculo" id="img-vehiculo" ></div>
 
               </div>
-         
-			
+             
             </div>
             <div class="card-footer text-muted">
                 <button type="submit" class="btn btn-primary">Grabar</button>
@@ -154,12 +159,20 @@
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
+      $("#id_tipo_vehiculo").select2()
+      {% if update %}
 
-  fetch("../../../getTipo/"+document.getElementById("id_tipo_vehiculo").value+"/").then(data=>data.json())
+  fetch("../../../getTipo/"+document.getElementById("id_tipo_vehiculo").value).then(data=>data.json())
     .then(response=>{
 
       document.getElementById("img-vehiculo").setAttribute("src","../../..{% static 'img/vehiculos/' %}"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
     })
+     fetch("../../../getTipo/"+document.getElementById("id_tipo_vehiculo").value).then(data=>data.json())
+    .then(response=>{
+
+      document.getElementById("img-vehiculo2").setAttribute("src","../../..{% static 'img/vehiculos/' %}"+response.response[0].codigo+"/"+response.response[0].codigoPosicion+".png")
+    })
+    {%endif%}
 console.log( );
  document.getElementById("id_tipo_vehiculo").addEventListener("change",function (param) {
    {% if update %}
@@ -168,10 +181,11 @@ console.log( );
   let url="../../getTipo/"+param.target.options[param.target.options.selectedIndex].value
 
    {% endif %}
-  document.getElementById("img-vehiculo").setAttribute("src","")
     fetch(url).then(data=>data.json())
     .then(response=>{
       document.getElementById("img-vehiculo").setAttribute("src","../../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+          document.getElementById("img-vehiculo2").setAttribute("src","../../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoPosicion+".png")
+
     })
     })
   document.getElementById("id_ano").addEventListener('input', function (event) {

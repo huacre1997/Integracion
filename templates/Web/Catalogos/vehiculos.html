@@ -106,9 +106,10 @@
     
     tabla = $("#tablaVehiculo").DataTable({
       processing:"true",
+              stateSave: true,
+
     responsive: true,
             destroy: true,
-
       "lengthMenu": [
         [5, 10, 25, 50, -1],
         [5, 10, 25, 50, "All"]
@@ -214,7 +215,8 @@
 
     });
 
-    
+    tabla.page('next');
+tabla.state.save();
   }
   $('input[name="date_ranger"]').daterangepicker({
         autoUpdateInput: false,
