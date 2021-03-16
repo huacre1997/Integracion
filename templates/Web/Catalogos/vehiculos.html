@@ -12,16 +12,16 @@
         <div class="container-fluid">
           <div class="card shadow mb-4">
       <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
-             <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Vehiculos</h6>
+             <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Registro de Vehículos</h6>
                  {% if 'Web.add_vehiculo' in perm %}
-                <a href="{% url 'Web:vehiculo' %}" class="btn btn-primary"><i class="fa fa-plus-circle"></i> </i> Regitrar Nuevo Vehiculo</a>{% endif %}
+                <a href="{% url 'Web:vehiculo' %}" class="btn btn-primary"><i class="fa fa-plus-circle"></i> </i> Regitrar Nuevo Vehículo</a>{% endif %}
 
             </div>
             <div class="card-body">
            
               <div class="form-row">
                <div class="form-group col-lg-3">
-                <label for="">Placa</label>
+                <label for="">Filtrar por Placa</label>
                     <select name="placa" id="placa" class="form-select">
                     <option value="0"></option>
                     {% for i in placa %}
@@ -30,7 +30,7 @@
                     </select>
                 </div>
                 <div class="form-group col-lg-3">
-                  <label for="">Marca</label>
+                  <label for="">Filtrar por Marca</label>
                       <select name="marca" id="marca" class="form-select">
                       <option value=""></option>
                       {% for i in marca %}
@@ -39,13 +39,13 @@
                       </select>
                   </div>
                   <div class="form-group col-lg-3">
-                    <label for="">Modelo</label>
+                    <label for="">Filtrar por Modelo</label>
                         <select name="modelo" id="modelo" class="form-select">
                       
                         </select>
                     </div>
                 <div class="form-group col-lg-3">
-                <label for="">Rango de fecha de creación</label>
+                <label for="">Filtrar por fecha de creación</label>
                             <input type="text" name="date_ranger" class="form-control" id="date_ranger" autocomplete="off">
 
                 </div>
