@@ -13,7 +13,7 @@
       <div class="card-header py-3">
         <div class="row">
           <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-edit"></i>
-            {% if update %} Editar Modelo de Renovación {% else %}Crear Modelo de Renovación {% endif %}</h6>
+            {% if update %} Editar Modelo de Banda {% else %}Crear Modelo de Banda {% endif %}</h6>
         </div>
       </div>
       <form method="post" action="" class="g-3 needs-validation" novalidate>
@@ -21,7 +21,7 @@
         <div class="card-body">
            <div class="form-row">
                 <div class="form-group col-lg-6">
-                	<label>Marca</label>
+                	<label>Reencauchadora</label>
                <select name="marca_renova" id="marca_renova" class="form-select">
                 <option value=""></option>
                 
@@ -36,7 +36,7 @@
               </div>
           <div class="form-row">
             <div class="form-group col-lg-6">
-              <label class="form-label">Descripción</label>
+              <label class="form-label">Modelo de Banda</label>
               {{form.descripcion}}
               <div class="invalid-feedback" id="invalid_descripcion">Este campo es requerido</div>
             </div>
