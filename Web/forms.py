@@ -409,12 +409,12 @@ class TipoVehiculoForm(forms.ModelForm):
             'activo': forms.CheckboxInput ( attrs={'class':'form-check-input'}),
 
         }
-    def clean_descripcion(self):
-        data=self.cleaned_data["descripcion"]
-        if self.instance.descripcion!=data:
-            if TipoVehiculo.objects.filter(descripcion=data).exists():
-                self.add_error("descripcion",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
-        return data
+    # def clean_descripcion(self):
+    #     data=self.cleaned_data["descripcion"]
+    #     if self.instance.descripcion!=data:
+    #         if TipoVehiculo.objects.filter(descripcion=data).exists():
+    #             self.add_error("descripcion",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
+    #     return data
 class ModeloLlantaForm(forms.ModelForm):
 
     class Meta:
