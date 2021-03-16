@@ -60,7 +60,7 @@ class TipoServicio(models.Model):
 
 
 class Departamento(models.Model):
-	code = models.CharField(max_length=5)
+	code = models.CharField(max_length=5,null=True,blank=True)
 	descripcion = models.CharField(max_length=100)
 
 	def __str__(self):
@@ -69,7 +69,7 @@ class Departamento(models.Model):
 
 class Provincia(models.Model):
 	departamento = models.ForeignKey(Departamento, on_delete=models.PROTECT)
-	code = models.CharField(max_length=5)
+	code = models.CharField(max_length=5,null=True,blank=True)
 	descripcion = models.CharField(max_length=100)
 
 	def __str__(self):
@@ -78,7 +78,7 @@ class Provincia(models.Model):
 
 class Distrito(models.Model):
 	provincia = models.ForeignKey(Provincia, on_delete=models.PROTECT)
-	code = models.CharField(max_length=5)
+	code = models.CharField(max_length=5,null=True,blank=True)
 	descripcion = models.CharField(max_length=100)
 
 	def __str__(self):
