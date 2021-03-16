@@ -62,7 +62,9 @@ admin.site.register(Almacen, AlmacenAdmin)
 class MarcaVehiculoAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(MarcaVehiculo, MarcaVehiculoAdmin)
-
+class VehiculoAdmin(admin.ModelAdmin):
+	pass
+admin.site.register(Vehiculo, VehiculoAdmin)
 class TipoServicioAdmin(admin.ModelAdmin):
 	pass
 admin.site.register(TipoServicio, TipoServicioAdmin)
