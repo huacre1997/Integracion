@@ -5369,7 +5369,8 @@ grid-template-rows: repeat(10,50px);
     
     }
   .P-8x4RB2,.P-B2,.P-B3,.P-B4,.P-R2,.P-R3,.P-R4,.P-T2,.P-S1,.P-S2,.P-SE2,.P-S3,.P-SE3,.P-RB1,
-  .P-RB2,.P-4x4,.P-S3-6,.P-S2-4,.P-C2-6,.P-C3-10,.P-C4-12,.P-8x4-12,.P-T3{
+  .P-RB2,.P-4x4,.P-S3-6,.P-S2-4,.P-C2-6,.P-C3-10,.P-C4-12,.P-8x4-12,.P-T3,.P-T2-6,.P-T3-10,.P-T3-6,
+  .P-C3-6{
 
     display: grid;
     grid-template-columns: repeat(21, 50px) ; 
