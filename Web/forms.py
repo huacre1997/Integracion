@@ -409,7 +409,7 @@ class TipoVehiculoForm(forms.ModelForm):
             'activo': forms.CheckboxInput ( attrs={'class':'form-check-input'}),
 
         }
-    def clean_descripcion(self):
+    def clean_codigo(self):
         data=self.cleaned_data["codigo"]
         if self.instance.descripcion!=data:
             if TipoVehiculo.objects.filter(codigo=data).exists():
