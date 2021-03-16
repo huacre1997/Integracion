@@ -411,7 +411,7 @@ class TipoVehiculoForm(forms.ModelForm):
         }
     def clean_codigo(self):
         data=self.cleaned_data["codigo"]
-        if self.instance.descripcion!=data:
+        if self.instance.codigo!=data:
             if TipoVehiculo.objects.filter(codigo=data).exists():
                 self.add_error("codigo",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
         return data
