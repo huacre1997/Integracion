@@ -129,7 +129,7 @@
               {%endif%}
                 {% endfor %}
                   {% for l in faltantes %}
-                   <div class="drag bordeado {{obj.tipo_vehiculo.codigoPosicion}}-ride{{l.posicion}}" data-posicion={{l.posicion}} >
+                   <div class="drag bordeado {{obj.tipo_vehiculo.codigoPosicion}}-ride{{l.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;" data-posicion={{l.posicion}} >
                
               </div>
                   {% endfor %}

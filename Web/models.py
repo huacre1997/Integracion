@@ -507,9 +507,9 @@ class TipoVehiculo(models.Model):
       return reverse('Web:posiciones', kwargs={'pk': self.pk})
 class PosicionesLlantas(models.Model):
    tipo=models.ForeignKey(TipoVehiculo, on_delete=models.CASCADE,null=True,blank=True)
-   posicion=models.IntegerField(default=True,blank=True)
-   posx=models.IntegerField(default=True,blank=True)
-   posy=models.IntegerField(default=True,blank=True)
+   posicion=models.IntegerField(blank=True)
+   posx=models.CharField(max_length=20, default="0",blank=True)
+   posy=models.CharField(max_length=20,default="0",blank=True)
    
 @receiver(post_save, sender=TipoVehiculo)
 def save_tipo(sender, instance, **kwargs):

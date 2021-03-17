@@ -41,7 +41,7 @@
         
                 
             <div class="P-B2">
-{% for i in obj %}
+{% for i in tipo %}
     <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;">
         <p>Pos:{{i.posicion}}</p>
     </div>
@@ -128,9 +128,10 @@ function dragged(e) {
     }
 function dragMoveListener (event) {
   var target = event.target
+  console.log(event)
   // keep the dragged position in the data-x/data-y attributes
-  var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
-  var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+  var x = (parseFloat(target.getAttribute('data-x')) || event.currentTarget.nextElementSibling.dataset.value/1.0) + event.dx
+  var y = (parseFloat(target.getAttribute('data-y')) || event.currentTarget.nextElementSibling.nextElementSibling.dataset.value/1.0) + event.dy
 
   // translate the element
   target.style.webkitTransform =
@@ -141,8 +142,8 @@ function dragMoveListener (event) {
   target.setAttribute('data-x', x   )
   target.setAttribute('data-y', y)
 
-event.currentTarget.nextElementSibling.value=x.toFixed();
-event.currentTarget.nextElementSibling.nextElementSibling.value=y.toFixed();
+event.currentTarget.nextElementSibling.value=x.toFixed(2)
+event.currentTarget.nextElementSibling.nextElementSibling.value=y.toFixed(2)
 
 }
 

@@ -105,7 +105,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "baseprueba",
-        "HOST": "localhost",
+        "HOST": "macbook-pro-de-jackeline.local",
         "USER": "root",
         "PASSWORD": "",
         "PORT": ""

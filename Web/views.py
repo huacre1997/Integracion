@@ -1702,7 +1702,8 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
             x.posx=pos[i][0]
             x.posy=pos[i][1]
             x.save()
-        return HttpResponse("aea")
+        messages.success(self.request, 'Operación realizada correctamente.')
+        return HttpResponseRedirect(reverse('Web:tipo-vehiculos',))
     def get_queryset(self):
         qs = super(DetalleTipoVehiculo, self).get_queryset()
         return qs.filter(tipo__id=self.kwargs["pk"])
@@ -2339,8 +2340,7 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
                 posrep.append(u[i].posicion)
             else:
                 pos.append(u[i].posicion)
-        
-        
+
         for i in range(1,nrollantas+1):
             if not i in pos:
                 faltantes.append(i)
@@ -2370,6 +2370,7 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
             data2.append(al2)
             al2={}
         context['obj'] =obj
+        context["tipo"]=PosicionesLlantas.objects.filter(tipo_id=obj.id)
         context["vehiculo"]=u
         context["faltantesRe"]=data2
         context["faltantes"]=data1
