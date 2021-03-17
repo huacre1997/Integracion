@@ -1,6 +1,3 @@
-
-
-
 .P-8x4RB2-ride1 {
   grid-column-start: 3;
   grid-row-start: 7;
@@ -27,14 +24,12 @@
   align-self: flex-end;
   justify-self: end;
 
-
 }
 .P-8x4RB2-ride5 {
   grid-column-start: 8;
   grid-row-start: 7;
   align-self: flex-end;
   justify-self: end;
-
   margin-right: -10px;
 
 }
@@ -44,7 +39,6 @@
   align-self: flex-end;
   justify-self: end;
   margin-right: -10px;
-
 }
 .P-8x4RB2-ride7 {
   grid-column-start: 8;
@@ -52,8 +46,6 @@
   align-self: flex-end;
   justify-self: end;
   margin-right: -10px;
-
-
 }
 .P-8x4RB2-ride8 {
   grid-column-start: 8;
@@ -5156,25 +5148,25 @@ table.dataTable tbody td {
 }
 .P-C2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-C2R2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-C2R3 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-C2RB1{
 
   display: grid;
-  grid-template-columns: repeat(21,50px);
+  grid-template-columns: repeat(21,1fr);
   /* grid-template-rows: repeat(17  ,50px); */
   grid-template-rows: repeat(10,50px);
 
@@ -5184,152 +5176,152 @@ table.dataTable tbody td {
 .P-C2RB2{
 
   display: grid;
-  grid-template-columns: repeat(21,50px);
+  grid-template-columns: repeat(21,1fr);
   grid-template-rows: repeat(10,50px);
 
 
 }
 .P-C3 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-C3R2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-C3R3 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-C3R4 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-C3RB1 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-C3RB2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-C4 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-C4R2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-C4R3 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-C4RB1 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-C4RB2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T2S1 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T2S2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T2S3 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T2SE2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T2SE3 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T3S1{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 
 .P-T3S2{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T3S2S1S2{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
 }
 .P-T3S2S2{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T3S3{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T3SE2{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T3SE2S1SE2{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T3SE2SE2{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-T3SE3{
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
@@ -5341,21 +5333,21 @@ table.dataTable tbody td {
 .P-8x4{
 
 display: grid;
-grid-template-columns: repeat(21, 50px) ;
+grid-template-columns: repeat(21, 1fr) ;
 grid-template-rows: repeat(10,50px);
 
 
 }
 .P-8x4R2 {
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   /* grid-template-rows: repeat(10,50px); */
 }
 .P-8x4R3{
 
   display: grid;
-  grid-template-columns: repeat(21, 50px) ;
+  grid-template-columns: repeat(21, 1fr) ;
   grid-template-rows: repeat(10,50px);
   
   
@@ -5363,7 +5355,7 @@ grid-template-rows: repeat(10,50px);
   .P-8x4RB1{
 
     display: grid;
-    grid-template-columns: repeat(21, 50px) ;
+    grid-template-columns: repeat(21, 1fr) ;
     grid-template-rows: repeat(10,50px);
     
     
@@ -5373,7 +5365,7 @@ grid-template-rows: repeat(10,50px);
   .P-C3-6{
 
     display: grid;
-    grid-template-columns: repeat(21, 50px) ; 
+    grid-template-columns: repeat(21, 1fr) ; 
     grid-template-rows: repeat(10,50px);
     
     
@@ -5381,7 +5373,7 @@ grid-template-rows: repeat(10,50px);
   .P-8x4R4{
 
     display: grid;
-    grid-template-columns: repeat(21, 50px) ;
+    grid-template-columns: repeat(21, 1fr) ;
     grid-template-rows: repeat(10,50px);
     
     
