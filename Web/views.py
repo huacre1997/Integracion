@@ -1674,29 +1674,53 @@ class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
 class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = TipoVehiculoForm
     template_name = 'Web/Catalogos/tipo_vehiculo.html'
-    success_url = reverse_lazy("Web:tipo-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.add_tipovehiculo"]
-
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.created_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
-
+  
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
+    
+class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
+    model=PosicionesLlantas
+    template_name = 'Web/Catalogos/posiciones.html'
+    action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
+    permission_required=["Web.add_tipovehiculo"]
+    context_object_name="obj"
+    def post(self,request,*args, **kwargs):
+        print(self.request.POST)
+        pos=[]
+        for i in range(0,len(self.request.POST)
+                       ):
+            if  i!=0:
+                pos.append((self.request.POST.getlist(f'{i}')))
+        print(pos)
+        for i,x in enumerate(self.get_queryset()):
+            print(i)
+            x.posx=pos[i][0]
+            x.posy=pos[i][1]
+            x.save()
+        return HttpResponse("aea")
+    def get_queryset(self):
+        qs = super(DetalleTipoVehiculo, self).get_queryset()
+        return qs.filter(tipo__id=self.kwargs["pk"])
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tipo"] = TipoVehiculo.objects.get(pk=self.kwargs["pk"])
+        print(context["tipo"])
+        return context
+    
+    
 class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = TipoVehiculoForm
     model = TipoVehiculo
     template_name = 'Web/Catalogos/tipo_vehiculo.html'
-    success_url = reverse_lazy("Web:tipo-vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_tipovehiculo"]
-
+    context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -1706,11 +1730,6 @@ class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['update'] = True
-        return context
 
 
 class TipoVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):

@@ -848,6 +848,7 @@ $(document).ready(function () {
         autoScroll: true,
         // dragMoveListener from the dragging demo above
         listeners: {
+          
           move: dragMoveListener,
 
         }

@@ -19,35 +19,29 @@
       <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="card-body">
-          <div class="form-row">
-            <div class="form-group col-lg-4">
-              <label for="">Configuración Vehicular</label>
-              {{form.descripcion}}
-            </div>
+          <label for="id_descripcion">Descripcion:</label>
+          {{form.descripcion}}
+          
+          <label for="id_image">Image:</label>
+          <input type="file" name="image" accept="image/*"  onchange="showMyImage(this)" >
+          <img id="thumbnil" style="width:20%; margin-top:10px;"  src="{% if obj  %}{% get_media_prefix %}/{{obj.image}} {%else%} https://via.placeholder.com/150 {%endif%}" alt="image"/>
 
-          </div>
 
 
-          <div class="form-row">
-            <div class="form-group col-lg-4">
-              <label for="">Código Configuración Vehicular </label>
-              {{form.codigo}}
-            </div>
-          </div>
+          <label for="id_image2">Image2:</label>
+          <input type="file" name="image2" accept="image/*"  id="id_image2" onchange="showMyImage2(this)">
+          <img id="thumbnil2" style="width:20%; margin-top:10px;" src="{% if obj  %}{% get_media_prefix %}/{{obj.image2}} {%else%} https://via.placeholder.com/150 {%endif%}"  alt="image"/>
 
-          <div class="form-row">
-            <div class="form-group col-lg-4"><label for="">
-                N° Llantas
-              </label>
-              {{form.nro_llantas}}
-            </div>
-          </div>
-          <div class="form-check">
-            {{form.activo}}
-            <label class="form-check-label" for="flexCheckDefault">
-              Activo
-            </label>
-          </div>
+
+          {{form.nro_llantas}}
+          <label for="id_activo">Activo:</label>
+          <input type="checkbox" name="activo" class="form-check-input"
+            id="id_activo" checked="">
+         
+
+     
+
+
         </div>
         <div class="card-footer text-muted">
           <button type="submit" class="btn btn-primary">Grabar</button>
@@ -62,11 +56,43 @@
 {% block bottom_scripts %}
 
 <script>
-  $('.btn_x').on('click', function () {
-    //var $this = $(this);
-    //archivo = $('#id_solicitud').val()
-    //if (archivo!='') { $this.button('loading');}
-    $this.button('loading');
-  });
+function showMyImage(fileInput) {
+        var files = fileInput.files;
+        for (var i = 0; i < files.length; i++) {           
+            var file = files[i];
+            var imageType = /image.*/;     
+            if (!file.type.match(imageType)) {
+                continue;
+            }           
+            var img=document.getElementById("thumbnil");            
+            img.file = file;    
+            var reader = new FileReader();
+            reader.onload = (function(aImg) { 
+                return function(e) { 
+                    aImg.src = e.target.result; 
+                }; 
+            })(img);
+            reader.readAsDataURL(file);
+        }    
+    }
+    function showMyImage2(fileInput) {
+        var files = fileInput.files;
+        for (var i = 0; i < files.length; i++) {           
+            var file = files[i];
+            var imageType = /image.*/;     
+            if (!file.type.match(imageType)) {
+                continue;
+            }           
+            var img=document.getElementById("thumbnil2");            
+            img.file = file;    
+            var reader = new FileReader();
+            reader.onload = (function(aImg) { 
+                return function(e) { 
+                    aImg.src = e.target.result; 
+                }; 
+            })(img);
+            reader.readAsDataURL(file);
+        }    
+    }
 </script>
 {% endblock %}
