@@ -486,9 +486,10 @@ class ModeloVehiculo(models.Model):
       return item
 class TipoVehiculo(models.Model):
    descripcion = models.CharField(max_length=100)
-   codigo = models.CharField(max_length=20)
-   codigoPosicion=models.CharField(max_length=20)
-   codigoImagen=models.CharField(max_length=20)
+   image=models.ImageField(upload_to="vehiculo2/%Y/%m/%d",null=True,blank=True)
+   image2=models.ImageField(upload_to="vehiculo2/%Y/%m/%d",null=True,blank=True)
+
+
    nro_llantas=models.IntegerField()
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -496,17 +497,19 @@ class TipoVehiculo(models.Model):
    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
    eliminado=models.BooleanField(default=False,editable=False)
-   def save(self,*args, **kwargs):
-      self.codigoImagen="I-"+self.codigo
-      self.codigoPosicion="P-"+self.codigo      
-      super(TipoVehiculo, self).save(*args, **kwargs)
+  
    def __str__(self):
       return self.descripcion+"-"+str(self.nro_llantas)+" llantas"
 
    def toJSON(self):
       item = model_to_dict(self,exclude=["created_by","modified_by"])
       return item
-
+class PosicionesLlantas(models.Model):
+   tipo=models.ForeignKey(TipoVehiculo, on_delete=models.CASCADE,null=True,blank=True)
+   posicion=models.IntegerField(default=True,blank=True)
+   posx=models.IntegerField(default=True,blank=True)
+   posy=models.IntegerField(default=True,blank=True)
+   
 class Vehiculo(models.Model):
 
    ano = models.IntegerField(null=True)

@@ -401,10 +401,10 @@ class MarcaLlantaForm(forms.ModelForm):
 class TipoVehiculoForm(forms.ModelForm):
     class Meta:
         model = TipoVehiculo
-        fields = ('descripcion', "codigo",'activo',"nro_llantas")
+        exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
-            'codigo': forms.TextInput( attrs={'class':'form-control'}),
+            
             'nro_llantas': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
             'activo': forms.CheckboxInput ( attrs={'class':'form-check-input'}),
 
