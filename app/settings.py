@@ -126,14 +126,14 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # }
 
 
-CACHES = {
-    'default': {
-        # Your default cache
-    },
-    'collectfast': {
-        # Your dedicated Collectfast cache
-    },
-}
+# CACHES = {
+#     'default': {
+#         # Your default cache
+#     },
+#     'collectfast': {
+#         # Your dedicated Collectfast cache
+#     },
+# }
 
 COLLECTFAST_CACHE = 'collectfast'
 # DATABASES = {
@@ -231,7 +231,7 @@ MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 # STATICFILES_LOCATION = 'static'
 # STATICFILES_STORAGE = 'custom_storages.StaticStorage'
-COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
+# COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
