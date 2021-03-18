@@ -406,6 +406,7 @@ class TipoVehiculoForm(forms.ModelForm):
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
             'nro_llantas': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
             'activo': forms.CheckboxInput ( attrs={'class':'form-check-input'}),
+            'max_rep': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
 
         }
     def clean_descripcion(self):

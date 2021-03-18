@@ -43,7 +43,13 @@
             <div class="P-B2">
 {% for i in obj %}
     <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;">
-        <p>Pos:{{i.posicion}}</p>
+       
+       {% if i.repuesto %}
+          <p>R</p>
+          {% else %}
+           <p>Pos:{{i.posicion}}</p>
+       {% endif %}
+         
     </div>
     <input type="hidden" name="{{i.posicion}}" data-value="{{i.posx}}" value="{{i.posx}}">
     <input type="hidden" name="{{i.posicion}}"  data-value="{{i.posy}}" value="{{i.posy}}">
