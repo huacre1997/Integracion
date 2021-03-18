@@ -229,7 +229,7 @@ STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
-# STATICFILES_LOCATION = 'static'
+STATICFILES_LOCATION = 'static'
 # STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 # COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
 STATIC_URL = '/static/'
