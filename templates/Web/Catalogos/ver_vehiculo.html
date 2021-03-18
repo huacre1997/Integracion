@@ -73,19 +73,7 @@
                   <div class="drag bordeado"></div>
           
               </div>
-            {% comment %}
-            <a href="{% url 'Web:agregar-llanta' obj.pk %}" class="btn btn-success"><i class="fa fa-edit"></i>Agragrar
-              Llanta</a>
-            <br /><br /> -->
-           <div class="alert alert-info">
-              <ul>
-                {% for l in asss %}
-                <li>Codigo de llanta : <a href="{% url 'Web:llanta' l.pk %}" class="">
-                    <i class="fa fa-search"></i>{{l.codigo}}</a></li>
-                {% endfor %}
-              </ul>
-            </div> 
-            {% endcomment %}
+
                 
             <div class="P-C3-6">
           
@@ -273,7 +261,7 @@ function dragged(e) {
         })
         fetch(url).then(
               $.confirm({
-              title: 'Desmontaje de la Llanta',
+              title: 'Desmontaje del Neumático',
               content: 'URL:' + url,
               type: 'dark',
               theme:"material",
@@ -360,10 +348,10 @@ function dragged(e) {
 
                   if(event.target.classList.contains('re')){
                     repuesto=true
-                  titulo="Montar Llanta de Repuesto"
+                  titulo="Montar Neumático de Repuesto"
                 }else{
                   repuesto=false
-                    titulo="Montar Llanta"
+                    titulo="Montar Neumático"
                 }
                           let url = " ../../../montaje?" + new URLSearchParams({
                             posicion: param.target.dataset.posicion,
@@ -458,7 +446,7 @@ function dragged(e) {
                                 dragdrop.addEventListener("dblclick", function () {
                                   fetch("../../../viewLlanta/" + response.id + "/").then(
                                     $.confirm({
-                                      title: 'Detalles de la Llanta',
+                                      title: 'Detalles del Neumático',
                                       content: 'URL: ../../../viewLlanta/' + response
                                         .id + "/",
                                       type: 'dark',
@@ -616,10 +604,10 @@ Array.from(document.getElementsByClassName("bordeado")).forEach(el=>{
 
                   if(event.target.classList.contains('re')){
                     repuesto=1
-                  titulo="Montar Llanta de Repuesto"
+                  titulo="Montar Neumático de Repuesto"
                 }else{
                   repuesto=0
-                    titulo="Montar Llanta"
+                    titulo="Montar Neumático"
                 }
                 let url = " ../../..{% url 'Web:ver-montaje' %}?" + new URLSearchParams({
                   posicion: event.target.dataset.posicion,
@@ -714,7 +702,7 @@ Array.from(document.getElementsByClassName("bordeado")).forEach(el=>{
                                 dragdrop.addEventListener("dblclick", function () {
                                   fetch("../../../viewLlanta/" + response.id + "/").then(
                                     $.confirm({
-                                      title: 'Detalles de la Llanta',
+                                      title: 'Detalles del Neumático',
                                       content: 'URL: ../../../viewLlanta/' + response
                                         .id + "/",
                                       type: 'dark',
@@ -790,7 +778,7 @@ for (let index = 0; index < arr.length; index++) {
     element.addEventListener("dblclick",function () {  
       fetch("../../../viewLlanta/"+element.dataset.llanta+"/").then(
               $.confirm({
-              title: 'Detalles de la Llanta',
+              title: 'Detalles del Neumático',
               content: 'URL: ../../../viewLlanta/'+element.dataset.llanta+"/",
               type: 'dark',
               theme:"material", 

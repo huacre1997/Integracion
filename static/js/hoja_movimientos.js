@@ -362,7 +362,7 @@ $(document).ready(function () {
                                 dragdrop.addEventListener("dblclick", function () {
                                   fetch("../../viewLlanta/" + response.id + "/").then(
                                     $.confirm({
-                                      title: 'Detalles de la Llanta',
+                                      title: 'Detalles del Neumático',
                                       content: 'URL: ../../viewLlanta/' + response
                                         .id + "/",
                                       type: 'dark',
@@ -560,7 +560,7 @@ $(document).ready(function () {
         })
         fetch(url).then(
           $.confirm({
-            title: 'Desmontaje de la Llanta',
+            title: 'Desmontaje del Neumático',
             content: 'URL:' + url,
             type: 'dark',
             theme: "material",
@@ -652,7 +652,7 @@ $(document).ready(function () {
                           })
                           fetch(url).then(
                             $.confirm({
-                              title: 'Montaje de la Llanta',
+                              title: 'Montaje del Neumático',
                               content: 'URL:' + url,
                               type: 'dark',
                               theme: "material",
@@ -736,7 +736,7 @@ $(document).ready(function () {
                                 dragdrop.addEventListener("dblclick", function () {
                                   fetch("../../viewLlanta/" + response.id + "/").then(
                                     $.confirm({
-                                      title: 'Detalles de la Llanta',
+                                      title: 'Detalles del Neumático',
                                       content: 'URL: ../../viewLlanta/' + response
                                         .id + "/",
                                       type: 'dark',
