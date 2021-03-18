@@ -2172,6 +2172,8 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     context_object_name = 'objetos'
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.view_vehiculo"]
+    success_url=reverse_lazy("Web:inicio")
+
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)

@@ -224,19 +224,20 @@ AWS_LOCATION = 'static'
 AWS_QUERYSTRING_AUTH = False
 LOGIN_REDIRECT_URL="/"
 LOGIN_URL="/login/"
-STATIC_URL = "https://s3-sa-east-1.amazonaws.com/%s/static/" % AWS_STORAGE_BUCKET_NAME
+# STATIC_URL = "https://s3-sa-east-1.amazonaws.com/%s/static/" % AWS_STORAGE_BUCKET_NAME
+STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
-STATICFILES_LOCATION = 'static'
-STATICFILES_STORAGE = 'custom_storages.StaticStorage'
+# STATICFILES_LOCATION = 'static'
+# STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_ROOT = ''
 STATIC_ROOT=os.path.join(BASE_DIR,"staticfiles")
 MEDIA_URL = "https://s3-sa-east-1.amazonaws.com/%s/media/" % AWS_STORAGE_BUCKET_NAME
-# STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
