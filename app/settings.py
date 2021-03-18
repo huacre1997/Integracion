@@ -46,7 +46,7 @@ DJANGO_APPS = [
     'debug_toolbar',
     "environ",
     'storages',
-
+    "collectfast",
 ]
 
 LOCAL_APPS = [
@@ -114,6 +114,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # }
 
 # DATABASES = {
+
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
 #         'NAME': "bdprueba",
@@ -125,13 +126,16 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # }
 
 
-
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
+        # Your default cache
+    },
+    'collectfast': {
+        # Your dedicated Collectfast cache
+    },
 }
+
+COLLECTFAST_CACHE = 'collectfast'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -226,6 +230,8 @@ MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 STATICFILES_LOCATION = 'static'
 STATICFILES_STORAGE = 'custom_storages.StaticStorage'
+COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
+
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_ROOT = ''
 STATIC_ROOT=os.path.join(BASE_DIR,"staticfiles")
