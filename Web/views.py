@@ -1692,8 +1692,7 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
     def post(self,request,*args, **kwargs):
         print(self.request.POST)
         pos=[]
-        for i in range(0,len(self.request.POST)
-                       ):
+        for i in range(0,len(self.request.POST)):
             if  i!=0:
                 pos.append((self.request.POST.getlist(f'{i}')))
         print(pos)
@@ -1710,7 +1709,6 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tipo"] = TipoVehiculo.objects.get(pk=self.kwargs["pk"])
-        print(context["tipo"])
         return context
     
     
@@ -2243,6 +2241,7 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
         print(self.request.POST)
         instance = form.save(commit=False)
         instance.created_by = self.request.user
+        
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -2329,6 +2328,8 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         id = self.kwargs['pk']
         obj = Vehiculo.objects.get(pk=id)
         u=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
+        posiciones=PosicionesLlantas.objects.filter(tipo_id=obj.tipo_vehiculo.id)
+
         nrollantas=obj.tipo_vehiculo.nro_llantas
         nrorepuesto=obj.nro_llantas_repuesto
         pos ,posrep,faltantes ,faltantesrep= [],[],[],[]
@@ -2338,12 +2339,11 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         for i in range(0,nro_llantas):
             if u[i].repuesto==True:
                 posrep.append(u[i].posicion)
-            else:
-                pos.append(u[i].posicion)
-
-        for i in range(1,nrollantas+1):
-            if not i in pos:
-                faltantes.append(i)
+           
+        
+        # for i in range(1,nrollantas+1):
+        #     if not i in pos:
+        #         faltantes.append(i)
         
   
         for i in range(nrollantas+1,total+1):
@@ -2354,15 +2354,15 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         data2=[]
         al={}
         al2={}
-        if len(faltantes)!=0:
+        # if len(faltantes)!=0:
             
-            for i in range(0,len(faltantes)):
-                al["posicion"]=faltantes[i]
-                al["id"]=i+nro_llantas
-                al["repuesto"]=False
-                data1.append(al)
-                al={}
-                sum=sum+1
+        #     for i in range(0,len(faltantes)):
+        #         al["posicion"]=faltantes[i]
+        #         al["id"]=i+nro_llantas
+        #         al["repuesto"]=False
+        #         data1.append(al)
+        #         al={}
+        #         sum=sum+1
         for i in range(0,len(faltantesrep)):
             al2["posicion"]=faltantesrep[i]
             al2["id"]=i+sum+nro_llantas
@@ -2370,10 +2370,11 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
             data2.append(al2)
             al2={}
         context['obj'] =obj
-        context["tipo"]=PosicionesLlantas.objects.filter(tipo_id=obj.id)
-        context["vehiculo"]=u
+        context["posiciones"]=posiciones
+        context["tipo"]=TipoVehiculo.objects.get(pk=obj.tipo_vehiculo.id)
+        context["llantas"]=u
         context["faltantesRe"]=data2
-        context["faltantes"]=data1
+        # context["faltantes"]=data1
         context["ubicaciones"]=Ubicacion.objects.filter(eliminado=0,activo=True).values("id","descripcion")
         return context
 
@@ -2469,6 +2470,7 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
+        print(self.request.GET)
         context={"obs":CHOICES_OBSERVACION,"obj":request.GET,"estado":CHOICES_ESTADO_LLANTA}
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):

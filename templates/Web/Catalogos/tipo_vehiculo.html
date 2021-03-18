@@ -19,24 +19,40 @@
       <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="card-body">
-          <label for="id_descripcion">Descripcion:</label>
+          <div class="form-row">
+            <div class="form-group col-lg-4">
+             <label for="id_descripcion">Configuración Vehicular:</label>
           {{form.descripcion}}
-          
-          <label for="id_image">Image:</label>
-          <input type="file" name="image" accept="image/*"  onchange="showMyImage(this)" >
-          <img id="thumbnil" style="width:20%; margin-top:10px;"  src="{% if obj  %}{% get_media_prefix %}/{{obj.image}} {%else%} https://via.placeholder.com/150 {%endif%}" alt="image"/>
-
-
-
-          <label for="id_image2">Image2:</label>
-          <input type="file" name="image2" accept="image/*"  id="id_image2" onchange="showMyImage2(this)">
-          <img id="thumbnil2" style="width:20%; margin-top:10px;" src="{% if obj  %}{% get_media_prefix %}/{{obj.image2}} {%else%} https://via.placeholder.com/150 {%endif%}"  alt="image"/>
-
+            </div>
+            <div class="form-group col-lg-4">
+                         <label for="id_descripcion">N° de Llantas</label>
 
           {{form.nro_llantas}}
-          <label for="id_activo">Activo:</label>
-          <input type="checkbox" name="activo" class="form-check-input"
-            id="id_activo" checked="">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-lg-6">
+              <label for="id_image">Imagen Y:</label>
+          <input type="file" name="image" accept="image/*"  onchange="showMyImage(this)" >
+          <img id="thumbnil"  class="img-fluid" style=" margin-top:10px;"  src="{% if obj  %}{% get_media_prefix %}/{{obj.image}} {%else%} https://via.placeholder.com/100 {%endif%}" alt="image"/>
+            </div>
+                <div class="form-group col-lg-6">
+                  <label for="id_image2">Imagen X:</label>
+          <input type="file" name="image2" accept="image/*"  id="id_image2" onchange="showMyImage2(this)">
+          <img id="thumbnil2" class="img-fluid" style="margin-top:10px;" src="{% if obj  %}{% get_media_prefix %}/{{obj.image2}} {%else%} https://via.placeholder.com/100 {%endif%}"  alt="image"/>
+                </div>
+          </div>
+        
+
+
+
+        
+                 	<div class="form-check">
+                {{form.activo}}
+  <label class="form-check-label" for="id_activo">
+    Activo
+  </label>
+</div>
          
 
      
@@ -70,6 +86,7 @@ function showMyImage(fileInput) {
             reader.onload = (function(aImg) { 
                 return function(e) { 
                     aImg.src = e.target.result; 
+                    aImg.style.width="100%"
                 }; 
             })(img);
             reader.readAsDataURL(file);
@@ -89,6 +106,8 @@ function showMyImage(fileInput) {
             reader.onload = (function(aImg) { 
                 return function(e) { 
                     aImg.src = e.target.result; 
+                                        aImg.style.width="100%"
+
                 }; 
             })(img);
             reader.readAsDataURL(file);
