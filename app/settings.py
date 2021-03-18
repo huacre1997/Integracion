@@ -188,7 +188,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
@@ -205,26 +205,31 @@ USE_TZ = False
 #     },
 # }
 
-AWS_ACCESS_KEY_ID = 'AKIAVTWEJMBXRYWHFIWP'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = 'AKIAVTWEJMBX5NYJYD6Q'
+AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'vg365'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',
+# }
+# AWS_S3_ENDPOINT_URL="s3.sa-east-1.amazonaws.com"
+AWS_DEFAULT_ACL=None
+AWS_S3_REGION_NAME="sa-east-1"
+AWS_S3_FILE_OVERWRITE=False
 AWS_LOCATION = 'static'
 AWS_QUERYSTRING_AUTH = False
 LOGIN_REDIRECT_URL="/"
 LOGIN_URL="/login/"
-STATIC_URL = "https://s3.amazonaws.com/%s/static/" % AWS_STORAGE_BUCKET_NAME
+STATIC_URL = "https://s3-sa-east-1.amazonaws.com/%s/static/" % AWS_STORAGE_BUCKET_NAME
 
-AWS_DEFAULT_ACL = None 
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
+MEDIAFILES_LOCATION = 'media'
+DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_ROOT = ''
 STATIC_ROOT=os.path.join(BASE_DIR,"staticfiles")
-MEDIA_URL = '/documentos/'
+MEDIA_URL = "https://s3-sa-east-1.amazonaws.com/%s/media/" % AWS_STORAGE_BUCKET_NAME
 # STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {

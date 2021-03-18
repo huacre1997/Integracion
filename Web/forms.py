@@ -354,7 +354,6 @@ class ModeloRenovaForm(forms.ModelForm):
     def clean(self):
         subject = self.cleaned_data.get('descripcion')
         subject1 = self.cleaned_data.get('marca_renova')
-        print(f'los valores son {subject}-{subject1}')
         if self.instance.descripcion!=subject:
             if ModeloRenova.objects.filter(descripcion=subject,marca_renova=subject1).exists():
                 self.add_error("descripcion",f" : La marca {subject1} ya tiene un modelo {subject} .")
@@ -667,7 +666,6 @@ class VehiculoForm(forms.ModelForm):
             'nro_motor': forms.TextInput( attrs={'class':'form-control'}),
 
             'km': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
-            'nro_llantas_repuesto': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'1'}),
             'obs': forms.Textarea( attrs={'class':'form-control',"cols":"3","rows":"2"}),
         }
 
@@ -676,7 +674,6 @@ class VehiculoForm(forms.ModelForm):
         self.fields['tipo_vehiculo'].queryset = TipoVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['obs'].required = False
 
-        self.fields['nro_llantas_repuesto'].required = False
     
     def clean_placa(self):
         data=self.cleaned_data["placa"]

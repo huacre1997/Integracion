@@ -5,7 +5,6 @@
 {% block tipo-vehiculo %}collapse-item active{% endblock  %}
 {% load base_extras %}
 {% block content %}  
-<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
 <style>
 
   
@@ -15,7 +14,7 @@
 
 
 
-  background:transparent url('{% get_media_prefix %}/{{tipo.image}}') no-repeat center center;  
+  background:transparent url('{% get_media_prefix %}{{tipo.image}}') no-repeat center center;  
 
 
    
@@ -45,7 +44,7 @@
     <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;">
        
        {% if i.repuesto %}
-          <p>R</p>
+          <p>Pos:{{i.posicion}}(R)</p>
           {% else %}
            <p>Pos:{{i.posicion}}</p>
        {% endif %}
@@ -111,10 +110,16 @@
 <script>
 interact('.draggable')
 .draggable({
-        inertia: true,
+    inertia: true,
+    modifiers: [
+      interact.modifiers.restrictRect({
+        restriction: 'parent',
+        endOnly: true
+      })
+    ],
+    // enable autoScroll
+    autoScroll: true,
 
-        autoScroll: true,
-        // dragMoveListener from the dragging demo above
         listeners: {
           move: dragMoveListener,
           start (event) {

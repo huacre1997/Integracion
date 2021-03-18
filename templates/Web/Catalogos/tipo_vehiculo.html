@@ -39,12 +39,12 @@
             <div class="form-group col-lg-6">
               <label for="id_image">Imagen Y:</label>
           <input type="file" name="image" accept="image/*"  onchange="showMyImage(this)" >
-          <img id="thumbnil"  class="img-fluid" style=" margin-top:10px;"  src="{% if obj  %}{% get_media_prefix %}/{{obj.image}} {%else%} https://via.placeholder.com/100 {%endif%}" alt="image"/>
+          <img id="thumbnil"  class="img-fluid" style=" margin-top:10px;"  src="{% if obj  %}{% get_media_prefix %}{{obj.image}} {%else%} https://via.placeholder.com/100 {%endif%}" alt="image"/>
             </div>
                 <div class="form-group col-lg-6">
                   <label for="id_image2">Imagen X:</label>
           <input type="file" name="image2" accept="image/*"  id="id_image2" onchange="showMyImage2(this)">
-          <img id="thumbnil2" class="img-fluid" style="margin-top:10px;" src="{% if obj  %}{% get_media_prefix %}/{{obj.image2}} {%else%} https://via.placeholder.com/100 {%endif%}"  alt="image"/>
+          <img id="thumbnil2" class="img-fluid" style="margin-top:10px;" src="{% if obj  %}{% get_media_prefix %}{{obj.image2}} {%else%} https://via.placeholder.com/100 {%endif%}"  alt="image"/>
                 </div>
           </div>
         

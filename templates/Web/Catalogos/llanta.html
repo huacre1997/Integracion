@@ -126,7 +126,12 @@
                 
                   {% for i in medida_llanta  %}
                   {% if  i.activo and not i.eliminado or obj.medida_llanta.id == i.id %}
-                   <option value="{{i.id}}" {% if obj.medida_llanta.id == i.id %}selected{% endif %}>Medida {{i.medida}}-{{i.profundidad}}-{{i.capas}}</option>
+                   <option value="{{i.id}}" {% if obj.medida_llanta.id == i.id %}selected{% endif %}>Medida {{i.medida}}-{{i.profundidad}}
+                   {% if i.capas %}
+                   -{{i.capas}}
+                     {% else %}
+                   {% endif %}
+                     </option>
                   {% endif %}
                    
                   {% endfor %}

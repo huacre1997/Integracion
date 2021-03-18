@@ -6,7 +6,6 @@
 {% load base_extras %}
 {% load l10n %}
 {% block content %}
-<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
 <style>
 
   
@@ -16,7 +15,7 @@
 
 
 
-  background:transparent url('{% get_media_prefix %}/{{tipo.image}}') no-repeat center center;  
+  background:transparent url('{% get_media_prefix %}{{tipo.image}}') no-repeat center center;  
 
 
    
@@ -91,7 +90,7 @@
             <div class="P-C3-6">
           
               <div class="img"></div>
-              <img class="img2"  alt="Error " id="myImg" src='{% get_media_prefix %}/{{tipo.image2}}'>
+              <img class="img2"  alt="Error " id="myImg" src='{% get_media_prefix %}{{tipo.image2}}'>
 
               
          
@@ -355,16 +354,27 @@ function dragged(e) {
                       this.close()
                       event.relatedTarget.parentNode.addEventListener("click", function AbriModantaje(param) {
                           console.log("montaje despues de soltar llanta");
-                            console.log(param)
+                          let repuesto
+                console.log(event);
+                let titulo
+
+                  if(event.target.classList.contains('re')){
+                    repuesto=true
+                  titulo="Montar Llanta de Repuesto"
+                }else{
+                  repuesto=false
+                    titulo="Montar Llanta"
+                }
                           let url = " ../../../montaje?" + new URLSearchParams({
                             posicion: param.target.dataset.posicion,
                             vehiculo: "{{obj.id}}",
-                            placa: "{{obj.placa}}"
+                            placa: "{{obj.placa}}",
+                            repuesto
 
                           })
                           fetch(url).then(
                             $.confirm({
-                              title: 'Montaje de la Llanta',
+                              title: titulo,
                               content: 'URL:' + url,
                               type: 'dark',
                               theme: "material",

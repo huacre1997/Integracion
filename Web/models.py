@@ -196,7 +196,7 @@ class Persona(models.Model):
    cargo = models.CharField(max_length=50, null=True, blank=True)
 
    foto_nueva = models.FileField(upload_to=upload_to(
-       'documentos/fotos/'), null=True, blank=True)
+       'fotos/'), null=True, blank=True)
    created_at = models.DateTimeField(
        auto_now_add=True, null=True, editable=False)
    modified_at = models.DateTimeField(auto_now=True, editable=False)
@@ -487,8 +487,8 @@ class ModeloVehiculo(models.Model):
 from django.urls import reverse
 class TipoVehiculo(models.Model):
    descripcion = models.CharField(max_length=100)
-   image=models.ImageField(upload_to="documentos/vehiculo2/%Y/%m/%d",null=True,blank=True)
-   image2=models.ImageField(upload_to="documentos/vehiculo2/%Y/%m/%d",null=True,blank=True)
+   image=models.ImageField(upload_to="vehiculo2/Y/",null=True,blank=True)
+   image2=models.ImageField(upload_to="vehiculo2/X",null=True,blank=True)
    nro_llantas=models.IntegerField()
    max_rep=models.IntegerField()
    activo = models.BooleanField(default=True)
@@ -500,17 +500,24 @@ class TipoVehiculo(models.Model):
   
    def __str__(self):
       return self.descripcion+"-"+str(self.nro_llantas)+" llantas"
-
+   def get_image(self):
+      if self.image:
+         return '{}{}'.format(settings.MEDIA_URL, self.image)
+   def get_image2(self):
+      if self.image2:
+         return '{}{}'.format(settings.MEDIA_URL, self.image2)
    def toJSON(self):
       item = model_to_dict(self,exclude=["created_by","modified_by"])
+      item["image"]=self.get_image()
+      item["image2"]=self.get_image2()
       return item
    def get_absolute_url(self):
       return reverse('Web:posiciones', kwargs={'pk': self.pk})
 class PosicionesLlantas(models.Model):
    tipo=models.ForeignKey(TipoVehiculo, on_delete=models.CASCADE,null=True,blank=True)
    posicion=models.IntegerField(null=True,blank=True)
-   posx=models.CharField(max_length=15,null=True,blank=True)
-   posy=models.CharField(max_length=15,null=True,blank=True)
+   posx=models.CharField(max_length=15,default="0")
+   posy=models.CharField(max_length=15,default="0")
    repuesto=models.BooleanField(default=False)
 @receiver(post_save, sender=TipoVehiculo)
 def save_tipo(sender, instance, **kwargs):
@@ -538,7 +545,6 @@ class Vehiculo(models.Model):
    operacion = models.CharField(max_length=50, null=True, blank=True)
    km = models.DecimalField(max_digits=10, decimal_places=2)
    nro_ejes = models.IntegerField(null=True)
-   nro_llantas_repuesto = models.IntegerField(null=True)
    nro_motor = models.CharField(max_length=50,null=True,blank=True)
    nro_chasis = models.CharField(max_length=50,null=True,blank=True)
 
@@ -733,8 +739,6 @@ class DetalleInspeccion(models.Model):
    
 @receiver(post_save, sender=DetalleInspeccion)
 def detalle_inspeccion(sender,instance,**kwargs):
-   print(sender)
-   print()
    ex=Llanta.objects.filter(pk=instance.llanta.id).first()
    if ex:
       print("if")

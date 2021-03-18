@@ -1,5 +1,5 @@
 {% extends 'Web/Seguridad/seguridad_base.html' %}
-
+{% load static %}
   <!-- Latest compiled and minified CSS -->
 
   {% comment %}
@@ -54,11 +54,11 @@
 {% block collapseAdmin %}collapse show{% endblock  %}
 {% block usuarios %}collapse-item active{% endblock  %}
     {% block content %}
-    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css">
-    <link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css">
-    <link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
 
-    <link rel="stylesheet" type="text/css" href="/static/admin/css/responsive.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/responsive.css' %}">
 
     <div class="container-fluid">
       <div class="card shadow mb-4">
@@ -151,12 +151,12 @@
 
 
       <script type="text/javascript" src="/admin/jsi18n/"></script>
-      <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
-      <script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
-      <script type="text/javascript" src="/static/admin/js/core.js"></script>
-      <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
-      <script type="text/javascript" src="/static/admin/js/SelectBox.js"></script>
-      <script type="text/javascript" src="/static/admin/js/SelectFilter2.js"></script>
+      <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+      <script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
+      <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+      <script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
+      <script type="text/javascript" src="{% static 'admin/js/SelectBox.js' %}"></script>
+      <script type="text/javascript" src="{% static 'admin/js/SelectFilter2.js' %}"></script>
      
     </div>
 

@@ -1690,7 +1690,6 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
     permission_required=["Web.add_tipovehiculo"]
     context_object_name="obj"
     def post(self,request,*args, **kwargs):
-        print(self.request.POST)
         pos=[]
         for i in range(0,len(self.request.POST)):
             if  i!=0:
@@ -1943,7 +1942,6 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     
     def post(self,request,*args, **kwargs):
         try:
-            print(request.POST)
             form1=LlantaForm(request.POST)
 
             form2=CubiertaForm(request.POST)
@@ -2060,14 +2058,12 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
         return render(self.request,self.template_name,context)
     
     def post(self,request,*args, **kwargs):
-        print(self.request.POST)
         try:
             form2=CubiertaForm(request.POST)
             form1=LlantaForm(request.POST,instance=self.get_object())
             
             if form1.is_valid() and form2.is_valid():
                 if self.get_object().cubierta:
-                    print("entro al self cubierta")
                     instance2=CubiertaLlanta.objects.filter(id=self.get_object().cubierta.id).first()
 
                     instance2.modified_by = self.request.user
@@ -2184,7 +2180,6 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
     
     def post(self,request,*args, **kwargs):
         try:
-            print(self.request.POST)
             start_date=self.request.POST["start_date"]
             end_date=self.request.POST["end_date"]
             placa=self.request.POST["placa"]
@@ -2386,7 +2381,6 @@ class DetalleLlantaView(LoginRequiredMixin,DetailView):
 def getLlanta(request):
     if request.method=="POST":
         post = json.loads(request.body.decode("utf-8"))
-        print(f'El id es {post}')
         qs = Llanta.objects.get(id=int(post)).toJSON()
         print(qs)
         return JsonResponse(qs, content_type='application/json')
@@ -2408,6 +2402,7 @@ def getTipo(request,id):
     if obj.exists:
         data2=[]
         data2.append(obj.first().toJSON())
+        print(data2)
         data={"status":200,"response":data2}
     else:
         data={"status":500}
@@ -2524,6 +2519,7 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
+        print(request.GET)
         return render(self.request,self.template_name,{"obj":request.GET})
     def post(self,request,*args, **kwargs):
         print(request.POST)
@@ -2668,14 +2664,9 @@ class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
     def post(self,*args, **kwargs):
         try: 
             with transaction.atomic():
-                print("1")
                 objeto=json.loads(self.request.POST["objeto"])
-                print("2")
                 inspeccion=self.get_object()
-                print("3")
-                print(self.request.POST["fech_ins"])
                 inspeccion.fech_ins=datetime.strptime(self.request.POST["fech_ins"], '%Y-%m-%d').date()
-                print("4")
                 inspeccion.km_act=self.request.POST["km_act"]
                 inspeccion.km_ult=self.request.POST["km_ult"]
                 inspeccion.fech_km_ant=datetime.strptime(self.request.POST["fech_km_ant"], '%Y-%m-%d').date()
@@ -2683,7 +2674,6 @@ class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 inspeccion.supervisor_id=self.request.POST["supervisor"]
                 inspeccion.tecnico_id=self.request.POST["tecnico"]
                 inspeccion.operacion=self.request.POST["operacion"]
-                print("5")
 
                 inspeccion.save()
                 inspeccion.detalleinspeccion_set.all().delete()
@@ -2712,7 +2702,6 @@ class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 return JsonResponse({"response":200},safe=False)
      
         except Exception as e:
-            print(e)
             messages.error(self.request, 'Ha ocurrido un error.')
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 def AgregarInspeccion(request):

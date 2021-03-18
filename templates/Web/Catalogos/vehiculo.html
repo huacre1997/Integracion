@@ -173,21 +173,19 @@
     $(document).ready(function () {
       $("#id_tipo_vehiculo").select2()
       {% if update %}
-
   fetch("../../../getTipo/"+document.getElementById("id_tipo_vehiculo").value).then(data=>data.json())
     .then(response=>{
-
-      document.getElementById("img-vehiculo").setAttribute("src","../../..{% static 'img/vehiculos/' %}"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
+      console.log(response)
+      document.getElementById("img-vehiculo").setAttribute("src",response.response[0].image)
     })
      fetch("../../../getTipo/"+document.getElementById("id_tipo_vehiculo").value).then(data=>data.json())
     .then(response=>{
+      console.log(response)
 
-      document.getElementById("img-vehiculo2").setAttribute("src","../../..{% static 'img/vehiculos/' %}"+response.response[0].codigo+"/"+response.response[0].codigoPosicion+".png")
+      document.getElementById("img-vehiculo2").setAttribute("src",response.response[0].image2)
     })
     {%endif%}
-console.log( );
 $("#id_tipo_vehiculo").on("change",function (param) {
-   console.log("DASDASDASDASD")
    {% if update %}
   let url="../../../getTipo/"+param.target.options[param.target.options.selectedIndex].value
    {% else %}
@@ -196,8 +194,8 @@ $("#id_tipo_vehiculo").on("change",function (param) {
    {% endif %}
     fetch(url).then(data=>data.json())
     .then(response=>{
-      document.getElementById("img-vehiculo").setAttribute("src","../../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoImagen+".png")
-          document.getElementById("img-vehiculo2").setAttribute("src","../../../static/img/vehiculos/"+response.response[0].codigo+"/"+response.response[0].codigoPosicion+".png")
+      document.getElementById("img-vehiculo").setAttribute("src",response.response[0].image)
+          document.getElementById("img-vehiculo2").setAttribute("src",response.response[0].image2)
 
     })
     })
@@ -300,7 +298,6 @@ $('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').p
     const element3 = array3[i].value;
     options3.push(element3)
   }
-  console.log(options3);
   actualizarmodelo()
   {% if obj %}
 
@@ -366,11 +363,9 @@ function actualizarmodelo(){
         $(function () {
           
         
-          console.log($('#id_marca')[0].selectedIndex);
 
     
       if(  $('#id_marca').val()==""){
-        console.log("if");
               $('#id_modelo_vehiculo').prop("disabled",true)
               $('#id_modelo_vehiculo').empty();
 
@@ -390,7 +385,6 @@ function actualizarmodelo(){
                 let opcion=document.createElement("option")
                   opcion.value=valuex.id
                 opcion.textContent=valuex.descripcion
-                console.log(opcion);
                   document.getElementById("id_modelo_vehiculo").append(opcion)
                   
               }        
