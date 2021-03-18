@@ -2325,15 +2325,15 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         u=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
         posiciones=PosicionesLlantas.objects.filter(tipo_id=obj.tipo_vehiculo.id)
 
-        nrollantas=obj.tipo_vehiculo.nro_llantas
-        nrorepuesto=obj.nro_llantas_repuesto
-        pos ,posrep,faltantes ,faltantesrep= [],[],[],[]
-        sum=0
-        nro_llantas = len(u)
-        total=nrollantas+nrorepuesto
-        for i in range(0,nro_llantas):
-            if u[i].repuesto==True:
-                posrep.append(u[i].posicion)
+        # nrollantas=obj.tipo_vehiculo.nro_llantas
+        # nrorepuesto=obj.nro_llantas_repuesto
+        # pos ,posrep,faltantes ,faltantesrep= [],[],[],[]
+        # sum=0
+        # nro_llantas = len(u)
+        # total=nrollantas+nrorepuesto
+        # for i in range(0,nro_llantas):
+        #     if u[i].repuesto==True:
+        #         posrep.append(u[i].posicion)
            
         
         # for i in range(1,nrollantas+1):
@@ -2341,14 +2341,14 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         #         faltantes.append(i)
         
   
-        for i in range(nrollantas+1,total+1):
-            if not i in posrep:
-                faltantesrep.append(i)    
+        # for i in range(nrollantas+1,total+1):
+        #     if not i in posrep:
+        #         faltantesrep.append(i)    
         
-        data1=[]
-        data2=[]
-        al={}
-        al2={}
+        # data1=[]
+        # data2=[]
+        # al={}
+        # al2={}
         # if len(faltantes)!=0:
             
         #     for i in range(0,len(faltantes)):
@@ -2358,12 +2358,12 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         #         data1.append(al)
         #         al={}
         #         sum=sum+1
-        for i in range(0,len(faltantesrep)):
-            al2["posicion"]=faltantesrep[i]
-            al2["id"]=i+sum+nro_llantas
-            al2["repuesto"]=True
-            data2.append(al2)
-            al2={}
+        # for i in range(0,len(faltantesrep)):
+        #     al2["posicion"]=faltantesrep[i]
+        #     al2["id"]=i+sum+nro_llantas
+        #     al2["repuesto"]=True
+        #     data2.append(al2)
+        #     al2={}
         context['obj'] =obj
         context["posiciones"]=posiciones
         context["tipo"]=TipoVehiculo.objects.get(pk=obj.tipo_vehiculo.id)
