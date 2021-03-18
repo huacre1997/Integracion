@@ -619,7 +619,7 @@ class LlantaForm(forms.ModelForm):
                     data=Vehiculo.objects.get(pk=subject1.id)
 
                     nrollantas=data.tipo_vehiculo.nro_llantas
-                    nrorepuesto=data.nro_llantas_repuesto
+                    nrorepuesto=data.tipo_vehiculo.max_rep
                     total=int(nrollantas)+int(nrorepuesto)
                     if repuesto:
                         a=""
