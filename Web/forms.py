@@ -401,19 +401,19 @@ class MarcaLlantaForm(forms.ModelForm):
 class TipoVehiculoForm(forms.ModelForm):
     class Meta:
         model = TipoVehiculo
-        fields = ('descripcion', "codigo",'activo',"nro_llantas")
+        exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
-            'codigo': forms.TextInput( attrs={'class':'form-control'}),
             'nro_llantas': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
             'activo': forms.CheckboxInput ( attrs={'class':'form-check-input'}),
+            'max_rep': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
 
         }
-    def clean_codigo(self):
-        data=self.cleaned_data["codigo"]
-        if self.instance.codigo!=data:
-            if TipoVehiculo.objects.filter(codigo=data).exists():
-                self.add_error("codigo",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if TipoVehiculo.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
         return data
 class ModeloLlantaForm(forms.ModelForm):
 

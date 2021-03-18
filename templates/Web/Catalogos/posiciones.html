@@ -1,0 +1,160 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% load static %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block tipo-vehiculo %}collapse-item active{% endblock  %}
+{% load base_extras %}
+{% block content %}  
+<link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
+<style>
+
+  
+  .img{
+    
+
+
+
+
+  background:transparent url('{% get_media_prefix %}/{{tipo.image}}') no-repeat center center;  
+
+
+   
+  }
+  
+</style>
+<form id="positionForm" method="POST">
+{% csrf_token %}
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Hoja de movimientos</h6>
+      </div>
+      <div class="card-body">
+     
+    
+        <div class="sliders">
+
+        <div class="row">
+        
+ 
+        
+                
+            <div class="P-B2">
+{% for i in obj %}
+    <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;">
+       
+       {% if i.repuesto %}
+          <p>R</p>
+          {% else %}
+           <p>Pos:{{i.posicion}}</p>
+       {% endif %}
+         
+    </div>
+    <input type="hidden" name="{{i.posicion}}" data-value="{{i.posx}}" value="{{i.posx}}">
+    <input type="hidden" name="{{i.posicion}}"  data-value="{{i.posy}}" value="{{i.posy}}">
+
+{% endfor %}
+              <div class="img"></div>
+
+                
+         
+                  <div style="display: grid; grid-column-start: 21;grid-row-start: 2;grid-row-end: 7;">
+  
+  
+                </div>
+
+                      <div style="display: grid; grid-column-start: 21;grid-row-start: 2;grid-row-end: 7; visibility:hidden;">
+  
+  
+                      <div id="inner-dropzone" class="dropzone-2 d-flex flex-wrap justify-content-center "
+                    style="grid-column-start: 20;grid-row-start: {{forloop.counter}};"><i class="fa fa-car"
+                      style="font-size: 3em;margin-bottom: 0.4em;" aria-hidden="true"></i>{{i.descripcion}}</div>
+
+                        
+                      <div id="inner-dropzone" data-id="{{i.id}}" class="dropzone-2 d-flex flex-wrap justify-content-center "
+                    style="grid-column-start: 20;grid-row-start: {{forloop.counter}};"><i class="fa fa-car"
+                      style="font-size: 3em;margin-bottom: 0.4em;" aria-hidden="true"></i>{{i.descripcion}}</div>
+                      <div id="inner-dropzone" data-id="{{i.id}}" class="dropzone-2 d-flex flex-wrap justify-content-center "
+                    style="grid-column-start: 20;grid-row-start: {{forloop.counter}};"><i class="fa fa-car"
+                      style="font-size: 3em;margin-bottom: 0.4em;" aria-hidden="true"></i>{{i.descripcion}}</div>
+                      <div id="inner-dropzone" data-id="{{i.id}}" class="dropzone-2 d-flex flex-wrap justify-content-center "
+                    style="grid-column-start: 20;grid-row-start: {{forloop.counter}};"><i class="fa fa-car"
+                      style="font-size: 3em;margin-bottom: 0.4em;" aria-hidden="true"></i>{{i.descripcion}}</div>
+                      <div id="inner-dropzone" data-id="{{i.id}}" class="dropzone-2 d-flex flex-wrap justify-content-center "
+                    style="grid-column-start: 20;grid-row-start: {{forloop.counter}};"><i class="fa fa-car"
+                      style="font-size: 3em;margin-bottom: 0.4em;" aria-hidden="true"></i>{{i.descripcion}}</div>
+                        
+                </div>
+            </div>
+          </div>
+         
+      
+        </div>
+      </div>
+      <div class="card-footer">
+          <button class="btn btn-primary" type="submit">Guardar Posiciones</button>
+        <a class="btn btn-secondary" href="{% url 'Web:vehiculos' %}" >Volver</a>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<div id="myModal" class="modal">
+  <img class="modal-content-vehiculo" id="img01">
+</div>
+
+{{tipo.image}}
+{% endblock %}
+
+{% block bottom_scripts %}
+<script>
+interact('.draggable')
+.draggable({
+        inertia: true,
+
+        autoScroll: true,
+        // dragMoveListener from the dragging demo above
+        listeners: {
+          move: dragMoveListener,
+          start (event) {
+            console.log(event.currentTarget.nextElementSibling.dataset.value)
+            console.log(event.currentTarget.nextElementSibling.nextElementSibling.dataset.value)
+
+            console.log(event, event.target)
+    },
+        }
+      })
+function dragged(e) {
+      drag_pos.x = 0;
+      drag_pos.y = 0;
+      e.target.style.transform = 'translate(0px, 0px)';
+      e.target.setAttribute('data-x', 0)
+      e.target.setAttribute('data-y', 0)
+    }
+function dragMoveListener (event) {
+  var target = event.target
+  console.log(event)
+  // keep the dragged position in the data-x/data-y attributes
+  var x = (parseFloat(target.getAttribute('data-x')) || event.currentTarget.nextElementSibling.dataset.value/1.0) + event.dx
+  var y = (parseFloat(target.getAttribute('data-y')) || event.currentTarget.nextElementSibling.nextElementSibling.dataset.value/1.0) + event.dy
+
+  // translate the element
+  target.style.webkitTransform =
+    target.style.transform =
+      'translate(' + x + 'px, ' + y + 'px)'
+
+  // update the posiion attributes
+  target.setAttribute('data-x', x   )
+  target.setAttribute('data-y', y)
+
+event.currentTarget.nextElementSibling.value=x.toFixed(2)
+event.currentTarget.nextElementSibling.nextElementSibling.value=y.toFixed(2)
+
+}
+
+// this function is used later in the resizing and gesture demos
+window.dragMoveListener = dragMoveListener
+
+</script>
+{% endblock %}

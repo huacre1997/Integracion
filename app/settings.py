@@ -44,9 +44,9 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-    "environ"
-    # 'tempus_dominus',
-    # 'bootstrap_datepicker_plus'
+    "environ",
+    'storages',
+
 ]
 
 LOCAL_APPS = [
@@ -104,13 +104,25 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "bdprueba",
-        "HOST": "localhost",
+        'NAME': "baseprueba",
+        # "HOST": "macbook-pro-de-jackeline.local",
+        "HOST":"localhost",
         "USER": "root",
         "PASSWORD": "",
         "PORT": ""
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': "bdprueba",
+#         "HOST": "localhost",
+#         "USER": "root",
+#         "PASSWORD": "",
+#         "PORT": ""
+#     }
+# }
 
 
 
@@ -193,14 +205,27 @@ USE_TZ = False
 #     },
 # }
 
+AWS_ACCESS_KEY_ID = 'AKIAVTWEJMBXRYWHFIWP'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'vg365'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
+AWS_QUERYSTRING_AUTH = False
 LOGIN_REDIRECT_URL="/"
 LOGIN_URL="/login/"
-STATIC_URL = '/static/'
+STATIC_URL = "https://s3.amazonaws.com/%s/static/" % AWS_STORAGE_BUCKET_NAME
+
+AWS_DEFAULT_ACL = None 
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_ROOT = ''
 STATIC_ROOT=os.path.join(BASE_DIR,"staticfiles")
 MEDIA_URL = '/documentos/'
-STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',

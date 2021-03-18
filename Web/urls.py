@@ -122,6 +122,7 @@ urlpatterns = [
     path('catalogos/tipo-vehiculo/<int:pk>/', views.TipoVehiculoUpdateView.as_view(), name='tipo-vehiculo'),
     path('catalogos/tipo-vehiculo/<int:pk>/delete/', views.TipoVehiculoDeleteView.as_view(), name='tipo-vehiculo-delete'),
 
+    path('catalogos/posiciones/<int:pk>/', views.DetalleTipoVehiculo.as_view(), name='posiciones'),
 
     path('catalogos/vehiculos/', views.VehiculosListView.as_view(), name='vehiculos'),
     path('catalogos/vehiculo/', views.VehiculoCreateView.as_view(), name='vehiculo'),

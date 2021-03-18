@@ -1674,29 +1674,52 @@ class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
 class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = TipoVehiculoForm
     template_name = 'Web/Catalogos/tipo_vehiculo.html'
-    success_url = reverse_lazy("Web:tipo-vehiculos")
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.add_tipovehiculo"]
-
-    def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.created_by = self.request.user
-        messages.success(self.request, 'Operación realizada correctamente.')
-        return super().form_valid(form)
-
+  
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
+import boto3 
+class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
+    model=PosicionesLlantas
+    template_name = 'Web/Catalogos/posiciones.html'
+    action = ACCION_NUEVO
+    login_url=reverse_lazy("Web:login")
+    permission_required=["Web.add_tipovehiculo"]
+    context_object_name="obj"
+    def post(self,request,*args, **kwargs):
+        print(self.request.POST)
+        pos=[]
+        for i in range(0,len(self.request.POST)):
+            if  i!=0:
+                pos.append((self.request.POST.getlist(f'{i}')))
+        print(pos)
+        for i,x in enumerate(self.get_queryset()):
+            print(i)
+            x.posx=pos[i][0]
+            x.posy=pos[i][1]
+            x.save()
+        messages.success(self.request, 'Operación realizada correctamente.')
+        return HttpResponseRedirect(reverse('Web:tipo-vehiculos',))
+    def get_queryset(self):
+        qs = super(DetalleTipoVehiculo, self).get_queryset()
+        return qs.filter(tipo__id=self.kwargs["pk"])
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tipo"] = TipoVehiculo.objects.get(pk=self.kwargs["pk"])
+        return context
+    
+    
 class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     form_class = TipoVehiculoForm
     model = TipoVehiculo
     template_name = 'Web/Catalogos/tipo_vehiculo.html'
-    success_url = reverse_lazy("Web:tipo-vehiculos")
     action = ACCION_EDITAR
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.change_tipovehiculo"]
-
+    context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
@@ -1706,11 +1729,6 @@ class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['update'] = True
-        return context
 
 
 class TipoVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
@@ -2223,6 +2241,7 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
         print(self.request.POST)
         instance = form.save(commit=False)
         instance.created_by = self.request.user
+        
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -2309,6 +2328,8 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         id = self.kwargs['pk']
         obj = Vehiculo.objects.get(pk=id)
         u=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
+        posiciones=PosicionesLlantas.objects.filter(tipo_id=obj.tipo_vehiculo.id)
+
         nrollantas=obj.tipo_vehiculo.nro_llantas
         nrorepuesto=obj.nro_llantas_repuesto
         pos ,posrep,faltantes ,faltantesrep= [],[],[],[]
@@ -2318,13 +2339,11 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         for i in range(0,nro_llantas):
             if u[i].repuesto==True:
                 posrep.append(u[i].posicion)
-            else:
-                pos.append(u[i].posicion)
+           
         
-        
-        for i in range(1,nrollantas+1):
-            if not i in pos:
-                faltantes.append(i)
+        # for i in range(1,nrollantas+1):
+        #     if not i in pos:
+        #         faltantes.append(i)
         
   
         for i in range(nrollantas+1,total+1):
@@ -2335,15 +2354,15 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         data2=[]
         al={}
         al2={}
-        if len(faltantes)!=0:
+        # if len(faltantes)!=0:
             
-            for i in range(0,len(faltantes)):
-                al["posicion"]=faltantes[i]
-                al["id"]=i+nro_llantas
-                al["repuesto"]=False
-                data1.append(al)
-                al={}
-                sum=sum+1
+        #     for i in range(0,len(faltantes)):
+        #         al["posicion"]=faltantes[i]
+        #         al["id"]=i+nro_llantas
+        #         al["repuesto"]=False
+        #         data1.append(al)
+        #         al={}
+        #         sum=sum+1
         for i in range(0,len(faltantesrep)):
             al2["posicion"]=faltantesrep[i]
             al2["id"]=i+sum+nro_llantas
@@ -2351,9 +2370,11 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
             data2.append(al2)
             al2={}
         context['obj'] =obj
-        context["vehiculo"]=u
+        context["posiciones"]=posiciones
+        context["tipo"]=TipoVehiculo.objects.get(pk=obj.tipo_vehiculo.id)
+        context["llantas"]=u
         context["faltantesRe"]=data2
-        context["faltantes"]=data1
+        # context["faltantes"]=data1
         context["ubicaciones"]=Ubicacion.objects.filter(eliminado=0,activo=True).values("id","descripcion")
         return context
 
@@ -2449,6 +2470,7 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
+        print(self.request.GET)
         context={"obs":CHOICES_OBSERVACION,"obj":request.GET,"estado":CHOICES_ESTADO_LLANTA}
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):
