@@ -490,6 +490,7 @@ class TipoVehiculo(models.Model):
    image=models.ImageField(upload_to="documentos/vehiculo2/%Y/%m/%d",null=True,blank=True)
    image2=models.ImageField(upload_to="documentos/vehiculo2/%Y/%m/%d",null=True,blank=True)
    nro_llantas=models.IntegerField()
+   max_rep=models.IntegerField()
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
@@ -510,7 +511,7 @@ class PosicionesLlantas(models.Model):
    posicion=models.IntegerField(default=True,blank=True)
    posx=models.IntegerField(default=True,blank=True)
    posy=models.IntegerField(default=True,blank=True)
-   
+   repuesto=models.BooleanField(default=False)
 @receiver(post_save, sender=TipoVehiculo)
 def save_tipo(sender, instance, **kwargs):
 
