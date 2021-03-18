@@ -238,10 +238,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_ROOT = ''
 STATIC_ROOT=os.path.join(BASE_DIR,"staticfiles")
 MEDIA_URL = "https://s3-sa-east-1.amazonaws.com/%s/media/" % AWS_STORAGE_BUCKET_NAME
-from django.contrib.messages import constants as messages
-MESSAGE_TAGS = {
-    messages.ERROR: 'danger',
-}
+
 AUTH_USER_MODEL="Web.Usuario"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  
 MAILER_EMAIL_BACKEND = EMAIL_BACKEND  
