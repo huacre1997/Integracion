@@ -2368,7 +2368,7 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         context["posiciones"]=posiciones
         context["tipo"]=TipoVehiculo.objects.get(pk=obj.tipo_vehiculo.id)
         context["llantas"]=u
-        context["faltantesRe"]=data2
+        # context["faltantesRe"]=data2
         # context["faltantes"]=data1
         context["ubicaciones"]=Ubicacion.objects.filter(eliminado=0,activo=True).values("id","descripcion")
         return context
