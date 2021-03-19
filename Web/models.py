@@ -537,39 +537,45 @@ def save_tipo(sender, instance, **kwargs):
    else:
       print("m not exists")
 
-      if len(m)!=instance.nro_llantas+instance.max_rep:
-         
-         faltantes=instance.nro_llantas+instance.max_rep-len(m)
-         if faltantes<0:
-            for i in m:
-               i.repuesto=False
+      
+      faltantes=instance.nro_llantas+instance.max_rep-len(m)
+      if faltantes<0:
+         for i in m:
+            i.repuesto=False
+            i.save()
+         print("falante menort a 0")
+
+         print("if menor a 0")
+         for i in m:
+            if i.posicion>instance.nro_llantas+instance.max_rep:
+               print("delete")
+               i.delete()
+            elif i.posicion>instance.nro_llantas:
+               print("repuesto")
+               i.repuesto=True
                i.save()
-            print("falante menort a 0")
-
-            print("if menor a 0")
-            for i in m:
-               if i.posicion>instance.nro_llantas+instance.max_rep:
-                  print("delete")
-                  i.delete()
-               elif i.posicion>instance.nro_llantas:
-                  print("repuesto")
-                  i.repuesto=True
-                  i.save()
-          
-               
-         else:   
-            print("faltante myor a 0")
-
-
-            for i in range(1,faltantes+1):
-               data=PosicionesLlantas()
-               data.repuesto=False
-               if (len(m)+i)>instance.nro_llantas:
-                  data.repuesto=True
-               data.tipo=instance
-               data.posicion=len(m)+i
-               data.save()
+         
             
+      else:   
+         print("faltante myor a 0")
+         
+               
+
+         for i in range(1,faltantes+1):
+            
+            data=PosicionesLlantas()
+            data.repuesto=False
+            data.tipo=instance
+            data.posicion=len(m)+i
+            data.save()
+         for a in PosicionesLlantas.objects.filter(tipo__id=instance.id):
+            # print(f"{a.posicion}>{instance.nro_llantas}")
+            if a.posicion>instance.nro_llantas:
+               a.repuesto=True
+            else:
+               print("un repuesto")
+               a.repuesto=False
+            a.save()
 class Vehiculo(models.Model):
 
    ano = models.IntegerField(null=True)
