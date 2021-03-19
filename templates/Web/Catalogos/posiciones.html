@@ -41,9 +41,12 @@
                 
             <div class="container-drag">
 {% for i in obj %}
+<script>console.log("{{i.posicion}}")</script>
     <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;">
        
        {% if i.repuesto %}
+          <script>console.log("es repue4sto")</script>
+
           <p class="text-center">Pos:{{i.posicion}} (R)</p>
           {% else %}
            <p class="text-center">Pos:{{i.posicion}}</p>
