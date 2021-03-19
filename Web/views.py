@@ -1703,8 +1703,9 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
         messages.success(self.request, 'Operación realizada correctamente.')
         return HttpResponseRedirect(reverse('Web:tipo-vehiculos',))
     def get_queryset(self):
-        qs = super(DetalleTipoVehiculo, self).get_queryset()
-        return qs.filter(tipo__id=self.kwargs["pk"])
+        for i in PosicionesLlantas.objects.filter(tipo__id=self.kwargs["pk"]).order_by("posicion"):
+            print(i.posicion)
+        return PosicionesLlantas.objects.filter(tipo__id=self.kwargs["pk"]).order_by("posicion")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["tipo"] = TipoVehiculo.objects.get(pk=self.kwargs["pk"])
