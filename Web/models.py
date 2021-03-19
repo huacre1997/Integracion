@@ -525,7 +525,7 @@ def save_tipo(sender, instance, **kwargs):
    m=PosicionesLlantas.objects.filter(tipo__id=instance.id)
    print(instance.max_rep)
    if not m.exists():
-
+      print("m exists")
       for i in range(1,instance.nro_llantas+instance.max_rep+1):
          data=PosicionesLlantas()
 
@@ -535,12 +535,17 @@ def save_tipo(sender, instance, **kwargs):
          data.posicion=i
          data.save()
    else:
+      print("m not exists")
+
       if len(m)!=instance.nro_llantas+instance.max_rep:
-         for i in m:
-            i.repuesto=False
-            i.save()
+         
          faltantes=instance.nro_llantas+instance.max_rep-len(m)
          if faltantes<0:
+            for i in m:
+               i.repuesto=False
+               i.save()
+            print("falante menort a 0")
+
             print("if menor a 0")
             for i in m:
                if i.posicion>instance.nro_llantas+instance.max_rep:
@@ -553,6 +558,9 @@ def save_tipo(sender, instance, **kwargs):
           
                
          else:   
+            print("faltante myor a 0")
+
+
             for i in range(1,faltantes+1):
                data=PosicionesLlantas()
                if (len(m)+i)>instance.nro_llantas:
