@@ -407,7 +407,12 @@ class TipoVehiculoForm(forms.ModelForm):
             'max_rep': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
 
         }
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['descripcion'].required = True
+        self.fields['image'].required = True
+        self.fields['image2'].required = True
+        self.fields['nro_llantas'].required = True
     def clean(self):
         data=self.cleaned_data.get('descripcion')
         data2=self.cleaned_data.get('nro_llantas')
