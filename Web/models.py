@@ -490,7 +490,7 @@ class TipoVehiculo(models.Model):
    image=models.ImageField(upload_to="vehiculo2/Y/",null=True,blank=True)
    image2=models.ImageField(upload_to="vehiculo2/X",null=True,blank=True)
    nro_llantas=models.IntegerField()
-   max_rep=models.IntegerField()
+   max_rep=models.IntegerField(default=0)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)

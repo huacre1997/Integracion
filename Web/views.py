@@ -1671,13 +1671,25 @@ class TipoVehiculosListView(LoginRequiredMixin,ValidateMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+from django.core.files.storage import default_storage
+
 class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     form_class = TipoVehiculoForm
     template_name = 'Web/Catalogos/tipo_vehiculo.html'
     action = ACCION_NUEVO
     login_url=reverse_lazy("Web:login")
     permission_required=["Web.add_tipovehiculo"]
-  
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        if instance.image!="":
+            if default_storage.exists(f'vehiculo2/Y/{instance.image}'):
+                default_storage.delete(f'vehiculo2/Y/{instance.image}')   
+        if instance.image2!="":
+            if default_storage.exists(f'vehiculo2/X/{instance.image2}'):
+                default_storage.delete(f'vehiculo2/X/{instance.image2}')            
+        instance.created_by = self.request.user
+        messages.success(self.request, 'Operación realizada correctamente.')
+        return super().form_valid(form)
     def form_invalid(self, form):
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
@@ -1720,6 +1732,14 @@ class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
+        print(instance.image)
+
+        if instance.image!="":
+            if default_storage.exists(f'vehiculo2/Y/{instance.image}'):
+                default_storage.delete(f'vehiculo2/Y/{instance.image}')         
+        if instance.image2!="":
+            if default_storage.exists(f'vehiculo2/X/{instance.image2}'):
+                default_storage.delete(f'vehiculo2/X/{instance.image2}')            
         instance.modified_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
@@ -2274,7 +2294,7 @@ class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
         # import pdb; pdb.set_trace()
         context['marca_vehiculo'] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
         context['ubicacion'] = Lugar.objects.filter().values("id",'descripcion',"activo","eliminado")
-        context['montado'] = Llanta.objects.filter(vehiculo=self.get_object()).count()
+        context['montado'] = Llanta.objects.filter(vehiculo=self.get_object(),repuesto=False).count()
 
         context['update'] = True
         return context
