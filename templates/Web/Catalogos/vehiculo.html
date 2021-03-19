@@ -272,7 +272,6 @@ $("#id_tipo_vehiculo").on("change",function (param) {
            $('#id_modelo_vehiculo').prop("disabled",true)
            $('#id_modelo_vehiculo').val("")
        } {% endif %}
-$('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').prop("selected", true);
 
 
   let array=document.getElementById("id_marca").options
@@ -295,8 +294,8 @@ $('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').p
     options3.push(element3)
   }
   actualizarmodelo()
-  {% if obj %}
 
+  {% if obj %}
   let modelo="{{obj.modelo_vehiculo.id}}"
   if (options3.includes(modelo)!=true) {
 
@@ -353,6 +352,9 @@ $('#id_marca  option[value="{{instance.modelo_vehiculo.marca_vehiculo.pk}}"]').p
   {%endif%}
     
 })
+document.getElementById("id_marca").value="{{form.cleaned_data.modelo_vehiculo.marca_vehiculo.id}}"
+document.getElementById("id_ubicacionv").value="{{form.cleaned_data.ubicacionv.id}}"
+document.getElementById("id_tipo_vehiculo").value="{{obj.tipo_vehiculo.id}}"
 
 
 function actualizarmodelo(){
@@ -410,6 +412,11 @@ function actualizarmodelo(){
 
 
                   }
+          
+          {% if not obj %}
+                  document.getElementById("id_modelo_vehiculo").value="{{form.cleaned_data.modelo_vehiculo.id}}"
+          {% endif %}
+            
             $('#id_modelo_vehiculo').removeAttr("disabled")
           },
           'error' : function(request,error){

@@ -14,6 +14,7 @@
                   {% if update %} Editar Modelo de Vehículo {% else %}Crear Modelo de Vehículo {% endif %}</h6>
             	</div>
             </div>
+            <h1></h1>
             <form method="post" action="" enctype="multipart/form-data" >
             {% csrf_token %}
             <div class="card-body">
@@ -71,7 +72,9 @@ $(document).ready(function () {
     //if (archivo!='') { $this.button('loading');}
     $this.button('loading');})
   });
-
+  
+document.getElementById("marca_vehiculo").value="{{form.cleaned_data.marca_vehiculo.id}}"
+ 
   {% if obj %}
   let option=document.createElement("option")
   option.textContent="{{obj.marca_vehiculo.descripcion}}"
