@@ -60,7 +60,6 @@
               Activo
             </label>
           </div>      
-			
             </div>
             {% if 'Web.add_anchobandarenova' in perm %}
             <div class="card-footer text-muted">
@@ -124,6 +123,9 @@
 
 
   }
+  {% else %}
+
+document.getElementById("id_marca").value="{{form.cleaned_data.modelo_renova.marca_renova_id}}"
   {%endif%}
 actualizar_modelo()
 
@@ -175,6 +177,10 @@ function actualizar_modelo(){
               }
               
         }
+               
+          {% if not obj %}
+                  document.getElementById("id_modelo_renova").value="{{form.cleaned_data.modelo_renova.id}}"
+          {% endif %}
       },
       'error' : function(request,error){
         //alert("Request: "+JSON.stringify(request));

@@ -166,8 +166,7 @@ table.dataTable tbody td {
 .modal-content-vehiculo {
   margin: auto;
   display: block;
-  width: 90%;
-  /* //max-width: 75%; */
+  max-width: 80%;
 }
 
 /* Caption of Modal Image */

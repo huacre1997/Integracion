@@ -244,7 +244,6 @@ class UsuarioForm(forms.ModelForm):
                 data['error'] = form.errors
         except Exception as e:
             data['error'] = str(e)
-            print(e)
         return data
             
 class  UsuarioEditForm(forms.ModelForm):
@@ -612,7 +611,7 @@ class LlantaForm(forms.ModelForm):
                 dataLlanta=Llanta.objects.filter(vehiculo=subject1,posicion=subject)
             
                 if dataLlanta.exists():
-                    self.add_error("posicion",f"El vehiculo {subject1} ya tiene asiganada una llanta en la posición {subject} .")
+                    self.add_error("posicion",f"El vehiculo {subject1} ya tiene asiganada un neumático en la posición {subject} .")
             
                 else:
 
@@ -627,13 +626,13 @@ class LlantaForm(forms.ModelForm):
                             a+=str(i+1)+" "
                         if not (subject<=int(total) and subject>int(nrollantas)):
                             print("repuesto")
-                            self.add_error("posicion",f"Esta llanta de repuesto solo puede ocupar las posiciones {a}.")
+                            self.add_error("posicion",f"Este neumático de repuesto solo puede ocupar las posiciones {a}.")
 
                     else:
                         if subject > total :
-                            self.add_error("posicion",f"El vehiculo {subject1} no puede tener mas de {total} llantas totales.")
+                            self.add_error("posicion",f"El vehiculo {subject1} no puede tener mas de {total} neumáticos totales.")
                         elif subject > nrollantas :
-                            self.add_error("posicion",f"El vehiculo {subject1} solo tiene {nrollantas} llantas.")
+                            self.add_error("posicion",f"El vehiculo {subject1} solo tiene {nrollantas} neumáticos.")
                     
                     
         return self.cleaned_data
@@ -680,7 +679,7 @@ class VehiculoForm(forms.ModelForm):
         if self.instance.tipo_vehiculo_id!=None:
             if self.instance.tipo_vehiculo!=subject1:
                 if m.exists():
-                    self.add_error("tipo_vehiculo",f" : Desmonte todas las llantas antes de cambiar la configuración vehicular .")
+                    self.add_error("tipo_vehiculo",f" : Desmonte todas los neumáticos antes de cambiar la configuración vehicular .")
         return self.cleaned_data
         
     def clean_placa(self):

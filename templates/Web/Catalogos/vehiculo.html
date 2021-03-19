@@ -65,7 +65,15 @@
                     <div class="invalid-feedback" id="invalid_propiedad">Este campo es requerido</div>
                   </div>
                
-               
+                    
+                    {% if obj %}
+                       <div class="form-group col-lg-3">
+                   <label for="">Neumáticos colocados</label>
+                    <input disabled type="text" value="{{montado}}" class="form-control"> 
+                    <div class="invalid-feedback" id="invalid_propiedad">Este campo es requerido</div>
+                  </div>
+                    {% endif %}
+                      
               </div>
              
             

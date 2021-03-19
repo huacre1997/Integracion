@@ -88,7 +88,7 @@
 
                     {% if i.posicion == l.posicion %}
 
-                      <div  class="verLlanta drag-drop-2 yes-drop {% if l.repuesto %} repuesto {% else %}llanta{% endif %}"  {% if l.repuesto %} data-repuesto="{{l.repuesto}}"{% endif %} data-llanta="{{i.id}}" data-repuesto="{{i.repuesto}}"  data-codigo="{{i.codigo}}" data-posicion="{{i.posicion}}">
+                      <div  class="verLlanta drag-drop-2 yes-drop {% if l.repuesto %} repuesto {% else %}llanta{% endif %}"  {% if l.repuesto %} data-repuesto="{{l.repuesto}}"{% endif %} data-llanta="{{i.id}}"   data-codigo="{{i.codigo}}" data-posicion="{{i.posicion}}">
                   <div class="d-flex justify-content-center  flex-wrap align-items-center" >
                     <div class="w-100 " style="font-size: 0.6em;" >Pos:{{i.posicion}}</div>
                     <div style="font-size: 0.6em; color: #000;">{{i.codigo}}</div>

@@ -73,8 +73,7 @@ $(document).ready(function () {
     $this.button('loading');})
   });
   
-document.getElementById("marca_vehiculo").value="{{form.cleaned_data.marca_vehiculo.id}}"
- 
+  
   {% if obj %}
   let option=document.createElement("option")
   option.textContent="{{obj.marca_vehiculo.descripcion}}"
@@ -82,6 +81,9 @@ document.getElementById("marca_vehiculo").value="{{form.cleaned_data.marca_vehic
     option.value="{{obj.marca_vehiculo.id}}"
 
   $("#id_marca_vehiculo").append(option)
+  {% else %}
+  document.getElementById("marca_vehiculo").value="{{form.cleaned_data.marca_vehiculo.id}}"
+
   {%endif%}
   </script>
 {% endblock %}

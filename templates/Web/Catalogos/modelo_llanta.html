@@ -68,6 +68,11 @@
     $this.button('loading');
   });
 
+{% if not obj %}
+  document.getElementById("marca_llanta").value="{{form.cleaned_data.marca_llanta.id}}"
+
+{% endif %}
+  
    
   </script>
 

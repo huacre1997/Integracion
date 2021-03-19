@@ -1694,7 +1694,6 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
         for i in range(0,len(self.request.POST)):
             if  i!=0:
                 pos.append((self.request.POST.getlist(f'{i}')))
-        print(pos)
         for i,x in enumerate(self.get_queryset()):
             print(i)
             x.posx=pos[i][0]
@@ -1703,8 +1702,7 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
         messages.success(self.request, 'Operación realizada correctamente.')
         return HttpResponseRedirect(reverse('Web:tipo-vehiculos',))
     def get_queryset(self):
-        for i in PosicionesLlantas.objects.filter(tipo__id=self.kwargs["pk"]).order_by("posicion"):
-            print(i.posicion)
+
         return PosicionesLlantas.objects.filter(tipo__id=self.kwargs["pk"]).order_by("posicion")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2196,18 +2194,17 @@ class VehiculosListView(LoginRequiredMixin, ValidateMixin,ListView):
 
                 if modelo:
                     search=Vehiculo.objects.filter(eliminado=False,modelo_vehiculo__marca_vehiculo_id=marca,modelo_vehiculo_id=modelo)
-
                     
             elif placa:
                 search=Vehiculo.objects.filter(placa=placa)
             elif start_date and end_date:
                 search=Vehiculo.objects.filter(created_at__range=[start_date,end_date],eliminado=False)
-
                 if start_date==end_date:     
                     search=Vehiculo.objects.filter(created_at__contains=start_date,eliminado=False)
 
             data=[]
             for i in search:
+                item=i.toJSON2()
                 data.append(i.toJSON2())
             return JsonResponse(data,safe=False)
 
@@ -2236,7 +2233,6 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     permission_required=["Web.add_vehiculo"]
     
     def form_valid(self, form):
-        print(self.request.POST)
         instance = form.save(commit=False)
         instance.created_by = self.request.user
         
@@ -2264,7 +2260,6 @@ class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     permission_required=["Web.change_vehiculo"]
     context_object_name="obj"
     def form_valid(self, form):
-        print(self.request.POST)
         instance = form.save(commit=False)
         instance.modified_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -2277,9 +2272,9 @@ class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # import pdb; pdb.set_trace()
-        id =  self.kwargs['pk']
         context['marca_vehiculo'] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
         context['ubicacion'] = Lugar.objects.filter().values("id",'descripcion',"activo","eliminado")
+        context['montado'] = Llanta.objects.filter(vehiculo=self.get_object()).count()
 
         context['update'] = True
         return context
@@ -2400,12 +2395,10 @@ def AnchoBandaRenovaSearch(request):
     contexto={"obj":product}
     return render(request,template_name,contexto)
 def getTipo(request,id):
-    print(id)
     obj=TipoVehiculo.objects.filter(id=id)
     if obj.exists:
         data2=[]
         data2.append(obj.first().toJSON())
-        print(data2)
         data={"status":200,"response":data2}
     else:
         data={"status":500}
@@ -2468,7 +2461,6 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def get(self,request,*args, **kwargs):
-        print(self.request.GET)
         context={"obs":CHOICES_OBSERVACION,"obj":request.GET,"estado":CHOICES_ESTADO_LLANTA}
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):
@@ -2579,18 +2571,21 @@ class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_historialllantas"]
 
     def post(self,request,*args, **kwargs):
-        data=[]
+        data,posicion=[],[]
         post = json.loads(request.body.decode("utf-8"))
 
         if(post["id"]!=""):
-            qs = Vehiculo.objects.get(id=post["id"]).toJSON()
+            ve=Vehiculo.objects.get(id=post["id"])
+            qs = ve.toJSON()
+         
             nm = Llanta.objects.filter(vehiculo=post["id"]).order_by("posicion")
+            pos=PosicionesLlantas.objects.filter(tipo_id=ve.tipo_vehiculo.id)
             for i in nm:
                 lala=i.toJSON()
-              
                 data.append(lala)   
-
-            return JsonResponse({"status":200,"vehiculo":qs,"llantas":data},safe=False, content_type='application/json')
+            for i in pos:
+                posicion.append(i.toJSON())
+            return JsonResponse({"status":200,"vehiculo":qs,"llantas":data,"pos":posicion},safe=False, content_type='application/json')
         return JsonResponse({"status":303},safe=False, content_type='application/json')
 
     def get_context_data(self, **kwargs):
@@ -2652,7 +2647,6 @@ class InsepccionDetalleView(LoginRequiredMixin,ValidateMixin,UpdateView):
             for i in DetalleInspeccion.objects.filter(inspeccion=self.get_object().id):
                 item=i.toJSON()
                
-                print(i.rem_prom)
                 data.append(item)
         except:
             pass

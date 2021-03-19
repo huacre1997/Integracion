@@ -519,11 +519,14 @@ class PosicionesLlantas(models.Model):
    posx=models.CharField(max_length=15,default="0")
    posy=models.CharField(max_length=15,default="0")
    repuesto=models.BooleanField(default=False)
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["tipo","modified_by"])
+      return item
+
 @receiver(post_save, sender=TipoVehiculo)
 def save_tipo(sender, instance, **kwargs):
 
    m=PosicionesLlantas.objects.filter(tipo__id=instance.id)
-   print(instance.max_rep)
    if not m.exists():
       print("m exists")
       for i in range(1,instance.nro_llantas+instance.max_rep+1):
@@ -569,11 +572,9 @@ def save_tipo(sender, instance, **kwargs):
             data.posicion=len(m)+i
             data.save()
          for a in PosicionesLlantas.objects.filter(tipo__id=instance.id):
-            # print(f"{a.posicion}>{instance.nro_llantas}")
             if a.posicion>instance.nro_llantas:
                a.repuesto=True
             else:
-               print("un repuesto")
                a.repuesto=False
             a.save()
 class Vehiculo(models.Model):
