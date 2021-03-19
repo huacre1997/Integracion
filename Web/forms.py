@@ -677,12 +677,12 @@ class VehiculoForm(forms.ModelForm):
         subject = self.cleaned_data.get('placa')
         subject1 = self.cleaned_data.get('tipo_vehiculo')
         m=Llanta.objects.filter(vehiculo__placa=subject)
-
-        if self.instance.tipo_vehiculo!=subject1:
-           if m.exists():
-            self.add_error("tipo_vehiculo",f" : Desmonte todas las llantas antes de cambiar la configuración vehicular .")
+        if self.instance.tipo_vehiculo_id!=None:
+            if self.instance.tipo_vehiculo!=subject1:
+                if m.exists():
+                    self.add_error("tipo_vehiculo",f" : Desmonte todas las llantas antes de cambiar la configuración vehicular .")
         return self.cleaned_data
-    
+        
     def clean_placa(self):
         data=self.cleaned_data["placa"]
         
