@@ -407,12 +407,16 @@ class TipoVehiculoForm(forms.ModelForm):
             'max_rep': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
 
         }
-    def clean_descripcion(self):
-        data=self.cleaned_data["descripcion"]
+
+    def clean(self):
+        data=self.cleaned_data.get('descripcion')
+        data2=self.cleaned_data.get('nro_llantas')
+        print(data2)
+        print(data)
         if self.instance.descripcion!=data:
-            if TipoVehiculo.objects.filter(descripcion=data).exists():
+            if TipoVehiculo.objects.filter(descripcion=data,nro_llantas=data2).exists():
                 self.add_error("descripcion",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
-        return data
+        return self.cleaned_data
 class ModeloLlantaForm(forms.ModelForm):
 
     class Meta:

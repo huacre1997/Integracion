@@ -24,6 +24,9 @@
                   <thead>
                     <tr>
                       <th class="text-center middle">Configuración Vehicular</th>
+                      <th class="text-center middle">N° de Neumáticos</th>
+                      <th class="text-center middle">N° Max. de Repuestos</th>
+
                       <th class="text-center middle">Estado</th>
                       <th style="width: 20%;"></th>
                     </tr>
@@ -32,6 +35,9 @@
                     {% for obj in objetos %}
                     <tr>
                       <td class="text-center middle">{{obj.descripcion}}</td>
+                      <td class="text-center middle">{{obj.nro_llantas}}</td>
+                      <td class="text-center middle">{{obj.max_rep}}</td>
+
                       <td class="text-center middle">{% if obj.activo %}<i class="fa fa-check-circle text-success"></i>{% else %} <i class="fas fa-times-circle text-danger"></i> {% endif %} </td>
                       <td class="text-center middle">
                              {% if 'Web.change_tipovehiculo' in perm %}
