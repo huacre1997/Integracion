@@ -523,6 +523,7 @@ class PosicionesLlantas(models.Model):
 def save_tipo(sender, instance, **kwargs):
 
    m=PosicionesLlantas.objects.filter(tipo__id=instance.id)
+   print(instance.max_rep)
    if not m.exists():
 
       for i in range(1,instance.nro_llantas+instance.max_rep+1):
@@ -533,7 +534,33 @@ def save_tipo(sender, instance, **kwargs):
          data.tipo=instance
          data.posicion=i
          data.save()
-   
+   else:
+      if len(m)!=instance.nro_llantas+instance.max_rep:
+         for i in m:
+            i.repuesto=False
+            i.save()
+         faltantes=instance.nro_llantas+instance.max_rep-len(m)
+         if faltantes<0:
+            print("if menor a 0")
+            for i in m:
+               if i.posicion>instance.nro_llantas+instance.max_rep:
+                  print("delete")
+                  i.delete()
+               elif i.posicion>instance.nro_llantas:
+                  print("repuesto")
+                  i.repuesto=True
+                  i.save()
+          
+               
+         else:   
+            for i in range(1,faltantes+1):
+               data=PosicionesLlantas()
+               if (len(m)+i)>instance.nro_llantas:
+                  data.repuesto=True
+               data.tipo=instance
+               data.posicion=len(m)+i
+               data.save()
+            
 class Vehiculo(models.Model):
 
    ano = models.IntegerField(null=True)

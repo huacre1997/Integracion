@@ -673,14 +673,24 @@ class VehiculoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['tipo_vehiculo'].queryset = TipoVehiculo.objects.filter(eliminado=False,activo=True)
         self.fields['obs'].required = False
+    def clean(self):
+        subject = self.cleaned_data.get('placa')
+        subject1 = self.cleaned_data.get('tipo_vehiculo')
+        m=Llanta.objects.filter(vehiculo__placa=subject)
 
+        if self.instance.tipo_vehiculo!=subject1:
+           if m.exists():
+            self.add_error("tipo_vehiculo",f" : Desmonte todas las llantas antes de cambiar la configuración vehicular .")
+        return self.cleaned_data
     
     def clean_placa(self):
         data=self.cleaned_data["placa"]
+        
         if self.instance.placa!=data:
             if Vehiculo.objects.filter(placa=data).exists():
                 self.add_error("placa",f" : La placa {data} ya se encuentra registrada .")
         return data
+   
 class InspeccionForm(forms.ModelForm):
 
     tecnico = forms.ModelChoiceField(queryset=Usuario.objects.filter(groups__name="Técnico"),empty_label="Seleccione técnico..",

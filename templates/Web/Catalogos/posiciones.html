@@ -27,7 +27,7 @@
   <div class="container-fluid">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Hoja de movimientos</h6>
+        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Configurar Posiciones de Vehículo</h6>
       </div>
       <div class="card-body">
      
@@ -44,9 +44,9 @@
     <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;">
        
        {% if i.repuesto %}
-          <p>Pos:{{i.posicion}}(R)</p>
+          <p class="text-center">Pos:{{i.posicion}} (R)</p>
           {% else %}
-           <p>Pos:{{i.posicion}}</p>
+           <p class="text-center">Pos:{{i.posicion}}</p>
        {% endif %}
          
     </div>
@@ -93,7 +93,7 @@
       </div>
       <div class="card-footer">
           <button class="btn btn-primary" type="submit">Guardar Posiciones</button>
-        <a class="btn btn-secondary" href="{% url 'Web:vehiculos' %}" >Volver</a>
+        <a class="btn btn-secondary" href="{% url 'Web:tipo-vehiculos' %}" >Volver</a>
       </div>
     </div>
   </div>
