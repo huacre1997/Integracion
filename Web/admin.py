@@ -106,3 +106,7 @@ class TipoVehiculoAdmin(admin.ModelAdmin):
 	pass
 
 admin.site.register(TipoVehiculo, TipoVehiculoAdmin)
+class Posiciones(admin.ModelAdmin):
+	pass
+
+admin.site.register(PosicionesLlantas, Posiciones)
