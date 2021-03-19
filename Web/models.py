@@ -563,6 +563,7 @@ def save_tipo(sender, instance, **kwargs):
 
             for i in range(1,faltantes+1):
                data=PosicionesLlantas()
+               data.repuesto=False
                if (len(m)+i)>instance.nro_llantas:
                   data.repuesto=True
                data.tipo=instance
