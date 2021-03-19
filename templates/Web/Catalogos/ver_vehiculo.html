@@ -83,13 +83,10 @@
               
          
                 {% for l in posiciones %}
-                <script>console.log({{l}})</script>
                 <div class="drag bordeado {% if l.repuesto %}re {% endif %}" data-posicion={{l.posicion}} style="transform: translate({{l.posx}}px,{{l.posy}}px); cursor: move;">
                 {% for i in llantas %}
-                <script>console.log({{i}})</script>
 
                     {% if i.posicion == l.posicion %}
-                      <script>console.log("i es igual a posu")</script>
 
                       <div  class="verLlanta drag-drop-2 yes-drop {% if l.repuesto %} repuesto {% else %}llanta{% endif %}"  {% if l.repuesto %} data-repuesto="{{l.repuesto}}"{% endif %} data-llanta="{{i.id}}" data-repuesto="{{i.repuesto}}"  data-codigo="{{i.codigo}}" data-posicion="{{i.posicion}}">
                   <div class="d-flex justify-content-center  flex-wrap align-items-center" >
