@@ -83,7 +83,7 @@ table.dataTable tbody td {
   .container-drag{
 
     display: grid;
-    grid-template-columns: repeat(21, 1fr) ; 
+    grid-template-columns: repeat(21, 50px) ; 
     grid-template-rows: repeat(10,50px);
     
     
@@ -246,3 +246,9 @@ animation-duration: 0.6s;
 
    
   }
+
+  /* @media only screen and (min-width: 1200px){
+    .img {
+      background-position-x: calc(100% + 70px),center !important;
+    }
+  }   */

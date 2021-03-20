@@ -42,7 +42,7 @@
             <div class="container-drag">
 {% for i in obj %}
 <script>console.log("{{i.posicion}}")</script>
-    <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;">
+    <div class="draggable bordeado ride-{{i.posicion}}" data-posicion="{{i.posicion}}" >
        
        {% if i.repuesto %}
           <script>console.log("es repue4sto")</script>
@@ -115,6 +115,8 @@ interact('.draggable')
     inertia: true,
     modifiers: [
       interact.modifiers.restrictRect({
+        elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+
         restriction: 'parent',
         endOnly: true
       })
@@ -132,13 +134,7 @@ interact('.draggable')
     },
         }
       })
-function dragged(e) {
-      drag_pos.x = 0;
-      drag_pos.y = 0;
-      e.target.style.transform = 'translate(0px, 0px)';
-      e.target.setAttribute('data-x', 0)
-      e.target.setAttribute('data-y', 0)
-    }
+
 function dragMoveListener (event) {
   var target = event.target
   console.log(event)
