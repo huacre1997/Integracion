@@ -103,7 +103,7 @@ textarea, .vTextField {
 
          
           <!-- Topbar Navbar -->
-          <ul class="navbar-nav ml-auto w-100" style="display: grid;grid-template-columns: repeat(8,1fr);">
+          <ul class="navbar-nav ml-auto w-100" style="display: grid;grid-template-columns: repeat(8,1fr);grid-auto-flow: column;">
               
             <!-- Nav Item - Search Dropdown (Visible Only XS) -->
             <li class="nav-item dropdown no-arrow d-sm-none">
@@ -160,9 +160,9 @@ textarea, .vTextField {
             <!-- Nav Item - User Information -->
             
             {% block titleheader %}
-            <li class="nav-item dropdown no-arrow" style="grid-column: 1/4;" >
+            <li class="nav-item dropdown no-arrow" style="grid-column: 1/5;" >
               <a class="nav-link" role="button" aria-expanded="false">
-               <img src="{% static 'img/logo.png' %}" width="30%" alt="">
+               <img src="{% static 'img/logo.png' %}" style="min-width: 100px; max-width: 200px;" alt="">
               </a>
            
             </li>
@@ -198,64 +198,19 @@ textarea, .vTextField {
         <!-- End of Topbar -->
         <!-- Begin Page Content --><!-- /.container-fluid -->
      
-      <style>
-        .item-lock{
-          height:120px;
-          border: 1px white;
-          border-radius: 10px;
-          background-color:#d7dbdd;
-
-        }
      
-    
-        .position-1{
-         grid-row: 2/3;
-         grid-column: 2/3;
-        }
-        .position-2{
-         grid-row: 2/3;
-         grid-column: 3/4;
-        }
-        .position-3{
-          grid-row: 2/3;
-         grid-column: 4/5;
-        }
-        .position-4{
-          grid-row: 2/3;
-         grid-column: 5/6;
-        }
-        .position-5{
-          grid-row: 3/4;
-          grid-column: 2/3;
-        }
-        .position-6{
-          grid-row: 3/4;
-          grid-column: 3/4;
-        }
-        .grid-index{
-          display: grid;
-    grid-template-columns: repeat(6,1fr);
-    grid-template-rows: repeat(4,1fr);
-    grid-gap:   20px;
-    
-        }
-        .justify-self-center{
-          justify-self: center;
-        }
-      </style>
-      
       {% block content %}
            <div class="grid-index">
-            <div style="grid-column: 2/4; align-self: flex-end;">
+            <div class="position-1">
                <label for="" class="">Seleccione el Módulo al que va acceder:</label>
  
               </div>
               {% if 'auth.view_seguridad' in perm %}
 
-            <div class="position-1">
+            <div class="position-2">
              <div class="shadow  item-lock justify-self-center">
               <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:seguridad' %}">
-                <img width="60%" height="100%" src="{% static 'img/iconos/seguridad.png' %}" alt="">
+                <img class="icon-index" src="{% static 'img/iconos/seguridad.png' %}" alt="">
               </a>
               <label  style="color: #014782;font-weight: bold;" class="w-100 text-center">Seguridad</label>
 
@@ -264,10 +219,10 @@ textarea, .vTextField {
             {%endif%}
             {% if 'auth.view_catalogos' in perm %} 
 
-            <div class="position-2">
+            <div class="position-3">
               <div class="shadow  item-lock justify-self-center">
                 <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:catalogos' %}">
-                  <img width="60%" height="100%" src="{% static 'img/iconos/catalogos.png' %}" alt="">
+                  <img  class="icon-index" src="{% static 'img/iconos/catalogos.png' %}" alt="">
 
 
                 </a>
@@ -278,10 +233,10 @@ textarea, .vTextField {
             {%endif%}
             {% if 'auth.view_procesos' in perm %} 
 
-            <div class="position-3">
+            <div class="position-4">
               <div class="shadow  item-lock justify-self-center">
                 <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:operaciones' %}">
-                  <img width="60%" height="100%" src="{% static 'img/iconos/neumaticos.png' %}" alt="">
+                  <img class="icon-index" src="{% static 'img/iconos/neumaticos.png' %}" alt="">
 
 
 
@@ -291,10 +246,10 @@ textarea, .vTextField {
                </div>
             </div>
             {%endif%}
-            <div class="position-4">
+            <div class="position-5">
               <div class="shadow  item-lock justify-self-center">
                 <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:reportes' %}">
-                  <img width="60%" height="100%" src="{% static 'img/iconos/reportes.png' %}" alt="">
+                  <img class="icon-index" src="{% static 'img/iconos/reportes.png' %}" alt="">
 
 
                 </a>
