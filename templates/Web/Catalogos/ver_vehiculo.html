@@ -678,6 +678,7 @@ Array.from(document.getElementsByClassName("bordeado")).forEach(el=>{
 
                             }).then(data => data.json()).then(response => {
                               if (response.status == 200) {
+                                console.log("viendo el response")
                                 console.log(response);
                                 const Toast = Swal.mixin({
                                   toast: true,
@@ -721,19 +722,22 @@ Array.from(document.getElementsByClassName("bordeado")).forEach(el=>{
                                 })
                                 console.log(event)
                                 if (event.target.classList.contains('re')) {
-                                  console.log("Es repuesto")
+                                  console.log("Es repuesto");
+                                  dragdrop.dataset.repuesto = "true"
                                   dragdrop.classList.add("repuesto", "verLlanta", "drag-drop-2",
                                     "yes-drop")
                                 } else {
-                                  console.log("no es repuesto")
+                                  console.log("No repuesto");
+
+                                  dragdrop.dataset.repuesto = "false"
                                   dragdrop.classList.add("llanta", "verLlanta", "drag-drop-2",
                                     "yes-drop")
 
                                 }
                                 dragdrop.dataset.llanta = response.id
                                 dragdrop.dataset.codigo = response.codigo
-                                event.target.dataset.posicion = response.posicion
-                             
+                                dragdrop.dataset.posicion = response.posicion
+
                                 let dragdropSon = document.createElement("div")
                                 dragdropSon.classList.add("d-flex", "justify-content-center",
                                   "flex-wrap", "align-items-center")
