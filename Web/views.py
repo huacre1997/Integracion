@@ -2342,7 +2342,7 @@ class VerVehiculoView(LoginRequiredMixin, ValidateMixin,TemplateView):
         obj = Vehiculo.objects.get(pk=id)
         u=obj.llantas.filter(eliminado=0,activo=True).order_by("posicion")
         posiciones=PosicionesLlantas.objects.filter(tipo_id=obj.tipo_vehiculo.id)
-
+        print(u)
         # nrollantas=obj.tipo_vehiculo.nro_llantas
         # nrorepuesto=obj.nro_llantas_repuesto
         # pos ,posrep,faltantes ,faltantesrep= [],[],[],[]
