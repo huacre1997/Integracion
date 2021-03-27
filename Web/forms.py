@@ -610,7 +610,8 @@ class LlantaForm(forms.ModelForm):
     #         self.fields['posicion'].required = True
 
     def clean(self):
-        if self.cleaned_data.get('ubicacion')!=1:
+        print(self.cleaned_data.get('ubicacion'))
+        if self.cleaned_data.get('ubicacion').descripcion=="MONTADO":
         
             subject = self.cleaned_data.get('posicion')
             subject1 = self.cleaned_data.get('vehiculo')
@@ -629,6 +630,7 @@ class LlantaForm(forms.ModelForm):
                     nrollantas=data.tipo_vehiculo.nro_llantas
                     nrorepuesto=data.tipo_vehiculo.max_rep
                     total=int(nrollantas)+int(nrorepuesto)
+                    print(total)
                     if repuesto:
                         a=""
                         for i in range(nrollantas,total):
@@ -638,6 +640,7 @@ class LlantaForm(forms.ModelForm):
                             self.add_error("posicion",f"Este neumático de repuesto solo puede ocupar las posiciones {a}.")
 
                     else:
+                        print("else")
                         if subject > total :
                             self.add_error("posicion",f"El vehiculo {subject1} no puede tener mas de {total} neumáticos totales.")
                         elif subject > nrollantas :
