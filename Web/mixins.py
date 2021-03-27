@@ -14,7 +14,7 @@ class ValidateMixin(object):
             return (self.permission_required).split()
 
         else:
-            return self.permission_required
+            return (self.permission_required)
     def get_url_redirect(self):
         if self.url_redirect is None:
             return reverse_lazy("Web:login")
@@ -29,6 +29,8 @@ class ValidateMixin(object):
                 return redirect(self.get_url_redirect())
             
         else:
+           
+            print(self.request.user.has_perms(self.get_perms()))
             print(self.request.user.get_group_permissions())
             if set(self.request.user.get_group_permissions())==set(self.get_perms()):
                 return super().dispatch(request, *args, **kwargs)

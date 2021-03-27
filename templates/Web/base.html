@@ -205,7 +205,6 @@ textarea, .vTextField {
                <label for="" class="">Seleccione el Módulo al que va acceder:</label>
  
               </div>
-              {% if 'auth.view_seguridad' in perm %}
 
             <div class="position-2">
              <div class="shadow  item-lock justify-self-center">
@@ -216,10 +215,10 @@ textarea, .vTextField {
 
              </div>
           </div>
-            {%endif%}
-            {% if 'auth.view_catalogos' in perm %} 
 
             <div class="position-3">
+              {% if 'auth.view_catalogos' in perm %} 
+
               <div class="shadow  item-lock justify-self-center">
                 <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:catalogos' %}">
                   <img  class="icon-index" src="{% static 'img/iconos/catalogos.png' %}" alt="">
@@ -229,11 +228,13 @@ textarea, .vTextField {
                 <label  style="color: #014782;font-weight: bold;" class="w-100 text-center">Catálogos</label>
   
                </div>
+               {%endif%}
+
             </div>
-            {%endif%}
-            {% if 'auth.view_procesos' in perm %} 
 
             <div class="position-4">
+              {% if 'auth.view_procesos' in perm %} 
+
               <div class="shadow  item-lock justify-self-center">
                 <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:operaciones' %}">
                   <img class="icon-index" src="{% static 'img/iconos/neumaticos.png' %}" alt="">
@@ -244,8 +245,9 @@ textarea, .vTextField {
                 <label  style="color: #014782;font-weight: bold;" class="w-100 text-center ">Neumáticos</label>
   
                </div>
+               {%endif%}
+
             </div>
-            {%endif%}
             <div class="position-5">
               <div class="shadow  item-lock justify-self-center">
                 <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:reportes' %}">

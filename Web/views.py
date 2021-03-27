@@ -81,7 +81,7 @@ class CatalogosView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["auth.view_catalogos"]
 class SeguridadView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name="Web/Seguridad/seguridad_base.html"
-    permission_required=["auth.view_seguridad"]
+    permission_required=("Web.view_usuario","Web.view_persona","auth.view_group")
 
 class OperacionesView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name="Web/Operaciones/operaciones_base.html"
