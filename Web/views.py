@@ -2600,7 +2600,7 @@ class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
             qs = ve.toJSON()
          
             nm = Llanta.objects.filter(vehiculo=post["id"]).order_by("posicion")
-            pos=PosicionesLlantas.objects.filter(tipo_id=ve.tipo_vehiculo.id)
+            pos=PosicionesLlantas.objects.filter(tipo_id=ve.tipo_vehiculo.id).order_by("posicion")
             for i in nm:
                 lala=i.toJSON()
                 data.append(lala)   
