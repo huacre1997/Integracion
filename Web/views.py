@@ -1998,7 +1998,7 @@ class CubiertaCreateView(LoginRequiredMixin,ValidateMixin,TemplateView):
         return context
     
 class CubiertaEditView(LoginRequiredMixin,ValidateMixin,UpdateView):
-    permission_required=["Web.view_cubiertallanta"]
+    permission_required=["Web.change_cubiertallanta"]
 
     model=CubiertaLlanta
     template_name="Web/Catalogos/cubierta.html"

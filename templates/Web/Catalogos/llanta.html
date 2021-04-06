@@ -557,7 +557,7 @@ function actualizar_modelo() {
                       if (!valuex.eliminado && valuex.activo) {
                         let opcion = document.createElement("option")
                         opcion.value = valuex.id
-                        opcion.textContent = valuex.descripcion
+                        opcion.textContent = valuex.descripcion+" ("+valuex.ancho_banda+" mm)"
                         ancho_banda_input.append(opcion)
                       }
                     });
@@ -667,7 +667,7 @@ function actualizar_modelo() {
                         if (!valuex.eliminado && valuex.activo) {
                           let opcion = document.createElement("option")
                           opcion.value = valuex.id
-                          opcion.textContent = valuex.descripcion
+                          opcion.textContent = valuex.descripcion+" ("+valuex.ancho_banda+" mm)"
                           select.append(opcion)
                         }
                       });

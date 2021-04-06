@@ -788,11 +788,12 @@
                           res => res
                           .json())
                         .then(data => {
+                          console.log(data);
                           $.each(data, function (index, valuex) {
                             if (!valuex.eliminado && valuex.activo) {
                               let opcion = document.createElement("option")
                               opcion.value = valuex.id
-                              opcion.textContent = valuex.descripcion
+                              opcion.textContent = valuex.descripcion+" ("+valuex.ancho_banda+" mm)"
                               ancho_banda_input.append(opcion)
                             }
                           });
