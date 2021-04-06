@@ -373,12 +373,18 @@ class AnchoBandaRenovaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    def clean_descripcion(self):
-        data=self.cleaned_data["descripcion"]
+    def clean(self):
+        cleaned_data = super().clean()
+
+        data=cleaned_data.get("descripcion")
+        data2=cleaned_data.get('modelo_renova')
+        data3=cleaned_data.get("ancho_banda")
+
+        print(data2)
         if self.instance.descripcion!=data:
-            if AnchoBandaRenova.objects.filter(descripcion=data).exists():
-                self.add_error("descripcion",f" : El ancho de banda {data} ya se encuentra registrado .")
-        return data  
+            if AnchoBandaRenova.objects.filter(descripcion=data,modelo_renova=data2,ancho_banda=data3).exists():
+                self.add_error("ancho_banda",f" : El ancho de banda {data3} ya se encuentra registrado .")
+        return self.cleaned_data  
 
 
 class MarcaLlantaForm(forms.ModelForm):
@@ -544,29 +550,33 @@ class CubiertaForm(forms.ModelForm):
     class Meta:
         model=CubiertaLlanta
         exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
-        widgets = {
-         
-        'fech_ren': forms.DateInput(format=('%Y-%m-%d'), attrs={ 'type':'date'}),
-                'ancho_banda': forms.Select(attrs={'class': 'form-select'}),
 
-                'modelo_renova': forms.Select(attrs={'class': 'form-select'}),
-                'renovadora': forms.TextInput(attrs={'class': 'form-control'}),
-
-            }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
                 "class": "form-control",
             })
-    def clean_categoria(self):
-        data=self.cleaned_data["categoria"]
-        if data=="2":  
-            self.fields['renovadora'].required = True
-            self.fields['ancho_banda'].required = True
-            self.fields['modelo_renova'].required =True
-            self.fields['nro_ren'].required =True
-        return data
+    def clean(self):
+        subject = self.cleaned_data.get('llanta')
+        subject1 = self.cleaned_data.get('nro_ren')
+        
+        if self.instance.nro_ren!=subject1:
+            print("if")
+            if CubiertaLlanta.objects.filter(nro_ren=subject1,llanta=subject).exists():
+                print("if2")
+                self.add_error("nro_ren",f" : Ya se ingresó el reencauche {subject1} del neumático {subject}.")
+        if int(subject1)>6:
+            self.add_error("nro_ren",f" : Ingrese un número de reencauche menor a 7")
+        return self.cleaned_data   
+    # def clean_categoria(self):
+    #     data=self.cleaned_data["categoria"]
+    #     if data=="2":  
+    #         self.fields['renovadora'].required = True
+    #         self.fields['ancho_banda'].required = True
+    #         self.fields['modelo_renova'].required =True
+    #         self.fields['nro_ren'].required =True
+    #     return data
 
 class LlantaForm(forms.ModelForm):
  
@@ -576,79 +586,80 @@ class LlantaForm(forms.ModelForm):
 
     class Meta:	
         model = Llanta
-        exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
+        exclude=["ubicacion","posicion","vehiculo","created_by","modified_by","created_at","modified_at","eliminado"]
         widgets = {
             'modelo_llanta': forms.Select( attrs={'class':'form-select'}),
             'medida_llanta': forms.Select( attrs={'class':'form-select'}),
-            'ubicacion': forms.Select( attrs={'class':'form-control'}),
-            'codigo': forms.TextInput( attrs={'class':'form-control'}),
-            'posicion': forms.TextInput( attrs={'class':'form-control'}),
+            'costo': forms.NumberInput( attrs={'class':'form-control'}),
+            'codigo': forms.NumberInput( attrs={'class':'form-control'}),
             'estado': forms.Select( attrs={'class':'form-select'}),
+            'fech_ren': forms.DateInput(format=('%Y-%m-%d'), attrs={ 'type':'date','class':'form-control'}),
+            'a_inicial': forms.NumberInput( attrs={'class':'form-control'}),
+            'a_final': forms.NumberInput( attrs={'class':'form-control'}),
 
         }
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
 
             self.fields['codigo'].required = True
-            self.fields['ubicacion'].required = True
+            # self.fields['ubicacion'].required = True
 
-    def clean_ubicacion(self):
-        data=self.cleaned_data["ubicacion"]
-        if data!=None:
-            if data.descripcion=="MONTADO" :
-                print("aaea")
-                self.fields['vehiculo'].required = True
+    # def clean_ubicacion(self):
+    #     data=self.cleaned_data["ubicacion"]
+    #     if data!=None:
+    #         if data.descripcion=="MONTADO" :
+    #             print("aaea")
+    #             self.fields['vehiculo'].required = True
 
-                self.fields['posicion'].required = True
-        else:
-            self.add_error("ubicacion",f" : Este campo es requerido.")
+    #             self.fields['posicion'].required = True
+    #     else:
+    #         self.add_error("ubicacion",f" : Este campo es requerido.")
   
-        return data
+    #     return data
     # def clean_vehiculo(self):
     #     data=self.cleaned_data["vehiculo"]
     #     if data.id!=None:
     #         self.fields['posicion'].required = True
 
-    def clean(self):
-        print(self.cleaned_data.get('ubicacion'))
-        if self.cleaned_data.get('ubicacion').descripcion=="MONTADO":
-        
-            subject = self.cleaned_data.get('posicion')
-            subject1 = self.cleaned_data.get('vehiculo')
-            repuesto = self.cleaned_data.get('repuesto')
+    # def clean(self):
+    #     if self.cleaned_data['ubicacion']!=None:
+    #         if self.cleaned_data['ubicacion'].descripcion=="MONTADO":
+    #             print("Entro al if")
+    #             subject = self.cleaned_data.get('posicion')
+    #             subject1 = self.cleaned_data.get('vehiculo')
+    #             repuesto = self.cleaned_data.get('repuesto')
 
-            if self.instance.posicion!=subject:
-                dataLlanta=Llanta.objects.filter(vehiculo=subject1,posicion=subject)
-            
-                if dataLlanta.exists():
-                    self.add_error("posicion",f"El vehiculo {subject1} ya tiene asiganada un neumático en la posición {subject} .")
-            
-                else:
+    #             if self.instance.posicion!=subject:
+    #                 dataLlanta=Llanta.objects.filter(vehiculo=subject1,posicion=subject)
+                
+    #                 if dataLlanta.exists():
+    #                     self.add_error("posicion",f"El vehiculo {subject1} ya tiene asiganada un neumático en la posición {subject} .")
+                
+    #                 else:
 
-                    data=Vehiculo.objects.get(pk=subject1.id)
+    #                     data=Vehiculo.objects.get(pk=subject1.id)
+    #                     nrollantas=data.tipo_vehiculo.nro_llantas
+    #                     nrorepuesto=data.tipo_vehiculo.max_rep
+    #                     total=int(nrollantas)+int(nrorepuesto)
+    #                     print(total)
+    #                     if repuesto:
+    #                         a=""
+    #                         for i in range(nrollantas,total):
+    #                             a+=str(i+1)+" "
+    #                         if not (subject<=int(total) and subject>int(nrollantas)):
+    #                             print("repuesto")
+    #                             self.add_error("posicion",f"Este neumático de repuesto solo puede ocupar las posiciones {a}.")
 
-                    nrollantas=data.tipo_vehiculo.nro_llantas
-                    nrorepuesto=data.tipo_vehiculo.max_rep
-                    total=int(nrollantas)+int(nrorepuesto)
-                    print(total)
-                    if repuesto:
-                        a=""
-                        for i in range(nrollantas,total):
-                            a+=str(i+1)+" "
-                        if not (subject<=int(total) and subject>int(nrollantas)):
-                            print("repuesto")
-                            self.add_error("posicion",f"Este neumático de repuesto solo puede ocupar las posiciones {a}.")
-
-                    else:
-                        print("else")
-                        if subject > total :
-                            self.add_error("posicion",f"El vehiculo {subject1} no puede tener mas de {total} neumáticos totales.")
-                        elif subject > nrollantas :
-                            self.add_error("posicion",f"El vehiculo {subject1} solo tiene {nrollantas} neumáticos.")
-                    
-                    
-        return self.cleaned_data
- 
+    #                     else:
+    #                         print("else")
+    #                         if subject > total :
+    #                             self.add_error("posicion",f"El vehiculo {subject1} no puede tener mas de {total} neumáticos totales.")
+    #                         elif subject > nrollantas :
+    #                             self.add_error("posicion",f"El vehiculo {subject1} solo tiene {nrollantas} neumáticos.")
+                        
+                        
+    #         return self.cleaned_data
+    
     
     def clean_codigo(self):
         data=self.cleaned_data["codigo"]

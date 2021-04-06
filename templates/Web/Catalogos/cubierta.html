@@ -1,0 +1,437 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block cubiertas %}collapse-item active{% endblock  %}
+{% block content %}
+{% load l10n %}
+
+<div id="wrapper">
+    <div class="container-fluid">
+      <form id="form-cubierta" method="POST" action="{% if obj %}{% url 'Web:cubierta-llanta' obj.id %}{% else %}{% url 'Web:cubierta-add'%}{% endif %}" id="frmlist">
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 ">
+
+                        <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> 
+                        {% if obj %}
+                        Editar Reencauche 
+                          {% else %}
+                          Agregar Reencauche
+                        {% endif %}
+                          </h6>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-body">
+             
+                    {% csrf_token %}
+                    <div class="form-row">
+                      <div class="col-lg-3">
+                        <label class="formName">Neumático</label>
+
+                        <select name="llanta" class="form-select" id="id_llanta">
+                            <option value="0">Seleccione..</option>
+
+                          {% for i in llanta  %}
+                          {% if  i.activo  %}
+
+                            <option {% if obj.llanta.id == i.id %}selected{% endif %} value="{{i.id}}">{{i.codigo}}</option>
+                            {% endif %}
+
+                          {% endfor %}
+                            
+                        </select>
+                      </div>
+                        <div class="col-lg-3 ">
+                            <label class="formName">N° Reencauche</label>
+                            <input type="number" step="0.01" min="0.00" name="nro_ren" class="nro_reencauchado form-control" value="{{obj.nro_ren}}"
+                                required />
+                        </div>
+                        <div class="col-lg-3">
+                            <label class="formName">Kilometraje</label>
+                            <input type="number" step="0.01" min="0.00" name="km" class="km form-control" value="{{obj.km |unlocalize }}" required  />
+                        </div>
+                        <div class="col-lg-3">
+                            <label class="formName">Alt.Promedio</label>
+                            <input type="number" step="0.01" min="0.00" name="alt_prom" class="promedio form-control" required value="{{obj.alt_prom  |unlocalize}}"/>
+                        </div>
+                      
+                    </div>
+                    <div class="form-row">
+                      <div class="col-lg-3">
+                        <label class="formName">Fecha Reencauche</label>
+                        <input type="date" class="fecha_ren form-control" name="fech_ren" required value="{% if obj %}{{obj.fech_ren|date:'Y-m-d'}}{% endif %}" />
+                    </div>
+                        <div class="col-lg-3">
+
+                            <label class="formName">Reencauchadora</label>
+                            <select class="renovadora form-select" name="renovadora" required id="id_renovadora" >
+                            <option value="0">Seleccione..</option>
+                            {% for i in renova %}
+                            {% if  i.activo and not i.eliminado%}
+                            <option value="{{i.id}}">{{i.descripcion}}</option>
+                            {%endif%}
+                            {%endfor%}
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+
+                            <label class="formName">Modelo de la Banda</label>
+                            <select class="modelo_renova form-select" name="modelo_renova" required id="id_modelo_renova">
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+
+                            <label class="formName">Ancho de Banda</label>
+                            <select class="ancho_banda form-select" required name="ancho_banda">
+                            </select>
+                        </div>
+                       
+                    </div>
+                    <div class="form-row">
+                      <div class="col-12">
+                        <div class="form-check">
+                          
+                          {% if obj %}
+                          <input class="form-check-input" type="checkbox" name="activo" {% if obj.activo %}checked{% endif %} id="invalidCheck" required>
+
+                          {% else %}
+                          <input class="form-check-input" type="checkbox" name="activo" checked id="invalidCheck" required>
+
+                          {% endif %}
+                            
+                          <label class="form-check-label" for="invalidCheck">
+                            Activo
+                          </label>
+                          <div class="invalid-feedback">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+
+            </div>
+            <div class="card-footer">
+              <div class="form-row">
+                <div class="col-lg-3">
+                  <button type="button" id="btn-submit" class="btn  btn-primary btn-block btn-add-r"><i
+                      class="fas fa-sign-in-alt"></i>&nbsp;Guardar 
+                  </button>
+              </div>
+              <div class="col-lg-3">
+                <a href="{% url 'Web:cubierta-llantas' %}" class="btn  btn-secondary btn-block ">Volver 
+                </a>
+            </div>
+              </div>
+            </div>
+        </div>
+      </form>
+
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+    <script>
+      $("#id_llanta").select2()
+           let renovadora_input=$(".renovadora")
+          let modelo_banda_input=$(".modelo_renova")
+          let ancho_banda_input=$(".ancho_banda")
+
+      let array=document.getElementById("id_renovadora").options
+  let options=[]
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i].value;
+    options.push(element)
+  }
+    let array3=document.getElementById("id_modelo_renova").options
+  let options3=[]
+  for (let i = 0; i < array3.length; i++) {
+    const element3 = array3[i].value;
+    options3.push(element3)
+  }
+ {% if obj %}
+
+  let modelo="{{obj.modelo_renova.id}}"
+  if (options3.includes(modelo)!=true) {
+
+  let option3=document.createElement("option")
+  option3.textContent="{{obj.modelo_renova.descripcion}}"
+  option3.selected=true
+    option3.value=modelo
+
+  $("#id_modelo_renova").append(option3)
+
+  }else{
+    document.getElementById('id_modelo_renova').value=modelo;
+
+  }
+  let marca="{{obj.renovadora.id}}"
+  if (options.includes(marca)!=true) {
+
+  let option=document.createElement("option")
+  option.textContent="{{obj.renovadora.descripcion}}"
+  option.selected=true
+    option.value=marca
+
+  $("#id_renovadora").append(option)
+
+
+  
+
+  }else{
+    // $('#id_renovadora  option[value="'+marca+'"]').prop("selected", true);
+
+    document.getElementById('id_renovadora').value=marca;
+
+
+  }
+  
+
+                  renovadora_input.find('option[value="' + {{obj.renovadora.id}} + '"]').attr(
+                    'selected', 'selected');
+                  modelo_banda_input.empty();
+                  modelo_banda_input.append($("<option>", {
+                    value: "0",
+                    text: " Seleccione... "
+                  }));
+                  fetch('/catalogos/render-option?id_marca=' + {{obj.renovadora.id}})
+                    .then(
+                      res => res
+                      .json())
+                    .then(data => {
+                      $.each(data, function (index, valuex) {
+                        if (!valuex.eliminado && valuex.activo) {
+                          let opcion = document.createElement("option")
+                          opcion.value = valuex.id
+                          opcion.textContent = valuex.descripcion
+                          modelo_banda_input.append(opcion)
+                        }
+                      });
+
+                      modelo_banda_input.find('option[value="' + {{obj.modelo_renova.id}} + '"]')
+                        .attr(
+                          'selected', 'selected');
+                      ancho_banda_input.empty();
+                      ancho_banda_input.append($("<option>", {
+                        value: "0",
+                        text: " Seleccione... "
+                      }));
+                      fetch('/catalogos/render-option-renova?id_marca_renova=' +
+                      {{obj.modelo_renova.id}})
+                        .then(
+                          res => res
+                          .json())
+                        .then(data => {
+                          $.each(data, function (index, valuex) {
+                            if (!valuex.eliminado && valuex.activo) {
+                              let opcion = document.createElement("option")
+                              opcion.value = valuex.id
+                              opcion.textContent = valuex.descripcion
+                              ancho_banda_input.append(opcion)
+                            }
+                          });
+
+                    
+                            ancho_banda_input.find('option[value="' + {{obj.ancho_banda.id}} +
+                              '"]').attr(
+                              'selected', 'selected');
+                          
+                        })
+                    })
+      
+
+  {% endif %}
+  document.getElementById("btn-submit").addEventListener("click",function () { 
+                let error=0
+                let form=document.getElementById("form-cubierta")
+                let data=new FormData(form)
+                function validar(that) {
+
+                    if($(that).val()=="0" || $(that).val()==""){
+                      error=1
+                      alerta(3000, "error", "complete todos los campos")
+
+                    }
+
+                  }
+                  validar($("#id_llanta"))
+                  validar($(".nro_reencauchado"))
+                  validar($(".km"))
+                  validar($(".promedio"))
+                  validar($(".fecha_ren"))
+                  validar($("#id_renovadora"))
+                  validar($("#id_modelo_renova"))
+                  validar($(".ancho_banda"))
+
+                  console.log(error);
+                if(error==0){
+                  fetch(form.getAttribute("action"), {
+                                  method: "POST",
+                                  headers: {
+                                    'X-CSRFToken': csrftoken
+                                  },
+                                  body: data
+
+                                }).then(data => data.json()).then(response=>{
+                                  if (response.status==200) {
+                                    notificacion(2000, "Reencauche guardado!", "success")
+                                    $("#id_llanta").select2().val("0").trigger("change")
+                  $(".nro_reencauchado").val("")
+                  $(".km").val("")
+                  $(".promedio").val("")
+                  $(".fecha_ren").val("")
+                  $("#id_renovadora").select2().val("0").trigger("change")
+                  $("#id_modelo_renova").empty()
+                  $(".ancho_banda").empty()
+                                  }
+                                  else{
+                                    if(response.errors.nro_ren){
+                                      alerta(3000, "error", response.errors.nro_ren[0])
+                                    }
+                                  }
+                                })
+
+                }
+               })
+               renovadora_input.on("change", function () {
+                  
+                  modelo_banda_input.prop("disabled", true)
+                  modelo_banda_input.empty();
+                  modelo_banda_input.append($("<option>", {
+                    value: "0",
+                    text: " Seleccione... "
+                  }));
+                  console.log("paso por aq");
+                  ancho_banda_input.prop("disabled", true)
+                  ancho_banda_input.empty();
+                  ancho_banda_input.append($("<option>", {
+                    value: "0",
+                    text: " Seleccione... "
+                  }))
+                  fetch('/catalogos/render-option?id_marca=' + $(this).val()).then(
+                      res => res
+                      .json())
+                    .then(data => {
+                      console.log(data);
+                      $.each(data, function (index, valuex) {
+                        if (!valuex.eliminado && valuex.activo) {
+                          let opcion = document.createElement("option")
+                          opcion.value = valuex.id
+                          opcion.textContent = valuex.descripcion
+                          modelo_banda_input.append(opcion)
+
+                        }
+                      });
+                      if ($(this).val() == "0") {
+                        modelo_banda_input.prop("disabled", true)
+                      } else {
+                        modelo_banda_input.prop("disabled", false)
+                      }
+                    })
+
+                })
+                modelo_banda_input.on("change", function () {
+
+                  ancho_banda_input.prop("disabled", true)
+                  ancho_banda_input.empty();
+                  ancho_banda_input.append($("<option>", {
+                    value: "0",
+                    text: " Seleccione... "
+                  }));
+                  fetch('/catalogos/render-option-renova?id_marca_renova=' + $(this)
+                      .val()).then(
+                      res => res
+                      .json())
+                    .then(data => {
+                      $.each(data, function (index, valuex) {
+                        if (!valuex.eliminado && valuex.activo) {
+                          let opcion = document.createElement("option")
+                          opcion.value = valuex.id
+                          opcion.textContent = valuex.descripcion+" ("+valuex.ancho_banda+" mm )"
+                          ancho_banda_input.append(opcion)
+                        }
+                      });
+                      if ($(this).val() == "0") {
+                        ancho_banda_input.prop("disabled", true)
+                      } else {
+                        ancho_banda_input.prop("disabled", false)
+                      }
+                    })
+             
+      
+
+                })
+                ancho_banda_input.on("change", function () {
+               
+                
+                })
+function actualizar_modelo(){
+    $('#id_modelo_renova').empty();
+    $('#id_modelo_renova').append($("<option>", {value: "",text: " --------- "}));              
+    $.ajax({
+      'url' : '/catalogos/render-option',
+      'type' : 'GET',
+      'async': false,
+      'data' : {'id_marca' : $('#id_renovadora').val()},
+      'success' : function(data) {
+        let modelo2="{{obj.modelo_renova.id}}"
+        let marca2="{{obj.renovadora.id}}"
+
+       $.each(data, function( index, valuex ) {
+              if(!valuex.eliminado && valuex.activo){
+                let opcion=document.createElement("option")
+                  opcion.value=valuex.id
+                opcion.textContent=valuex.descripcion
+                console.log(opcion);
+                  document.getElementById("id_modelo_renova").append(opcion)
+                  
+              }           
+             
+       });
+        if($("#id_renovadora").val()==marca2){
+
+       let array4=document.getElementById("id_modelo_renova").options
+            let options4=[]
+            for (let i = 0; i < array4.length; i++) {
+              const element4 = array4[i].value;
+              options4.push(element4)
+            }
+            let modelo2="{{obj.modelo_renova.id}}"
+
+            if (options4.includes(modelo2)!=true) {
+
+              let option4=document.createElement("option")
+              option4.textContent="{{obj.modelo_renova.descripcion}}"
+              option4.selected=true
+                option4.value=modelo2
+
+              $("#id_modelo_renova").append(option4)
+
+              }else{
+                document.getElementById('id_modelo_renova').value=modelo2;
+
+              }
+              
+        }
+               
+          {% if not obj %}
+                  document.getElementById("id_modelo_renova").value="{{form.cleaned_data.modelo_renova.id}}"
+          {% endif %}
+      },
+      'error' : function(request,error){
+        //alert("Request: "+JSON.stringify(request));
+      }
+    });
+
+}
+
+     
+    </script>
+{% endblock  %}
+    

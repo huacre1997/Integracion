@@ -78,7 +78,10 @@
 
             <a class="{% block ubicaciones %}collapse-item{% endblock %}" href="{% url 'Web:Ubicaciones' %}">Ubicación del Neumático</a>
             {%endif%} 
-           
+            {% if 'Web.view_cubierta' in perm or 'auth.view_catalogos' in perm %}
+
+            <a class="{% block cubiertas %}collapse-item{% endblock %}" href="{% url 'Web:cubierta-llantas' %}">Registro de Reencauches</a>
+            {%endif%} 
 
             {% if 'Web.view_llanta' in perm or 'auth.view_catalogos' in perm %}
 

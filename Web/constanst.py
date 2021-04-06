@@ -117,14 +117,16 @@ CHOICES_OPERACION = (
 
 )
 CHOICES_ESTADO_LLANTA = (
-	("1", 'BAJA'),
-	("2", 'USADO'),
-  	("3", 'REPARACIÓN'),
-  	("4", 'ALMACÉN'),
-  	("5", 'EVALUACIÓN'),
-  	("6", 'TALLER MTNO'),
-  	("7", 'REENCAUCHADO'),
-  	("8", 'REPARADO'),
-  	("9", 'NUEVO'),
+    ("1", '	NUEVO'),
+	("2", 'REENCAUCHE'),
+	# ("1", 'BAJA'),
+	# ("2", 'USADO'),
+  	# ("3", 'REPARACIÓN'),
+  	# ("4", 'ALMACÉN'),
+  	# ("5", 'EVALUACIÓN'),
+  	# ("6", 'TALLER MTNO'),
+  	# ("7", 'REENCAUCHADO'),
+  	# ("8", 'REPARADO'),
+  	# ("9", 'NUEVO'),
 
 )

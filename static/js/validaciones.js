@@ -150,3 +150,14 @@ function validarEmail(valor) {
     return data
 
 }
+function checkDate(myDate) {
+   let now= moment()
+   console.log(now);
+   let s=moment(myDate, "YYYY-MM-DD")
+   console.log(s);
+
+    if (now > s) {
+      return true;
+    }
+    return false;
+  }

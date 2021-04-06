@@ -70,6 +70,7 @@ urlpatterns = [
     path('catalogos/ancho-banda-renovacion/<int:pk>/', views.AnchoBandaRenovacionUpdateView.as_view(), name='ancho-banda-renovacion'),
     path('catalogos/ancho-banda-renovacion/<int:pk>/delete/', views.AnchoBandaRenovacionDeleteView.as_view(), name='ancho-banda-renovacion-delete'),
     path('catalogos/render-option', views.RenderOption, name="render-option"),
+    path('catalogos/render-option-renova', views.RenderOptionRenova, name="render-option-renova"),
 
     path('catalogos/marca-llantas/', views.MarcaLlantasListView.as_view(), name='marca-llantas'),
     path('catalogos/marca-llanta/', views.MarcaLlantaCreateView.as_view(), name='marca-llanta'),
@@ -85,7 +86,13 @@ urlpatterns = [
     path('catalogos/medida-llanta/', views.MedidaLlantaCreateView.as_view(), name='medida-llanta'),
     path('catalogos/medida-llanta/<int:pk>/', views.MedidaLlantaUpdateView.as_view(), name='medida-llanta'),
     path('catalogos/medida-llanta/<int:pk>/delete/', views.MedidaLlantaDeleteView.as_view(), name='medida-llanta-delete'),
-    path('catalogos/render-option-llanta', views.RenderOptionLlanta, name="render-option-llanta"),
+    path('catalogos/render-option-llanta/<int:id>', views.RenderOptionLlanta, name="render-option-llanta"),
+
+
+
+    path('catalogos/cubierta-llantas/', views.CubiertaListView.as_view(), name="cubierta-llantas"),
+    path('catalogos/cubierta-llantas/<int:pk>/', views.CubiertaEditView.as_view(), name="cubierta-llanta"),
+    path('catalogos/cubierta-llanta/', views.CubiertaCreateView.as_view(), name="cubierta-add"),
 
     # path('estado-llantas/', views.EstadoLlantasListView.as_view(), name='estado-llantas'),
     # path('estado-llanta/', views.EstadoLlantaCreateView.as_view(), name='estado-llanta'),
@@ -116,7 +123,9 @@ urlpatterns = [
     path('catalogos/llanta/', views.LlantaCreateView.as_view(), name='llanta'),
     path('catalogos/llanta/<int:pk>/', views.LlantaUpdateView.as_view(), name='llanta'),
     path('catalogos/llanta/<int:pk>/delete/', views.LlantaDeleteView.as_view(), name='llanta-delete'),
-    
+    path('catalogos/llanta/exist/<int:codigo>/', views.NeumaticoExists, name='llanta-exist'),
+    path('catalogos/llanta/existPosicion/', views.PosicionExists, name='posicion-exist'),
+
     path('catalogos/tipo-vehiculos/', views.TipoVehiculosListView.as_view(), name='tipo-vehiculos'),
     path('catalogos/tipo-vehiculo/', views.TipoVehiculoCreateView.as_view(), name='tipo-vehiculo'),
     path('catalogos/tipo-vehiculo/<int:pk>/', views.TipoVehiculoUpdateView.as_view(), name='tipo-vehiculo'),

@@ -38,18 +38,20 @@
     <div class="form-row">
         <div class="form-group col-lg-12">
             <label for="">Estado del Neumático</label>
-            <input disabled type="text" class="form-control" value="{% if obj.estado == '1' %}BAJA{% elif obj.estado == '2' %}USADO{% elif obj.estado == '3' %}REPARACIÓN{% elif obj.estado == '4' %}ALMACÉN{% elif obj.estado == '5' %}EVALUACIÓN{% elif obj.estado == '6' %}TALLER MNTTO{% elif obj.estado == '7' %}REENCAUCHADO{% elif obj.estado == '8'  %}REPARADO{%elif obj.estado == '9' %}NUEVO{% endif %}">
+            <input disabled type="text" class="form-control" value="{% if obj.estado == '1' %}NUEVO{%else%}REENCAUCHADO{% endif %}">
+
+            {% comment %} <input disabled type="text" class="form-control" value="{% if obj.estado == '1' %}BAJA{% elif obj.estado == '2' %}USADO{% elif obj.estado == '3' %}REPARACIÓN{% elif obj.estado == '4' %}ALMACÉN{% elif obj.estado == '5' %}EVALUACIÓN{% elif obj.estado == '6' %}TALLER MNTTO{% elif obj.estado == '7' %}REENCAUCHADO{% elif obj.estado == '8'  %}REPARADO{%elif obj.estado == '9' %}NUEVO{% endif %}"> {% endcomment %}
         </div>  
     </div>
     <div class="form-row">
-        <div class="form-group col-lg-6">
+        {% comment %} <div class="form-group col-lg-6">
             <label for="">Cubierta</label>
             <input disabled type="text" class="form-control"
                 value="{% if obj.cubierta.categoria == '1' %}Nuevo{%else%}Reencauchado{% endif %}">
-        </div>
-        <div class="form-group col-lg-6">
+        </div> {% endcomment %}
+        <div class="form-group col-lg-12">
             <label for="">Fecha</label>
-            <input disabled type="text" class="form-control" value="{{obj.cubierta.fech_ren}}">
+            <input disabled type="text" class="form-control" value="{{obj.fech_ren}}">
 
 
         </div>
@@ -59,7 +61,7 @@
     <div class="form-row">
         <div class="form-group col-lg-6">
             <label for="">Costo</label>
-            <input disabled type="text" value="{{obj.cubierta.costo | unlocalize }}" class="form-control">
+            <input disabled type="text" value="{{obj.costo | unlocalize }}" class="form-control">
         </div>
         <div class="form-group col-lg-6">
             <label for="">Km.</label>
@@ -68,14 +70,14 @@
     <div class="form-row">
         <div class="form-group col-lg-4">
             <label for="">Altura inicial</label>
-            <input disabled type="text" class="form-control" value="{{obj.cubierta.a_inicial  | unlocalize}}">
+            <input disabled type="text" class="form-control" value="{{obj.a_inicial  | unlocalize}}">
         </div>
         <div class="form-group col-lg-4">
             <label for="">Altura promedio</label>
-            <input disabled type="text" class="form-control" value="{{obj.cubierta.a_promedio  | unlocalize}}"></div>
+            <input disabled type="text" class="form-control" value="{{obj.a_promedio  | unlocalize}}"></div>
         <div class="form-group col-lg-4">
             <label for="">Altura final</label>
-            <input disabled type="text" class="form-control" value="{{obj.cubierta.a_final  | unlocalize}}"></div>
+            <input disabled type="text" class="form-control" value="{{obj.a_final  | unlocalize}}"></div>
     </div>
     
     {% if obj.cubierta.categoria == "2"  %}      

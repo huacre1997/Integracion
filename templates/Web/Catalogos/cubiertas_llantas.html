@@ -1,0 +1,200 @@
+{% extends 'Web/Catalogos/catalogos_base.html' %}
+{% block blockCatalogos%}nav-item active{% endblock  %}
+{% block collapseCatalogos %}collapse show{% endblock  %}
+{% block cubiertas %}collapse-item active{% endblock  %}
+{% block content %}
+{% load static %}
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <div class="d-flex justify-content-between align-items-center">
+
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Reencauches</h6>
+       {% if 'Web.add_cubiertallanta' in perm %}
+
+            <a href="{% url 'Web:cubierta-add' %}" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Nuevo Reencauche</a>
+          {% endif %} 
+        </div>
+      </div>
+      <div class="card-body">
+       <div class="form-row">
+               <div class="form-group col-lg-3">
+                <label for="">Filtrar por Neumático</label>
+                    <select name="llanta" id="llanta" class="form-select">
+                    <option value="0">Seleccione..</option>
+                    {% for i in llanta %}
+                      <option value="{{i.id}}">{{i.codigo}}</option>
+                    {% endfor %}
+                    </select>
+         
+              </div> 
+              <div class="form-group col-lg-1">
+                <label class="" style="visibility: hidden;" for="">s</label>
+                <input type="button" disabled class="btn btn-danger" id="remove-filter" value="Quitar filtro">
+              </div>
+                    </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="tablaCubierta" width="100%" cellspacing="0">
+              <thead>
+                <th class="text-center middle">Neumático </th>
+                <th class="text-center middle" >N° Reenc.</th>
+                <th class="text-center middle">Km</th>
+                <th class="text-center middle" >Alt.Prom</th>
+                <th>Reencauchadora</th>
+                <th>Modelo de Banda</th>
+                <th >Ancho de Banda</th>
+                <th class="text-center middle" >Fecha</th>
+                <th></th>
+              </thead>
+
+            </table>
+          </div>
+          </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+{% block bottom_scripts %}
+
+<script>
+  $("#llanta").select2()
+      var parameters = {
+      "codigo": "",
+ 
+
+    }
+    var tabla
+    function render(){
+        tabla = $("#tablaCubierta").DataTable({
+      stateSave:true,
+      ordering: true,
+      responsive:true,
+                  destroy: true,
+      processing:"true",
+
+      "order": [
+        [0, "asc"]
+      ],
+           ajax: {
+        url: window.location.pathname,
+        type: "POST",
+        data: parameters,
+        dataSrc: ""
+      },
+        "lengthMenu": [
+                [5, 10, 25, 50, -1],
+                [5, 10, 25, 50, "All"]
+            ],
+               language:{
+                    "url": "{% static 'language.json' %}",
+
+          },
+      columns: [
+          
+        {
+          "data": 'llanta',
+          className: "middle text-center"
+        },
+        {
+          "data": 'nro_ren',
+          className: "middle text-center"
+        },
+        {
+          "data": 'km',
+          className: "middle text-center",
+   
+        },
+        {
+          "data": 'alt_prom',
+          className: "middle text-center",
+     
+        },
+
+        {
+          "data": "renovadora",
+          className: "middle text-center"
+
+        },
+        {
+          "data": 'modelo_renova',
+          className: "middle text-center"
+        },
+        {
+          "data": 'ancho_banda',
+          className: "middle text-center"
+        },
+        {
+          "data": "fech_ren",
+          className: "middle text-center"
+
+        },
+       
+        {
+          "data": null,
+          className: "middle text-center"
+
+        },
+   
+
+      ],
+          "columnDefs": [
+            {
+              targets:[0],
+              orderData: [ 0, 1 ]
+
+            },
+            {
+              targets: [-1],
+
+          render: function (row, data, index) {
+              var buttons =
+                '<a class="btn btn-warning btn-edit-usuario"  role="button" href="' +
+                index.id +
+                '"><i class="far fa-edit" ></i></a>' 
+
+
+              return buttons;
+          
+          },
+
+        },
+          
+        ],
+
+    });
+   
+    tabla.page('next');
+tabla.state.save();
+    }
+       $("#llanta").on("change",function (e) { 
+         window.localStorage.setItem("llanta",$(this).val())
+            parameters["codigo"]= $(this).val()
+            if($(this).val()=="0"){
+                    parameters["codigo"]=""
+                    window.localStorage.removeItem("llanta")
+            }else{
+              $("#remove-filter").prop("disabled",false)
+            }
+           render()
+       })
+       $("#remove-filter").on("click",function (e) {
+         $(this).prop("disabled",true)
+        $("#llanta").select2().val("0").trigger("change");
+        window.localStorage.removeItem("llanta")
+       })
+       $(document).ready(function () {
+        if(window.localStorage.getItem("llanta")!=null){
+         console.log(window.localStorage.getItem("llanta"));
+        $("#llanta").select2().val(window.localStorage.getItem("llanta")).trigger("change");
+       }
+       else{
+        render()
+
+       }
+       });
+</script>
+{%endblock%}

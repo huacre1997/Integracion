@@ -61,9 +61,7 @@ $(document).ready(function () {
     td_obs.textContent = "-"
     operador.textContent = "-"
 
-    // If your expected result is "http://foo.bar/?x=1&y=2&x=42"
 
-    // If your expected result is "http://foo.bar/?x=42&y=2"
     fetch("../hoja-movimientos/", {
       method: "POST",
       headers: {
@@ -140,6 +138,8 @@ $(document).ready(function () {
 
           }
           for (let a = 0; a < response.llantas.length; a++) {
+            console.log(response.llantas[a].posicion);
+            console.log( response.pos[i].posicion);
             if (response.llantas[a].posicion == response.pos[i].posicion) {
               let dragdrop = document.createElement("div")
               if (response.pos[i].repuesto == true) {

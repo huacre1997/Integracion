@@ -37,5 +37,23 @@ function eliminateMarca(params) {
       })
 }
 
+function test(that,codigo){
+      const errorbak=0
 
+ fetch("exist/" +codigo ).then(data=> data.json())
+ 
+  .then(response=>{
+    if (response.status == 300) {
+    $(that).parent().parent().find("[name='codigo']").addClass("is-invalid").on("input",function (){
+      $(that).parent().parent().find("[name='codigo']").removeClass("is-invalid")
+    })
+    alerta(3000, "error", "El código " +codigo +
+      " ya se encuentra registrado.")
+      errorbak = 1
+     
+    }
+  })
+    console.log(errorbak)
+    return errorbak
+}
 // Get the image and insert it inside the modal - use its "alt" text as a caption

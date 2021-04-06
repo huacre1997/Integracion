@@ -110,3 +110,4 @@ class Posiciones(admin.ModelAdmin):
 	pass
 
 admin.site.register(PosicionesLlantas, Posiciones)
+admin.site.register(CubiertaLlanta)

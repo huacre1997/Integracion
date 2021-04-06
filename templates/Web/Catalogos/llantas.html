@@ -28,7 +28,13 @@
             <select name="medida" id="medida" class="form-select">
               <option value=""></option>
               {% for i in medida %}
-              <option value="{{i.id}}">{{i}}</option>
+              <option value="{{i.id}}">Medida
+                  {{i.medida}}-{{i.profundidad}}
+                  {% if i.capas %}
+                  -{{i.capas}}
+                  {% else %}
+                  {% endif %}
+                </option>
               {% endfor %}
             </select>
 
@@ -64,9 +70,9 @@
                 <th class="text-center middle">Marca</th>
                 <th class="text-center middle">Modelo</th>
                 <th class="text-center middle">Medida</th>
-                <th class="text-center middle">Ubicación</th>
+                {% comment %} <th class="text-center middle">Ubicación</th> {% endcomment %}
                 <th class="text-center middle">Costo</th>
-                <th class="text-center middle">KM</th>
+                {% comment %} <th class="text-center middle">KM</th> {% endcomment %}
                 <th class="text-center middle">F. Registro</th>
                 <th class="text-center middle">Vehículo</th>
                 <th class="text-center middle">Est.</th>
@@ -116,6 +122,7 @@
       responsive: true,
       destroy: true,
       stateSave: true,
+  "order": [[ 1, 'asc' ]],		
       "lengthMenu": [
         [5, 10, 25, 50, -1],
         [5, 10, 25, 50, "All"]
@@ -152,7 +159,7 @@
           "data": "medida",
           className: "middle"
         },
-        {
+        {% comment %} {
           "data": "ubicacion",
           className: "middle text-center",
           render: function (data) {
@@ -161,15 +168,15 @@
             }
             return data
           }
-        },
+        }, {% endcomment %}
         {
           "data": "costo",
           className: "middle text-center"
         },
-        {
+        {% comment %} {
           "data": "km",
           className: "middle text-center"
-        },
+        }, {% endcomment %}
         {
           "data": "created_at",
           className: "middle text-center"
@@ -220,10 +227,11 @@
         }, {
 
           "targets": [0],
-          "visible": false
-        },
+          "visible": false,
 
-      ], "order": [[ 1, 'asc' ]],		
+        },
+ 
+      ], 
 
 
 

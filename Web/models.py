@@ -357,7 +357,11 @@ class AnchoBandaRenova(models.Model):
       item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
       item["modelo_renova"]=self.modelo_renova.toJSON()
       return item
+   def toJSON2(self):
+      item = model_to_dict(self,exclude=["modified_by","modified_at","created_by","modified_at","modelo_renova"])
+      item["ancho_banda"]=format(self.ancho_banda, '.2f')
 
+      return item
 class MarcaLlanta(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
@@ -621,39 +625,13 @@ class Vehiculo(models.Model):
       return item
 
         
-class  CubiertaLlanta(models.Model):
-   class TipoCubierta(models.TextChoices):
-        NUEVO = "1", _('Nuevo')
-        REENCAUCHADO = "2", _('Reencauchado')
-   nro_ren=models.CharField(max_length=2,null=True,blank=True,default=None)      
-   categoria=models.CharField(max_length=10, default=TipoCubierta.NUEVO,choices=TipoCubierta.choices)
-   costo = models.DecimalField(max_digits=10, decimal_places=2)
-   km = models.DecimalField(max_digits=10, decimal_places=2)
-   a_final = models.DecimalField(max_digits=10, decimal_places=2)
-   a_inicial=models.DecimalField(max_digits=10, decimal_places=2)
-   a_promedio=models.DecimalField(max_digits=10, decimal_places=2)
-   fech_ren=models.DateField()
-   modelo_renova=models.ForeignKey(ModeloRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
-   ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
-   renovadora=models.ForeignKey(MarcaRenova,on_delete=models.PROTECT,blank=True,null=True,default=None)
-   
-   created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-   eliminado=models.BooleanField(default=False,editable=False)
-   def toJSON(self):
-      item = model_to_dict(self,exclude=["eliminado","modelo_renova","ancho_banda","eliminado","renovadora","created_by","modified_by"])
-      item["costo"]=self.costo
-      item["km"]=self.km
-      return item
+
 class Llanta(models.Model):
 
 
    modelo_llanta = models.ForeignKey(ModeloLlanta, on_delete=models.PROTECT,null=True)
    medida_llanta = models.ForeignKey(MedidaLlanta, on_delete=models.PROTECT)
    # ubicacion = models.CharField(max_length=50, choices=CHOICES_UBICACION_LLANTA,null=True,blank=True)
-   cubierta=models.ForeignKey(CubiertaLlanta, verbose_name=_("Cubierta"), on_delete=models.PROTECT,null=True,blank=True)
    ubicacion = models.ForeignKey(Ubicacion,on_delete=models.PROTECT,null=True,blank=True)
 
    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True,blank=True)
@@ -662,7 +640,11 @@ class Llanta(models.Model):
    posicion=models.IntegerField(blank=True,null=True,default=None)
    repuesto=models.BooleanField(default=False)
    estado = models.CharField(max_length=9,choices=CHOICES_ESTADO_LLANTA)
-   
+   costo = models.DecimalField(max_digits=10, decimal_places=2)
+   a_final = models.DecimalField(max_digits=10, decimal_places=2)
+   a_inicial=models.DecimalField(max_digits=10, decimal_places=2)
+   a_promedio=models.DecimalField(max_digits=10, decimal_places=2)
+   fech_ren=models.DateField()
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    modified_at = models.DateTimeField(auto_now=True)
@@ -672,33 +654,36 @@ class Llanta(models.Model):
    def __str__(self):
       return self.codigo
    def toJSON(self):
-      item = model_to_dict(self,exclude=["estado","eliminado","modified_at","eliminado","created_by","modified_by"])
+      item = model_to_dict(self,exclude=["a_inicial","a_final","a_promedio","fech_ren","ubicacion","estado","modified_at","eliminado","created_by","modified_by"])
       if self.medida_llanta.capas:
          item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
       else:
          item["medida"]='Medida {} - {} '.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')))
-      item["km"]=format(self.cubierta.km, '.2f')
-      item["costo"]=format(self.cubierta.costo, '.2f')
+      # item["km"]=format(self.cubierta.km, '.2f')
+      item["costo"]=format(self.costo, '.2f')
       item["modelo_llanta"]=self.modelo_llanta.descripcion
       item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
-      if self.ubicacion: 
-         item["ubicacion"]=self.ubicacion.descripcion 
+      # if self.ubicacion: 
+      #    item["ubicacion"]=self.ubicacion.descripcion 
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
-      if self.vehiculo: 
-         item["vehiculo"]=self.vehiculo.placa
+      # if self.vehiculo: 
+      #    item["vehiculo"]=self.vehiculo.placa
       return item
-   def toJSON2(self):
+   def tabletoJSON(self):
       item = model_to_dict(self,exclude=["posicion","repuesto","medida_llanta","cubierta","estado","eliminado","modified_at","eliminado","created_by","modified_by"])
       item["modelo_llanta"]=self.modelo_llanta.descripcion
       item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
-
+      if self.medida_llanta.capas:
+            item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
+      else:
+         item["medida"]='Medida {} - {} '.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')))
     
-      item["km"]=format(self.cubierta.km, '.2f')
-      item["costo"]=format(self.cubierta.costo, '.2f')
+      # item["km"]=format(self.cubierta.km, '.2f')
+      item["costo"]=format(self.costo, '.2f')
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
-      if self.vehiculo: 
+      if self.vehiculo:
          item["vehiculo"]=self.vehiculo.placa
-     
+
       return item
    @property
    def code(self):
@@ -713,8 +698,45 @@ class Llanta(models.Model):
       return codigo
    
    
-
+class  CubiertaLlanta(models.Model):
    
+   llanta=models.ForeignKey(Llanta, verbose_name=_("Llanta"), on_delete=models.PROTECT,null=True,blank=True)
+    
+   nro_ren=models.CharField(max_length=2,null=True,blank=True,default=None)      
+   primer_reen=models.BooleanField(default=False)
+   km = models.DecimalField(max_digits=10, decimal_places=2)
+   fech_ren=models.DateField(null=True,blank=False)
+   modelo_renova=models.ForeignKey(ModeloRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
+   ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
+   renovadora=models.ForeignKey(MarcaRenova,on_delete=models.PROTECT,blank=True,null=True,default=None)
+   alt_prom= models.DecimalField(max_digits=10, decimal_places=2)
+   created_at = models.DateTimeField(auto_now_add=True, null=True)
+   modified_at = models.DateTimeField(auto_now=True)
+   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   eliminado=models.BooleanField(default=False,editable=False)
+   activo=models.BooleanField(default=True)
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["primer_reen","llanta","eliminado","eliminado","created_by","modified_by","activo"])
+      item["km"]=format(self.km, '.2f')
+      item["alt_prom"]=format(self.alt_prom, '.2f')
+      item["fech_ren"]=self.fech_ren.strftime('%Y-%m-%d')  
+
+      item["renovadora"]=self.renovadora.id
+      item["modelo_renova"]=self.modelo_renova.id
+      item["ancho_banda"]=self.ancho_banda.id
+
+      return item
+   def toJSON2(self):
+      item = model_to_dict(self,exclude=["primer_reen","llanta","eliminado","eliminado","created_by","modified_by","activo"])
+      item["km"]=format(self.km, '.2f')
+      item["alt_prom"]=format(self.alt_prom, '.2f')
+      item["fech_ren"]=self.fech_ren.strftime('%Y-%m-%d')  
+      item["renovadora"]=self.renovadora.descripcion
+      item["modelo_renova"]=self.modelo_renova.descripcion
+      item["ancho_banda"]=self.ancho_banda.descripcion
+      item["llanta"]=self.llanta.codigo
+      return item  
 class HistorialLLantas(models.Model):
   
    llanta=models.ForeignKey(Llanta,on_delete=models.PROTECT,blank=True,null=True)

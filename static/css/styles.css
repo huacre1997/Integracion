@@ -105,14 +105,16 @@ table.dataTable tbody td {
 }
 
 .llanta {
-  background-color: #0d6efd;
+  background-color:  #014782;
 }
 
 .repuesto {
   background-color: seagreen;
 
 }
-
+.text-primary{
+  color: #014782 !important;
+}
 .dropzone,
 .dropzone-2 {
   background-color: #29e;

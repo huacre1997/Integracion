@@ -80,8 +80,8 @@
           <br>
         </div>
         <div class="card-footer text-muted">
-          <button type="submit" class="btn btn-primary">Grabar</button>
-          <a href="{% url 'Web:medida-llantas' %}" class="btn btn-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <a href="{% url 'Web:medida-llantas' %}" class="btn btn-secondary">Regresar</a>
         </div>
       </form>
     </div>
@@ -224,6 +224,7 @@ if (profundidad.trim() == "") {
   }
   console.log(options3)
  {% if obj %}
+ actualizar_modelo()
   let modelo="{{obj.modelo_llanta.id}}"
   if (options3.includes(modelo)!=true) {
 
@@ -265,7 +266,7 @@ if (profundidad.trim() == "") {
 
 
 
-actualizar_modelo()
+
 
   function actualizar_modelo() {
     
@@ -274,14 +275,8 @@ actualizar_modelo()
       value: "",
       text: " --------- "
     }));
-    $.ajax({
-      'url': '/catalogos/render-option-llanta',
-      'type': 'GET',
-      'async': false,
-      'data': {
-        'id_marca': $('#id_marca').val()
-      },
-      'success': function (data) {
+    fetch('/catalogos/render-option-llanta/' +$('#id_marca').val()).then(res => res.json())
+    .then(data=> {
         let modelo2="{{obj.modelo_llanta.id}}"
         let marca2="{{obj.modelo_llanta.marca_llanta.id}}"
         $.each(data, function (index, valuex) {
@@ -318,10 +313,8 @@ actualizar_modelo()
          {% if not obj %}
                   document.getElementById("id_modelo_llanta").value="{{form.cleaned_data.modelo_llanta.id}}"
           {% endif %}
-      },
-      'error': function (request, error) {
-        //alert("Request: "+JSON.stringify(request));
-      }
+      
+    
     });
 
   }
