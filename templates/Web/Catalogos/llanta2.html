@@ -227,7 +227,7 @@
               targets: [0],
               width: "10%",
               render: function (data, type, row) {
-                return `<input type="number" name="codigo"  onkeypress="return event.charCode >= 48" class="form-control form" maxlength="100" value="${data}">`;
+                return `<input type="number" name="codigo" min="1" onkeypress="return event.charCode >= 48" class="form-control form" maxlength="100" value="${data}">`;
               }
             },
 
@@ -466,7 +466,7 @@
                 '<div class="form-row">' +
                 '<div class="col-lg-3 ">' +
                 '<label  class="formName">N° Reencauche</label>' +
-                '<input type="number"  step="0.01" min="0.00" class="nro_reencauchado form-control" required />' +
+                '<input type="number"  class="nro_reencauchado form-control" required />' +
                 '</div>' +
                 '<div class="col-lg-3">' +
                 '<label  class="formName">Kilometraje</label>' +
@@ -520,11 +520,11 @@
                 '<th class="text-center middle">N° Reenc.</th>' +
                 '<th class="text-center middle">Km</th>' +
                 '<th class="text-center middle">Alt.Prom</th>' +
-                '<th >Reencauchadora</th>' +
-                '<th >Modelo de Banda</th>' +
-                '<th >Ancho de Banda</th>' +
+                '<th class="middle">Reencauchadora</th>' +
+                '<th class="middle">Modelo de Banda</th>' +
+                '<th class="middle">Ancho de Banda</th>' +
                 '<th  class="text-center middle">Fecha</th>' +
-                '<th></th>' +
+                '<th class="text-center middle"></th>' +
                 '</thead>' +
                 '<tbody class="t_body">' +
                 '</tbody>' +
@@ -1331,35 +1331,43 @@
                     $(this).removeClass("is-invalid")
                   })
                 } else {
-                  for (let i = 0; i < settings.aoData.length - 1; i++) {
+                  let errorc=0
+                  for (let i = 0; i < settings.aoData.length-1 ; i++) {
+                    console.log(settings.aoData[i]._aData.codigo);
                     if (settings.aoData[i]._aData.codigo == cant && i != tr.row) {
+                      console.log("raa");
                       alerta(1500, "error", "El codigo " + cant +
                         " ya se encuentra en la tabla.")
-                      $(this).addClass("is-invalid").on("input", function (e) {
-                        $(this).removeClass("is-invalid")
-                      })
+                        $(this).addClass("is-invalid")
+                        errorc=1
+                      break
                     }
                   }
-                  fetch("exist/" + cant).then(s => s.json())
+                  console.log(errorc);
+                  if(errorc==0){
+                    fetch("exist/" + cant).then(s => s.json())
                     .then(response => {
                       console.log(response);
                       if (response.status == 300) {
-                        $(this).parent().parent().find("[name='codigo']").addClass("is-invalid")
-                          .on("input", function () {
-                            $(this).parent().parent().find("[name='codigo']").removeClass(
-                              "is-invalid")
-                          })
+                        $(this).addClass("is-invalid")
+                        
 
                         alerta(1500, "error", "El código " + cant +
                           " ya se encuentra registrado.")
                         $("#btn-save").prop("disabled", true)
                         $(this).parent().parent().find(".btn-add").prop("disabled", true)
+
                       }else{
                         $("#btn-save").prop("disabled", false)
                         $(this).parent().parent().find(".btn-add").prop("disabled", false)
+                        $(this).removeClass("is-invalid")
 
                       }
                     })
+                  }else{
+                    $(this).addClass("is-invalid")
+
+                  }
 
                 }
                 let a = 0
@@ -1377,6 +1385,8 @@
                   $("#btn-save").prop("disabled", false)
 
                 }
+                console.log($(this).attr("class"));
+
               })
               $("select[name='medida_llanta']").on("change", function (e) {
                 var cant = $(this).val();

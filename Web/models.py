@@ -670,7 +670,7 @@ class Llanta(models.Model):
       #    item["vehiculo"]=self.vehiculo.placa
       return item
    def tabletoJSON(self):
-      item = model_to_dict(self,exclude=["posicion","repuesto","medida_llanta","cubierta","estado","eliminado","modified_at","eliminado","created_by","modified_by"])
+      item = model_to_dict(self,exclude=["posicion","repuesto","medida_llanta","cubierta","eliminado","modified_at","eliminado","created_by","modified_by"])
       item["modelo_llanta"]=self.modelo_llanta.descripcion
       item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
       if self.medida_llanta.capas:

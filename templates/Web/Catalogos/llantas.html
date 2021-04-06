@@ -70,7 +70,7 @@
                 <th class="text-center middle">Marca</th>
                 <th class="text-center middle">Modelo</th>
                 <th class="text-center middle">Medida</th>
-                {% comment %} <th class="text-center middle">Ubicación</th> {% endcomment %}
+                <th class="text-center middle">Estado</th>
                 <th class="text-center middle">Costo</th>
                 {% comment %} <th class="text-center middle">KM</th> {% endcomment %}
                 <th class="text-center middle">F. Registro</th>
@@ -159,16 +159,16 @@
           "data": "medida",
           className: "middle"
         },
-        {% comment %} {
-          "data": "ubicacion",
+        {
+          "data": "estado",
           className: "middle text-center",
           render: function (data) {
-            if (data == null) {
-              return "MONTADO"
+            if (data == "1") {
+              return "NUEVO"
             }
-            return data
+            return "REENCAUCHADO"
           }
-        }, {% endcomment %}
+        }, 
         {
           "data": "costo",
           className: "middle text-center"

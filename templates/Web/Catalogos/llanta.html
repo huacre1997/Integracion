@@ -286,7 +286,7 @@ function actualizar_modelo() {
     'success': function (data) {
       console.log(data)
       let modelo2 = "{{obj.modelo_llanta.id}}"
-      let marca2 = "{{obj.modelo_llanta.marca_llanta.id}}"
+      let marca2 = "{{obj.marca_llanta.id}}"
       $('#id_modelo_llanta').prop("disabled", false)
       $.each(data, function (index, valuex) {
         if (!valuex.eliminado && valuex.activo) {
@@ -446,7 +446,7 @@ function actualizar_modelo() {
               targets: [0],
               render: function (data, type, row) {
 
-                return `<input type="number" name="nro_ren"  class="form form-control" value="${data}">`;
+                return `<input type="number" name="nro_ren" min="1" class="form form-control" value="${data}">`;
 
               }
             },
@@ -739,7 +739,8 @@ function actualizar_modelo() {
                   alerta(1500, "error","Revise los numeros de reencauches")
                         $("#btn-save-llanta").prop("disabled", true)
                   }else{
-                      for (let i = 0; i < settings.aoData.length - 1; i++) {
+                      for (let i = 0; i < settings.aoData.length; i++) {
+                        console.log(settings.aoData[i]._aData);
                     if (settings.aoData[i]._aData.nro_ren == cant && i != tr.row) {
                       alerta(1500, "error", "El codigo " + cant +
                         " ya se encuentra en la tabla.")
