@@ -353,15 +353,21 @@
                   .then(data => {
                     $.each(data, function (index, valuex) {
                       if (!valuex.eliminado && valuex.activo) {
-                          $('#modelo').append($("<option>", {
+                        $('#modelo').append($("<option>", {
                           value: valuex.id,
                           text: valuex.descripcion
-                        }));
+                        }))
+                      
                       }
+                      
+              
                     });
-                          $('#modelo').prop("disabled", false)
+                    $('#modelo').prop("disabled", false)
 
-    }
-  });
+                  })
+
+                }         
+              })
+
 </script>
 {% endblock %}
