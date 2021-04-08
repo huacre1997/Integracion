@@ -1901,9 +1901,9 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
             print("aeaaaa")
             for i in response:
                 data.append(i.tabletoJSON())  
-                print(data)
+            print("termino el post")
             return JsonResponse(data, safe=False)
- 
+    
         except Exception as e:
             print(e)
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')

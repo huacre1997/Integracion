@@ -134,8 +134,10 @@
         url: window.location.pathname,
         type: "POST",
         data: parameters,
-        dataSrc: ""
-      },
+      "dataSrc": function (response) {
+            roleList = response;
+            console.log(roleList)
+        },      },
 
 
       columns: [{
