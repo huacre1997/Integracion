@@ -1876,14 +1876,14 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
     def post(self,request,*args, **kwargs):
         try:
             print("Entro al catch")
-
+            print(self.request.POST)
             start_date=self.request.POST["start_date"]
             end_date=self.request.POST["end_date"]
             modelo=self.request.POST["modelo"]
             medida=self.request.POST["medida"]
 
             marca=self.request.POST["marca"]
-
+            
             search=Llanta.objects.select_related("modelo_llanta","ubicacion","medida_llanta","vehiculo").filter(eliminado=False)
             response=search 
             if marca:

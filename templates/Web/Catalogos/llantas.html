@@ -327,6 +327,8 @@
 
   })
   $("#marca").on("change", function (e) {
+    parameters["modelo"] = ""
+
     parameters["marca"] = $("#marca").val()
     generate_reports();
     $('#medida').prop("disabled", true)
