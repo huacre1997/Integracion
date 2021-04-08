@@ -519,6 +519,7 @@ function actualizar_modelo() {
             },
           ],
           "createdRow": function (row, data, index) {
+
             let modelo_banda_input = $(row).find("select[name='modelo_banda']")
             let ancho_banda_input = $(row).find("select[name='ancho_banda']")
             modelo_banda_input.empty();
@@ -561,26 +562,35 @@ function actualizar_modelo() {
                         ancho_banda_input.append(opcion)
                       }
                     });
+                  
                     ancho_banda_input.find('option[value="' + data.ancho_banda + '"]').attr('selected',
                       'selected');
-
+                      if(ancho_banda_input.val()=="0"){
+                      ancho_banda_input.addClass("is-invalid")
+                    }
                   })
               })
+              console.log("createdrow");
           },
           initComplete: function (settings, json) {
             $(function () {
               function validaInputs() {
                 let a = 0
                 $.each($(".form"), function (index, value) {
+                  console.log($(value));
+
                   if ($(value).hasClass("is-invalid")) {
                     a = a + 1
                     $("#btn-add-llanta").prop("disabled", true)
                   }
                 });
+                console.log(a);
                 if (a == 0) {
                   $("#btn-add-llanta").prop("disabled", false)
                 }
               }
+              validaInputs()
+
               $("select[name='renovadora']").on("change", function (e) {
                 e.stopPropagation();
 
@@ -652,16 +662,17 @@ function actualizar_modelo() {
                 }));
                 select.prop("disabled", true)
                 if ($(this).val() == "0") {
+                  console.log("ig 0");
                   $("#btn-add-llanta").prop("disabled", true)
                   $(this).addClass("is-invalid")
                 } else {
+                  
                   $(this).removeClass("is-invalid")
                   validaInputs()
                   fetch('/catalogos/render-option-renova?id_marca_renova=' + $(this).val()).then(
                       res => res
                       .json())
                     .then(data => {
-                      console.log(data);
                       select.prop("disabled", false)
                       $.each(data, function (index, valuex) {
                         if (!valuex.eliminado && valuex.activo) {
