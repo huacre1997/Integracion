@@ -134,7 +134,8 @@
         url: window.location.pathname,
         type: "POST",
         data: parameters,
-          },
+        dataSrc: ""
+      },
 
 
       columns: [{
@@ -364,7 +365,7 @@
           });
         },
         'error': function (request, error) {
-          console.log(error)
+          //alert("Request: "+JSON.stringify(request));
         }
       });
     }

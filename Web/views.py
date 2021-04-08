@@ -1901,7 +1901,6 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
             print("aeaaaa")
             for i in response:
                 data.append(i.tabletoJSON())  
-            print("termino el post")
             return JsonResponse(data, safe=False)
     
         except Exception as e:
