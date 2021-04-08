@@ -286,7 +286,7 @@ function actualizar_modelo() {
     'success': function (data) {
       console.log(data)
       let modelo2 = "{{obj.modelo_llanta.id}}"
-      let marca2 = "{{obj.marca_llanta.id}}"
+      let marca2 = "{{obj.modelo_llanta.marca_llanta.id}}"
       $('#id_modelo_llanta').prop("disabled", false)
       $.each(data, function (index, valuex) {
         if (!valuex.eliminado && valuex.activo) {
