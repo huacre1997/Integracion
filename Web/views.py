@@ -1875,6 +1875,8 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
    
     def post(self,request,*args, **kwargs):
         try:
+            print("Entro al catch")
+
             start_date=self.request.POST["start_date"]
             end_date=self.request.POST["end_date"]
             modelo=self.request.POST["modelo"]
@@ -1896,9 +1898,10 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
                 if start_date==end_date:     
                     response=search.filter(created_at__contains=start_date)            
             data=[]
+            print("aeaaaa")
             for i in response:
                 data.append(i.tabletoJSON())  
-                 
+                print(data)
             return JsonResponse(data, safe=False)
  
         except Exception as e:
