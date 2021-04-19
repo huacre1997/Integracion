@@ -8,6 +8,8 @@ import numpy as np
 from pandas import ExcelWriter
 from pandas import ExcelFile
 import decimal
+from django.db import connection
+
 def importExcel(file):
     try:
         df = pd.read_excel(file, sheet_name='Hoja1')
@@ -35,6 +37,10 @@ def importExcel(file):
     return False
 def importPosi(file):
     try:
+        PosicionesLlantas.objects.all().delete()
+        cursor = connection.cursor()
+
+        cursor.execute('''TRUNCATE TABLE Web_posicionesllantas RESTART IDENTITY''')
         df = pd.read_excel(file, sheet_name='Hoja1')
         for i in df.index:
             tipo=TipoVehiculo.objects.get(id=df["tipo_id"][i])
@@ -122,13 +128,9 @@ def importMedi(file):
         print("hola")
         print(e)
     return False
-from django.db import connection
 def importLLan(file):
     try:
-        PosicionesLlantas.objects.all().delete()
-        cursor = connection.cursor()
 
-        cursor.execute('''TRUNCATE TABLE Web_posicionesllantas RESTART IDENTITY''')
 
         df = pd.read_excel(file, sheet_name='Hoja1')
         for i in df.index:
