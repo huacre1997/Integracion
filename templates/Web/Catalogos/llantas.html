@@ -74,7 +74,6 @@
                 <th class="text-center middle">Costo</th>
                 {% comment %} <th class="text-center middle">KM</th> {% endcomment %}
                 <th class="text-center middle">F. Registro</th>
-                <th class="text-center middle">Vehículo</th>
                 <th class="text-center middle">Est.</th>
 
                 <th></th>
@@ -173,24 +172,12 @@
           "data": "costo",
           className: "middle text-center"
         },
-        {% comment %} {
-          "data": "km",
-          className: "middle text-center"
-        }, {% endcomment %}
+
         {
           "data": "created_at",
           className: "middle text-center"
         },
-        {
-          "data": "vehiculo",
-          className: "middle text-center",
-          render: function (data) {
-            if (data == null) {
-              return "----------"
-            }
-            return data
-          }
-        },
+
         {
           "data": 'activo',
           className: "estado middle  text-center",

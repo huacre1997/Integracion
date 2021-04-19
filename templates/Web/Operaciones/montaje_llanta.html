@@ -24,11 +24,16 @@
              <div class="form-group col-lg-6">
                 <label for="">Neumático</label>
                     <div class="input-group mb-3">
-
-                      <input disabled type="text"  class="form-control" id="id_neu">
-                      <input type="hidden" name="llanta"  id="id_llanta">
-                      <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
-                          aria-hidden="true"></i></button>
+                        <select name="llanta" id="id_llanta" class="form-select">
+                        <option value="0">Seleccione...</option>
+                          {% for i in  llanta %}
+                            <option value="{{ i.id }}">{{ i.codigo }}</option>
+                          {% endfor %}
+                        </select>
+                      {% comment %} <input type="text"  class="form-control" id="id_neu">
+                      <input type="hidden" name="llanta"  id="id_llanta"> {% endcomment %}
+                      {% comment %} <button class="btn btn-primary" type="button" id="btnSearch"><i class="fa fa-search"
+                          aria-hidden="true"></i></button> {% endcomment %}
                       <div class="invalid-feedback" id="invalid_llanta">Este campo es requerido.</div>
 
                     </div>
@@ -54,7 +59,10 @@
     </form>
 </div>
 <script>
+  $("#id_llanta").select2({
+     dropdownParent: $('.jconfirm')
 
+  })
     $("#btnSearch").click(function (e) {
 
       e.preventDefault();

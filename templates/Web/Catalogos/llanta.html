@@ -152,9 +152,11 @@
               <thead>
                 <th class="text-center middle" style="width: 5%;">N° Reenc.</th>
                 <th class="text-center middle" style="width: 10%;">Km</th>
-                <th class="text-center middle" style="width: 10%;">Alt.Prom</th>
-                <th style="width: 20%;">Reencauchadora</th>
-                <th style="width: 20%;">Modelo de Banda</th>
+                <th class="text-center middle" style="width: 10%;">Alt.Ini</th>
+                <th class="text-center middle" style="width: 10%;">Alt.Fin</th>
+
+                <th style="width: 15%;">Reencauchadora</th>
+                <th style="width: 15%;">Modelo de Banda</th>
                 <th style="width: 20%;">Ancho de Banda</th>
                 <th class="text-center middle" style="width: 10%;">Fecha</th>
                 <th style="width: 5%;"></th>
@@ -186,7 +188,6 @@
            $("input[name='codigo']").on("input", function (e) {
              
                 var cant = $(this).val();
-                console.log(cant);
                 if (cant == "" || cant =="0") {
                   $("#btn-add-llanta").prop("disabled", true)
                   $(this).addClass("is-invalid").on("input", function () {
@@ -267,6 +268,7 @@
 
 
     }
+    
     {%endif%}
     actualizar_modelo()
 
@@ -284,7 +286,6 @@ function actualizar_modelo() {
     'async': false,
 
     'success': function (data) {
-      console.log(data)
       let modelo2 = "{{obj.modelo_llanta.id}}"
       let marca2 = "{{obj.modelo_llanta.marca_llanta.id}}"
       $('#id_modelo_llanta').prop("disabled", false)
@@ -328,9 +329,24 @@ function actualizar_modelo() {
     }
   });
 }
+$("#id_estado").on("change",function () { 
+                if($(this).val()=="2"){
+                  objeto.list()
+                  $("tbody .form").prop("disabled",false)
+
+                }else{
+                  objeto.items=[]
+                  objeto.list()
+
+               $("tbody .form").prop("disabled",true)
+                }
+               })
     $("#btn-add-llanta").on("click", function (e) {
       e.preventDefault()
       if($("#codigo_d").val()!="1"){
+        $("#loadingCharge").css("visibility","visible")
+        $("#spinner").css("visibility","visible")
+
       if (objeto.items.length === 0 && $("#id_estado").val()=="2") {
         notificacion(2000, "Faltan llenar datos en la tabla!", "error")
         return false;
@@ -358,8 +374,13 @@ function actualizar_modelo() {
             },
             body: parameters
           }).then(l => l.json()).then(res => {
-            console.log(res);
-            notificacion(2000, "Neumáticos guardados!", "success")
+            $("#loadingCharge").css("visibility","hidden")
+        $("#spinner").css("visibility","hidden")
+
+            notificacion(1000, "Neumáticos guardados!", "success")
+            setTimeout(() => {
+              window.location.href="{% url 'Web:llantas' %}"
+            }, 1000);
           })
           $("#btn-save").prop("disabled", false)
         }
@@ -370,21 +391,15 @@ function actualizar_modelo() {
     var tabla
     var data = {
       fech_ren: "",
-      alt_prom: "",
-      nro_reencauchado: "",
+      alt_inicial: "",
+      alt_final:"",
+      nro_ren: "",
       km: "",
-      renovadora: {
-        id: "",
-        descripcion: ""
-      },
-      modelo_banda: {
-        id: "",
-        descripcion: ""
-      },
-      ancho_banda: {
-        id: "",
-        descripcion: ""
-      },
+      renovadora:  "",
+      modelo_renova: "",
+      ancho_banda: "",
+      activo:0
+
     }
     var objeto = {
       items: [],
@@ -412,7 +427,12 @@ function actualizar_modelo() {
 
             },
             {
-              "data": "alt_prom",
+              "data": "alt_inicial",
+              className: "middle"
+
+            },
+            {
+              "data": "alt_final",
               className: "middle"
 
             },
@@ -442,11 +462,21 @@ function actualizar_modelo() {
 
             }
           ],
+          "createdRow": function( row, data, dataIndex ) {
+            console.log(objeto.items.length);
+
+                if (data.activo==0 && dataIndex!=objeto.items.length) {
+            $(row).hide();
+        };
+  },
           columnDefs: [{
               targets: [0],
               render: function (data, type, row) {
-
-                return `<input type="number" name="nro_ren" min="1" class="form form-control" value="${data}">`;
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                return `<input type="number" name="nro_ren" min="1" ${disabled} class="form form-control" value="${data}">`;
 
               }
             },
@@ -454,23 +484,46 @@ function actualizar_modelo() {
               targets: [1],
 
               render: function (data, type, row) {
-
-                return `<input type="number" name="km" step="0.01" min="0.00" class="form form-control" value="${data}">`;
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                return `<input type="number" name="km" ${disabled} step="0.01" min="0.00"  class="form form-control" value="${data}">`;
 
               }
             },
             {
               targets: [2],
               render: function (data, type, row) {
-                return `<input type="number" name="alt_prom" step="0.01" min="0.00" class="form form-control" value="${data}">`;
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                return `<input type="number" name="alt_inicial" ${disabled} step="0.01" min="0.00" class="form form-control" value="${data}">`;
 
               }
             },
             {
               targets: [3],
+              render: function (data, type, row) {
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                return `<input type="number" name="alt_final" ${disabled} step="0.01" min="0.00" class="form form-control" value="${data}">`;
+
+              }
+            },
+            {
+              targets: [4],
 
               render: function (data, type, row) {
-                var $select = $('<select name="renovadora"  class="form form-select change_marca">' +
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+               
+                var $select = $('<select name="renovadora"  '+disabled+' class="form form-select change_marca">' +
                   ' <option value="0">Seleccione...</option>' +
                   '{% for i in renova  %}' +
                   '{% if  i.activo and not i.eliminado %}' +
@@ -483,117 +536,390 @@ function actualizar_modelo() {
               }
             },
             {
-              targets: [4],
-              render: function (data, type, row) {
-                var $select = $('<select name="modelo_banda"  class="form form-select">' +
-                  '</select>');
-
-
-                $select.find('option[value="' + data + '"]').attr('selected', 'selected');
-                return $select[0].outerHTML
-              }
-            },
-            {
               targets: [5],
               render: function (data, type, row) {
-                var $select = $('<select name="ancho_banda"  class="form form-select">' +
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                var $select = $('<select name="modelo_renova" '+disabled+' class="form form-select">' +
                   '</select>');
 
                 $select.find('option[value="' + data + '"]').attr('selected', 'selected');
+           
+               
                 return $select[0].outerHTML
               }
             },
             {
               targets: [6],
               render: function (data, type, row) {
-                return `<input type="date"  name="fech_ren" class="form form-control" value="${data}" >`;
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                var $select = $('<select name="ancho_banda" '+disabled+'  class="form form-select">' +
+                  '</select>');
+
+                $select.find('option[value="' + data + '"]').attr('selected', 'selected');        
+                return $select[0].outerHTML
               }
             },
             {
               targets: [7],
+              render: function (data, type, row) {
+            
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                  return `<input type="date"  style="width:155px" name="fech_ren" ${disabled} class="form form-control " value="${data}" >`;
+
+                
+              }
+            },
+            {
+              targets: [8],
 
               render: function (data, type, row) {
+                let disabled
+                if(objeto.items.length==0){
+                  disabled="disabled"
+                }
+                if (data.nro_ren != "") {
+                  return `<button class="btn btn-success btn-remove form" ${disabled}><i class="fas fa-check"></i></button>`;
 
-                return `<a href="#" class="btn btn-danger btn-remove btn-add"><i class="fas fa-trash"></i></a>`;
+                } else {
+                  return `<button class="btn btn-primary btn-add form" ${disabled}><i class="fas fa-plus"></i></button>`;
+
+                }
+
+               
               }
             },
           ],
-          "createdRow": function (row, data, index) {
-
-            let modelo_banda_input = $(row).find("select[name='modelo_banda']")
-            let ancho_banda_input = $(row).find("select[name='ancho_banda']")
-            modelo_banda_input.empty();
-            modelo_banda_input.append($("<option>", {
-              value: "0",
-              text: " Seleccione... "
-            }));
-            fetch('/catalogos/render-option?id_marca=' + data.renovadora)
-              .then(
-                res => res
-                .json())
-              .then(l => {
-                $.each(l, function (index, valuex) {
-                  if (!valuex.eliminado && valuex.activo) {
-                    let opcion = document.createElement("option")
-                    opcion.value = valuex.id
-                    opcion.textContent = valuex.descripcion
-                    modelo_banda_input.append(opcion)
-                  }
-                });
-                modelo_banda_input.find('option[value="' + data.modelo_renova + '"]').attr('selected',
-                  'selected');
-
-                ancho_banda_input.empty();
-                ancho_banda_input.append($("<option>", {
-                  value: "0",
-                  text: " Seleccione... "
-                }));
-                fetch('/catalogos/render-option-renova?id_marca_renova=' +
-                    data.modelo_renova)
-                  .then(
-                    res => res
-                    .json())
-                  .then(g => {
-                    $.each(g, function (index, valuex) {
-                      if (!valuex.eliminado && valuex.activo) {
-                        let opcion = document.createElement("option")
-                        opcion.value = valuex.id
-                        opcion.textContent = valuex.descripcion+" ("+valuex.ancho_banda+" mm)"
-                        ancho_banda_input.append(opcion)
-                      }
-                    });
-                  
-                    ancho_banda_input.find('option[value="' + data.ancho_banda + '"]').attr('selected',
-                      'selected');
-                      if(ancho_banda_input.val()=="0"){
-                      ancho_banda_input.addClass("is-invalid")
-                    }
-                  })
-              })
-              console.log("createdrow");
-          },
+          // "createdRow": function (row, data, index) {
+  
+          // },
           initComplete: function (settings, json) {
             $(function () {
               function validaInputs() {
                 let a = 0
                 $.each($(".form"), function (index, value) {
-                  console.log($(value));
 
                   if ($(value).hasClass("is-invalid")) {
                     a = a + 1
                     $("#btn-add-llanta").prop("disabled", true)
                   }
                 });
-                console.log(a);
                 if (a == 0) {
                   $("#btn-add-llanta").prop("disabled", false)
                 }
               }
               validaInputs()
+              $("select[name='renovadora']").each(function (index, el) {
+                let select = $(el).parent().next().children()
+                let select2 = $(el).parent().next().next().children()
 
+                select.append($("<option>", {
+                  value: "0",
+                  text: " --------- "
+                }));
+                if($(this).val()!="0"){
+                  fetch('/catalogos/render-option?id_marca=' + $(el).val()).then(res => res
+                    .json())
+                  .then(data => {
+                    $.each(data, function (index, valuex) {
+                      if (!valuex.eliminado && valuex.activo) {
+                        $(el).parent().next().children().append($("<option>", {
+                          value: valuex.id,
+                          text: valuex.descripcion
+                        }));
+                      }
+                    });
+                    $(el).parent().next().children().find('option[value="' + settings.aoData[
+                      index]._aData.modelo_renova + '"]').attr('selected', 'selected');
+                      select2.empty();
+                      select2.append($("<option>", {
+                            value: "0",
+                            text: " Seleccione... "
+                          }));
+                          fetch('/catalogos/render-option-renova?id_marca_renova=' +
+                              select.val())
+                            .then(
+                              res => res
+                              .json())
+                            .then(data => {
+                              let a=0
+                              let opciones = []
+                              let modelo={
+                                id:"",descripcion:"",activo:"",ancho_banda:""
+                              }
+                              $.each(data, function (index, valuex) {
+                                modelo.activo=valuex.activo
+                                modelo.id=valuex.id
+                                modelo.descripcion=valuex.descripcion
+                                modelo.ancho_banda=valuex.ancho_banda
+                                opciones.push(modelo)
+                                console.log(opciones);
+                                modelo={id:"",descripcion:"",activo:""}
+                                if (!valuex.eliminado && valuex.activo) {
+                                  let opcion = document.createElement("option")
+                                  opcion.value = valuex.id
+                                  opcion.textContent = valuex.descripcion + " (" + valuex.ancho_banda + " mm )"
+                                  select2.append(opcion)
+                                }
+                              });
+                                console.log(settings.aoData[index]);
+                             
+                      if (settings.aoData[index]._aData.modelo_renova == select.val()) {
+                         for (let i = 0; i < opciones.length; i++) {
+                           console.log(opciones[i]);
+                           if(opciones[i].id==settings.aoData[index]._aData.ancho_banda && opciones[i].activo==false){
+                           console.log(opciones[i].ancho_banda);
+                            let option4 = document.createElement("option")
+                                     option4.textContent = opciones[i].descripcion+ " (" + opciones[i].ancho_banda+ " mm )"
+                                      option4.selected = true
+                                       option4.value = opciones[i].id
+                              select2.append(option4)
+                            a=1
+                           }
+                           
+                         }
+                         if(a==0){
+                          $(el).parent().next().next().children().find('option[value="' + settings.aoData[
+                      index]._aData.ancho_banda + '"]').attr('selected', 'selected');
+                         }
+                      // if (options4.includes(modelo2) != true) {
+
+                      //                 let option4 = document.createElement("option")
+                      //                 option4.textContent = "{{obj.modelo_llanta.descripcion}}"
+                      //                 option4.selected = true
+                      //                 option4.value = modelo2
+
+                      //                 $("#id_modelo_llanta").append(option4)
+
+                      //                 } else {
+                      //                 document.getElementById('id_modelo_llanta').value = modelo2;
+
+                      //                 }
+                                  }
+                            })
+                  })
+                }
+              })
+              console.log(objeto.items);
+
+              $(".btn-remove").hover(function () {
+
+$(this).children().remove()
+$(this).append('<i class="fas fa-times"></i>').css("width", "42px")
+$(this).removeClass("btn-success").addClass("btn-danger");
+}, function () {
+$(this).children().remove()
+$(this).append('<i class="fas fa-check"></i>')
+$(this).removeClass("btn-danger").addClass("btn-success");
+}
+
+)
+                 $("td").on("click",".btn-add",function () {
+                  let error = 0
+                var tr = tabla.cell($(this).closest("td", "li")).index()
+                let nro_ren = $("td:eq(0)", tabla.row(tr.row).node()).children()
+                let km = $("td:eq(1)", tabla.row(tr.row).node()).children()
+                let alt_inicial = $("td:eq(2)", tabla.row(tr.row).node()).children()
+                let alt_final = $("td:eq(3)", tabla.row(tr.row).node()).children()
+                let renovadora = $("td:eq(4)", tabla.row(tr.row).node()).children()
+                let modelo_renova = $("td:eq(5)", tabla.row(tr.row).node()).children()
+                let ancho_banda = $("td:eq(6)", tabla.row(tr.row).node()).children()
+                let fech_ren = $("td:eq(7)", tabla.row(tr.row).node()).children()
+
+            
+                data.nro_ren = nro_ren.val()
+                data.renovadora = renovadora.val()
+                data.modelo_renova = modelo_renova.val()
+                data.ancho_banda = ancho_banda.val()
+                data.fech_ren = fech_ren.val()
+                data.km = km.val()
+                data.alt_inicial = alt_inicial.val()
+                data.alt_final = alt_final.val()
+                for (let i = 0; i < settings.aoData.length - 1; i++) {
+                  if (settings.aoData[i]._aData.nro_ren == nro_ren.val()) {
+                    error = 1
+                    alerta(1500, "error", "El codigo " + nro_reencauchado.val() +
+                      " ya se encuentra en la tabla.")
+                      nro_ren.addClass("is-invalid").on("input", function (e) {
+                        nro_ren.removeClass("is-invalid")
+                    })
+                  }
+                }
+           
+
+                function valid(that, name, mensaje = "Revise los campos") {
+                  let ele = $(that).parent().parent().find(name)
+                  if (ele.val() == "0" || ele.val() == "") {
+                    error = 1
+                    ele.addClass("is-invalid")
+                    ele.on("change input", function () {
+                      ele.removeClass("is-invalid")
+                    })
+                    alerta(1500, "error", mensaje)
+                    // $(this).prop("disabled", false)
+
+                  }
+                }
+
+                valid(this, "[name='nro_ren']")
+                valid(this, "[name='renovadora']")
+                valid(this, "[name='modelo_renova']")
+                valid(this, "[name='ancho_banda']")
+                if (fech_ren.val() == "") {
+                  alerta(1500, "error", "Revise el campo fecha.")
+
+                  error = 1
+                  fech_ren.css("border-color", "red")
+                  fech_ren.on("change input", function () {
+                    fech_ren.css("border-color", "black")
+                  })
+
+                }
+                if (km.val() == "") {
+                  error = 1
+                  km.addClass("is-invalid").on("change input", function () {
+                    km.removeClass("is-invalid")
+                  })
+                  alerta(1500, "error", "Revise los campos")
+                  $(this).prop("disabled", false)
+                } else {
+                  if (km.val() < 0) {
+                    error = 1
+                    km.addClass("is-invalid").on("change input", function () {
+                      km.removeClass("is-invalid")
+                    })
+                    alerta(1500, "error", "El km debe ser positivo.")
+                    $(this).prop("disabled", false)
+
+                  }
+                }
+
+                if (alt_inicial.val() == "0" || alt_inicial.val() == "") {
+                  error = 1
+
+                  alt_inicial.addClass("is-invalid")
+                  alt_inicial.on("change input", function () {
+                    alt_inicial.removeClass("is-invalid")
+                  })
+                  alerta(1500, "error", "Revise los campos")
+                  $(this).prop("disabled", false)
+
+                } else {
+                  let validate_a_ini = validatePunto(alt_inicial.val())
+                  if (!validate_a_ini) {
+                    error = 1
+                    alt_inicial.addClass("is-invalid").on("input", function () {
+                      alt_inicial.removeClass("is-invalid")
+                    })
+                    alerta(1500, "error", "Los campos altura inicial deben tener 2 decimales")
+                    $(this).prop("disabled", false)
+
+                  }
+                }
+                if (alt_final.val() == "0" || alt_final.val() == "") {
+                  error = 1
+                  alt_final.addClass("is-invalid")
+                  alt_final.on("change input", function () {
+                    alt_final.removeClass("is-invalid")
+                  })
+                  alerta(1500, "error", "Revise los campos")
+                  $(this).prop("disabled", false)
+
+
+                } else {
+                  let validate_a_fin = validatePunto(alt_final.val())
+                  if (!validate_a_fin) {
+                    error = 1
+                    alt_final.addClass("is-invalid").on("input", function () {
+                      alt_final.removeClass("is-invalid")
+                    })
+                    alerta(1500, "error", "Los campos altura final deben tener 2 decimales")
+                    $(this).prop("disabled", false)
+
+
+                  }
+                }
+     
+                if (!checkDate(fech_ren.val())) {
+                  alerta(1500, "error", "Revise el campo fecha.")
+
+                  error = 1
+                  fech_ren.css("border-color", "red")
+                  fech_ren.on("change input", function () {
+                    fech_ren.css("border-color", "black")
+                  })
+                }
+                if (error == 0) {                   
+                   
+                     
+
+                  
+                    data.activo = 1;
+                  
+                        objeto.items.push(data)
+                         data = {
+                          fech_ren: "",
+                          alt_inicial: "",
+                          alt_final:"",
+                          nro_ren: "",
+                          km: "",
+                          renovadora:  "",
+                          modelo_renova: "",
+                          ancho_banda: "",
+                          activo:0
+                      }
+
+                        $(this).children().remove()
+                        $(this).append('<i class="fas fa-check"></i>')
+                        $(this).removeClass("btn-primary").addClass("btn-success")
+                        $(this).removeClass("btn-add").addClass("btn-remove")
+
+                        $(this).hover(function () {
+                            $(this).children().remove()
+                            $(this).append('<i class="fas fa-times"></i>').css("width",
+                              "42px")
+                            $(this).removeClass("btn-success").addClass("btn-danger");
+                          }, function () {
+
+                            $(this).children().remove()
+                            $(this).append('<i class="fas fa-check"></i>')
+                            $(this).removeClass("btn-danger").addClass("btn-success");
+                          }
+
+                        )
+ 
+                  
+                            objeto.list()
+
+                        
+                      
+                   
+
+                }
+                   })
+                   $(".btn-remove").on("click", function () {
+                var tr = tabla.cell($(this).closest("td", "li")).index()
+
+                let a = confirmar(function () {
+                  objeto.items.splice(tr.row, 1)
+                  objeto.list()
+
+                }, "¿Desea eliminar este reencauche de la lista?", function () {
+
+                })
+
+
+              })
               $("select[name='renovadora']").on("change", function (e) {
-                e.stopPropagation();
-
+            
                 var cant = $(this).val();
                 var tr = tabla.cell($(this).closest("td", "li")).index()
                 select = $(this).parent().next().children()
@@ -616,7 +942,6 @@ function actualizar_modelo() {
                   select2.addClass("is-invalid")
                 }
                 if ($(this).val() == "0") {
-                  console.log("if");
                   $("#btn-add-llanta").prop("disabled", true)
                   $(this).addClass("is-invalid")
                 } else {
@@ -650,7 +975,7 @@ function actualizar_modelo() {
                   }
                 }
               })
-              $("select[name='modelo_banda']").on("change", function (e) {
+              $("select[name='modelo_renova']").on("change", function (e) {
                 e.stopPropagation();
                 var cant = $(this).val();
                 var tr = tabla.cell($(this).closest("td", "li")).index()
@@ -662,7 +987,6 @@ function actualizar_modelo() {
                 }));
                 select.prop("disabled", true)
                 if ($(this).val() == "0") {
-                  console.log("ig 0");
                   $("#btn-add-llanta").prop("disabled", true)
                   $(this).addClass("is-invalid")
                 } else {
@@ -751,16 +1075,13 @@ function actualizar_modelo() {
                         $("#btn-save-llanta").prop("disabled", true)
                   }else{
                       for (let i = 0; i < settings.aoData.length; i++) {
-                        console.log(settings.aoData[i]._aData);
                     if (settings.aoData[i]._aData.nro_ren == cant && i != tr.row) {
                       alerta(1500, "error", "El codigo " + cant +
                         " ya se encuentra en la tabla.")
                         $(this).addClass("is-invalid")
-                      console.log("if");
                   $("#btn-add-llanta").prop("disabled", true)
                       break;
                     }else{
-                      console.log("else");
 
                       $(this).removeClass("is-invalid")
                     if (typeof objeto.items[tr.row] !== "undefined") {
@@ -805,19 +1126,22 @@ function actualizar_modelo() {
                 var tr = tabla.cell($(this).closest("td", "li")).index()
 
                 let a = confirmar(function () {
-                  objeto.items.splice(tr.row, 1)
+                  if (typeof objeto.items[tr.row] !== "undefined") {
+                    objeto.items[tr.row].activo = 0;
+                  }
                   objeto.list()
-
+                  console.log(objeto.items);
                 }, "¿Desea eliminar este neumático de la lista?", function () {
 
                 })
 
-                console.log(objeto.items);
               })
             })
           }
         })
+        tabla.row.add(data).draw()
       }
+
     }
 
     objeto.items = {{ cubierta | safe }}

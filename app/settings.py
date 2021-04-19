@@ -47,6 +47,8 @@ DJANGO_APPS = [
     "environ",
     'storages',
     "collectfast",
+    'simple_history',
+
 ]
 
 LOCAL_APPS = [
@@ -69,7 +71,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 
-    'whitenoise.middleware.WhiteNoiseMiddleware'
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 
 ]
 
@@ -104,7 +107,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "baseprueba",
+#         'NAME': "vg35",
 #         # "HOST": "macbook-pro-de-jackeline.local",
 #         "HOST":"localhost",
 #         "USER": "root",

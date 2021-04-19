@@ -35,6 +35,65 @@ from six import text_type
 from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
 from django.core import serializers
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .many_load import *
+def imports(request):
+    if request.method=="GET":
+        return render(request,"Web/imports.html")
+
+def importTipos(request):
+    if request.method=="POST":
+        file=request.FILES['FILE']
+        if not file.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo cargado no es .csv')
+        else:
+            if importExcel(file):
+                messages.success(request, 'Archivo cargando...')
+        return HttpResponseRedirect(reverse_lazy("Web:tipo-vehiculos"))
+def importPosiciones(request):
+    if request.method=="POST":
+        file=request.FILES['posi']
+        if not file.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo cargado no es .csv')
+        else:
+            if importPosi(file):
+                messages.success(request, 'Archivo cargando...')
+        return HttpResponseRedirect(reverse_lazy("Web:tipo-vehiculos"))
+def importVehiculos(request):
+    if request.method=="POST":
+        file=request.FILES['vehi']
+        if not file.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo cargado no es .csv')
+        else:
+            if importVehi(file):
+                messages.success(request, 'Archivo cargando...')
+        return HttpResponseRedirect(reverse_lazy("Web:tipo-vehiculos"))
+def importMedidas(request):
+    if request.method=="POST":
+        file=request.FILES['medidas']
+        if not file.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo cargado no es .csv')
+        else:
+            if importMedi(file):
+                messages.success(request, 'Archivo cargando...')
+        return HttpResponseRedirect(reverse_lazy("Web:tipo-vehiculos"))
+def importLlantas(request):
+    if request.method=="POST":
+        file=request.FILES['llantas']
+        if not file.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo cargado no es .csv')
+        else:
+            if updateLlantas(file):
+                messages.success(request, 'Archivo cargando...')
+        return HttpResponseRedirect(reverse_lazy("Web:llantas"))
+def importCubiertas(request):
+    if request.method=="POST":
+        file=request.FILES['cubiertas']
+        if not file.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo cargado no es .csv')
+        else:
+            if importCub(file):
+                messages.success(request, 'Archivo cargando...')
+        return HttpResponseRedirect(reverse_lazy("Web:llantas"))
 def ProvinciaComboBox(request):
     if request.method=="POST":
         post = json.loads(request.body.decode("utf-8"))
@@ -265,7 +324,7 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 form = self.get_form()
 
                 if form.is_valid():
-                    form.instance.modified_by = self.request.user
+                    form.instance.changed_by = self.request.user
 
                     form.save()
 
@@ -307,7 +366,7 @@ class PersonaCreateView(LoginRequiredMixin,ValidateMixin,CreateView):
             form = self.get_form()
 
             if form.is_valid():
-                form.instance.created_by = self.request.user
+                form.instance.changed_by = self.request.user
                 form.save()
                 data = {
                     'status': 200,"error":{}
@@ -380,7 +439,7 @@ class UsuarioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
             if form.is_valid(): 
            
-                form.created_by = self.request.user
+                form.changed_by = self.request.user
           
                 
                 form.save()    
@@ -420,7 +479,7 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def post(self,request,*args, **kwargs):
         data={}
-
+        
         try:
             form = self.get_form()
 
@@ -432,7 +491,7 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
                 instance=form.save(commit=False)
                 if("Administrador" in [i.name for i in self.object.groups.all()]):
                     instance.is_staff=True
-                instance.modified_by = self.request.user
+                instance.changed_by = self.request.user
                 
                 instance.save()    
 
@@ -442,7 +501,7 @@ class UsuarioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
                     data.nom=self.request.POST["name"]
                     data.apep=self.request.POST["apep"]
                     data.apem=self.request.POST["apem"]
-                    data.modified_by=self.request.user
+                    data.changed_by=self.request.user
                     
                     data.save()
                 return JsonResponse({"status":200,"url":self.success_url})
@@ -497,7 +556,7 @@ def UsuarioDesactivate(request,pk):
         if user.exists():
             data=user.first()
             data.is_active=False
-            data.modified_by=request.user
+            data.changed_by=request.user
             data.save()
             return JsonResponse({"status":200})
         else:
@@ -508,7 +567,7 @@ def UsuarioActivate(request,pk):
         if user.exists():
             data=user.first()
             data.is_active=True
-            data.modified_by=request.user
+            data.changed_by=request.user
 
             data.save()
             return JsonResponse({"status":200})
@@ -547,7 +606,7 @@ class UbicacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -568,7 +627,7 @@ class UbicacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -590,7 +649,7 @@ class UbicacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
     def get(self, request, *args, **kwargs):
         id_ubicacion = self.kwargs['pk']
         ubicacion = Ubicacion.objects.get(pk=id_ubicacion)
-        ubicacion.modified_by=request.user
+        ubicacion.changed_by=request.user
         ubicacion.eliminado = True
         ubicacion.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -627,7 +686,7 @@ class AlmacenCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -647,7 +706,7 @@ class AlmacenUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -670,7 +729,7 @@ class AlmacenDeleteView(LoginRequiredMixin,ValidateMixin, View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         Almacen = Almacen.objects.get(pk=id)
-        Almacen.modified_by=request.user
+        Almacen.changed_by=request.user
         Almacen.eliminado = True
         Almacen.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -707,7 +766,7 @@ class LugarCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -727,7 +786,7 @@ class LugarUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -749,7 +808,7 @@ class LugarDeleteView(LoginRequiredMixin,ValidateMixin ,View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         lugar = Lugar.objects.get(pk=id)
-        lugar.modified_by=request.user
+        lugar.changed_by=request.user
         lugar.eliminado = True
         lugar.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -786,7 +845,7 @@ class MarcaRenovacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -806,7 +865,7 @@ class MarcaRenovacionUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -828,7 +887,7 @@ class MarcaRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = MarcaRenova.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -864,7 +923,7 @@ class ModeloRenovacionCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -888,7 +947,7 @@ class ModeloRenovacionUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -912,7 +971,7 @@ class ModeloRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = ModeloRenova.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -946,7 +1005,7 @@ class AnchoBandaRenovacionCreateView(LoginRequiredMixin, ValidateMixin,CreateVie
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -971,7 +1030,7 @@ class AnchoBandaRenovacionUpdateView(LoginRequiredMixin, ValidateMixin,UpdateVie
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -995,7 +1054,7 @@ class AnchoBandaRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = AnchoBandaRenova.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1072,7 +1131,7 @@ class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
 
                 instance=form.save(commit=False)
               
-                instance.created_by = self.request.user
+                instance.changed_by = self.request.user
                 instance.save()
                 data = {
                 'status': 200
@@ -1125,7 +1184,7 @@ class MarcaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
                 if not "activo" in self.request.POST:
                     print("aeaaaa")
                     instance.activo=False
-                instance.modified_by = self.request.user
+                instance.changed_by = self.request.user
                 instance.save()
                 data = {
                 'status': 200
@@ -1156,7 +1215,7 @@ class MarcaLlantaDeleteView(LoginRequiredMixin,ValidateMixin, View):
         if existe.exists():
             obj=existe.first()
             print(obj)
-            obj.modified_by=request.user
+            obj.changed_by=request.user
             obj.eliminado = True
             obj.activo=False
             obj.save()
@@ -1197,7 +1256,7 @@ class ModeloLlantaCreateView(LoginRequiredMixin,ValidateMixin ,CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1221,7 +1280,7 @@ class ModeloLlantaUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1245,7 +1304,7 @@ class ModeloLlantaDeleteView(LoginRequiredMixin,ValidateMixin ,View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = ModeloLlanta.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1282,7 +1341,7 @@ class MedidaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1307,7 +1366,7 @@ class MedidaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1331,7 +1390,7 @@ class MedidaLlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = MedidaLlanta.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1378,7 +1437,7 @@ def RenderOptionLlanta(request,id):
 
 #     def form_valid(self, form):
 #         instance = form.save(commit=False)
-#         instance.created_by = self.request.user
+#         instance.changed_by = self.request.user
 #         messages.success(self.request, 'Operación realizada correctamente.')
 #         return super().form_valid(form)
 
@@ -1398,7 +1457,7 @@ def RenderOptionLlanta(request,id):
 
 #     def form_valid(self, form):
 #         instance = form.save(commit=False)
-#         instance.modified_by = self.request.user
+#         instance.changed_by = self.request.user
 #         messages.success(self.request, 'Operación realizada correctamente.')
 #         return super().form_valid(form)
 
@@ -1420,7 +1479,7 @@ def RenderOptionLlanta(request,id):
 #     def get(self, request, *args, **kwargs):
 #         id = self.kwargs['pk']
 #         obj = EstadoLlanta.objects.get(pk=id)
-#         obj.modified_by=request.user
+#         obj.changed_by=request.user
 #         obj.eliminado = True
 #         obj.save()
 #         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1457,7 +1516,7 @@ class TipoServicioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1477,7 +1536,7 @@ class TipoServicioUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1499,7 +1558,7 @@ class TipoServicioDeleteView(LoginRequiredMixin,ValidateMixin, View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = TipoServicio.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1536,7 +1595,7 @@ class TipoPisoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1556,7 +1615,7 @@ class TipoPisoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1578,7 +1637,7 @@ class TipoPisoDeleteView(LoginRequiredMixin, ValidateMixin,View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = TipoPiso.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1617,7 +1676,7 @@ class MarcaVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1637,7 +1696,7 @@ class MarcaVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1659,7 +1718,7 @@ class MarcaVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = MarcaVehiculo.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1698,7 +1757,7 @@ class TipoVehiculoCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         if instance.image2!="":
             if default_storage.exists(f'vehiculo2/X/{instance.image2}'):
                 default_storage.delete(f'vehiculo2/X/{instance.image2}')            
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
     def form_invalid(self, form):
@@ -1751,7 +1810,7 @@ class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
         if instance.image2!="":
             if default_storage.exists(f'vehiculo2/X/{instance.image2}'):
                 default_storage.delete(f'vehiculo2/X/{instance.image2}')            
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1768,7 +1827,7 @@ class TipoVehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = TipoVehiculo.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1805,7 +1864,7 @@ class ModeloVehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1829,7 +1888,7 @@ class ModeloVehiculoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -1853,7 +1912,7 @@ class ModeloVehiculoDeleteView(LoginRequiredMixin,ValidateMixin, View):
     def get(self, request, *args, **kwargs):
         id = self.kwargs['pk']
         obj = ModeloVehiculo.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
@@ -1861,80 +1920,7 @@ class ModeloVehiculoDeleteView(LoginRequiredMixin,ValidateMixin, View):
 
 from django.views.decorators.cache import never_cache
 
-class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
-    template_name = 'Web/Catalogos/llantas.html'
-    model = Llanta
-    context_object_name = 'objetos'
-    login_url=reverse_lazy("Web:login")
-    permission_required=["Web.view_llanta"]
-    success_url=reverse_lazy("Web:inicio")
-    @method_decorator(csrf_exempt)
-    def dispatch(self,request,*args, **kwargs):
-        return super().dispatch(request,*args,**kwargs)
- 
-   
-    def post(self,request,*args, **kwargs):
-        try:
-            print("Entro al catch")
-            print(self.request.POST)
-            start_date=self.request.POST["start_date"]
-            end_date=self.request.POST["end_date"]
-            modelo=self.request.POST["modelo"]
-            medida=self.request.POST["medida"]
 
-            marca=self.request.POST["marca"]
-            
-            search=Llanta.objects.select_related("modelo_llanta","ubicacion","medida_llanta","vehiculo").filter(eliminado=False)
-            response=search 
-            if marca:
-                response=search.filter(modelo_llanta__marca_llanta_id=marca)
-                if modelo:
-                    response=search.filter(modelo_llanta__marca_llanta_id=marca,modelo_llanta_id=modelo)
-            elif medida!="":
-                response=search.filter(medida_llanta=medida)
-            elif start_date and end_date:
-                response=search.filter(created_at__range=[start_date,end_date])
-
-                if start_date==end_date:     
-                    response=search.filter(created_at__contains=start_date)            
-            data=[]
-            print("aeaaaa")
-            for i in response:
-                data.append(i.tabletoJSON())  
-            return JsonResponse(data, safe=False)
-    
-        except Exception as e:
-            print(e)
-            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
-            return HttpResponseRedirect(self.success_url)
-    def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.filter(eliminado=False,activo=True)
-        # modelo = self.request.GET.get('modelo','')
-        # costo = self.request.GET.get('costo','')
-        # fi = self.request.GET.get('fecha_inicio')
-        # ff =self.request.GET.get('fecha_fin')
-        
-        # if modelo:
-        #     qs = qs.filter(modelo_llanta__pk=modelo)
-        # if costo:
-        #     qs = qs.filter(costo__icontains=costo)
-        
-        # if fi:
-        #     fi=datetime.strptime(fi, '%Y-%m-%d').date()
-        #     ff=datetime.strptime(ff, '%Y-%m-%d').date()
-        #     ff = ff + timedelta(days=1)
-        #     qs = qs.filter(created_at__range=(fi,ff))
-        
-        return qs.order_by('codigo').reverse()
-
-    def get_context_data(self, **kwargs):
-        # import pdb; pdb.set_trace()
-        context = super().get_context_data(**kwargs)
-        context['medida'] = MedidaLlanta.objects.values("id","medida","profundidad","capas","eliminado","activo")
-        context['marca'] = MarcaLlanta.objects.values("id",'descripcion',"activo","eliminado")
-
-        return context
 import decimal
 class CubiertaListView(LoginRequiredMixin,ValidateMixin,TemplateView):
     permission_required=["Web.view_cubiertallanta"]
@@ -1945,6 +1931,7 @@ class CubiertaListView(LoginRequiredMixin,ValidateMixin,TemplateView):
     
     def post(self,request,*args, **kwargs):
         try:
+            print("entro al post")
             codigo=self.request.POST["codigo"]
             print(codigo)
             llanta=CubiertaLlanta.objects.select_related("renovadora","modelo_renova","ancho_banda","llanta").filter(activo=True)
@@ -1953,11 +1940,13 @@ class CubiertaListView(LoginRequiredMixin,ValidateMixin,TemplateView):
             data=[]
             for i in llanta:
                 data.append(i.toJSON2())  
+            print(data)
             return JsonResponse(data,safe=False)
         except Exception as e:
             print(e)
+            
             messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
-            return HttpResponseRedirect("Web:cubierta-llantas")
+            return HttpResponseRedirect(reverse("Web:cubierta-llantas"))
     def get_context_data(self, **kwargs):
         context = super(CubiertaListView, self).get_context_data(**kwargs)
         context["llanta"]=Llanta.objects.values("id","codigo","activo","eliminado").filter(eliminado=False,activo=True)
@@ -1974,10 +1963,12 @@ class CubiertaCreateView(LoginRequiredMixin,ValidateMixin,TemplateView):
                 llanta=Llanta.objects.get(id=self.request.POST["llanta"])
                 instance=CubiertaLlanta()
                 instance.llanta=llanta
-                instance.created_by=self.request.user
+                instance.changed_by=self.request.user
                 instance.nro_ren=self.request.POST["nro_ren"]
                 instance.km=self.request.POST["km"]
-                instance.alt_prom=self.request.POST["alt_prom"]
+                instance.alt_inicial=self.request.POST["alt_inicial"]
+                instance.alt_final=self.request.POST["alt_final"]
+                instance.primer_reen=False
                 instance.fech_ren=self.request.POST["fech_ren"]
                 instance.renovadora_id=self.request.POST["renovadora"]
                 instance.modelo_renova_id=self.request.POST["modelo_renova"]
@@ -2017,29 +2008,87 @@ class CubiertaEditView(LoginRequiredMixin,ValidateMixin,UpdateView):
         context={"renova":renova,"obj":self.get_object(),"llanta":llanta}
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):
-        print(self.request.POST)
-        form=CubiertaForm(self.request.POST,instance=self.get_object())
-        if form.is_valid():
-            instance=self.get_object()
-            instance.nro_ren=self.request.POST["nro_ren"]
-            instance.km=self.request.POST["km"]
-            instance.alt_prom=self.request.POST["alt_prom"]
-            instance.fech_ren=self.request.POST["fech_ren"]
-            instance.modified_by=self.request.user
-            instance.renovadora_id=self.request.POST["renovadora"]
-            instance.modelo_renova_id=self.request.POST["modelo_renova"]
-            instance.ancho_banda_id=self.request.POST["ancho_banda"]
-            if "activo" in self.request.POST:
-                instance.activo=True
-            else:
-                instance.activo=False
-            instance.save()
-            data={"status":200}
+        try:
+            print(self.request.POST)
+            form=CubiertaForm(self.request.POST,instance=self.get_object())
+            if form.is_valid():
+                instance=self.get_object()
+                instance.llanta.estado="2"
+                instance.nro_ren=self.request.POST["nro_ren"]
+                instance.km=self.request.POST["km"]
+                instance.alt_final=self.request.POST["alt_final"]
+                instance.alt_inicial=self.request.POST["alt_inicial"]
+                instance.fech_ren=self.request.POST["fech_ren"]
+                instance.changed_by=self.request.user
+                instance.renovadora_id=self.request.POST["renovadora"]
+                instance.modelo_renova_id=self.request.POST["modelo_renova"]
+                instance.ancho_banda_id=self.request.POST["ancho_banda"]
+                if "activo" in self.request.POST:
+                    instance.activo=True
+                else:
+                    instance.activo=False
+                instance.llanta.save()
 
-        else:
-            print(form.errors)
-            data={"status":500,"errors":form.errors}
-        return JsonResponse(data,safe=False)
+                instance.save()
+                data={"status":200}
+
+            else:
+                print(form.errors)
+                data={"status":500,"errors":form.errors}
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500},safe=False)
+class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
+    template_name = 'Web/Catalogos/llantas.html'
+    model = Llanta
+    context_object_name = 'objetos'
+    login_url=reverse_lazy("Web:login")
+    permission_required=["Web.view_llanta"]
+    success_url=reverse_lazy("Web:inicio")
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+   
+    def post(self,request,*args, **kwargs):
+        try:
+            start_date=self.request.POST["start_date"]
+            end_date=self.request.POST["end_date"]
+            modelo=self.request.POST["modelo"]
+            medida=self.request.POST["medida"]
+
+            marca=self.request.POST["marca"]
+            
+            search=Llanta.objects.select_related("modelo_llanta","medida_llanta")
+            if marca:
+                search=search.filter(modelo_llanta__marca_llanta_id=marca)
+                if modelo:
+                    search=search.filter(modelo_llanta__marca_llanta_id=marca,modelo_llanta_id=modelo)
+            elif medida!="":
+                search=search.filter(medida_llanta=medida)
+            elif start_date and end_date:
+                search=search.filter(created_at__range=[start_date,end_date])
+
+                if start_date==end_date:     
+                    search=search.filter(created_at__contains=start_date)            
+            data=[]
+            for i in search:
+                data.append(i.tabletoJSON())  
+            return JsonResponse(data, safe=False)
+    
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+
+    def get_context_data(self, **kwargs):
+        # import pdb; pdb.set_trace()
+        context = super().get_context_data(**kwargs)
+        context['medida'] = MedidaLlanta.objects.values("id","medida","profundidad","capas","eliminado","activo")
+        context['marca'] = MarcaLlanta.objects.values("id",'descripcion',"activo","eliminado")
+
+        return context
 class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
     template_name = 'Web/Catalogos/llanta2.html'
     success_url = reverse_lazy("Web:llantas")
@@ -2094,18 +2143,20 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
                 instance.a_promedio=decimal.Decimal(i["altura_fin"])-decimal.Decimal(i["altura_ini"])
                 instance.fech_ren=i["fech_ren"]
 
-                instance.created_by = self.request.user
+                instance.changed_by = self.request.user
                 instance.save()
                 if i["estado"]=="2":
                     for a in i["cubierta"]:
                         
                         instance2=CubiertaLlanta()
                         instance2.llanta=instance
-                        instance2.created_by = self.request.user
+                        instance2.changed_by = self.request.user
                         instance2.km=a["km"]
                         instance2.nro_ren=a["nro_reencauchado"]
                         instance2.fech_ren=a["fech_ren"]
-                        instance2.alt_prom=a["alt_prom"]
+                        instance2.alt_final=a["alt_final"]
+                        instance2.alt_inicial=a["alt_inicial"]
+
                         instance2.primer_reen=True
                         instance2.modelo_renova_id=a["modelo_banda"]["id"]
                         instance2.ancho_banda_id=a["ancho_banda"]["id"]
@@ -2156,7 +2207,7 @@ def PosicionExists(request):
     # def form_valid(self, form):
     #     instance = form.save(commit=False)
     #     instance.codigo = instance.code
-    #     instance.created_by = self.request.user
+    #     instance.changed_by = self.request.user
     #     messages.success(self.request, 'Operación realizada correctamente.')
     #     return super().form_valid(form)
 
@@ -2183,7 +2234,7 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
     def get_reencauches(self):
         data=[]
         try:
-            for i in CubiertaLlanta.objects.filter(llanta=self.get_object()):
+            for i in CubiertaLlanta.objects.filter(llanta=self.get_object(),activo=True,primer_reen=True):
                 item=i.toJSON()
                 data.append(item)
         except:
@@ -2232,32 +2283,74 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 instance.activo=True
             else:
                 instance.activo=False
-            instance.modified_by = self.request.user
+            instance.changed_by = self.request.user
             instance.save()
+            instance2=CubiertaLlanta.objects.filter(llanta=self.get_object())
+
             if data["estado"]=="2":
-                instance2=CubiertaLlanta.objects.filter(llanta=self.get_object())
-                print(json.loads(data["objeto"]))
-                for i in instance2:
-                    print(i.id)
-                    print("---")
-                    for a in json.loads(data["objeto"]):
-                        if i.id==a["id"]:
-                            print(i.nro_ren)
-                            print("***")
-                            i.modified_by = self.request.user
-                            i.km=a["km"]
-                            i.nro_ren=a["nro_ren"]
-                            i.fech_ren=a["fech_ren"]
-                            i.alt_prom=a["alt_prom"]
-                            i.primer_reen=True
-                            i.modelo_renova_id=a["modelo_renova"]
-                            i.ancho_banda_id=a["ancho_banda"]
-                            i.renovadora_id=a["renovadora"]
-                            i.save()
-                            break
+
+                for a in json.loads(data["objeto"]):
+                    for i in instance2:
+                        if "id" in a:
+                            if i.id==a["id"]:
+                                i.changed_by = self.request.user
+                                i.km=a["km"]
+                                i.nro_ren=a["nro_ren"]
+                                i.fech_ren=a["fech_ren"]
+                                i.alt_final=a["alt_final"]
+                                i.alt_inicial=a["alt_inicial"]
+                                i.activo=False if a["activo"]==0 else True
+                                i.primer_reen=True
+                                i.modelo_renova_id=a["modelo_renova"]
+                                i.ancho_banda_id=a["ancho_banda"]
+                                i.renovadora_id=a["renovadora"]
+                                i.save()
+                                break
                     else:
-                        CubiertaLlanta.objects.get(id=i.id).delete()
- 
+                        cubierta=CubiertaLlanta()
+                        cubierta.llanta=instance
+                        cubierta.changed_by=self.request.user
+                        cubierta.nro_ren=a["nro_ren"]
+                        cubierta.km=a["km"]
+                        cubierta.alt_inicial=a["alt_inicial"]
+                        cubierta.alt_final=a["alt_final"]
+                        cubierta.fech_ren=a["fech_ren"]
+                        cubierta.renovadora_id=a["renovadora"]
+                        cubierta.modelo_renova_id=a["modelo_renova"]
+                        cubierta.ancho_banda_id=a["ancho_banda"]
+                        cubierta.primer_reen=True
+                        cubierta.save()
+            else:
+                for i in instance2:
+                    i.activo=False
+                    i.save()
+                # instance2=CubiertaLlanta.objects.filter(llanta=self.get_object())
+                # print(json.loads(data["objeto"]))
+                # print(instance2.count())
+                # for i in instance2:
+                #     print(i.id)
+                #     print("---")
+                #     for a in json.loads(data["objeto"]):
+                #         if i.id==a["id"]:
+                #             print(i.nro_ren)
+                #             print("***")
+                #             i.changed_by = self.request.user
+                #             i.km=a["km"]
+                #             i.nro_ren=a["nro_ren"]
+                #             i.fech_ren=a["fech_ren"]
+                #             i.alt_final=a["alt_final"]
+                #             i.alt_inicial=a["alt_inicial"]
+
+                #             i.primer_reen=True
+                #             i.modelo_renova_id=a["modelo_renova"]
+                #             i.ancho_banda_id=a["ancho_banda"]
+                #             i.renovadora_id=a["renovadora"]
+                #             i.save()
+                #             break
+                #     else:
+                #         active=CubiertaLlanta.objects.get(id=i.id)
+                #         active.activo=False
+                        # active.save()
                 # for a in json.loads(data["objeto"]):
                     
               
@@ -2289,7 +2382,7 @@ class LlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
     def post(self, request, *args, **kwargs):
         id_llanta = self.kwargs['pk']
         llanta = Llanta.objects.get(pk=id_llanta)
-        llanta.modified_by=request.user
+        llanta.changed_by=request.user
         llanta.eliminado = True
         llanta.save()
         data={"status":200}
@@ -2367,7 +2460,7 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
@@ -2394,7 +2487,7 @@ class VehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.modified_by = self.request.user
+        instance.changed_by = self.request.user
         messages.success(self.request, 'Operación realizada correctamente.')
         return super().form_valid(form)
 
@@ -2422,7 +2515,7 @@ class VehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
         id = self.kwargs['pk']
         print(id)
         obj = Vehiculo.objects.get(pk=id)
-        obj.modified_by=request.user
+        obj.changed_by=request.user
         obj.eliminado = True
         obj.save()
         data={"status":200}
@@ -2573,7 +2666,7 @@ class AgregarLlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         instance = form.save(commit=False)
         instance.codigo = instance.code
         instance.vehiculo = self.vehiculo
-        instance.created_by = self.request.user
+        instance.changed_by = self.request.user
         instance.save()
         messages.success(self.request, 'Se agrego la llanta correctamente..')
         return HttpResponseRedirect(reverse('Web:ver-vehiculo', kwargs={'pk':self.vehiculo.pk}))
@@ -2591,7 +2684,7 @@ from django.db import transaction
 
 class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name = "Web/Operaciones/desmontaje_llanta.html"
-    permission_required=["Web.view_historialllantas"]
+    permission_required=["Web.view_movimientos_historial"]
 
     def get(self,request,*args, **kwargs):
         context={"obs":CHOICES_OBSERVACION,"obj":request.GET,"estado":CHOICES_ESTADO_LLANTA}
@@ -2612,7 +2705,7 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
             
                     objeto.ubicacion_id=request.POST["ubicacion"]
                     objeto.save()
-                    historial=HistorialLLantas()
+                    historial=Movimientos_Historial()
                     historial.llanta=objeto
                     historial.km=request.POST["kilometros"]
                     historial.estado=request.POST["estado"]
@@ -2625,7 +2718,7 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
 
                     historial.vehiculo_id=request.POST["vehiculo"]
                     historial.profundidad=request.POST["profundidad"]
-                    historial.created_by=self.request.user
+                    historial.changed_by=self.request.user
                     historial.ubicacion_id=request.POST["ubicacion"]
 
                     historial.save()
@@ -2644,11 +2737,11 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 class MontajeLlantasView(LoginRequiredMixin,TemplateView):
     template_name = "Web/Operaciones/montaje_llanta.html"
-    permission_required=["Web.view_historialllantas"]
+    permission_required=["Web.view_movimientos_historial"]
 
     def get(self,request,*args, **kwargs):
-        print(request.GET)
-        return render(self.request,self.template_name,{"obj":request.GET})
+        llanta=Llanta.objects.filter(vehiculo=None,activo=True,eliminado=False)
+        return render(self.request,self.template_name,{"obj":request.GET,"llanta":llanta})
     def post(self,request,*args, **kwargs):
         print(request.POST)
         try:
@@ -2664,20 +2757,20 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
                     
                     objeto=llanta.first()
                     objeto.ubicacion_id=1
-
+                    objeto.km=request.POST["kilometros"]
                     objeto.vehiculo_id=request.POST["vehiculo"]
                     objeto.repuesto=rep
                     objeto.posicion=request.POST["posicion"]
 
                     objeto.save()
-                    historial=HistorialLLantas()
+                    historial=Movimientos_Historial()
                     historial.llanta=objeto
                     historial.km=request.POST["kilometros"]
                     historial.posicion=pos
                   
                     historial.vehiculo_id=request.POST["vehiculo"]
                     historial.profundidad=request.POST["profundidad"]
-                    historial.created_by=self.request.user
+                    historial.changed_by=self.request.user
                     historial.ubicacion_id=None
                     historial.save()
                     # ins,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=request.POST["vehiculo"])
@@ -2701,7 +2794,7 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
             return HttpResponseRedirect(reverse_lazy("Web:inicio"))
 class HojaDeMovimientosView(LoginRequiredMixin,ValidateMixin,TemplateView):
     template_name="Web/Operaciones/hoja_movimientos.html"   
-    permission_required=["Web.view_historialllantas"]
+    permission_required=["Web.view_movimientos_historial"]
 
     def post(self,request,*args, **kwargs):
         data,posicion=[],[]
@@ -2741,7 +2834,6 @@ class InspeccionLlantasView(LoginRequiredMixin,ValidateMixin,TemplateView):
             llanta=Llanta.objects.filter(vehiculo_id=post["id"])
             obj,p=InpeccionLlantas.objects.get_or_create(vehiculo_id=post["id"])
             if p:
-                print("Entro al p ")
                 for i in llanta:
                     det=DetalleInspeccion()
                     det.inspeccion=obj
@@ -2841,4 +2933,4 @@ def AgregarInspeccion(request):
     return render(request,template_name,context)
 class HistorialLlantas(ListView,LoginRequiredMixin):
     template_name="Web/reportes/historial.html"
-    model=HistorialLLantas
+    model=Movimientos_Historial

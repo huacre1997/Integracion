@@ -41,7 +41,9 @@
                 <th class="text-center middle">Neumático </th>
                 <th class="text-center middle" >N° Reenc.</th>
                 <th class="text-center middle">Km</th>
-                <th class="text-center middle" >Alt.Prom</th>
+                <th class="text-center middle" >Alt.Ini</th>
+                                <th class="text-center middle" >Alt.Fin</th>
+
                 <th>Reencauchadora</th>
                 <th>Modelo de Banda</th>
                 <th >Ancho de Banda</th>
@@ -80,7 +82,7 @@
         [0, "asc"]
       ],
            ajax: {
-        url: window.location.pathname,
+        url: "{% url 'Web:cubierta-llantas' %}",
         type: "POST",
         data: parameters,
         dataSrc: ""
@@ -109,11 +111,15 @@
    
         },
         {
-          "data": 'alt_prom',
+          "data": 'alt_inicial',
           className: "middle text-center",
      
         },
-
+  {
+          "data": 'alt_final',
+          className: "middle text-center",
+     
+        },
         {
           "data": "renovadora",
           className: "middle text-center"

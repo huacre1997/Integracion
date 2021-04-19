@@ -79,11 +79,13 @@
 <script>
   $(document).ready(function () {
     $("#btn-save").on("click", function (e) {
+       
       e.preventDefault()
       if (objeto.items.length === 0) {
         notificacion(2000, "Debes ingresar almenos una llanta!", "error")
         return false;
       } else {
+        
         let b = 0
         $.each($(".form"), function (index, value) {
           let name = $(value).attr("name")
@@ -95,6 +97,8 @@
         });
 
         if (b == 0) {
+           $("#loadingCharge").css("visibility","visible")
+        $("#spinner").css("visibility","visible")
           let result = !Object.values(objeto.items).every(o => o === "")
           confirmar(function () {
             var parameters = new FormData();
@@ -108,12 +112,17 @@
               body: JSON.stringify(objeto.items),
 
             }).then(l => l.json()).then(res => {
+             
               window.localStorage.clear()
               objeto.items = []
               objeto.list()
+               $("#loadingCharge").css("visibility","hidden")
+              $("#spinner").css("visibility","hidden")
               notificacion(2000, "Neumáticos guardados!", "success")
+
             })
           }, "Está a punto de ingresar " + objeto.items.length + " neumáticos!")
+                 
           $("#btn-save").prop("disabled", false)
         }
       }
@@ -406,7 +415,7 @@
                 }
               }
 
-              function load(tabla, a, b, c, d, e, f, g, tr) {
+              function load(tabla, a, b, c, d, e, f, g, tr,h,settings) {
                 function center(param) {
                   param.classList.add("text-center", "middle")
                 }
@@ -425,8 +434,10 @@
 
                 let td_fech = document.createElement("td")
                 center(td_fech)
-                let td_alt_prom = document.createElement("td")
-                center(td_alt_prom)
+                let td_alt_inicial = document.createElement("td")
+                center(td_alt_inicial)
+                let td_alt_final = document.createElement("td")
+                center(td_alt_final)
                 let td_btn = document.createElement("td")
                 let btn = document.createElement("button")
                 let i = document.createElement("i")
@@ -435,8 +446,15 @@
                 $(btn).on("click", function () {
                   let index = $(this).parent().parent()
                   confirmar(function () {
+                    if (typeof objeto.items[tr] !== "undefined") {
+
                     objeto.items[tr].cubierta.splice(index.index(), 1)
                     refreshStorage()
+                    }
+                    else{
+                     
+                      settings.aoData[tr]._aData.cubierta.splice(tr, 1)
+                    }
                     index.remove();
 
                   }, "¿Desea eliminar este reencauche de la lista?", function () {
@@ -451,11 +469,15 @@
                 td_modelo_b.textContent = d
                 td_ancho_b.textContent = e
                 td_fech.textContent = f
-                td_alt_prom.textContent = g
+                td_alt_inicial.textContent = g
+                td_alt_final.textContent = h
+
                 td_btn.append(btn)
                 trp.append(td_nro)
                 trp.append(td_km)
-                trp.append(td_alt_prom)
+                trp.append(td_alt_inicial)
+                trp.append(td_alt_final)
+
                 trp.append(td_renova)
                 trp.append(td_modelo_b)
                 trp.append(td_ancho_b)
@@ -471,23 +493,27 @@
                 '<div class="form-row">' +
                 '<div class="col-lg-3 ">' +
                 '<label  class="formName">N° Reencauche</label>' +
-                '<input type="number"  class="nro_reencauchado form-control" required />' +
+                '<input type="number" min="0" max="6"  class="nro_reencauchado form-control" required />' +
                 '</div>' +
                 '<div class="col-lg-3">' +
                 '<label  class="formName">Kilometraje</label>' +
                 '<input type="number"  step="0.01" min="0.00" class="km form-control" required />' +
                 '</div>' +
                 '<div class="col-lg-3">' +
-                '<label  class="formName">Alt.Promedio</label>' +
-                '<input type="number"   step="0.01" min="0.00" class="promedio form-control" required />' +
+                '<label  class="formName">Alt.Inicial</label>' +
+                '<input type="number"   step="0.01" min="0.00" class="alt_inicial form-control" required />' +
                 '</div>' +
                 '<div class="col-lg-3">' +
+                '<label  class="formName">Alt.Final</label>' +
+                '<input type="number"   step="0.01" min="0.00" class="alt_final form-control" required />' +
+                '</div>' +
+         
+                '</div>' +
+                '<div class="form-row">' +
+                  '<div class="col-lg-3">' +
                 '<label  class="formName">Fecha Reencauche</label>' +
                 '<input type="date" class="fecha_ren form-control" required />' +
                 '</div>' +
-                '</div>' +
-                '<div class="form-row">' +
-
                 '<div class="col-lg-3">' +
 
                 '<label class="formName">Reencauchadora</label>' +
@@ -512,8 +538,7 @@
                 '<select class="ancho_banda form-select" required />' +
                 '</select>' +
                 '</div>' +
-                '<div class="col-lg-3">' +
-                '<label class="formName" style="visibility:hidden">Ancho de Banda</label>' +
+                '<div class="offset-lg-9 col-lg-3 mt-2  ">' +
                 '<button class="btn  btn-primary btn-block btn-add-r" /><i class="fas fa-sign-in-alt"></i>&nbsp;Agregar' +
                 '</button>' +
                 '</div>' +
@@ -524,7 +549,9 @@
                 '<thead>' +
                 '<th class="text-center middle">N° Reenc.</th>' +
                 '<th class="text-center middle">Km</th>' +
-                '<th class="text-center middle">Alt.Prom</th>' +
+                '<th class="text-center middle">Alt.Inicial</th>' +
+                '<th class="text-center middle">Alt.Final</th>' +
+
                 '<th class="middle">Reencauchadora</th>' +
                 '<th class="middle">Modelo de Banda</th>' +
                 '<th class="middle">Ancho de Banda</th>' +
@@ -553,7 +580,6 @@
                         settings.aoData[tr.row]._aData.cubierta = objeto.cu
                         objeto.cu = []
                         refreshStorage()
-                        console.log(settings.aoData);
                         // if(settings.aoData.length-1!=tr.row){
                         if (settings.aoData[tr.row]._aData.cubierta.length > 0) {
                           $(that).removeClass("btn-danger").addClass("btn-outline-secondary")
@@ -617,7 +643,7 @@
                     let modelo_banda = settings.aoData[tr.row]._aData.cubierta.modelo_banda
                     let ancho_banda = settings.aoData[tr.row]._aData.cubierta.ancho_banda
                     let fecha_ren = settings.aoData[tr.row]._aData.cubierta.fech_ren
-                    let alt_prom = settings.aoData[tr.row]._aData.cubierta.alt_prom
+                    let alt_inicial = settings.aoData[tr.row]._aData.cubierta.alt_inicial
 
                     let renovadora_input = this.$content.find('.renovadora')
                     let modelo_banda_input = this.$content.find('.modelo_renova')
@@ -625,7 +651,8 @@
                     let km_input = this.$content.find('.km')
                     let nro_input = this.$content.find('.nro_reencauchado')
                     let fech_input = this.$content.find('.fecha_ren')
-                    let alt_prom_input = this.$content.find('.promedio')
+                    let alt_inicial_input = this.$content.find('.alt_inicial')
+                    let alt_final_input = this.$content.find('.alt_final')
 
                     let btn_add = this.$content.find('.btn-add-r')
                     let tabla = this.$content.find('.t_body')
@@ -636,11 +663,12 @@
                       const e = array[index];
                       load(tabla, e.nro_reencauchado, e.km, e.renovadora.descripcion, e
                         .modelo_banda.descripcion,
-                        e.ancho_banda.descripcion, e.fech_ren, e.alt_prom, tr.row)
+                        e.ancho_banda.descripcion, e.fech_ren, e.alt_inicial, tr.row,e.alt_final)
                     }
                     var obj = {
                       fech_ren: "",
-                      alt_prom: "",
+                      alt_inicial: "",
+                      alt_final:"",
                       nro_reencauchado: "",
                       km: "",
                       renovadora: {
@@ -735,7 +763,6 @@
                     })
 
                     renovadora_input.on("change", function () {
-                      console.log("aea");
                       if ($(this).val() != "" && objeto.items.length > 0 && typeof objeto
                         .items[tr.row] !== "undefined") {
                         objeto.items[tr.row].cubierta.renovadora = $(this).val();
@@ -747,7 +774,6 @@
                         value: "0",
                         text: " Seleccione... "
                       }));
-                      console.log("paso por aq");
                       ancho_banda_input.prop("disabled", true)
                       ancho_banda_input.empty();
                       ancho_banda_input.append($("<option>", {
@@ -763,9 +789,7 @@
                               let opcion = document.createElement("option")
                               opcion.value = valuex.id
                               opcion.textContent = valuex.descripcion
-                              console.log("entro al for");
                               modelo_banda_input.append(opcion)
-                              console.log("entro al for2");
 
                             }
                           });
@@ -775,7 +799,6 @@
                             modelo_banda_input.prop("disabled", false)
                           }
                         })
-                      console.log("paso por aqww");
 
                       obj.renovadora.id = $(this).val()
                       obj.renovadora.descripcion = $(this).find("option:selected").text()
@@ -793,7 +816,6 @@
                           res => res
                           .json())
                         .then(data => {
-                          console.log(data);
                           $.each(data, function (index, valuex) {
                             if (!valuex.eliminado && valuex.activo) {
                               let opcion = document.createElement("option")
@@ -855,13 +877,15 @@
                       obj.km = km_input.val()
                       obj.nro_reencauchado = nro_input.val()
                       obj.fech_ren = fech_input.val()
-                      obj.alt_prom = alt_prom_input.val()
+                      obj.alt_inicial = alt_inicial_input.val()
+                      obj.alt_final = alt_final_input.val()
+
                       validar(km_input.val(), km_input)
                       validar(nro_input.val(), nro_input)
                       validar(renovadora_input.val(), renovadora_input)
                       validar(modelo_banda_input.val(), modelo_banda_input)
                       validar(ancho_banda_input.val(), ancho_banda_input)
-                      validar(alt_prom_input.val(), alt_prom_input)
+
                       validar(fech_input.val(), fech_input)
                       if(checkDate(fech_input.val())){
 
@@ -889,16 +913,58 @@
                         alerta(1500, "error", "Ingrese un numero de reencauche válido.")
 
                       }
+                      if (alt_inicial_input.val() == "0" || alt_inicial_input.val() == "") {
+                  error = 1
+
+                  alt_inicial_input.addClass("is-invalid")
+                  alt_inicial_input.on("change input", function () {
+                    alt_inicial_input.removeClass("is-invalid")
+                  })
+                  alerta(1500, "error", "Revise los campos")
+                  $(this).prop("disabled", false)
+
+                } else {
+                  let validate_a_ini = validatePunto(alt_inicial_input.val())
+                  if (!validate_a_ini) {
+                    error = 1
+                    alt_inicial_input.addClass("is-invalid").on("input", function () {
+                      alt_inicial_input.removeClass("is-invalid")
+                    })
+                    alerta(1500, "error", "Los campos altura inicial deben tener 2 decimales")
+
+                  }
+                }
+                if (alt_final_input.val() == "0" || alt_final_input.val() == "") {
+                  error = 1
+                  alt_final_input.addClass("is-invalid")
+                  alt_final_input.on("change input", function () {
+                    alt_final_input.removeClass("is-invalid")
+                  })
+                  alerta(1500, "error", "Revise los campos")
+                } else {
+                  let validate_a_fin = validatePunto(alt_final_input.val())
+                  if (!validate_a_fin) {
+                    error = 1
+                    alt_final_input.addClass("is-invalid").on("input", function () {
+                      alt_final_input.removeClass("is-invalid")
+                    })
+                    alerta(1500, "error", "Los campos altura final deben tener 2 decimales")
+
+
+                  }
+                }
                       if (error == 0) {
 
                         objeto.cu.push(obj)
                         load(tabla, obj.nro_reencauchado, obj.km, obj.renovadora
                           .descripcion,
                           obj.modelo_banda.descripcion, obj.ancho_banda.descripcion, obj
-                          .fech_ren, obj.alt_prom, tr.row)
+                          .fech_ren, obj.alt_inicial, tr.row,obj.alt_final,settings)
                         obj = {
                           fech_ren: "",
-                          alt_prom: "",
+                          alt_inicial: "",
+                          alt_final: "",
+
                           nro_reencauchado: "",
                           km: "",
                           renovadora: {
@@ -915,7 +981,9 @@
                           },
                         }
                         fech_input.val("")
-                        alt_prom_input.val("")
+                        alt_inicial_input.val("")
+                        alt_final_input.val("")
+
                         km_input.val("")
                         nro_input.val("")
                         renovadora_input.select2({
@@ -1131,7 +1199,6 @@
                   alerta(1500, "error", "Ingrese uno o más reencuaches.")
                 }
                 if (!checkDate(fech_ren.val())) {
-                  console.log("if check");
                   alerta(1500, "error", "Revise el campo fecha.")
 
                   error = 1
@@ -1338,9 +1405,7 @@
                 } else {
                   let errorc=0
                   for (let i = 0; i < settings.aoData.length-1 ; i++) {
-                    console.log(settings.aoData[i]._aData.codigo);
                     if (settings.aoData[i]._aData.codigo == cant && i != tr.row) {
-                      console.log("raa");
                       alerta(1500, "error", "El codigo " + cant +
                         " ya se encuentra en la tabla.")
                         $(this).addClass("is-invalid")
@@ -1348,11 +1413,9 @@
                       break
                     }
                   }
-                  console.log(errorc);
                   if(errorc==0){
                     fetch("exist/" + cant).then(s => s.json())
                     .then(response => {
-                      console.log(response);
                       if (response.status == 300) {
                         $(this).addClass("is-invalid")
                         
@@ -1390,7 +1453,6 @@
                   $("#btn-save").prop("disabled", false)
 
                 }
-                console.log($(this).attr("class"));
 
               })
               $("select[name='medida_llanta']").on("change", function (e) {
@@ -1577,7 +1639,7 @@
     if (window.localStorage.getItem("array")) {
       objeto.items = JSON.parse(window.localStorage.getItem("array"))
       objeto.list()
-
+      console.log(objeto.items)
     } else {
       objeto.list()
 

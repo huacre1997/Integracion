@@ -1,0 +1,41 @@
+{% extends 'Web/base.html' %}
+{% block content %}
+<br>
+     <form action="{% url 'Web:import-tipo' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar Tipos</h2>
+          <input type="file" name="FILE" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+              <form action="{% url 'Web:import-posiciones' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar POsiciones</h2>
+          <input type="file" name="posi" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+                <form action="{% url 'Web:import-vehiculos' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar Vehiculos</h2>
+          <input type="file" name="vehi" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+             </form>
+                <form action="{% url 'Web:import-medidas' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar medidas</h2>
+          <input type="file" name="medidas" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+        <form action="{% url 'Web:import-llantas' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar Llantas</h2>
+          <input type="file" name="llantas" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+    <form action="{% url 'Web:import-cubiertas' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h2>Importar Reencauches</h2>
+          <input type="file" name="cubiertas" id="">
+          <button type="submit" class="btn btn-primary">Importar Datos</button>
+          </form>
+{% endblock %}

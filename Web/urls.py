@@ -162,6 +162,14 @@ urlpatterns = [
     path('Reportes/historial/', views.HistorialLlantas.as_view(), name='ver-historial'),
 
     # path('get-vehiculo/', views.getVehiculo, name='ver-vehiculo'),
+    path('import/', views.importTipos, name='import-tipo'),
+    path('importposi/', views.importPosiciones, name='import-posiciones'),
+    path('importVehiculos/', views.importVehiculos, name='import-vehiculos'),
+    path('importMedidas/', views.importMedidas, name='import-medidas'),
+    path('importLlantas/', views.importLlantas, name='import-llantas'),
+    path('importCubiertas/', views.importCubiertas, name='import-cubiertas'),
+
+    path('imports/', views.imports, name='imports'),
 
 ]
 

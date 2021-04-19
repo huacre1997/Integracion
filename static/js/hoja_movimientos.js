@@ -23,7 +23,8 @@ $(document).ready(function () {
     }
   }
   $('#drop-vehiculos').on("change", function (e) {
-
+    $("#loadingCharge").css("visibility","visible")
+    $("#spinner").css("visibility","visible")
 
     datos.items.vehiculo_id = ""
     datos.items.placa = ""
@@ -73,6 +74,8 @@ $(document).ready(function () {
 
     ).then(response => {
       console.log(response);
+      $("#loadingCharge").css("visibility","hidden")
+      $("#spinner").css("visibility","hidden")
       if (response.status == 200) {
 
         document.getElementById("container-grid").classList.add("container-drag")
@@ -125,7 +128,7 @@ $(document).ready(function () {
         td_marca.textContent = response.vehiculo.modelo_vehiculo["marca-vehiculo"].descripcion
         td_km.textContent = response.vehiculo.km
         td_obs.textContent = response.vehiculo.obs
-        operador.textContent = response.vehiculo.created_by.persona
+        operador.textContent = response.vehiculo.changed_by.persona
 
         for (let i = 0; i < response.pos.length; i++) {
           let parent = document.createElement("div")
@@ -138,8 +141,6 @@ $(document).ready(function () {
 
           }
           for (let a = 0; a < response.llantas.length; a++) {
-            console.log(response.llantas[a].posicion);
-            console.log( response.pos[i].posicion);
             if (response.llantas[a].posicion == response.pos[i].posicion) {
               let dragdrop = document.createElement("div")
               if (response.pos[i].repuesto == true) {
@@ -249,10 +250,15 @@ $(document).ready(function () {
                           km.classList.add("is-invalid")
                           error = 1
                         }
-                        if (id_llanta.value == "") {
+                        if (id_llanta.value == "0") {
                           form.getElementById("invalid_llanta").innerHTML =
                             "Este campo es requerido"
-                          llanta.classList.add("is-invalid")
+                            id_llanta.classList.add("is-invalid")
+                            id_llanta.addEventListener("change",function(){
+                              console.log("aea");
+                              id_llanta.classList.remove("is-invalid")
+                              form.getElementById("invalid_llanta").innerHTML=""
+                            })
                           error = 1
                         }
                         if (profundidad.value == "") {
@@ -590,7 +596,6 @@ $(document).ready(function () {
                                 action: function () {
                                   let form = this.$content[0].ownerDocument
                                   let id_llanta = form.getElementById("id_llanta")
-                                  let llanta = form.getElementById("id_neu")
 
                                   let profundidad = form.getElementById("id_profundidad")
                                   let km = form.getElementById("id_km")
@@ -602,10 +607,17 @@ $(document).ready(function () {
                                     km.classList.add("is-invalid")
                                     error = 1
                                   }
-                                  if (id_llanta.value == "") {
+                                  if (id_llanta.value == "0") {
                                     form.getElementById("invalid_llanta").innerHTML =
                                       "Este campo es requerido"
-                                    llanta.classList.add("is-invalid")
+                                      console.log("entro");
+                                      id_llanta.classList.add("is-invalid")
+                                      id_llanta.addEventListener("change",function(){
+                                        console.log("aea");
+                                        id_llanta.classList.remove("is-invalid")
+                                        form.getElementById("invalid_llanta").innerHTML=""
+                                      })
+
                                     error = 1
                                   }
                                   if (profundidad.value == "") {

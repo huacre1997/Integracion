@@ -77,7 +77,7 @@ class PersonaForm(forms.ModelForm):
 
     class Meta:
         model = Persona
-        exclude = ["uuid","created_at","modified_at","created_by","modified_by","eliminado","uuid"]
+        exclude = ["uuid","created_at","modified_at","changed_by","modified_by","eliminado","uuid"]
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -368,14 +368,13 @@ class AnchoBandaRenovaForm(forms.ModelForm):
             'ancho_banda': forms.TextInput( attrs={'class':'form-control','type':'number', 'min':'0', 'step':'0.01'}),
             'modelo_renova': forms.Select( attrs={'class':'form-select'}),
             "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
-
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["descripcion"].required=False
     def clean(self):
         cleaned_data = super().clean()
-
         data=cleaned_data.get("descripcion")
         data2=cleaned_data.get('modelo_renova')
         data3=cleaned_data.get("ancho_banda")
@@ -390,7 +389,7 @@ class AnchoBandaRenovaForm(forms.ModelForm):
 class MarcaLlantaForm(forms.ModelForm):
     class Meta:
         model = MarcaLlanta
-        exclude = ["created_by","modified_by"]
+        exclude = ["changed_by","modified_by"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
             "activo":forms.CheckboxInput(attrs={"class":"form-check-input"})
@@ -405,7 +404,7 @@ class MarcaLlantaForm(forms.ModelForm):
 class TipoVehiculoForm(forms.ModelForm):
     class Meta:
         model = TipoVehiculo
-        exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
+        exclude=["changed_by","modified_by","created_at","modified_at","eliminado"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
             'nro_llantas': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
@@ -549,7 +548,7 @@ class ModeloVehiculoForm(forms.ModelForm):
 class CubiertaForm(forms.ModelForm):
     class Meta:
         model=CubiertaLlanta
-        exclude=["created_by","modified_by","created_at","modified_at","eliminado"]
+        exclude=["changed_by","modified_by","created_at","modified_at","eliminado"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -563,7 +562,7 @@ class CubiertaForm(forms.ModelForm):
         
         if self.instance.nro_ren!=subject1:
             print("if")
-            if CubiertaLlanta.objects.filter(nro_ren=subject1,llanta=subject).exists():
+            if CubiertaLlanta.objects.filter(nro_ren=subject1,llanta=subject).exclude(activo=False).exists():
                 print("if2")
                 self.add_error("nro_ren",f" : Ya se ingresó el reencauche {subject1} del neumático {subject}.")
         if int(subject1)>6:
@@ -586,7 +585,7 @@ class LlantaForm(forms.ModelForm):
 
     class Meta:	
         model = Llanta
-        exclude=["ubicacion","posicion","vehiculo","created_by","modified_by","created_at","modified_at","eliminado"]
+        exclude=["ubicacion","posicion","vehiculo","changed_by","modified_by","created_at","modified_at","eliminado"]
         widgets = {
             'modelo_llanta': forms.Select( attrs={'class':'form-select'}),
             'medida_llanta': forms.Select( attrs={'class':'form-select'}),

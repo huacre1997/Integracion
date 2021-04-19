@@ -14,6 +14,7 @@ from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
 
+from simple_history.models import HistoricalRecords
 
 def _update_filename(instance, filename, path):
 	filename_aux = ''
@@ -48,11 +49,9 @@ class TipoServicio(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                   null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                   null=True, editable=False, related_name='%(class)s_modified')
+   
    eliminado = models.BooleanField(default=False, editable=False)
 
    def __str__(self):
@@ -113,11 +112,10 @@ class Cliente(models.Model):
        "Contacto"), on_delete=models.PROTECT)
    created_at = models.DateTimeField(
        auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+   
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                   null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                   null=True, editable=False, related_name='%(class)s_modified')
+  
    eliminado = models.BooleanField(default=False, editable=False)
 
 
@@ -130,11 +128,10 @@ class Proveedor(models.Model):
        "Contacto"), on_delete=models.PROTECT)
    created_at = models.DateTimeField(
        auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+   
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                   null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                   null=True, editable=False, related_name='%(class)s_modified')
+  
    eliminado = models.BooleanField(default=False, editable=False)
 
 
@@ -145,11 +142,10 @@ class ProveedorDireccion(models.Model):
        Direccion, on_delete=models.PROTECT, null=True, default=True)
    created_at = models.DateTimeField(
        auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+   
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                   null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                   null=True, editable=False, related_name='%(class)s_modified')
+  
    eliminado = models.BooleanField(default=False, editable=False)
 
 
@@ -160,11 +156,10 @@ class ClienteDireccion(models.Model):
        "direccion"), on_delete=models.PROTECT)
    created_at = models.DateTimeField(
        auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+   
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                   null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                   null=True, editable=False, related_name='%(class)s_modified')
+  
    eliminado = models.BooleanField(default=False, editable=False)
 
 
@@ -199,13 +194,20 @@ class Persona(models.Model):
        'fotos/'), null=True, blank=True)
    created_at = models.DateTimeField(
        auto_now_add=True, null=True, editable=False)
-   modified_at = models.DateTimeField(auto_now=True, editable=False)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+   
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                   null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
-                                   null=True, editable=False, related_name='%(class)s_modified')
-   eliminado = models.BooleanField(default=False, editable=False)
 
+   eliminado = models.BooleanField(default=False, editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_Persona')
+
+   @property
+   def _history_user(self):
+        return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+        self.changed_by = value  
    class Meta:
       ordering = ["-created_at"]
 
@@ -228,11 +230,17 @@ class Persona(models.Model):
 class Usuario(AbstractUser):
    persona = models.OneToOneField(Persona, on_delete=models.CASCADE,null=True,blank=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_Usuario')
 
+   @property
+   def _history_user(self):
+        return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+        self.changed_by = value  
    def save(self, *args, **kwargs):
       if self.persona:
          self.email=self.persona.correo
@@ -267,59 +275,67 @@ class Ubicacion(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
-   
+   history = HistoricalRecords(table_name='Web_Historial_Ubicacion',user_model=Usuario)
+
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value    
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["eliminado","changed_by"])
       return item
 class Almacen(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
    
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["eliminado","changed_by"])
       return item
 
 class Lugar(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
    
    def __str__(self):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["eliminado","changed_by"])
       return item
 class MarcaRenova(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_MarcaRenova',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["eliminado","changed_by"])
       return item
 
 class ModeloRenova(models.Model):
@@ -328,15 +344,21 @@ class ModeloRenova(models.Model):
    profundidad = models.DecimalField(max_digits=10, decimal_places=2)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_ModeloRenova',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["eliminado","changed_by"])
       item["marca_renova"]=self.marca_renova.toJSON()
       return item
 
@@ -346,19 +368,25 @@ class AnchoBandaRenova(models.Model):
    ancho_banda = models.DecimalField(max_digits=10, decimal_places=2)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_AnchoBandaRenova',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","modified_at","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["eliminado","changed_by"])
       item["modelo_renova"]=self.modelo_renova.toJSON()
       return item
    def toJSON2(self):
-      item = model_to_dict(self,exclude=["modified_by","modified_at","created_by","modified_at","modelo_renova"])
+      item = model_to_dict(self,exclude=["changed_by","modelo_renova"])
       item["ancho_banda"]=format(self.ancho_banda, '.2f')
 
       return item
@@ -366,16 +394,22 @@ class MarcaLlanta(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_MarcaLlanta',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","eliminado","created_by","modified_at"])
+      item = model_to_dict(self,exclude=["eliminado","changed_by"])
       return item
 class ModeloLlanta(models.Model):
    marca_llanta = models.ForeignKey(MarcaLlanta, on_delete=models.PROTECT, related_name="modelos")
@@ -383,15 +417,21 @@ class ModeloLlanta(models.Model):
 
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_ModeloLlanta',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.descripcion
    def toJSON(self):
-      item = model_to_dict(self,exclude=["created_by","modified_by","activo","created_at","eliminado"])
+      item = model_to_dict(self,exclude=["changed_by","activo","created_at","eliminado"])
       item=self.marca_llanta.toJSON()
       return item
       
@@ -404,18 +444,24 @@ class MedidaLlanta(models.Model):
    capas = models.DecimalField(max_digits=10, decimal_places=2,null=True, blank=True)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_MedidaLlanta',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       if self.capas:
          return 'Medida {} - {} - {}'.format(str(self.medida), str(format(self.profundidad, '.2f')), str(format(self.capas, '.2f')))
       else:
          return 'Medida {} - {} '.format(str(self.medida), str(format(self.profundidad, '.2f')))   
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","created_by"])
+      item = model_to_dict(self,exclude=["changed_by"])
       item["modelo_llanta"]= self.modelo_llanta.toJSON()
       item["descripcion"]='Medida {} - {} - {}'.format(str(self.medida), str(self.profundidad), str(self.capas))
       return item
@@ -425,15 +471,13 @@ class MedidaLlanta(models.Model):
 #    descripcion = models.CharField(max_length=100)
 #    activo = models.BooleanField(default=True)
 #    created_at = models.DateTimeField(auto_now_add=True, null=True)
-#    modified_at = models.DateTimeField(auto_now=True)
-#    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-#    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
-#    eliminado=models.BooleanField(default=False,editable=False)
+# #    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
+# #    eliminado=models.BooleanField(default=False,editable=False)
    
 #    def __str__(self):
 #       return self.descripcion
 #    def toJSON(self):
-#       item = model_to_dict(self,exclude=["modified_by","created_by"])
+#       item = model_to_dict(self,exclude=["changed_by"])
 #       return item
         
 
@@ -441,16 +485,14 @@ class TipoPiso(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
    
    def __str__(self):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by","created_by"])
+      item = model_to_dict(self,exclude=["changed_by"])
       return item
         
 
@@ -459,16 +501,22 @@ class MarcaVehiculo(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(Usuario,on_delete=models.PROTECT)
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_MarcaVehiculo',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self,exclude=["created_by","modified_by"])
+      item = model_to_dict(self,exclude=["changed_by",])
       return item
 
 class ModeloVehiculo(models.Model):
@@ -476,16 +524,22 @@ class ModeloVehiculo(models.Model):
    descripcion = models.CharField(max_length=100)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_ModeloVehiculo',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+        self.changed_by = value  
    def __str__(self):
       return self.descripcion
 
    def toJSON(self):
-      item = model_to_dict(self,exclude=["created_by","modified_by"])
+      item = model_to_dict(self,exclude=["changed_by",])
       item["marca-vehiculo"]=self.marca_vehiculo.toJSON()
       return item
 from django.urls import reverse
@@ -497,11 +551,17 @@ class TipoVehiculo(models.Model):
    max_rep=models.IntegerField(default=0)
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
-  
+   history = HistoricalRecords(table_name='Web_Historial_TipoVehiculo',user_model=Usuario)
+
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.descripcion+"-"+str(self.nro_llantas)+" llantas"
    def get_image(self):
@@ -511,12 +571,13 @@ class TipoVehiculo(models.Model):
       if self.image2:
          return '{}{}'.format(settings.MEDIA_URL, self.image2)
    def toJSON(self):
-      item = model_to_dict(self,exclude=["created_by","modified_by"])
+      item = model_to_dict(self,exclude=["changed_by",])
       item["image"]=self.get_image()
       item["image2"]=self.get_image2()
       return item
    def get_absolute_url(self):
       return reverse('Web:posiciones', kwargs={'pk': self.pk})
+
 class PosicionesLlantas(models.Model):
    tipo=models.ForeignKey(TipoVehiculo, on_delete=models.CASCADE,null=True,blank=True)
    posicion=models.IntegerField(null=True,blank=True)
@@ -524,7 +585,7 @@ class PosicionesLlantas(models.Model):
    posy=models.CharField(max_length=15,default="0")
    repuesto=models.BooleanField(default=False)
    def toJSON(self):
-      item = model_to_dict(self,exclude=["tipo","modified_by"])
+      item = model_to_dict(self,exclude=["tipo",])
       return item
 
 @receiver(post_save, sender=TipoVehiculo)
@@ -535,23 +596,19 @@ def save_tipo(sender, instance, **kwargs):
       print("m exists")
       for i in range(1,instance.nro_llantas+instance.max_rep+1):
          data=PosicionesLlantas()
-
          if i>instance.nro_llantas:
             data.repuesto=True
          data.tipo=instance
          data.posicion=i
          data.save()
    else:
-      print("m not exists")
-
-      
+      print("m not exists")   
       faltantes=instance.nro_llantas+instance.max_rep-len(m)
       if faltantes<0:
          for i in m:
             i.repuesto=False
             i.save()
          print("falante menort a 0")
-
          print("if menor a 0")
          for i in m:
             if i.posicion>instance.nro_llantas+instance.max_rep:
@@ -560,16 +617,9 @@ def save_tipo(sender, instance, **kwargs):
             elif i.posicion>instance.nro_llantas:
                print("repuesto")
                i.repuesto=True
-               i.save()
-         
-            
+               i.save()           
       else:   
-         print("faltante myor a 0")
-         
-               
-
-         for i in range(1,faltantes+1):
-            
+         for i in range(1,faltantes+1):  
             data=PosicionesLlantas()
             data.repuesto=False
             data.tipo=instance
@@ -597,18 +647,23 @@ class Vehiculo(models.Model):
 
    obs = models.TextField(null=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    activo=models.BooleanField(default=True)
 
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_Vehiculo',user_model=Usuario)
 
+   @property
+   def _history_user(self):
+      return self.changed_by
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value  
    def __str__(self):
       return self.placa
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_by"])
-      item["created_by"]=self.created_by.toJSON2()
+      item = model_to_dict(self,exclude=[])
+      item["changed_by"]=self.changed_by.toJSON2()
 
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')
       item["modelo_vehiculo"]=self.modelo_vehiculo.toJSON()
@@ -616,15 +671,14 @@ class Vehiculo(models.Model):
 
       return item
    def toJSON2(self):
-      item = model_to_dict(self,exclude=["obs","nro_ejes","estado","propiedad","operacion","modified_by","almacen","modelo_vehiculo","tipo_vehiculo","created_by","ubicacionv"])
+      item = model_to_dict(self,exclude=["obs","nro_ejes","estado","propiedad","operacion","almacen","modelo_vehiculo","tipo_vehiculo","changed_by","ubicacionv"])
       item["marca"]=self.modelo_vehiculo.marca_vehiculo.descripcion
       item["modelo"]=self.modelo_vehiculo.descripcion
       item["nro_llantas"]=self.tipo_vehiculo.nro_llantas
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')
 
       return item
-
-        
+     
 
 class Llanta(models.Model):
 
@@ -633,9 +687,8 @@ class Llanta(models.Model):
    medida_llanta = models.ForeignKey(MedidaLlanta, on_delete=models.PROTECT)
    # ubicacion = models.CharField(max_length=50, choices=CHOICES_UBICACION_LLANTA,null=True,blank=True)
    ubicacion = models.ForeignKey(Ubicacion,on_delete=models.PROTECT,null=True,blank=True)
-
    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name="llantas", null=True,blank=True)
-   
+   km = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
    codigo = models.CharField(max_length=100, null=True, blank=True)
    posicion=models.IntegerField(blank=True,null=True,default=None)
    repuesto=models.BooleanField(default=False)
@@ -647,14 +700,14 @@ class Llanta(models.Model):
    fech_ren=models.DateField()
    activo = models.BooleanField(default=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
+   history = HistoricalRecords(table_name='Web_Historial_Llanta',user_model=Usuario)
+
    def __str__(self):
       return self.codigo
    def toJSON(self):
-      item = model_to_dict(self,exclude=["a_inicial","a_final","a_promedio","fech_ren","ubicacion","estado","modified_at","eliminado","created_by","modified_by"])
+      item = model_to_dict(self,exclude=["a_inicial","a_final","a_promedio","fech_ren","ubicacion","estado","eliminado","changed_by",])
       if self.medida_llanta.capas:
          item["medida"]='Medida {} - {} - {}'.format(str(self.medida_llanta.medida), str(format(self.medida_llanta.profundidad, '.2f')), str(format(self.medida_llanta.capas, '.2f')))
       else:
@@ -670,7 +723,7 @@ class Llanta(models.Model):
       #    item["vehiculo"]=self.vehiculo.placa
       return item
    def tabletoJSON(self):
-      item = model_to_dict(self,exclude=["posicion","repuesto","cubierta","eliminado","modified_at","eliminado","created_by","modified_by"])
+      item = model_to_dict(self,exclude=["modelo_llanta","medida_llanta","ubicacion","posicion","vehiculo","repuesto","cubierta","eliminado","eliminado","changed_by",])
       item["modelo_llanta"]=self.modelo_llanta.descripcion
       item["marca_llanta"]=self.modelo_llanta.marca_llanta.descripcion
       if self.medida_llanta.capas:
@@ -681,10 +734,17 @@ class Llanta(models.Model):
       # item["km"]=format(self.cubierta.km, '.2f')
       item["costo"]=format(self.costo, '.2f')
       item["created_at"]=self.created_at.strftime('%Y-%m-%d')  
-      if self.vehiculo:
-         item["vehiculo"]=self.vehiculo.placa
+    
 
       return item
+
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
    @property
    def code(self):
       # import pdb; pdb.set_trace()
@@ -709,35 +769,47 @@ class  CubiertaLlanta(models.Model):
    modelo_renova=models.ForeignKey(ModeloRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
    ancho_banda=models.ForeignKey(AnchoBandaRenova, on_delete=models.PROTECT,blank=True,null=True,default=None)
    renovadora=models.ForeignKey(MarcaRenova,on_delete=models.PROTECT,blank=True,null=True,default=None)
-   alt_prom= models.DecimalField(max_digits=10, decimal_places=2)
+   alt_inicial= models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
+   alt_final= models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
+
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
    activo=models.BooleanField(default=True)
+   history = HistoricalRecords(table_name='Web_Historial_CubiertaLlanta',user_model=Usuario)
+
    def toJSON(self):
-      item = model_to_dict(self,exclude=["primer_reen","llanta","eliminado","eliminado","created_by","modified_by","activo"])
+      item = model_to_dict(self,exclude=["primer_reen","llanta","eliminado","eliminado","changed_by","activo"])
       item["km"]=format(self.km, '.2f')
-      item["alt_prom"]=format(self.alt_prom, '.2f')
+      item["alt_inicial"]=format(self.alt_inicial, '.2f')
+      item["alt_final"]=format(self.alt_final, '.2f')      
       item["fech_ren"]=self.fech_ren.strftime('%Y-%m-%d')  
 
       item["renovadora"]=self.renovadora.id
       item["modelo_renova"]=self.modelo_renova.id
       item["ancho_banda"]=self.ancho_banda.id
-
+      item["activo"]=1 if self.activo else 0
       return item
    def toJSON2(self):
-      item = model_to_dict(self,exclude=["primer_reen","llanta","eliminado","eliminado","created_by","modified_by","activo"])
+      item = model_to_dict(self,exclude=["primer_reen","llanta","eliminado","eliminado","changed_by","activo"])
       item["km"]=format(self.km, '.2f')
-      item["alt_prom"]=format(self.alt_prom, '.2f')
+      item["alt_inicial"]=format(self.alt_inicial, '.2f')
+      item["alt_final"]=format(self.alt_final, '.2f')
+
       item["fech_ren"]=self.fech_ren.strftime('%Y-%m-%d')  
       item["renovadora"]=self.renovadora.descripcion
       item["modelo_renova"]=self.modelo_renova.descripcion
       item["ancho_banda"]=self.ancho_banda.descripcion
       item["llanta"]=self.llanta.codigo
-      return item  
-class HistorialLLantas(models.Model):
+      return item 
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+class Movimientos_Historial(models.Model):
   
    llanta=models.ForeignKey(Llanta,on_delete=models.PROTECT,blank=True,null=True)
    km=models.CharField( max_length=20,blank=True,null=True)
@@ -750,9 +822,7 @@ class HistorialLLantas(models.Model):
    activo = models.BooleanField(default=True)
    eliminado=models.BooleanField(default=False,editable=False)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    
    
 class InpeccionLlantas(models.Model):
@@ -768,9 +838,7 @@ class InpeccionLlantas(models.Model):
 
    fech_km_ant=models.DateField(blank=True,null=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
 import decimal
 class DetalleInspeccion(models.Model):
@@ -791,12 +859,10 @@ class DetalleInspeccion(models.Model):
    accion=models.CharField(_("Acción"),choices=CHOICES_ACCION,max_length=50)
    repuesto=models.BooleanField(blank=True,null=True)
    created_at = models.DateTimeField(auto_now_add=True, null=True)
-   modified_at = models.DateTimeField(auto_now=True)
-   created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
-   modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_modified')
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
    def toJSON(self):
-      item = model_to_dict(self,exclude=["modified_at","created_by","modified_by","inspeccion"])
+      item = model_to_dict(self,exclude=["changed_by","inspeccion"])
       item["codigo"]=self.llanta.codigo
       item["rem_prom"]=format(self.rem_prom,".2f")
       return item
