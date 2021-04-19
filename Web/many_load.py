@@ -40,7 +40,7 @@ def importPosi(file):
         PosicionesLlantas.objects.all().delete()
         cursor = connection.cursor()
 
-        cursor.execute('''TRUNCATE TABLE Web_posicionesllantas RESTART IDENTITY''')
+        cursor.execute('''TRUNCATE TABLE "Web_posicionesllantas" RESTART IDENTITY''')
         df = pd.read_excel(file, sheet_name='Hoja1')
         for i in df.index:
             tipo=TipoVehiculo.objects.get(id=df["tipo_id"][i])
