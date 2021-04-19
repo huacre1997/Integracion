@@ -123,10 +123,11 @@ def importMedi(file):
         print(e)
     return False
 from django.db import connection
-cursor = connection.cursor()
 def importLLan(file):
     try:
-        PosicionesLlantas.objects.all()
+        PosicionesLlantas.objects.all().delete()
+        cursor = connection.cursor()
+
         cursor.execute('''TRUNCATE TABLE Web_posicionesllantas RESTART IDENTITY''')
 
         df = pd.read_excel(file, sheet_name='Hoja1')
