@@ -82,7 +82,7 @@ def importLlantas(request):
         if not file.name.endswith('.xlsx'):
             messages.error(request, 'El archivo cargado no es .csv')
         else:
-            if updateLlantas(file):
+            if importLLan(file):
                 messages.success(request, 'Archivo cargando...')
         return HttpResponseRedirect(reverse_lazy("Web:llantas"))
 def importCubiertas(request):
