@@ -2060,7 +2060,7 @@ class LlantasListView(LoginRequiredMixin, ValidateMixin,ListView):
 
             marca=self.request.POST["marca"]
             
-            search=Llanta.objects.select_related("modelo_llanta","medida_llanta")
+            search=Llanta.objects.select_related("modelo_llanta","medida_llanta").filter(vehiculo=None)
             if marca:
                 search=search.filter(modelo_llanta__marca_llanta_id=marca)
                 if modelo:
