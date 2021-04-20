@@ -45,9 +45,9 @@
               <label class="form-label">Marca del Neumático</label>
               <select name="marca_llanta" id="id_marca_llanta" class="form-select" onchange="actualizar_modelo()">
                 <option value=""></option>
-
+             
                 {% for i in marca_llanta  %}
-                {% if  i.activo and not i.eliminado or obj.modelo_llanta.marca_llanta.id == i.id %}
+                {% if  i.activo and not i.eliminado  %}
                 <option value="{{i.id}}" {% if obj.modelo_llanta.marca_llanta.id == i.id %}selected{% endif %}>
                   {{i.descripcion}}</option>
                 {% endif %}
@@ -376,7 +376,6 @@ $("#id_estado").on("change",function () {
           }).then(l => l.json()).then(res => {
             $("#loadingCharge").css("visibility","hidden")
         $("#spinner").css("visibility","hidden")
-
             notificacion(1000, "Neumáticos guardados!", "success")
             setTimeout(() => {
               window.location.href="{% url 'Web:llantas' %}"
@@ -396,6 +395,7 @@ $("#id_estado").on("change",function () {
       nro_ren: "",
       km: "",
       renovadora:  "",
+      descripcion:"",
       modelo_renova: "",
       ancho_banda: "",
       activo:0
@@ -463,7 +463,6 @@ $("#id_estado").on("change",function () {
             }
           ],
           "createdRow": function( row, data, dataIndex ) {
-            console.log(objeto.items.length);
 
                 if (data.activo==0 && dataIndex!=objeto.items.length) {
             $(row).hide();
@@ -560,7 +559,6 @@ $("#id_estado").on("change",function () {
                 }
                 var $select = $('<select name="ancho_banda" '+disabled+'  class="form form-select">' +
                   '</select>');
-
                 $select.find('option[value="' + data + '"]').attr('selected', 'selected');        
                 return $select[0].outerHTML
               }
@@ -618,6 +616,15 @@ $("#id_estado").on("change",function () {
               }
               validaInputs()
               $("select[name='renovadora']").each(function (index, el) {
+                if(objeto.items.length!=index){
+                  let option9 = document.createElement("option")
+                option9.textContent = objeto.items[index].descripcion
+                option9.value = objeto.items[index].renovadora
+                $(el).append(option9)
+                $(el).find('option[value="' + settings.aoData[
+                      index]._aData.renovadora + '"]').attr('selected', 'selected');
+                }
+        
                 let select = $(el).parent().next().children()
                 let select2 = $(el).parent().next().next().children()
 
@@ -629,7 +636,18 @@ $("#id_estado").on("change",function () {
                   fetch('/catalogos/render-option?id_marca=' + $(el).val()).then(res => res
                     .json())
                   .then(data => {
+                    let b=0
+
+                    let opciones2 = []
+                              let renova={
+                                id:"",descripcion:"",activo:"",modelo_banda:""
+                              }
                     $.each(data, function (index, valuex) {
+                      renova.activo=valuex.activo
+                      renova.id=valuex.id
+                      renova.descripcion=valuex.descripcion
+                      opciones2.push(renova)
+                      renova={id:"",descripcion:"",activo:""}
                       if (!valuex.eliminado && valuex.activo) {
                         $(el).parent().next().children().append($("<option>", {
                           value: valuex.id,
@@ -637,8 +655,25 @@ $("#id_estado").on("change",function () {
                         }));
                       }
                     });
-                    $(el).parent().next().children().find('option[value="' + settings.aoData[
+                    if (settings.aoData[index]._aData.renovadora == $(el).val()) {
+                         for (let i = 0; i < opciones2.length; i++) {
+                           if(opciones2[i].id==settings.aoData[index]._aData.modelo_renova && opciones2[i].activo==false){
+                            let option4 = document.createElement("option")
+                                     option4.textContent = opciones2[i].descripcion
+                                      option4.selected = true
+                                       option4.value = opciones2[i].id
+                              select.append(option4)
+                            b=1
+                           }
+                           
+                         }
+                         if(b==0){
+                          $(el).parent().next().children().find('option[value="' + settings.aoData[
                       index]._aData.modelo_renova + '"]').attr('selected', 'selected');
+                         }
+                  
+                            }
+           
                       select2.empty();
                       select2.append($("<option>", {
                             value: "0",
@@ -661,7 +696,6 @@ $("#id_estado").on("change",function () {
                                 modelo.descripcion=valuex.descripcion
                                 modelo.ancho_banda=valuex.ancho_banda
                                 opciones.push(modelo)
-                                console.log(opciones);
                                 modelo={id:"",descripcion:"",activo:""}
                                 if (!valuex.eliminado && valuex.activo) {
                                   let opcion = document.createElement("option")
@@ -670,13 +704,10 @@ $("#id_estado").on("change",function () {
                                   select2.append(opcion)
                                 }
                               });
-                                console.log(settings.aoData[index]);
                              
                       if (settings.aoData[index]._aData.modelo_renova == select.val()) {
                          for (let i = 0; i < opciones.length; i++) {
-                           console.log(opciones[i]);
                            if(opciones[i].id==settings.aoData[index]._aData.ancho_banda && opciones[i].activo==false){
-                           console.log(opciones[i].ancho_banda);
                             let option4 = document.createElement("option")
                                      option4.textContent = opciones[i].descripcion+ " (" + opciones[i].ancho_banda+ " mm )"
                                       option4.selected = true
@@ -690,26 +721,12 @@ $("#id_estado").on("change",function () {
                           $(el).parent().next().next().children().find('option[value="' + settings.aoData[
                       index]._aData.ancho_banda + '"]').attr('selected', 'selected');
                          }
-                      // if (options4.includes(modelo2) != true) {
-
-                      //                 let option4 = document.createElement("option")
-                      //                 option4.textContent = "{{obj.modelo_llanta.descripcion}}"
-                      //                 option4.selected = true
-                      //                 option4.value = modelo2
-
-                      //                 $("#id_modelo_llanta").append(option4)
-
-                      //                 } else {
-                      //                 document.getElementById('id_modelo_llanta').value = modelo2;
-
-                      //                 }
-                                  }
+                  
+                            }
                             })
                   })
                 }
               })
-              console.log(objeto.items);
-
               $(".btn-remove").hover(function () {
 
 $(this).children().remove()
@@ -737,6 +754,7 @@ $(this).removeClass("btn-danger").addClass("btn-success");
             
                 data.nro_ren = nro_ren.val()
                 data.renovadora = renovadora.val()
+                data.descripcion=renovadora.find("option:selected").text()
                 data.modelo_renova = modelo_renova.val()
                 data.ancho_banda = ancho_banda.val()
                 data.fech_ren = fech_ren.val()
@@ -872,6 +890,7 @@ $(this).removeClass("btn-danger").addClass("btn-success");
                           nro_ren: "",
                           km: "",
                           renovadora:  "",
+                          descripcion:"",
                           modelo_renova: "",
                           ancho_banda: "",
                           activo:0
@@ -919,7 +938,6 @@ $(this).removeClass("btn-danger").addClass("btn-success");
 
               })
               $("select[name='renovadora']").on("change", function (e) {
-            
                 var cant = $(this).val();
                 var tr = tabla.cell($(this).closest("td", "li")).index()
                 select = $(this).parent().next().children()
@@ -951,7 +969,19 @@ $(this).removeClass("btn-danger").addClass("btn-success");
                       .json())
                     .then(data => {
                       select.prop("disabled", false)
+                      let b=0
+
+                    let opciones2 = []
+                              let renova={
+                                id:"",descripcion:"",activo:"",modelo_banda:""
+                              }
                       $.each(data, function (index, valuex) {
+                        modelo.activo=valuex.activo
+                                modelo.id=valuex.id
+                                modelo.descripcion=valuex.descripcion
+                                modelo.ancho_banda=valuex.ancho_banda
+                                opciones2.push(modelo)
+                                modelo={id:"",descripcion:"",activo:""}
                         if (!valuex.eliminado && valuex.activo) {
                           let opcion = document.createElement("option")
                           opcion.value = valuex.id
@@ -959,16 +989,25 @@ $(this).removeClass("btn-danger").addClass("btn-success");
                           select.append(opcion)
                         }
                       });
+                      if (settings.aoData[tr.row]._aData.renovadora == $(this).val()) {
+                         for (let i = 0; i < opciones2.length; i++) {
+                           if(opciones2[i].id==settings.aoData[tr.row]._aData.modelo_renova && opciones2[i].activo==false){
+                            let option4 = document.createElement("option")
+                                     option4.textContent = opciones2[i].descripcion
+                                       option4.value = opciones2[i].id
+                              select.append(option4)
+                            b=1
+                           }
+                           
+                         }
+                      //    if(b==0){
+                      //     $(this).parent().next().children().find('option[value="' + settings.aoData[
+                      // tr.row]._aData.modelo_renova + '"]').attr('selected', 'selected');
+                      //    }
+                  
+                            }
                       select.prop("disabled", false)
-                      // if (select.val() == "0") {
-                      //   $("#btn-add-llanta").prop("disabled", true)
-                      //   select.addClass("is-invalid")
-                      // } else {
-                      //   $("#btn-add-llanta").prop("disabled", false)
-                      //   select.on("change", function () {
-                      //     select.removeClass("is-invalid")
-                      //   })
-                      // }
+  
                     })
                   if (typeof objeto.items[tr.row] !== "undefined") {
                     objeto.items[tr.row].renovadora = cant;
@@ -986,6 +1025,11 @@ $(this).removeClass("btn-danger").addClass("btn-success");
                   text: " --------- "
                 }));
                 select.prop("disabled", true)
+                if($(this).parent().next().children().val()=="0"){
+                  $(this).parent().next().children().addClass("is-invalid")
+                  $("#btn-add-llanta").prop("disabled", true)
+                  console.log("aeaa");
+                }
                 if ($(this).val() == "0") {
                   $("#btn-add-llanta").prop("disabled", true)
                   $(this).addClass("is-invalid")
@@ -998,7 +1042,17 @@ $(this).removeClass("btn-danger").addClass("btn-success");
                       .json())
                     .then(data => {
                       select.prop("disabled", false)
+                              let opciones = []
+                              let modelo={
+                                id:"",descripcion:"",activo:"",ancho_banda:""
+                              }
                       $.each(data, function (index, valuex) {
+                        modelo.activo=valuex.activo
+                                modelo.id=valuex.id
+                                modelo.descripcion=valuex.descripcion
+                                modelo.ancho_banda=valuex.ancho_banda
+                                opciones.push(modelo)
+                                modelo={id:"",descripcion:"",activo:""}
                         if (!valuex.eliminado && valuex.activo) {
                           let opcion = document.createElement("option")
                           opcion.value = valuex.id
@@ -1006,6 +1060,19 @@ $(this).removeClass("btn-danger").addClass("btn-success");
                           select.append(opcion)
                         }
                       });
+                      if (settings.aoData[tr.row]._aData.modelo_renova == $(this).val()) {
+                         for (let i = 0; i < opciones.length; i++) {
+                           if(opciones[i].id==settings.aoData[tr.row]._aData.ancho_banda && opciones[i].activo==false){
+                            let option4 = document.createElement("option")
+                                     option4.textContent = opciones[i].descripcion+ " (" + opciones[i].ancho_banda+ " mm )"
+                                       option4.value = opciones[i].id
+                                       select.append(option4)
+                           }
+                           
+                         }
+                      
+                  
+                            }
                       select.prop("disabled", false)
 
                     })
@@ -1124,13 +1191,23 @@ $(this).removeClass("btn-danger").addClass("btn-success");
 
               $(".btn-remove").on("click", function () {
                 var tr = tabla.cell($(this).closest("td", "li")).index()
-
+                let error=0
                 let a = confirmar(function () {
                   if (typeof objeto.items[tr.row] !== "undefined") {
                     objeto.items[tr.row].activo = 0;
                   }
                   objeto.list()
-                  console.log(objeto.items);
+                  for (let i = 0; i < objeto.items.length; i++) {
+                    if(objeto.items[i].activo==0){
+                      error=error+1
+                    }
+                    
+                  }
+                  if (error==objeto.items.length){
+                    $("#id_estado").val("1")
+                    $("tbody .form").prop("disabled",true)
+
+                  }
                 }, "¿Desea eliminar este neumático de la lista?", function () {
 
                 })
@@ -1146,5 +1223,6 @@ $(this).removeClass("btn-danger").addClass("btn-success");
 
     objeto.items = {{ cubierta | safe }}
     objeto.list()
+    console.log(objeto.items)
   </script>
   {% endblock %}

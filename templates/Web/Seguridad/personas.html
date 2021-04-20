@@ -167,6 +167,7 @@
             text: 'Registrar persona',
             btnClass: 'btn-dark',
             action: function () {
+              console.log("click")
               form = this.$content
               let name = form[0].ownerDocument.getElementById("id_nom")
               let apem = form[0].ownerDocument.getElementById("id_apem")
@@ -405,9 +406,7 @@
 
         onContentReady: function () {
           // when content is fetched & rendered in DOM
-          this.$content.find('form').on('submit', function (e) {
-            e.preventDefault();
-          });;
+    
         },
       });
     });

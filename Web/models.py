@@ -199,7 +199,7 @@ class Persona(models.Model):
                                   null=True, editable=False, related_name='%(class)s_created')
 
    eliminado = models.BooleanField(default=False, editable=False)
-   history = HistoricalRecords(table_name='Web_Historial_Persona')
+   history = HistoricalRecords(table_name='Web_Historial_Persona',user_model=settings.AUTH_USER_MODEL)
 
    @property
    def _history_user(self):
@@ -232,7 +232,7 @@ class Usuario(AbstractUser):
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    eliminado=models.BooleanField(default=False,editable=False)
-   history = HistoricalRecords(table_name='Web_Historial_Usuario')
+   history = HistoricalRecords(table_name='Web_Historial_Usuario',user_model=settings.AUTH_USER_MODEL)
 
    @property
    def _history_user(self):
@@ -269,6 +269,7 @@ def update_user(sender, instance, **kwargs):
          instance.persona.eliminado=False
       else:
          instance.persona.eliminado=True
+      print("Entro al update del usuario")
       instance.persona.save()
 
 class Ubicacion(models.Model):
@@ -786,6 +787,8 @@ class  CubiertaLlanta(models.Model):
       item["fech_ren"]=self.fech_ren.strftime('%Y-%m-%d')  
 
       item["renovadora"]=self.renovadora.id
+      item["descripcion"]=self.renovadora.descripcion
+
       item["modelo_renova"]=self.modelo_renova.id
       item["ancho_banda"]=self.ancho_banda.id
       item["activo"]=1 if self.activo else 0

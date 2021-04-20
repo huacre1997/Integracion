@@ -243,7 +243,7 @@
         <input type="hidden" value="{{persona.distrito.id}}" id="distritoid">
       </div>
       <input type="hidden" value="{% if persona %}{{persona.id}}{% endif %}" id="id">
-      <button type="submit" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
+      <button type="button" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
 
     </form>
 
@@ -467,7 +467,7 @@ sexo.addEventListener("change", function () {
 
       var parameters = new FormData($('.needs-validation')[0])
               
-                    let passForm=docDigits(tip_doc.value,nro_doc.value)
+                let passForm=docDigits(tip_doc.value,nro_doc.value)
                 let emailForm=validarEmail(correo)
                 let error=0
                 if (emailForm.status == 500) {
@@ -495,8 +495,6 @@ sexo.addEventListener("change", function () {
                 error = 1
 
               }
-
-
 
               if (apem.value == "") {
                 document.getElementById("invalid_apem").innerHTML = "Este campo es requerido."
@@ -553,16 +551,12 @@ sexo.addEventListener("change", function () {
 
               }
               if (provincia.value == "0") {
-                console.log("if provi");
-
                 document.getElementById("invalid_provincia").innerHTML = "Este campo es requerido."
                 provincia.classList.add("is-invalid")
                 error = 1
 
               }
               if (distrito.value == "0") {
-                console.log("if distri");
-
                 document.getElementById("invalid_distrito").innerHTML = "Este campo es requerido."
                 distrito.classList.add("is-invalid")
                 error = 1
@@ -570,46 +564,34 @@ sexo.addEventListener("change", function () {
               }
 
               if (direccion.value == "") {
-                console.log("if direccion");
                 error = 1
-
                 document.getElementById("invalid_direccion").innerHTML = "Este campo es requerido."
                 direccion.classList.add("is-invalid")
 
               }
               if (fech_inicio.value == "") {
-                console.log("if gech iniico");
-
                 document.getElementById("invalid_fech_inicio").innerHTML = "Este campo es requerido."
                 fech_inicio.classList.add("is-invalid")
                 error = 1
 
               }
               if (fech_fin.value == "") {
-                console.log("if fecha fin");
-
                 document.getElementById("invalid_fech_fin").innerHTML = "Este campo es requerido."
                 fech_fin.classList.add("is-invalid")
                 error = 1
 
               }
               if (tip_doc.value == "0") {
-                console.log("if tip doc");
-
                 document.getElementById("invalid_tip_doc").innerHTML = "Este campo es requerido."
                 tip_doc.classList.add("is-invalid")
                 error = 1
 
               }
               if (nro_doc.value == "") {
-                console.log("if nro_doc");
-
                 document.getElementById("invalid_doc").innerHTML = "Este campo es requerido."
                 nro_doc.classList.add("is-invalid")
                 error = 1
-
               }
-
               if (numbersDigits(telefono.value,7).status==500) {
                 document.getElementById("invalid_telefono").innerHTML = numbersDigits(celular.value,7).mensaje
                 telefono.classList.add("is-invalid")
@@ -622,8 +604,6 @@ sexo.addEventListener("change", function () {
                 error = 1
 
               }
-
-          
               if (error == 1) {
                 notificacion(1500, "Error", "error", "Revise los campos")
                 de.hideLoading()
@@ -637,30 +617,21 @@ sexo.addEventListener("change", function () {
                 body: parameters
 
               }).then(data => data.json()).then(response => {
-                  console.log(response);
                   if (response.status == 200) {
                     de.showLoading()
-
                     de.close()
                     notificacion(2000, "Éxito", "success", "Persona guardada")
-
                     tablaPersonas.ajax.reload()
-
                   }else{
                     de.hideLoading()
-
                     notificacion(1500, "Error", "error", "Revise los campos")
                     if (response.error.nro_doc) {
-                    console.log("if nro_doc");
-
                     document.getElementById("invalid_doc").innerHTML = response.error.nro_doc[0]
                     nro_doc.classList.add("is-invalid")
-
                   }
                   if (response.error.correo) {
                     document.getElementById("invalid_correo").innerHTML = response.error.correo[0]
                     correo.classList.add("is-invalid")
-
                   }
                   if (response.error.celular) {
                     document.getElementById("invalid_celular").innerHTML = response.error.celular[0]
@@ -671,36 +642,6 @@ sexo.addEventListener("change", function () {
                 })
 
               }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  fetch( "../Persona/" + id + "/", {
-                method: "POST",
-                headers: {
-                  'X-CSRFToken': csrftoken
-                },
-                body: parameters
-
-              }).then(data => data.json())
-            
-        
-
       return false;
     });
   })

@@ -331,6 +331,7 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                     data = {
                     'status': 200
                    }
+                    print("update")
                 else:
                     data = {
                     "error":form.errors,

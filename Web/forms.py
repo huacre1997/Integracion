@@ -77,7 +77,7 @@ class PersonaForm(forms.ModelForm):
 
     class Meta:
         model = Persona
-        exclude = ["uuid","created_at","modified_at","changed_by","modified_by","eliminado","uuid"]
+        exclude = ["uuid","created_at","changed_by","eliminado","uuid"]
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -404,7 +404,7 @@ class MarcaLlantaForm(forms.ModelForm):
 class TipoVehiculoForm(forms.ModelForm):
     class Meta:
         model = TipoVehiculo
-        exclude=["changed_by","modified_by","created_at","modified_at","eliminado"]
+        exclude=["changed_by","modified_by","created_at","eliminado"]
         widgets = {
             'descripcion': forms.TextInput( attrs={'class':'form-control'}),
             'nro_llantas': forms.NumberInput( attrs={'class':'form-control',"min":"0"}),
@@ -548,7 +548,7 @@ class ModeloVehiculoForm(forms.ModelForm):
 class CubiertaForm(forms.ModelForm):
     class Meta:
         model=CubiertaLlanta
-        exclude=["changed_by","modified_by","created_at","modified_at","eliminado"]
+        exclude=["changed_by","created_at","eliminado"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -585,7 +585,7 @@ class LlantaForm(forms.ModelForm):
 
     class Meta:	
         model = Llanta
-        exclude=["ubicacion","posicion","vehiculo","changed_by","modified_by","created_at","modified_at","eliminado"]
+        exclude=["ubicacion","posicion","vehiculo","changed_by","created_at","eliminado"]
         widgets = {
             'modelo_llanta': forms.Select( attrs={'class':'form-select'}),
             'medida_llanta': forms.Select( attrs={'class':'form-select'}),
@@ -674,7 +674,7 @@ class VehiculoForm(forms.ModelForm):
 
     class Meta:	
         model = Vehiculo
-        exclude=["nro_ejes","vehiculo","eliminado","modified_at","created_at","modified_by"]
+        exclude=["nro_ejes","vehiculo","eliminado","created_at"]
 
         widgets = {
             'ano': forms.TextInput( attrs={'class':'form-control','type':'number', 'step':'1'}),
@@ -719,7 +719,7 @@ class InspeccionForm(forms.ModelForm):
 
     class Meta:	
         model = InpeccionLlantas
-        exclude=["vehiculo","eliminado","modified_at","created_at","modified_by"]
+        exclude=["vehiculo","eliminado","created_at"]
         widgets = {
             'operacion': forms.Select( attrs={'class':'form-control'}),
         }
