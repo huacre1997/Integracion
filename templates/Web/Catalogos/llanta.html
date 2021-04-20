@@ -615,8 +615,17 @@ $("#id_estado").on("change",function () {
                 }
               }
               validaInputs()
+              let arrays=[]
               $("select[name='renovadora']").each(function (index, el) {
-                if(objeto.items.length!=index){
+                arrays.push(parseInt($(el).val()))
+                console.log(arrays);
+                if (typeof objeto.items[index] !== "undefined") {
+
+                if(!arrays.includes(objeto.items[index].renovadora)){
+                  console.log(objeto.items.length);
+                  console.log(index);
+                if(objeto.items.length>index  ){
+                  console.log("dentro del if");
                   let option9 = document.createElement("option")
                 option9.textContent = objeto.items[index].descripcion
                 option9.value = objeto.items[index].renovadora
@@ -624,7 +633,7 @@ $("#id_estado").on("change",function () {
                 $(el).find('option[value="' + settings.aoData[
                       index]._aData.renovadora + '"]').attr('selected', 'selected');
                 }
-        
+              }}
                 let select = $(el).parent().next().children()
                 let select2 = $(el).parent().next().next().children()
 
