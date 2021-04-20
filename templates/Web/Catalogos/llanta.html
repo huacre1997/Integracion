@@ -355,12 +355,12 @@ $("#id_estado").on("change",function () {
         $.each($(".form"), function (index, value) {
           let name = $(value).attr("name")
 
-          if ($(value).hasClass("is-invalid")) {
+          if ($(value).hasClass("is-invalid") || $(value).hasClass("invalid")) {
             b = b + 1
             $("#btn-save").prop("disabled", true)
           }
         });
-
+        console.log(b);
         if (b == 0) {
           let result = !Object.values(objeto.items).every(o => o === "")
           var parameters = new FormData(document.getElementById("LlantaForm"));
@@ -382,6 +382,11 @@ $("#id_estado").on("change",function () {
             }, 1000);
           })
           $("#btn-save").prop("disabled", false)
+        }else{
+          $("#loadingCharge").css("visibility","hidden")
+        $("#spinner").css("visibility","hidden")
+        notificacion(1000,"Error", "error","Corrija los campos!")
+
         }
       }}else{
         alert("Revise el codigo")
@@ -749,6 +754,7 @@ $(this).removeClass("btn-danger").addClass("btn-success");
 
 )
                  $("td").on("click",".btn-add",function () {
+                   console.log(objeto.items);
                   let error = 0
                 var tr = tabla.cell($(this).closest("td", "li")).index()
                 let nro_ren = $("td:eq(0)", tabla.row(tr.row).node()).children()
@@ -805,8 +811,9 @@ $(this).removeClass("btn-danger").addClass("btn-success");
 
                   error = 1
                   fech_ren.css("border-color", "red")
+                  fech_ren.addClass("invalid")
                   fech_ren.on("change input", function () {
-                    fech_ren.css("border-color", "black")
+                    fech_ren.css("border-color", "black").removeClass("invalid")
                   })
 
                 }
@@ -880,8 +887,10 @@ $(this).removeClass("btn-danger").addClass("btn-success");
 
                   error = 1
                   fech_ren.css("border-color", "red")
+                  fech_ren.addClass("invalid")
+
                   fech_ren.on("change input", function () {
-                    fech_ren.css("border-color", "black")
+                    fech_ren.css("border-color", "black").removeClass("invalid")
                   })
                 }
                 if (error == 0) {                   
