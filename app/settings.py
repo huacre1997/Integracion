@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'pnfnh$12%rkgz*kf81$1jbzc$f-5)i5ago4f!#7si6m0jr5_(c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False    
+DEBUG = True    
 
 # ALLOWED_HOSTS = [".herokuapp.com"]
 ALLOWED_HOSTS = ["*",".herokuapp.com"]
@@ -104,17 +104,17 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "vg35",
-#         # "HOST": "macbook-pro-de-jackeline.local",
-#         "HOST":"localhost",
-#         "USER": "root",
-#         "PASSWORD": "",
-#         "PORT": ""
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "vg35",
+        # "HOST": "macbook-pro-de-jackeline.local",
+        "HOST":"localhost",
+        "USER": "root",
+        "PASSWORD": "",
+        "PORT": ""
+    }
+}
 
 # DATABASES = {
 
@@ -150,13 +150,13 @@ COLLECTFAST_CACHE = 'collectfast'
 #     }
 # }
 
-import dj_database_url
-from decouple import config
-DATABASES={
-    "default":dj_database_url.config(
-        default=config("DATABASE_URL")
-    )
-}
+# import dj_database_url
+# from decouple import config
+# DATABASES={
+#     "default":dj_database_url.config(
+#         default=config("DATABASE_URL")
+#     )
+# }
 
 
 # Password validation
@@ -185,32 +185,32 @@ INTERNAL_IPS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-TIME_ZONE = 'America/Lima'
+LANGUAGE_CODE = 'es'
 
-LANGUAGE_CODE = 'es-PE'
+TIME_ZONE = 'America/Lima'
 
 SITE_ID = 1
 
 USE_I18N = True
 
-USE_L10N = True
-
-USE_TZ = True
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-        },
-    },
-}
+USE_L10N = False
+THOUSAND_SEPARATOR="."
+USE_TZ = False
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#              'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+#         },
+#     },
+# }
 
 AWS_ACCESS_KEY_ID = 'AKIAVTWEJMBX5NYJYD6Q'
 AWS_SECRET_ACCESS_KEY = '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'

@@ -1,0 +1,126 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block procesos%}active{% endblock %}
+{% block collapseProcesos %}show{% endblock collapseProcesos %}
+{% block conductores %}collapse-item active{% endblock  %}
+{% block content %}
+<div id="wrapper">
+    <div class="container-fluid">
+        <div class="card">
+            <h5 class="card-header"><i class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp;Registro de Conductores</h5>
+            <div class="card-body">
+                <p class="card-text">
+                    <form class="row g-3 needs-validation" id="form_conductores" novalidate>
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo de Documento</label>
+                           <select name="tip_doc" id="tip_doc" class="form-select">
+                           
+                           {% for i in  tip_doc %}
+                               <option value="{{ i.0 }}">{{ i.1 }}</option>
+                           {% endfor %}
+                               
+                           </select>
+                               <div class="invalid-feedback">
+                                Este campo es requerido
+                            </div>
+                        </div>
+                       
+                        <div class="col-md-3">
+                            <label class="form-label">N° de Documento</label>
+                            <input type="text" name="doc" id="doc" class="form-control">
+                            <div class="invalid-feedback">
+                                Este campo es requerido
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellidos y Nombres</label>
+                            <input type="text" class="form-control" id="nombres" name="nombres">
+                            <div class="invalid-feedback">
+                                Este campo es requerido
+                            </div>
+                        </div> 
+                        
+                    
+
+                   
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="button" id="conductores_submit">Guardar</button>
+                        </div>
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+<script>
+  function clean_fields(input) {
+            $(input).val('');
+             $(input).removeClass('is-invalid');
+          }
+          $("#tip_doc").on("change", function() {
+              $("doc").removeClass('is-invalid');
+          })
+        document.getElementById("conductores_submit").addEventListener("click",function(){
+            let error = 0
+            function validar(input){
+                if($(input).val()==""){
+                    $(input).addClass("is-invalid")
+                    error = 1
+                    $(input).on("input",function(){
+                        $(input).removeClass("is-invalid")
+                    })
+                }
+            }
+            let passForm=docDigits($("#tip_doc").val(),$("#doc").val())
+            console.log(passForm)
+            if (passForm.status == 500) {
+
+                $("#doc").addClass("is-invalid").on("input",function(){
+                    $(this).removeClass("is-invalid")
+                })
+                $("#doc").next().text(passForm.mensaje) 
+                error = 1
+
+              }
+       
+            validar($("#nombres"))
+
+         
+            if(error == 0){
+                   let form=document.getElementById("form_conductores")
+            let data=new FormData(form)
+                fetch(window.location.href,{
+                    method: "POST",
+                    headers: {
+                              'X-CSRFToken': csrftoken
+                    },
+                    body: data
+
+                }).then(data=>data.json()).then(response=>{
+                    console.log(response);
+                    if(response.status == 200){
+                        notificacion(1500,"Genial!","success","Conductor agregado!")
+                        $.each($("input"), function (indexInArray, valueOfElement) { 
+                             clean_fields($(valueOfElement))
+                            });
+                     
+                    }else{
+                        notificacion(1500, "Error!","error","Ha ocurrido un error.Revise los campos.")
+                        if(response.form.doc){
+                            $("#doc").addClass("is-invalid").on("input",function(){
+                                $(this).removeClass("is-invalid")
+                            })
+                            $("#doc").next().text(response.form.doc[0])
+                        }
+                   
+                    }
+               
+                })
+            }
+            
+        })
+</script>
+{% endblock bottom_scripts %}

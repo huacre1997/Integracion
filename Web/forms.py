@@ -723,3 +723,99 @@ class InspeccionForm(forms.ModelForm):
         widgets = {
             'operacion': forms.Select( attrs={'class':'form-control'}),
         }
+class EstacionesForm(forms.ModelForm):
+    class Meta:  
+        model=Estaciones
+        exclude=["changed_by","estado"]   
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['contacto'].required = False 
+    def clean_codigo(self):
+        data=self.cleaned_data["codigo"]
+        
+        if self.instance.codigo!=data:
+            if Estaciones.objects.filter(codigo=data).exists():
+                self.add_error("codigo",f" : El código {data} ya se encuentra registrado .")
+        return data
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        
+        if self.instance.descripcion!=data:
+            if Estaciones.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : La estación {data} ya se encuentra registrada .")
+        return data
+class ConductoresForm(forms.ModelForm):
+    class Meta:  
+        model=Conductor
+        exclude=["changed_by","estado"]  
+    def clean_doc(self):
+        data=self.cleaned_data["doc"]
+        
+        if self.instance.doc!=data:
+            if Conductor.objects.filter(doc=data).exists():
+                self.add_error("doc",f" : El documento {data} ya se encuentra registrado .")
+        return data
+class Rutaform(forms.ModelForm):
+    class Meta:  
+        model=Ruta
+        exclude=["changed_by","estado"]  
+    def clean_ruta(self):
+        data=self.cleaned_data["ruta"]
+        
+        if self.instance.ruta!=data:
+            if Ruta.objects.filter(ruta=data).exists():
+                self.add_error("ruta",f" : La ruta {data} ya se encuentra registrada.")
+        return data
+
+class EmpresaForm(forms.ModelForm):
+    class Meta:
+        model=Empresa
+        fields=["nombre"]
+    def clean_nombre(self):
+        data=self.cleaned_data["nombre"]
+        
+        if self.instance.nombre!=data:
+            if Empresa.objects.filter(nombre=data).exists():
+                self.add_error("nombre",f" : La empresa {data} ya se encuentra registrada.")
+        return data
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model=Producto
+        exclude=["changed_by","estado"]  
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        
+        if self.instance.descripcion!=data:
+            if Producto.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : EL producto {data} ya se encuentra registrado.")
+        return data
+class RendimientoForm(forms.ModelForm):
+    class Meta:
+        model=Rendimiento
+        exclude=["changed_by","estado","rend_prom"]  
+class AbastecimientoForm(forms.ModelForm):
+    class Meta:
+        model=Abastecimiento
+        exclude=["changed_by","estado"]
+class EstadoViajeForm(forms.ModelForm):
+    class Meta:
+        model=EstadoViaje
+        exclude=["changed_by","estado"]
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        
+        if self.instance.descripcion!=data:
+            if EstadoViaje.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
+        return data     
+class TipoAbastecimientoForm(forms.ModelForm):
+    class Meta:
+        model=TipoAbastecimiento
+        exclude=["changed_by","estado"]
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        
+        if self.instance.descripcion!=data:
+            if TipoAbastecimiento.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
+        return data

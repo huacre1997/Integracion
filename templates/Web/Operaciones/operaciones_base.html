@@ -3,6 +3,11 @@
 {% load base_extras %}
                    {% block titleheader %}{% endblock %}
 
+{% block none %}
+    {% block vh %}{% endblock %}
+
+{% endblock none %}
+  
            {% block inicio %}
    <li class="nav-item dropdown no-arrow mx-1 d-flex align-items-center justify-content-between">
               <a class="btn btn-light" href="{% url 'Web:inicio' %}"> <i class="fa fa-home" aria-hidden="true">Inicio</i></a>
@@ -12,17 +17,7 @@
   
         
         {% block sidebar %}
-           <ul class="navbar-nav  sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #014782; transition:1s;">
-          <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-        <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-circle"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">Inspeccion<sup>1.0</sup></div>
-      </a>
-      <hr class="sidebar-divider my-0">
-  
-      <hr class="sidebar-divider">
-
+          
       <li class="nav-item active">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-cog"></i>
@@ -40,6 +35,5 @@
           </div>
         </div>
       </li>
-    </ul>
        {% endblock %}     
  {% block content %}{% endblock %}

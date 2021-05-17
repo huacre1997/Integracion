@@ -1,0 +1,52 @@
+
+        {% extends 'Web/base.html' %}
+{% load base_extras %}
+                   {% block titleheader %}{% endblock %}
+{% block none %}{% endblock %}
+  {% block vh %}{% endblock %}
+
+           {% block inicio %}
+   <li class="nav-item dropdown no-arrow mx-1 d-flex align-items-center justify-content-between">
+              <a class="btn btn-light" href="{% url 'Web:inicio' %}"> <i class="fa fa-home" aria-hidden="true">Inicio</i></a>
+
+            </li>
+{% endblock inicio %}
+
+        
+        {% block sidebar %}
+    
+      <li class="nav-item {% block procesos %}{% endblock procesos %}">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fa fa-edit"></i>
+          <span>Procesos</span>
+        </a>
+        <div id="collapseOne" class="collapse {% block collapseProcesos %}{% endblock collapseProcesos %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <a class="{% block abastecimiento %}collapse-item{% endblock %}" href="{% url 'Web:abastecimiento' %}">Abastecimiento</a>
+            <a class="{% block rendimiento %}collapse-item{% endblock %}"  href="{% url 'Web:rendimiento' %}">Rendimiento</a>
+            <a class="{% block flota %}collapse-item{% endblock %}" href="{% url 'Web:flota' %}">Flota</a>
+            <a class="{% block ruta %}collapse-item{% endblock %}" href="{% url 'Web:ruta' %}">Ruta</a>
+            <a class="{% block conductores %}collapse-item{% endblock %}" href="{% url 'Web:conductores' %}">Conductores</a>
+            <a class="{% block estaciones %}collapse-item{% endblock %}" href="{% url 'Web:estaciones' %}">Estaciones de Servicio</a>
+
+          </div>
+        </div>
+      </li>    
+      <li class="nav-item  {% block reportes %}{% endblock reportes %}">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fa fa-file" aria-hidden="true"></i>
+
+          <span>Reportes</span>
+        </a>
+        <div id="collapseTwo" class="collapse  {% block collapseReportes %}{% endblock collapseReportes %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <a class="{% block liquidacion %}collapse-item{% endblock %}" href="{% url 'Web:liquidacion' %}">Liquidación de Factura</a>
+            <a class="{% block rend_viaje %}collapse-item{% endblock %}" href="{% url 'Web:rend_viaje' %}">Rendimiento por Viaje</a>
+            <a class="{% block rend_abast %}collapse-item{% endblock %}" style="white-space:break-spaces;"  href="{% url 'Web:rend_abast' %}">Rendimiento por Abastecimiento</a>
+
+
+          </div>
+        </div>
+      </li>
+       {% endblock %}     
+ {% block content %}{% endblock %}

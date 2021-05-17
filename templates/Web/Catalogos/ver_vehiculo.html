@@ -6,23 +6,11 @@
 {% load base_extras %}
 {% load l10n %}
 {% block content %}
-<style>
-
-  
+<style> 
   .img{
-    
-
-
-
-
-  background:transparent url('{% get_media_prefix %}{{tipo.image}}') no-repeat center center;  
-
-
-   
+  background:transparent url('{% get_media_prefix %}{{tipo.image}}') no-repeat center center;     
   }
-  
 </style>
-
 <div id="wrapper">
   <div class="container-fluid">
     <div class="card shadow mb-4">
@@ -30,18 +18,14 @@
         <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Hoja de movimientos</h6>
       </div>
       <div class="card-body">
-     
         <div class="row">
-       
           <div class="col-lg-12 ">
-
             <div class="table-responsive">
               <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr class="bg-primary text-white">
                     <th>Placa</th>
                     <th>Tipo</th>
-
                     <th>Marca</th>
                     <th>Modelo</th>
                     <th>KM</th>
@@ -65,23 +49,15 @@
           </div>
         </div>
         <div class="sliders">
-
         <div class="row">
-        
           <div class="col-lg-12 d-flex justify-content-center flex-wrap">
                <div id="container-repuesto" class="w-100" style="visibility:hidden;display: grid; grid-template-columns: repeat(20, 1fr); grid-auto-flow: column;">
                   <div class="drag bordeado"></div>
           
-              </div>
-
-                
-            <div class="container-drag">
-          
+              </div>         
+            <div class="container-drag">          
               <div class="img"></div>
-              <img class="img2"  alt="Error " id="myImg" src='{% get_media_prefix %}{{tipo.image2}}'>
-
-              
-         
+              <img class="img2"  alt="Error " id="myImg" src='{% get_media_prefix %}{{tipo.image2}}'>       
                 {% for l in posiciones %}
                 <div class="drag bordeado {% if l.repuesto %}re {% endif %}" data-posicion={{l.posicion}} style="transform: translate({{l.posx}}px,{{l.posy}}px); cursor: move;">
                 {% for i in llantas %}
@@ -99,17 +75,6 @@
                 {% endfor %}
               </div>
                 {% endfor %}
-                  {% comment %} {% for l in faltantes %}
-                   <div class="drag bordeado {{obj.tipo_vehiculo.codigoPosicion}}-ride{{l.posicion}}" data-posicion={{l.posicion}} >
-               
-              </div>
-                  {% endfor %} {% endcomment %}
-                  {% comment %} {% for i in posiciones %}
-                   <div class="drag bordeado" data-posicion="{{i.posicion}}" style="transform: translate({{i.posx}}px,{{i.posy}}px); cursor: move;" data-posicion={{l.posicion}} >
-               
-              </div>
-                  {% endfor %} {% endcomment %}
-
                   <div style="display: grid; grid-column-start: 21;grid-row-start: 2;grid-row-end: 7;">
   
   

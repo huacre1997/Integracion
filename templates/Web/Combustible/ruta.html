@@ -1,0 +1,132 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block procesos%}active{% endblock %}
+{% block collapseProcesos %}show{% endblock collapseProcesos %}
+{% block ruta %}collapse-item active{% endblock  %}
+{% block content %}
+<div id="wrapper">
+    <div class="container-fluid">
+        <div class="card">
+            <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Registro de Ruta</h5>
+            <div class="card-body">
+                <p class="card-text">
+                    <form class="row g-3 needs-validation" id="form_ruta" novalidate>
+                        <div class="col-md-4">
+                            <label class="form-label">Placa</label>
+                            <select name="placa" id="placa" class="form-select">
+                                <option value="0">Seleccione...</option>
+                                
+                                {% for i in placa  %}
+                                    <option value="{{ i.id }}">{{ i.placa }}</option>
+                                {% endfor %}
+                                    
+                            </select>
+                              <div class="invalid-feedback">
+                                Este campo es requerido.
+                            </div>
+                        </div>
+                       
+                       
+                        <div class="col-md-4">
+                            <label class="form-label">Kilometraje</label>
+                            <input type="text" name="km" id="km" class="form-control">
+                            <div class="invalid-feedback">
+                                Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Volumen</label>
+                            <input type="number" class="form-control" id="volumen" name="volumen">
+                            <div class="invalid-feedback">
+                                Este campo es requerido.
+                            </div>
+                        </div> <div class="col-md-4">
+                            <label class="form-label">Ruta</label>
+                            <input type="text" class="form-control" id="ruta" name="ruta">
+                            <div class="invalid-feedback">
+                                Este campo es requerido.
+                            </div>
+                        </div> <div class="col-md-4">
+                            <label class="form-label">Rendimiento</label>
+                            <input type="number" class="form-control" id="rend" name="rend">
+                            <div class="invalid-feedback">
+                                Este campo es requerido.
+                            </div>
+                        </div>
+                     
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="button" id="submit_ruta">Guardar</button>
+                        </div>
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+<script>
+ 
+        function clean_fields(input) {
+                        $(input).val(0);
+
+            $(input).val('');
+          }
+        document.getElementById("submit_ruta").addEventListener("click",function(){
+            let error = 0
+            function validar(input){
+                if($(input).val()=="" || $(input).val()=="0" ){
+                    $(input).addClass("is-invalid")
+                    error = 1
+                    $(input).on("input change",function(){
+                        $(input).removeClass("is-invalid")
+                    })
+                }
+            }
+            validar($("#placa"))
+
+            validar($("#km"))
+            validar($("#volumen"))
+            validar($("#rend"))
+            validar($("#ruta"))
+            let form=document.getElementById("form_ruta")
+            let data=new FormData(form)
+            if(error == 0){
+                fetch(window.location.href,{
+                    method: "POST",
+                    headers: {
+                              'X-CSRFToken': csrftoken
+                    },
+                    body: data
+
+                }).then(data=>data.json()).then(response=>{
+                    console.log(response);
+                    if(response.status == 200){
+                        notificacion(1500,"Genial!","success","Estación agregada!")
+                        $.each($("input"), function (indexInArray, valueOfElement) { 
+                             clean_fields($(valueOfElement))
+                            });
+                        $("#placa").val(0)
+                    }else{
+                        notificacion(1500, "Error!","error","Ha ocurrido un error.Revise los campos.")
+                        if(response.form.placa){
+                            $("#placa").addClass("is-invalid").on("input",function(){
+                                $(this).removeClass("is-invalid")
+                            })
+                            $("#placa").next().text(response.form.placa[0])
+                        }
+                        if(response.form.ruta){
+                            $("#ruta").addClass("is-invalid").on("input",function(){
+                                $(this).removeClass("is-invalid")
+                            })
+                            $("#ruta").next().text(response.form.ruta[0])
+                        }
+                    }
+               
+                })
+            }
+            
+        })
+</script>
+{% endblock bottom_scripts %}

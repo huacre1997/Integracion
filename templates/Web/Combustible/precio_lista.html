@@ -1,0 +1,124 @@
+<div class="container">
+    {% load l10n %}
+
+
+    <form id="form_precio" action="{% url 'Web:precio' eess prod %}" class="row g-3" novalidate>
+        <div class="col-12">
+            <h6>            Ingresar o actualizar el precio de servicio de la Estación
+            </h6>
+        </div>
+        <div class="col-md-6">
+            <label for="">Fecha Inicio</label>
+            <input type="date" name="pre_fech_ini" id="pre_fech_ini" class="form-control" value="{% if obj.pre_fech_ini != None %}{{ obj.pre_fech_ini | date:'Y-m-d' }}{% endif %}">
+            <div class="invalid-feedback">
+                Este campo es requerido
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label for="">Fecha Fin</label>
+            <input type="date" name="pre_fech_fin" id="pre_fech_fin" class="form-control"  value="{% if obj.pre_fech_fin != None %}{{ obj.pre_fech_fin | date:'Y-m-d' }}{% endif %}"> 
+            <div class="invalid-feedback">
+                Este campo es requerido
+            </div>
+        </div>   
+        <div class="col-md-6">
+            <label for="">Estación</label>
+            <input type="hidden" name="estacion_id" id="estacion_id"> 
+            <input type="text" name="estacion_precio" id="estacion_precio" disabled class="form-control" value="{{ obj.estacion.descripcion }}" >
+            <div class="invalid-feedback">
+                Este campo es requerido
+            </div>
+        </div>
+        <div class="col-md-6">
+
+            <label for="">Precio</label>
+            <input type="number" name="precio_modal" step="0.01" id="precio_modal"  class="form-control"  value="{% if obj.precio != None %}{{ obj.precio | floatformat:2 }}{% endif %}">
+            <div class="invalid-feedback">
+                Este campo es requerido
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"  id="keep_price" required>
+              <label class="form-check-label" for="keep_price">
+                Mantener precio
+              </label>
+              <div class="invalid-feedback">
+                You must agree before submitting.
+              </div>
+            </div>
+          </div>
+        <button type="button" class="btn d-none btn-precio">as</button>
+    </form>
+</div>
+
+<script>
+            $("#keep_price").on("change", function(){
+                console.log($(this).is(":checked"));
+
+            ($(this).is(":checked")) ? $("#precio_modal").prop("disabled",true) : $("#precio_modal").prop("disabled",false)
+            
+        })
+    $(".btn-precio").on("click", function () {
+        let error = 0
+
+
+        if ($("#pre_fech_ini").val() == "") {
+            error = 1
+            $("#pre_fech_ini").addClass("is-invalid").on("input", function () {
+                $("#pre_fech_ini").removeClass("is-invalid")
+            })
+        }   if ($("#pre_fech_fin").val() == "") {
+            error = 1
+            $("#pre_fech_fin").addClass("is-invalid").on("input", function () {
+                $("#pre_fech_fin").removeClass("is-invalid")
+            })
+        }   if ($("#precio_modal").val() == "") {
+            error = 1
+            $("#precio_modal").addClass("is-invalid").on("input", function () {
+                $("#precio_modal").removeClass("is-invalid")
+            })
+        }
+
+        if($("#pre_fech_ini").val()>$("#pre_fech_fin").val()){
+            error = 1
+            $("#pre_fech_ini").addClass("is-invalid").on("input", function () {
+                $("#pre_fech_ini").removeClass("is-invalid")
+            })
+            $("#pre_fech_ini").next().text("Ingrese una fecha menor a la Fecha Fin")
+            $("#pre_fech_fin").addClass("is-invalid").on("input", function () {
+                $("#pre_fech_fin").removeClass("is-invalid")
+            })
+            $("#pre_fech_fin").next().text("Ingrese una fecha mayor a la Fecha Inicio")
+
+        }
+        if (error == 0) {
+            let data = new FormData(document.getElementById("form_precio"))
+            fetch($("#form_precio").attr("action"), {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                body: data
+            }).then(data => data.json()).then(response => {
+                console.log(response)
+                if (response.status == 200) {
+                    modal_precio.close();
+                    alerta(2000, "success", "Precio actualizado!", "top-end")
+                    console.log(typeof response.precio)
+                    document.getElementById("precio").value=parseFloat(response.precio).toFixed(2)
+
+                } else {
+                    if (response.form.descripcion) {
+                        $("#descripcion").addClass("is-invalid").on("input", function () {
+                            $("#descripcion").removeClass("is-invalid")
+                        })
+                        $("#descripcion").next().text(response.form.descripcion[0])
+                    }
+
+                }
+            })
+        
+    }
+    })
+</script>

@@ -2,6 +2,8 @@
 {% load base_extras %}
 {% load static %}
                    {% block titleheader %}{% endblock %}
+{% block none %}{% endblock %}
+  {% block vh %}{% endblock %}
 
 {% block inicio %}
    <li class="nav-item dropdown no-arrow mx-1 d-flex align-items-center justify-content-between">
@@ -11,20 +13,10 @@
 {% endblock inicio %}
   
 {% block sidebar %}
-    <ul class="navbar-nav  sidebar sidebar-dark accordion" style="background-color: #014782;transition:1s;" id="accordionSidebar" >
-
-      <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-        <img class="img-fluid" src="{% static 'img/logo.png' %}"  alt="">
-      </a>
-      <hr class="sidebar-divider my-0">
-  
-
-      <!-- Heading -->
 
 
       <li class="nav-item active">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+        <a class="nav-link collapsed " href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
           <i class="fas fa-fw fa-wrench"></i>
           <span>CATÁLOGOS</span>
         </a>
@@ -99,7 +91,6 @@
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
       </div>
 
-    </ul>
 {% endblock sidebar %}
 
 {% block content %}

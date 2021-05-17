@@ -150,14 +150,31 @@ urlpatterns = [
     path('searchLlanta/', views.LlantaSearch, name='search-llanta'),
     
     path('operaciones/', views.OperacionesView.as_view(), name='operaciones'),
-
     path('operaciones/hoja-movimientos/', views.HojaDeMovimientosView.as_view(), name='hoja-movimientos'),
-    path('operaciones/inspeccion-llantas/', views.InspeccionLlantasView.as_view(), name='inspeccion-llantas'),
-
-    
+    path('operaciones/inspeccion-llantas/', views.InspeccionLlantasView.as_view(), name='inspeccion-llantas'),   
     path('operaciones/inspeccion-llantas/detalles/<int:pk>/', views.InsepccionDetalleView.as_view(), name='inspeccion-detalle'),
+    
+    path("combustible/",views.CombustibleView.as_view(),name="combustible"),
+    path("combustible/abastecimiento/",views.AbastecimientoView.as_view(),name="abastecimiento"),
+    path("combustible/rendimiento/",views.RendimientoView.as_view(),name="rendimiento"),
+    path("combustible/flota/",views.FlotaView.as_view(),name="flota"),
+    path("combustible/ruta/",views.RutaView.as_view(),name="ruta"),
+    path("combustible/conductores/",views.ConductoresView.as_view(),name="conductores"),
+    path("combustible/estaciones/",views.EstacionesView.as_view(),name="estaciones"),
+    path("combustible/liquidacion/",views.LiquidacionView.as_view(),name="liquidacion"),
+    path("combustible/rendimiento/viaje/",views.RendimientoViajeView.as_view(),name="rend_viaje"),
+    path("combustible/rendimiento/abastecimiento/",views.RendimientoAbastecimientoView.as_view(),name="rend_abast"),
+
+    path("combustible/empresa/",views.EmpresaCreateView.as_view(),name="empresa"),
+    path("combustible/producto/",views.ProductoCreateView.as_view(),name="producto"),
+    path("combustible/estado/",views.EstadoAbastecimientoCreateView.as_view(),name="estado"),
+    path("combustible/tipo/",views.TipoAbastecimientoCreateView.as_view(),name="tipo"),
+    path("combustible/precio/<int:eess>/<int:prod>/",views.PrecioUpdateView.as_view(),name="precio"),
+    path("combustible/get-products/<int:id>/",views.getProducts),
+
     path('inspeccion-agregar/', views.AgregarInspeccion, name='inspeccion-agregar'),
     path('getTipo/<int:id>/', views.getTipo, name='get-tipo'),
+    path('getVehiculo/<int:id>/', views.getVehiculo, name='get-vehiculo'),
 
     path('Reportes/historial/', views.HistorialLlantas.as_view(), name='ver-historial'),
 

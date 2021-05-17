@@ -111,3 +111,10 @@ class Posiciones(admin.ModelAdmin):
 
 admin.site.register(PosicionesLlantas, Posiciones)
 admin.site.register(CubiertaLlanta)
+admin.site.register(Conductor)
+admin.site.register(Abastecimiento)
+admin.site.register(Ruta)
+admin.site.register(Rendimiento)
+admin.site.register(DetalleAbastecimiento)
+admin.site.register(Estaciones)
+admin.site.register(Producto)

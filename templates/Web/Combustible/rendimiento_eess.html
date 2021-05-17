@@ -1,0 +1,379 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block reportes%}active{% endblock %}
+{% block collapseReportes %}show{% endblock collapseReportes %}
+{% block rend_abast %}collapse-item active{% endblock  %}
+{% block content %}
+{% load static %}
+<div id="wrapper">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5><i class="fas fa-car"></i>&nbsp;Reporte de Rendimiento por Abastecimiento de Flota</h5> 
+        <button id="clean_filters" class="btn btn-danger">Remover
+          Filtros</button>
+        </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-1">
+            <label for="">Año</label>
+            <input type="text" name="año" id="año" class="form-control">
+          </div>
+          <div class="col-2">
+            <label for="">Mes</label>
+            <select name="mes" id="mes" class="form-select">
+              <option value="0">Seleccione...</option>
+              <option value="1">ENERO</option>
+              <option value="2">FEBRERO</option>
+              <option value="3">MARZO</option>
+              <option value="4">ABRIL</option>
+              <option value="5">MAYO</option>
+              <option value="6">JUNIO</option>
+              <option value="7">JULIO</option>
+              <option value="8">AGOSTO</option>
+              <option value="9">SETIEMBRE</option>
+              <option value="10">OCTUBRE</option>
+              <option value="11">NOVIEMBRE</option>
+              <option value="12">DICIEMBRE</option>
+            </select>
+          </div>
+          <div class="col-2">
+            <label for="">Placa</label>
+            <select name="placa" id="placa" class="form-select">
+              <option value="0">Seleccione...</option>
+              {% for i in placa  %}
+              <option value="{{ i.id }}">{{ i.placa }}</option>
+              {% endfor %}
+            </select>
+
+          </div>
+          <div class="col-2">
+            <label for="">Ruta</label>
+            <select name="ruta" id="ruta" class="form-select">
+              <option value="0">Seleccione...</option>
+              {% for i in ruta  %}
+              <option value="{{ i.id }}">{{ i.ruta }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-2">
+            <label for="">Empresa</label>
+            <select name="empresa" id="empresa" class="form-select">
+              <option value="0">Seleccione...</option>
+              {% for i in empresa  %}
+              <option value="{{ i.id }}">{{ i.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-2">
+            <label for="">Tipo Abastecimiento</label>
+            <select name="tipo" id="tipo" class="form-select">
+              <option value="0">Seleccione...</option>
+              {% for i in tipo  %}
+              <option value="{{ i.id }}">{{ i.descripcion }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-1">
+            <label for="" class="invisible">Buscar</label></label><button id="search"
+              class="btn btn-primary btn-block"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;</button>
+          </div>
+        </div>
+        <br>
+        <div class="table-responsive">
+          <table class="table table-bordered display responsive nowrap" id="tabla_rendimiento_eess" style="width:100%">
+            <thead>
+              <th> Marca</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>Fecha</th>
+              <th>Empresa</th>
+              <th>Placa</th>
+              <th>Conductor</th>
+              <th>Ruta</th>
+              <th>Tipo</th>
+              <th>%Carga</th>
+              <th>Volumen</th>
+              <th>Precio</th>
+              <th>Monto</th>
+              <th>Recorr.</th>
+              <th>Rend.Real</th>
+              <th>Rend.Obj.</th>
+              <th>Consum</th>
+              <th>%Rend%</th>
+              <th>Ahorro</th>
+            </thead>
+            <tbody>
+
+
+            </tbody>
+
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+<script>
+  $("#clean_filters").on("click",function () {
+    parameters = {
+    año: "",
+    mes: "",
+    placa: "",
+    ruta: "",
+    empresa: "",
+    tipo: "",
+
+  }
+  $("#año").val("")
+  $("#mes").val(0)
+  $("#placa").val(0)
+  $("#ruta").val(0)
+  $("#empresa").val(0)
+  $("#tipo").val(0)
+    load()
+    })
+  let parameters = {
+    año: "",
+    mes: "",
+    placa: "",
+    ruta: "",
+    empresa: "",
+    tipo: "",
+
+  }
+  load()
+  $("#año").on("input", function () {
+    console.log($(this).val().length)
+    if($(this).val().length==4){
+      ($(this).val()=="") ?  parameters.año = "" : parameters.año = $(this).val()
+      load()
+    }
+    else
+    if($(this).val().length==0){
+      parameters.año = ""
+      load()
+    }
+  })
+  $("#mes").on("change", function () {
+    ($(this).val()==0) ?  parameters.mes = "" : parameters.mes = $(this).val()
+         load()  
+  })
+  $("#placa").on("change", function () {
+    ($(this).val()==0) ?  parameters.placa = "" : parameters.placa = $(this).val()
+         load()  
+  })
+  $("#ruta").on("change", function () {
+    ($(this).val()==0) ?  parameters.ruta = "" : parameters.ruta = $(this).val()
+         load()  
+  })
+  $("#empresa").on("change", function () {
+    ($(this).val()==0) ?  parameters.empresa = "" : parameters.empresa = $(this).val()
+       load()  })
+  $("#tipo").on("change", function () {
+    ($(this).val()==0) ?  parameters.tipo = "" : parameters.tipo = $(this).val()
+       load()
+  })
+  $("#search").on("click", function () {
+    load()
+  })
+
+  function load() {
+    let tabla_rend = $("#tabla_rendimiento_eess").DataTable({
+      processing: "true",
+      stateSave: true,
+
+      responsive: true,
+      destroy: true,
+      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+
+      language: {
+        "url": "{% static 'language.json' %}"
+      },
+      ajax: {
+        url: window.location.pathname,
+        type: "POST",
+        data: parameters,
+        dataSrc: ""
+      },
+      lengthChange: false,
+        buttons: [
+        {
+           extend:"excelHtml5",
+           text:"<i class='fas fa-file-excel'></i>&nbsp;Exportar a Excel",
+           titleAttr:"excel",
+           className:"btn btn-success"
+         },
+         {
+           extend:"pdfHtml5",
+           text:"<i class='fas fa-file-pdf'></i>&nbsp;Exportar a PDF",
+           titleAttr:"PDF",
+           className:"btn btn-danger",
+           download:"open",
+           orientation:"landscape",
+           pageSize:"LEGAL",
+         
+         },
+         {
+           extend:"print",
+           text:"<i class='fas fa-print'></i>&nbsp;Imprimir",
+           className:"btn btn-secondary",
+           download:"open",
+           orientation:"landscape",
+           pageSize:"LEGAL",
+         
+         }
+        ],
+      columns: [
+
+
+        {
+          "data": "placa.marca",
+
+          className: "middle"
+        },
+
+
+        {
+          "data": "placa.modelo",
+          className: "middle"
+
+        },
+        {
+          "data": 'placa.ano',
+
+          className: "middle"
+
+        },
+        {
+          "data": 'abast.fecha',
+          className: "middle"
+        },
+        {
+          "data": 'placa.empresa',
+          className: "middle"
+        },
+
+        {
+          "data": 'placa.placa',
+          className: "middle"
+        },
+
+        {
+          "data": 'conductor',
+          className: "middle"
+        },
+        {
+          "data": "abast.ruta.ruta",
+          className: "middle"
+        },
+        {
+          "data": "abast.tipo",
+          className: "middle"
+        },
+        {
+          "data": "cargado",
+          className: "middle"
+        },
+        {
+          "data": "volumen",
+          className: "middle"
+        },
+        {
+          "data": "abast.precio",
+          className: "middle"
+        },
+        {
+          "data": "total",
+          className: "middle"
+        },
+        {
+          "data": "km",
+          className: "middle"
+        },
+        {
+          "data": null,
+          className: "middle"
+        },
+        {
+          "data": null,
+          className: "middle"
+        },
+        {
+          "data": null,
+          className: "middle"
+        },
+        {
+          "data": null,
+          className: "middle"
+        },
+        {
+          "data": null,
+          className: "middle"
+        },
+      ],
+      columnDefs: [
+
+        {
+          targets: [4],
+          render: function (data, type, row) {
+            if (data == undefined) {
+              return ""
+            } else {
+              return data
+            }
+          }
+        },
+        {
+          targets: [14],
+          render: function (data, type, row) {
+            return parseFloat(row.km / row.volumen).toFixed(2)
+          }
+        },
+        {
+          targets: [15],
+          render: function (data, type, row) {
+            if (row.cargado == 50) {
+              return parseFloat(row.rend_km / row.rend_prom).toFixed(2)
+
+            } else if (row.cargado == 0) {
+              return parseFloat(row.rend_km / row.rend_vacio).toFixed(2)
+
+            }
+            return parseFloat(row.rend_km / row.rend_cargado).toFixed(2)
+          }
+        },
+
+
+      ],
+      "initComplete": function (settings, json) {
+        for (let index = 0; index < settings.aoData.length; index++) {
+          let recorrido = $("td:eq(13)", tabla_rend.row(index).node()).text()
+          let real = $("td:eq(14)", tabla_rend.row(index).node()).text()
+
+          let volumen = $("td:eq(10)", tabla_rend.row(index).node()).text()
+          let objetivo = $("td:eq(15)", tabla_rend.row(index).node()).text()
+          $("td:eq(16)", tabla_rend.row(index).node()).html((parseInt(recorrido) / parseFloat(objetivo)).toFixed(
+            2))
+          $("td:eq(17)", tabla_rend.row(index).node()).html((parseInt(real) / parseFloat(objetivo)).toFixed(2))
+          let consumo = $("td:eq(16)", tabla_rend.row(index).node()).text()
+          let precio = $("td:eq(11)", tabla_rend.row(index).node()).text()
+          $("td:eq(18)", tabla_rend.row(index).node()).html(((parseFloat(consumo) - parseFloat(volumen)) *
+            parseFloat(precio)).toFixed(2))
+            tabla_rend.buttons().container()
+        .appendTo( '#tabla_rendimiento_eess_wrapper .col-md-6:eq(0)' );
+        }
+        // console.log( $("td:eq(15)", tabla_rend.row(1).node()))
+        //   $("td:eq(16)", tabla_rend.row(tr.row).node()).html('$' + vent.items
+        //           .products[tr.row].sub_total.toFixed(2)) 
+      }
+
+    })
+   
+  }
+</script>
+{% endblock bottom_scripts %}

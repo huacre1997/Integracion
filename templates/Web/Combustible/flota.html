@@ -1,0 +1,185 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block procesos%}active{% endblock %}
+{% block collapseProcesos %}show{% endblock collapseProcesos %}
+{% block flota %}collapse-item active{% endblock  %}
+{% block content %}
+<div id="wrapper">
+    <div class="container-fluid">
+        <div class="card">
+            <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Flota Total</h5>
+            <div class="card-body">
+                <p class="card-text">
+                    <form class="row g-3 needs-validation" id="form-flota" novalidate>
+                        <div class="col-md-4">
+                            <label class="form-label">Placa</label>
+                            <select name="placa" id="placa" class="form-select">
+                                <option value="0">Seleccione...</option>
+                                {% for i in placa %}
+                                    <option value="{{ i.id }}">{{i.placa}}</option>
+                                {% endfor %}
+                                    
+                            </select>
+                            <div class="invalid-feedback">
+                                Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        <label class="form-label">Marca</label>
+                           <input type="text" class="form-control" id="marca" name="marca" disabled>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Modelo</label>
+                            <input type="text" class="form-control" id="modelo" name="modelo" disabled>
+
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Chasis</label>
+                            <input type="text" class="form-control" id="chasis" name="chasis" disabled>
+                            <div class="invalid-feedback">
+                                Please select a valid state.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Año</label>
+                            <input type="number" class="form-control" id="año" name="año" disabled>
+                            <div class="invalid-feedback">
+                                Please provide a valid city.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Empresa</label>
+                            <div class="input-group">
+                                <select class="form-select" name="empresa" id="empresa" aria-label="Example select with button addon">
+                                    <option value="0">Seleccione...</option>
+                                    {% for i in empresa  %}
+                                        <option value="{{ i.id }}">{{ i.nombre }}</option>
+                                    {% endfor %}
+                                        
+                                </select>
+                                <button class="btn btn-primary" type="button" id="btn-add-empresa"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                <div class="invalid-feedback">
+                                    Este campo es requerido.
+                                </div>
+                            </div>
+                              
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo</label>
+                            <input type="text" class="form-control" id="tipo" name="tipo" disabled>
+
+                            <div class="invalid-feedback">
+                                Please provide a valid city.
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="button" id="submit-flota">Guardar</button>
+                        </div>
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+<script>
+     var jc
+   $("#submit-flota").on("click",function (e){
+       let error= 0
+       let data=new FormData(document.getElementById("form-flota"))
+       if($("#placa").val()=="0"){
+           error=1
+           $("#placa").addClass("is-invalid").on("change",function() {
+               $(this).removeClass("is-invalid")
+           })
+       }
+       if($("#empresa").val()=="0"){
+           error=1
+           $("#empresa").addClass("is-invalid").on("change",function() {
+               $(this).removeClass("is-invalid")
+           })
+       }
+       if(error == 0){
+        fetch(window.location.href,{
+                    method: "POST",
+                    headers: {
+                              'X-CSRFToken': csrftoken
+                    },
+                    body: data
+
+                }).then(data=>data.json()).then(response => {
+                    if(response.status == 200){
+                        notificacion(1500,"Genial!","success","Flota agregada!")
+                        $("#placa").val(0)
+                        $("#empresa").val(0)
+                        $("#chasis").val("")
+                        $("#marca").val("")
+                        $("#modelo").val("")
+                        $("#año").val("")
+                        $("#tipo").val("")
+
+                    }else{
+                        notificacion(1500, "Error!","error","Ha ocurrido un error.Revise los campos.")
+                        if(response.form.empresa){
+                            $("#empresa").addClass("is-invalid").on("change",function(){
+                                $(this).removeClass("is-invalid")
+                            })
+                            $("#empresa").next().text(response.form.empresa[0])
+                        }
+                        if(response.form.placa){
+                            $("#placa").addClass("is-invalid").on("change",function(){
+                                $(this).removeClass("is-invalid")
+                            })
+                            $("#placa").next().text(response.form.placa[0])
+                        }                    }
+                })
+       }
+   })
+    $("#btn-add-empresa").on("click",function () {
+        jc= $.confirm({
+                  title: "Registrar empresa",
+                  type: 'dark',
+                  theme: "material",
+                  content:'URL: ../empresa/',
+                  icon: 'fas fa-plus-circle',
+                  animation: 'left',
+                  closeAnimation: 'right',
+                  columnClass: "col-lg-6 col-md-6 col-md-offset-3",
+                  containerFluid: true, 
+  
+                  typeAnimated: true,
+                  buttons: {
+                    guardar: {
+                      btnClass: 'btn-success',
+                      keys: ['enter', 'shift'],
+                      action: function () {
+                        this.$content.find(".btn").trigger("click")
+                 
+                      return false;
+                      }
+                    },
+                    cancel: function () {
+        }
+                  },
+      
+                })
+      })
+    $("#placa").on("change",function(){
+        fetch("../../getVehiculo/"+$(this).val()).then(data =>data.json()).then(response=>{
+            console.log(response);
+            $("#marca").val(response.marca)
+            $("#modelo").val(response.modelo)
+            $("#año").val(response.ano)
+            response.chasis==null ?  $("#chasis").val("") : $("#chasis").val(response.chasis) ;           
+            $("#tipo").val(response.tipo)
+
+        })
+    })
+</script>
+{% endblock bottom_scripts %}

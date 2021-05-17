@@ -29,21 +29,6 @@ def upload_to(path):
     return partial(_update_filename, path=path)
 
 
-class Empresa(models.Model):
-   uuid_empresa = models.UUIDField(
-       default=uuid.uuid4, editable=False, unique=True)
-   nombre = models.CharField(max_length=200, null=True)
-   direccion = models.CharField(max_length=200, null=True)
-   telefono = models.CharField(max_length=20, null=True)
-   email = models.CharField(max_length=100, null=True)
-   banco = models.CharField(max_length=100, null=True)
-   banco_abr = models.CharField(max_length=100, null=True)
-   cta_corriente = models.CharField(max_length=100, null=True)
-   cci = models.CharField(max_length=100, null=True)
-
-   def __unicode__(self):
-      return self.nombre
-
 
 class TipoServicio(models.Model):
    descripcion = models.CharField(max_length=100)
@@ -632,6 +617,29 @@ def save_tipo(sender, instance, **kwargs):
             else:
                a.repuesto=False
             a.save()
+class Empresa(models.Model):
+
+   nombre = models.CharField(max_length=200, null=True)
+   direccion = models.CharField(max_length=200, null=True)
+   telefono = models.CharField(max_length=20, null=True)
+   email = models.CharField(max_length=100, null=True)
+   banco = models.CharField(max_length=100, null=True)
+   banco_abr = models.CharField(max_length=100, null=True)
+   cta_corriente = models.CharField(max_length=100, null=True)
+   cci = models.CharField(max_length=100, null=True)
+   estado=models.BooleanField(default=True)
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_Empresa',user_model=Usuario)
+
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+   def __unicode__(self):
+      return self.nombre
 class Vehiculo(models.Model):
 
    ano = models.IntegerField(null=True)
@@ -650,7 +658,7 @@ class Vehiculo(models.Model):
    created_at = models.DateTimeField(auto_now_add=True, null=True)
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, editable=False, related_name='%(class)s_created')
    activo=models.BooleanField(default=True)
-
+   empresa=models.ForeignKey(Empresa, verbose_name=_(""), on_delete=models.CASCADE,null=True,blank=True)
    eliminado=models.BooleanField(default=False,editable=False)
    history = HistoricalRecords(table_name='Web_Historial_Vehiculo',user_model=Usuario)
 
@@ -680,7 +688,14 @@ class Vehiculo(models.Model):
 
       return item
      
-
+   def toJSON3(self):
+      item = model_to_dict(self,fields=["nro_chasis","ano","placa"])
+      item["marca"]=self.modelo_vehiculo.marca_vehiculo.descripcion
+      item["modelo"]=self.modelo_vehiculo.descripcion
+      item["tipo"]=self.tipo_vehiculo.descripcion
+      if self.empresa!=None:
+         item["empresa"]=self.empresa.nombre
+      return item
 class Llanta(models.Model):
 
 
@@ -883,3 +898,180 @@ def detalle_inspeccion(sender,instance,**kwargs):
       ex.save()
    else:
       print("else")
+
+
+
+   
+class Estaciones(models.Model):
+   codigo = models.CharField(max_length=20)
+   descripcion = models.CharField(max_length=100)
+   red=models.CharField(max_length=100)
+   ubicacion=models.CharField(max_length=50)
+   direccion = models.CharField(max_length=200)
+   contacto=models.CharField(max_length=100)
+   estado=models.BooleanField(default=True)
+ 
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_Estaciones',user_model=Usuario)
+
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+
+   
+class Conductor(models.Model):
+   tip_doc = models.IntegerField(
+       choices=CHOICES_TIPO_DOC2, default=TIPO_DOC_DNI)
+   doc=models.CharField(max_length=20)
+   nombres=models.CharField(max_length=100)
+   estado=models.BooleanField(default=True)
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_Conductores',user_model=Usuario)
+
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+class Ruta(models.Model):
+   placa= models.ForeignKey(Vehiculo, verbose_name=_("Vehiculo"), on_delete=models.CASCADE)
+   km=models.IntegerField(null=True,blank=True)
+   volumen=models.DecimalField(max_digits=10, decimal_places=5)
+   ruta = models.CharField(max_length=100)
+   rend= models.DecimalField( max_digits=10, decimal_places=5)
+   estado=models.BooleanField(default=True)
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_Ruta',user_model=Usuario)
+   
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+   def toJSON(self):
+      item=model_to_dict(self,exclude=["changed_by","placa"])
+      item["rend"]=format(self.rend, '.2f')      
+
+      return item
+
+class Rendimiento(models.Model):
+   fech_hora = models.DateTimeField()
+   placa=models.ForeignKey(Vehiculo,on_delete=models.PROTECT)
+   ruta=models.ForeignKey(Ruta,on_delete=models.PROTECT)
+   rend_cargado=models.IntegerField()
+   rend_vacio=models.IntegerField()
+   km=models.IntegerField()
+   rend_prom=models.DecimalField(max_digits=10, decimal_places=4)
+   estado=models.BooleanField(default=True)
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_Rendimiento',user_model=Usuario)
+   @property
+   def _history_user(self):
+      return self.changed_by
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+   def save(self, *args, **kwargs):
+      self.rend_prom=(self.rend_cargado+self.rend_vacio)/2
+      super(Rendimiento, self).save(*args, **kwargs)
+   def toJSON(self):
+      item=model_to_dict(self,exclude=["changed_by","placa"])
+      item["ruta"]=self.ruta.toJSON()
+      return item
+class TipoAbastecimiento(models.Model):
+   descripcion = models.CharField(max_length=100)
+class EstadoViaje(models.Model):
+   descripcion = models.CharField(max_length=100)
+class Producto(models.Model):
+   descripcion = models.CharField(max_length=100)
+   estado=models.BooleanField(default=True)
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_Productos',user_model=Usuario)
+   def toJSON(self):
+      item=model_to_dict(self)
+      return item
+   @property
+   def _history_user(self):
+      return self.changed_by
+
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+class EstacionProducto(models.Model):
+   producto=models.ForeignKey(Producto, on_delete=models.CASCADE)
+   estacion=models.ForeignKey(Estaciones,on_delete=models.CASCADE)
+   precio=models.DecimalField( max_digits=10, decimal_places=2)
+   fecha=models.DateTimeField(auto_now_add=True)
+   pre_fech_fin=models.DateField(null=True)
+   pre_fech_ini=models.DateField(null=True)
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_EstacionProductos',user_model=Usuario)
+   def toJSON(self):
+      item = model_to_dict(self,exclude=["changed_by","inspeccion","estacion"])
+      item["producto"]=self.producto.toJSON()
+      return item
+   @property
+   def _history_user(self):
+      return self.changed_by
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value 
+class Abastecimiento(models.Model):
+   estacion=models.ForeignKey(Estaciones, on_delete=models.PROTECT)
+   fecha=models.DateField()
+   precio=models.DecimalField(max_digits=10, decimal_places=2)
+   tipo=models.ForeignKey(TipoAbastecimiento, on_delete=models.PROTECT)
+   estado_viaje=models.ForeignKey(EstadoViaje, on_delete=models.PROTECT)
+   ruta=models.ForeignKey(Ruta, on_delete=models.CASCADE)
+   producto=models.ForeignKey(Producto, on_delete=models.PROTECT)   
+   estado=models.BooleanField(default=True)
+   changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
+   history = HistoricalRecords(table_name='Web_Historial_Abastecimiento',user_model=Usuario)
+   @property
+   def _history_user(self):
+      return self.changed_by
+   @_history_user.setter
+   def _history_user(self, value):
+      self.changed_by = value
+   def toJSON(self):
+         item=model_to_dict(self,exclude=["changed_by","producto"])
+         item["ruta"]=self.ruta.toJSON()
+         item["tipo"]=self.tipo.descripcion
+         item["estacion"]=self.estacion.codigo
+         item["precio"]=format(self.precio, '.2f')      
+         item["fecha"]=self.fecha.strftime('%Y-%m-%d')  
+         return item
+      
+class DetalleAbastecimiento(models.Model):
+   abast=models.ForeignKey(Abastecimiento,on_delete=models.PROTECT)
+   hora=models.TimeField(null=True)
+   placa=models.ForeignKey(Vehiculo,on_delete=models.PROTECT)
+   km=models.IntegerField()
+   volumen=models.DecimalField( max_digits=10, decimal_places=4)
+   conductor=models.ForeignKey(Conductor, on_delete=models.PROTECT)
+   cargado=models.DecimalField(max_digits=10, decimal_places=2)
+   voucher=models.CharField(max_length=50)
+   factura=models.CharField( max_length=50)
+   total=models.DecimalField( max_digits=10, decimal_places=2)
+   def save(self, *args, **kwargs):
+      self.total=float(self.volumen)*float(self.abast.precio)
+     
+      super(DetalleAbastecimiento, self).save(*args, **kwargs)   
+   def get_report_liquidacion(self):
+      item=model_to_dict(self)
+      item["volumen"]=format(self.volumen, '.2f')      
+      item["cargado"]=format(self.cargado, '.2f')      
+      item["total"]=format(self.total, '.2f')      
+      item["abast"]=self.abast.toJSON()
+      item["placa"]=self.placa.toJSON3()
+      item["conductor"]=self.conductor.nombres
+      return item
+      

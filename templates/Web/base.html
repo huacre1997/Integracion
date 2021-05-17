@@ -31,7 +31,7 @@
 <link href="{% static 'css/datatable.bootstrap5.min.css' %}" rel="stylesheet">
 <link href="{% static 'css/select2.min.css' %}" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="{% static 'css/daterangerpicker.min.css' %}" />
-
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.bootstrap5.min.css">
 </head>
 <style>
   {% comment %} input, textarea, select {
@@ -149,23 +149,31 @@ textarea, .vTextField {
 <body id="page-top">
 
   <!-- Page Wrapper -->
-  <div id="wrapper">
+  <div id="wrapper" style="height:100%">
 
    <span id="loadingCharge" style="visibility: hidden;"></span>
 <div class="half-circle-spinner" id="spinner" style="visibility: hidden;">
   <div class="circle circle-1"></div>
   <div class="circle circle-2"></div>
 </div> 
-    
+           <ul class="navbar-nav  sidebar sidebar-dark accordion {% block none %}d-none{% endblock none %}" id="accordionSidebar" style="background-color: #014782; transition:1s;">
+     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+        <img class="img-fluid" src="{% static 'img/logo.png' %}"  alt="">
+      </a>
+        <hr class="sidebar-divider my-0">
+  
+      <hr class="sidebar-divider">
+
     {% block sidebar %}
-    <ul class="navbar-nav sidebar sidebar-dark " id="accordionSidebar"  style="width: 0 !important;"></ul>
+  
 
     {% endblock sidebar %}
-      
+          </ul>
+
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content-wrapper" class="d-flex flex-column" {% block vh %} style="height:100vh"{% endblock %}>
 
       <!-- Main Content -->
       <div id="contentado">
@@ -186,18 +194,7 @@ textarea, .vTextField {
                 <i class="fas fa-search fa-fw"></i>
               </a>
               <!-- Dropdown - Messages -->
-              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
-                <form class="form-inline mr-auto w-100 navbar-search">
-                  <div class="input-group">
-                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                      <button class="btn btn-primary" type="button">
-                        <i class="fas fa-search fa-sm"></i>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
+       
             </li>
 
             <!-- Nav Item - Alerts -->
@@ -233,7 +230,8 @@ textarea, .vTextField {
             <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
 
             <!-- Nav Item - User Information -->
-            
+      
+      
             {% block titleheader %}
             <li class="nav-item dropdown no-arrow" style="grid-column: 1/5;" >
               <a class="nav-link" role="button" aria-expanded="false">
@@ -324,6 +322,22 @@ textarea, .vTextField {
 
             </div>
             <div class="position-5">
+              {% if 'auth.view_procesos' in perm %} 
+
+              <div class="shadow  item-lock justify-self-center">
+                <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:combustible' %}">
+                  <img class="icon-index" src="{% static 'img/iconos/combustible.png' %}" alt="">
+
+
+
+                </a>
+                <label  style="color: #014782;font-weight: bold;" class="w-100 text-center ">Combustible</label>
+  
+               </div>
+               {%endif%}
+
+            </div>
+            <div class="position-6">
               <div class="shadow  item-lock justify-self-center">
                 <a class="nav-link d-flex  text-white align-items-center justify-content-center h-100" href="{% url 'Web:reportes' %}">
                   <img class="icon-index" src="{% static 'img/iconos/reportes.png' %}" alt="">
@@ -416,6 +430,14 @@ textarea, .vTextField {
 <script src="{% static 'js/datatable.bootstrap5.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/daterangerpicker.min.js' %}"></script>
 <script src="{% static 'js/gsap.min.js' %}"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.colVis.min.js"></script>
   {% block bottom_scripts %}{% endblock %}
   <script>
     $(document).ready(function () {
@@ -453,10 +475,10 @@ textarea, .vTextField {
         
     })
   }
-  const alerta=(time,icon,content)=>{
+  const alerta=(time,icon,content,position="top")=> {
           const Toast = Swal.mixin({
   toast: true,
-  position: 'top',
+  position: position,
   showConfirmButton: false,
   timer: time,
   timerProgressBar: true,

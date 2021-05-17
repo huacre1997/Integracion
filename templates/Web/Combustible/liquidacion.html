@@ -1,0 +1,226 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block reportes%}active{% endblock %}
+{% block collapseReportes %}show{% endblock collapseReportes %}
+{% block liquidacion %}collapse-item active{% endblock  %}
+{% block content %}
+{% load static %}
+<div id="wrapper">
+    <div class="container-fluid">
+        <div class="card">
+            <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Liquidación de Factura</h5>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-2">
+                        <label for="">Año</label>
+                        <input type="number" name="año" id="año" class="form-control">
+                    </div>
+                    <div class="col-2">
+                        <label for="">Mes</label>
+                        <select name="mes" id="mes" class="form-select">
+                            <option value="0">Seleccione..</option>
+                            <option value="1">ENERO</option>
+                            <option value="2">FEBRERO</option>
+                            <option value="3">MARZO</option>
+                            <option value="4">ABRIL</option>
+                            <option value="5">MAYO</option>
+                            <option value="6">JUNIO</option>
+                            <option value="7">JULIO</option>
+                            <option value="8">AGOSTO</option>
+                            <option value="9">SETIEMBRE</option>
+                            <option value="10">OCTUBRE</option>
+                            <option value="11">NOVIEMBRE</option>
+                            <option value="12">DICIEMBRE</option>
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <label for="">Factura</label>
+                        <input type="text" name="factura" id="factura" class="form-control">
+                    </div>
+                    <div class="col-3">
+                        <label for="">Código EESS</label>
+                        <input type="text" name="eess" id="eess" class="form-control">                    
+                    </div>
+                    <div class="col-2">
+                        <label for="" class="invisible">Buscar</label></label><button id="search"
+                            class="btn btn-primary btn-block"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;Buscar</button>
+                    </div>
+                </div>
+                <br>
+                <div class="table-responsive">
+                    <table  class="table display responsive nowrap" id="tabla_liquidacion" style="width:100%">
+                        <thead>
+                        <th>Placa</th>
+                        <th> Marca</th>
+                        <th>Modelo</th>
+                        <th>Año</th>
+                        <th>Conductor</th>
+                        <th>Fecha</th>
+                        <th>% Cargado</th>
+                        <th>Tipo</th>
+                        <th>Gal.Obj.</th>     
+                        <th>Rend. Obj.</th>
+                        <th>EESS</th>
+                        <th>Recorrido</th>
+                        <th>Rend.Real</th>
+                        <th>Gal.Abast.</th>
+                        <th>Precio</th>
+                        <th>Monto</th>
+                      </thead>
+                      <tbody>
+                 
+          
+                      </tbody>
+          
+          
+                    </table>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+<script>
+  let parameters = {
+      año:"",
+      mes:"",
+      factura:"",
+      eess:""
+
+    }
+    load()
+    $("#año").on("input",function(){
+      parameters.año=$(this).val()
+    })    
+    $("#mes").on("change",function(){
+      parameters.mes=$(this).val()
+    })  
+     $("#eess").on("change",function(){
+      parameters.eess=$(this).val()
+    }) 
+    $("#factura").on("change",function(){
+      parameters.factura=$(this).val()
+    })
+    $("#search").on("click",function(){
+      load()
+    })
+  function load(){
+        $("#tabla_liquidacion").DataTable({
+ processing:"true",
+              stateSave: true,
+
+    responsive: true,
+            destroy: true,
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+      language:{"url":"{% static 'language.json' %}"},
+      ajax: {
+        url: window.location.pathname,
+        type: "POST",
+        data: parameters,
+        dataSrc: ""
+      },
+       columns: [
+
+
+            {
+              "data": 'placa.placa',
+              className: "middle"
+            },
+
+
+            {
+              "data": "placa.marca",
+              className: "middle"
+
+            },
+            {
+              "data": "placa.modelo",
+              className: "middle"
+
+            },
+            {
+              "data": 'placa.ano',
+              className: "middle"
+            },
+            {
+              "data": 'conductor',
+              className: "middle"
+            },
+
+            {
+              "data": 'abast.fecha',
+              className: "middle"
+            },
+
+            {
+              "data": 'cargado',
+              className: "middle"
+            },
+            {
+              "data": 'abast.tipo',
+              className: "middle"
+            },  
+             {
+              "data": null,
+              className: "middle"
+            },   {
+              "data":"abast.ruta.rend",
+              className: "middle"
+            },
+               {
+              "data": "abast.estacion",
+              className: "middle"
+            },  
+             {
+              "data": "km",
+              className: "middle"
+            },   
+            {
+              "data": null,
+              className: "middle"
+            },     
+            {
+              "data": "volumen",
+              className: "middle"
+            },   
+            {
+              "data": "abast.precio",
+              className: "middle"
+            },   {
+              "data": "total",
+              className: "middle"
+            },
+          ],
+            columnDefs: [
+
+            {
+              targets: [8],
+              render: function (data, type, row) {
+                if(row.cargado==50){
+                  console.log("prom")
+                  return parseFloat(row.rend_km/row.rend_prom).toFixed(2)
+
+                }else if(row.cargado==0){
+                  return parseFloat(row.rend_km/row.rend_vacio).toFixed(2)
+
+                }
+                return parseFloat(row.rend_km/row.rend_cargado).toFixed(2)
+              }
+            }, {
+              targets: [12],
+              render: function (data, type, row) {
+                console.log(row)
+                return parseFloat(row.km/row.volumen).toFixed(2)
+              }
+            },
+            ]
+ 
+    })
+  }
+</script>
+{% endblock bottom_scripts %}

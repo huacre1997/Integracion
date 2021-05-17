@@ -1,0 +1,206 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block procesos%}active{% endblock %}
+{% block collapseProcesos %}show{% endblock collapseProcesos %}
+{% block rendimiento %}collapse-item active{% endblock  %}
+
+{% block content %}
+
+<div id="wrapper">
+    <div class="container-fluid">
+        <div class="card">
+            <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Rendimiento de Flota </h5>
+            <div class="card-body">
+                <p class="card-text">
+                    <form class="row g-3 needs-validation" id="form_rendimiento" novalidate>
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha y Hora</label>
+                            <input type="datetime-local" id="fecha" name="fech_hora" class="form-control">
+                                   <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Placa </label>
+                            <select name="placa" id="placa" class="form-select">
+                                <option value="0">Seleccione...</option>
+                                {% for i in placa  %}
+                                    <option value="{{ i.id }}">{{ i.placa }}</option>
+                                {% endfor %}
+                                    
+                            </select>
+                                  <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo</label>
+                            <input type="text" id="tipo" name="tipo" class="form-control" disabled>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Marca</label>
+                                                      <input type="text" id="marca" name="marca" class="form-control" disabled>
+
+                            <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Modelo</label>
+                            <input type="text" id="modelo" name="modelo" class="form-control" disabled>
+
+                            <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Año</label>
+                            <input type="number" class="form-control" id="año" name="año" disabled>
+                            <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ruta</label>
+                            <select name="ruta" id="ruta" class="form-select">
+                                <option value="0">Seleccione...</option>
+                                
+                                {% for i in ruta  %}
+                                        <option value="{{ i.id }}">{{ i.ruta }}</option>
+ 
+                                {% endfor %}
+                                    
+                            </select>
+                            <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Rendimiento Cargado (KM/GLN)</label>
+                            <input type="number" class="form-control" id="cargado" name="rend_cargado">
+                            <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Rendimiento Vacio (KM/GLN)</label>
+                            <input type="number" class="form-control" id="vacio" name="rend_vacio">
+                            <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div> 
+                   
+                        <div class="col-md-6">
+                            <label class="form-label">Kilometros</label>
+                            <input type="number" class="form-control" id="km" name="km">
+                           <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                         
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Rendimiento Promedio (KM/GLN)</label>
+                            <input type="number" class="form-control" id="promedio" name="rend_prom" disabled>
+                           <div class="invalid-feedback">
+                               Este campo es requerido.
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button class="btn btn-primary" type="button" id="submit_rendimiento">Guardar</button>
+                        </div>
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block bottom_scripts %}
+    <script>
+       function clean_fields(input) {
+            $(input).val('');
+          }
+        document.getElementById("submit_rendimiento").addEventListener("click",function(){
+            let error = 0
+            function validar(input){
+                if($(input).val()=="" || $(input).val()==0 ){
+                    $(input).addClass("is-invalid")
+                    error = 1
+                    $(input).on("input",function(){
+                        $(input).removeClass("is-invalid")
+                    })
+                }
+            }
+            validar($("#vacio"))
+            validar($("#cargado"))
+            validar($("#km"))
+            validar($("#galones"))
+            validar($("#fecha"))
+            validar($("#ruta"))
+            validar($("#placa"))
+            let form=document.getElementById("form_rendimiento")
+            let data=new FormData(form)
+            if(error == 0){
+                fetch(window.location.href,{
+                    method: "POST",
+                    headers: {
+                              'X-CSRFToken': csrftoken
+                    },
+                    body: data
+
+                }).then(data=>data.json()).then(response=>{
+                    console.log(response);
+                    if(response.status == 200){
+                        notificacion(1500,"Genial!","success","Rendimiento agregado!")
+                        $.each($("input"), function (indexInArray, valueOfElement) { 
+                             clean_fields($(valueOfElement))
+                            });
+                     
+                    }else{
+                        notificacion(1500, "Error!","error","Ha ocurrido un error.Revise los campos.")
+                        if(response.form.codigo){
+                            $("#codigo").addClass("is-invalid").on("input",function(){
+                                $(this).removeClass("is-invalid")
+                            })
+                            $("#codigo").next().text(response.form.codigo[0])
+                        }
+                        if(response.form.descripcion){
+                            $("#descripcion").addClass("is-invalid").on("input",function(){
+                                $(this).removeClass("is-invalid")
+                            })
+                            $("#descripcion").next().text(response.form.descripcion[0])
+                        }
+                    }
+               
+                })
+            }
+            
+        })
+
+
+        $("#vacio").on("input", function(){
+            prom=(parseInt($("#cargado").val())+parseInt($(this).val()))/2
+            $("#promedio").val(prom)
+        })
+        $("#cargado").on("input", function(){
+            prom=(parseInt($("#vacio").val())+parseInt($(this).val()))/2
+            $("#promedio").val(prom)
+
+        })
+            $("#placa").on("change",function(){
+        fetch("../../getVehiculo/"+$(this).val()).then(data =>data.json()).then(response=>{
+            console.log(response);
+            $("#marca").val(response.marca)
+            $("#modelo").val(response.modelo)
+            $("#año").val(response.ano)
+            response.chasis==null ?  $("#chasis").val("") : $("#chasis").val(response.chasis) ;           
+            $("#tipo").val(response.tipo)
+
+        })
+    })
+    </script>
+{% endblock bottom_scripts %}
+    
