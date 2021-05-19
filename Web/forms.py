@@ -803,9 +803,19 @@ class EstadoViajeForm(forms.ModelForm):
         exclude=["changed_by","estado"]
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
-        
         if self.instance.descripcion!=data:
             if EstadoViaje.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
+        return data
+class UnidadMedidaForm(forms.ModelForm):
+    class Meta:
+        model=UnidadMedida
+        exclude=["changed_by","estado"]
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        
+        if self.instance.descripcion!=data:
+            if UnidadMedida.objects.filter(descripcion=data).exists():
                 self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
         return data     
 class TipoAbastecimientoForm(forms.ModelForm):

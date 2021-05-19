@@ -179,7 +179,7 @@ class LogueoView(FormView):
         messages.error(self.request, 'El usuario o la clave es incorrecto.')
         return super().form_invalid(form)
 
-class HomePageView(LoginView, TemplateView):
+class HomePageView(LoginRequiredMixin,TemplateView):
     template_name = "Web/base.html"
   
 class Error403(TemplateView):
@@ -2934,10 +2934,10 @@ def AgregarInspeccion(request):
     context={"obs":CHOICES_OBSERVACION,"accion":CHOICES_ACCION,"cubierta":CHOICES_CUBIERTA_INSPECCION}
 
     return render(request,template_name,context)
-class HistorialLlantas(ListView,LoginRequiredMixin):
+class HistorialLlantas(LoginRequiredMixin,ListView):
     template_name="Web/reportes/historial.html"
     model=Movimientos_Historial
-class AbastecimientoView(CreateView):
+class AbastecimientoView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/abastecimiento.html"
     model=Abastecimiento
     form_class=AbastecimientoForm  
@@ -2994,7 +2994,7 @@ class AbastecimientoView(CreateView):
         context["estado"]=EstadoViaje.objects.values("id","descripcion")
 
         return context
-class RendimientoView(TemplateView):
+class RendimientoView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/rendimiento.html"
     model=Rendimiento
     form_class=RendimientoForm
@@ -3021,7 +3021,7 @@ class RendimientoView(TemplateView):
         context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
         context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True)
         return context
-class FlotaView(TemplateView):
+class FlotaView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/flota.html"
     def post(self,request,*args, **kwargs):
         try:
@@ -3037,7 +3037,7 @@ class FlotaView(TemplateView):
         context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
         context["empresa"]=Empresa.objects.values("id","nombre")
         return context
-class RutaView(CreateView,LoginRequiredMixin):
+class RutaView(LoginRequiredMixin,CreateView):
     model=Ruta
     template_name="Web/combustible/ruta.html"
     form_class=Rutaform
@@ -3065,7 +3065,7 @@ class RutaView(CreateView,LoginRequiredMixin):
 def getVehiculo(request,id): 
     data=Vehiculo.objects.get(id=id)
     return JsonResponse(data.toJSON3())
-class EstacionesView(CreateView,LoginRequiredMixin):
+class EstacionesView(LoginRequiredMixin,CreateView):
     model=Estaciones
     form_class=EstacionesForm
     template_name="Web/combustible/estaciones.html"
@@ -3097,9 +3097,10 @@ class EstacionesView(CreateView,LoginRequiredMixin):
         context = super().get_context_data(**kwargs)
         context["producto"] = Producto.objects.filter(estado=True)
         context["eess"]=Estaciones.objects.filter(estado=True)
+        context["unidad"]=UnidadMedida.objects.filter(estado=True)
         return context
     
-class EmpresaCreateView(CreateView,LoginRequiredMixin):
+class EmpresaCreateView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/empresa.html"
     model=Empresa
     form_class=EmpresaForm
@@ -3121,7 +3122,33 @@ class EmpresaCreateView(CreateView,LoginRequiredMixin):
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
-class ProductoCreateView(CreateView,LoginRequiredMixin):
+class ProductosListView(LoginRequiredMixin,ListView):
+    template_name = 'Web/Combustible/estaciones.html'
+    model = Producto
+    login_url=reverse_lazy("Web:login")
+    success_url=reverse_lazy("Web:productos")
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Producto.objects.filter(estado=True):
+                    data.append(i.toJSON())
+            else:
+                data["error"]="Ha ocurrido un error"
+            return JsonResponse(data,safe=False)
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+
+class ProductoCreateView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/producto.html"
     model=Producto
     form_class=ProductoForm
@@ -3142,7 +3169,7 @@ class ProductoCreateView(CreateView,LoginRequiredMixin):
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
-class PrecioUpdateView(TemplateView,LoginRequiredMixin):
+class PrecioUpdateView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/precio_lista.html"
     model=EstacionProducto
     context_object_name="obj"
@@ -3183,7 +3210,7 @@ def getProducts(request,id):
                 es.precio=i["precio"]
                 es.save()
         return JsonResponse({"status":200})
-class EstadoAbastecimientoCreateView(CreateView,LoginRequiredMixin):
+class EstadoAbastecimientoCreateView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/estado.html"
     model=EstadoViaje
     form_class=EstadoViajeForm
@@ -3205,7 +3232,7 @@ class EstadoAbastecimientoCreateView(CreateView,LoginRequiredMixin):
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
-class TipoAbastecimientoCreateView(CreateView,LoginRequiredMixin):
+class TipoAbastecimientoCreateView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/tipo.html"
     model=TipoAbastecimiento
     form_class=TipoAbastecimientoForm
@@ -3226,8 +3253,29 @@ class TipoAbastecimientoCreateView(CreateView,LoginRequiredMixin):
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
+class UnidadMedidaCreateView(LoginRequiredMixin,CreateView):
+    template_name="Web/combustible/unidad.html"
+    model=UnidadMedida
+    form_class=UnidadMedidaForm
+    def post(self,request,*args, **kwargs):
+        try:
+            form=self.form_class(request.POST)
+            if form.is_valid():
+                instance=form.save(commit=False)
+                instance.changed_by=request.user
+                instance.save()
+                data={"status":200,"id":instance.id,"descripcion":instance.descripcion}
+            else:
+                data = {
+                "form":form.errors,
+                'status': 500,
+                }
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
 
-class ConductoresView(CreateView,LoginRequiredMixin):
+class ConductoresView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/conductores.html"
     model=Conductor
     form_class=ConductoresForm
@@ -3252,7 +3300,7 @@ class ConductoresView(CreateView,LoginRequiredMixin):
             print(e)
             return JsonResponse({"status":500})
 
-class LiquidacionView(TemplateView ,LoginRequiredMixin):
+class LiquidacionView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/liquidacion.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
@@ -3443,7 +3491,7 @@ class RendimientoViajeView(TemplateView):
         context["empresa"]=Empresa.objects.values("id","nombre").filter(estado=True)
         return context
     
-class RendimientoAbastecimientoView(TemplateView):
+class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/rendimiento_eess.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):

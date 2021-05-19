@@ -550,6 +550,9 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+  $("input").on("keyup", function () {
+    $(this).val($(this).val().toUpperCase());
+  })
 const csrftoken = getCookie('csrftoken');
 $(document).on("mouseenter", ".item-lock", function(){
 
