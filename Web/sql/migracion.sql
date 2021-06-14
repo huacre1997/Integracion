@@ -1,4 +1,4 @@
-INSERT INTO `Web_departamento` (`descripcion`, `code`) VALUES
+INSERT INTO "Web_departamento" (descripcion, code) VALUES
 ('AMAZONAS',"1"),
 ('ANCASH',"1"),
 ('APURIMAC',"1"),
@@ -24,7 +24,7 @@ INSERT INTO `Web_departamento` (`descripcion`, `code`) VALUES
 ('TACNA',"1"),
 ('TUMBES',"1"),
 ('UCAYALI',"1");
-INSERT INTO `Web_provincia` (`descripcion`, `departamento_id`, `code`) VALUES
+INSERT INTO "Web_provincia" (descripcion, departamento_id, code) VALUES
 ('CHACHAPOYAS ', 1,"2"),
 ('BAGUA', 1,"2"),
 ('BONGARA', 1,"2"),
@@ -218,7 +218,7 @@ INSERT INTO `Web_provincia` (`descripcion`, `departamento_id`, `code`) VALUES
 ('ATALAYA', 25,"2"),
 ('PADRE ABAD', 25,"2"),
 ('PURUS', 25,"2");
-INSERT INTO `Web_distrito` (`descripcion`, `provincia_id`, `code`) VALUES
+INSERT INTO "Web_distrito" (descripcion, provincia_id, code) VALUES
 ('CHACHAPOYAS', 1,"3"),
 ('ASUNCION', 1,"3"),
 ('BALSAS', 1,"3"),

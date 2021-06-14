@@ -9,7 +9,7 @@ import simple_history.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('Web', '0006_auto_20210601_1349'),
+        ('Web', '0005_auto_20210601_1314'),
     ]
 
     operations = [
