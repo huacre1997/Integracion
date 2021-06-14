@@ -29,10 +29,10 @@ def importExcel(file):
             max_rep=df["max_rep"][i]
 
             )
-            print(i)
+            
         return True
     except Exception as e:
-        print("hola")
+        
         print(e)
     return False
 def importPosi(file):
@@ -54,10 +54,10 @@ def importPosi(file):
        
 
             )
-            print(i)
+            
         return True
     except Exception as e:
-        print("hola")
+        
         print(e)
     return False
 def importVehi(file):
@@ -91,10 +91,10 @@ def importVehi(file):
             nro_motor=l(df["nro_motor"][i]),
             
             )
-            print(i)
+            
         return True
     except Exception as e:
-        print("hola")
+        
         print(e)
     return False
 def importMedi(file):
@@ -122,10 +122,10 @@ def importMedi(file):
          
             
             )
-            print(i)
+            
         return True
     except Exception as e:
-        print("hola")
+        
         print(e)
     return False
 def importLLan(file):
@@ -168,10 +168,10 @@ def importLLan(file):
             fech_ren=df["fech_ren"][i],
             
             )
-            print(i)
+            
         return True
     except Exception as e:
-        print("hola")
+        
         print(e)
     return False
 def importCub(file):
@@ -205,10 +205,10 @@ def importCub(file):
 
             fech_ren=df["fech_ren"][i],      
             )
-            print(i)
+            
         return True
     except Exception as e:
-        print("hola")
+        
         print(e)
     return False
 def updateLlantas(file):
@@ -248,9 +248,9 @@ def updateLlantas(file):
             "fech_ren":df["fech_ren"][i],
             
          })
-            print(i)
+            
         return True
     except Exception as e:
-        print("hola")
+        
         print(e)
     return False

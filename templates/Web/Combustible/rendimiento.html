@@ -2,115 +2,118 @@
 {% block procesos%}active{% endblock %}
 {% block collapseProcesos %}show{% endblock collapseProcesos %}
 {% block rendimiento %}collapse-item active{% endblock  %}
-
+{% load static %}
 {% block content %}
 
 <div id="wrapper">
     <div class="container-fluid">
-        <div class="card">
-            <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Rendimiento de Flota </h5>
-            <div class="card-body">
-                <p class="card-text">
-                    <form class="row g-3 needs-validation" id="form_rendimiento" novalidate>
-                        <div class="col-md-4">
-                            <label class="form-label">Fecha y Hora</label>
-                            <input type="datetime-local" id="fecha" name="fech_hora" class="form-control">
-                                   <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Placa </label>
-                            <select name="placa" id="placa" class="form-select">
-                                <option value="0">Seleccione...</option>
-                                {% for i in placa  %}
-                                    <option value="{{ i.id }}">{{ i.placa }}</option>
-                                {% endfor %}
-                                    
-                            </select>
-                                  <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Tipo</label>
-                            <input type="text" id="tipo" name="tipo" class="form-control" disabled>
-                        </div>
+        <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="rendimiento-tab" data-toggle="tab" data-target="#rendimiento"
+                    type="button" role="tab" aria-controls="rendimiento" aria-selected="true">Registro de
+                    Rendimientos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rendimientos-tab" data-toggle="tab" data-target="#rendimientos"
+                    type="button" role="tab" aria-controls="rendimientos" aria-selected="false">Rendimientos</button>
+            </li>
 
-                        <div class="col-md-4">
-                            <label class="form-label">Marca</label>
-                                                      <input type="text" id="marca" name="marca" class="form-control" disabled>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="rendimiento" role="tabpanel" aria-labelledby="rendimiento-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <form class="row g-3 needs-validation" id="form_rendimiento">
+                                <div class="col-md-4">
+                                    <label class="form-label">Fecha y Hora</label>
+                                    <input type="datetime-local" id="fecha" name="fech_hora" class="form-control">
+                                    <div class="invalid-feedback">
+                                        Este campo es requerido.
+                                    </div>
+                                </div>
 
-                            <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Modelo</label>
-                            <input type="text" id="modelo" name="modelo" class="form-control" disabled>
 
-                            <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Año</label>
-                            <input type="number" class="form-control" id="año" name="año" disabled>
-                            <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Ruta</label>
-                            <select name="ruta" id="ruta" class="form-select">
-                                <option value="0">Seleccione...</option>
-                                
-                                {% for i in ruta  %}
+                                <div class="col-md-4">
+                                    <label class="form-label">Marca</label>
+                                    <select name="marca_vehiculo" id="id_marca" class="form-select"
+                                        onchange="actualizarmodelo()">
+                                        <option value="0">Seleccione...</option>
+
+                                        {% for i in marca_vehiculo  %}
+                                        {% if  not i.eliminado  and i.activo  %}
+                                        <option value="{{i.id}}"
+                                            {% if obj.marca_vehiculo.id == i.id %}selected{% endif %}>
+                                            {{i.descripcion}}</option>
+                                        {% endif %}
+
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Este campo es requerido.
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Modelo</label>
+                                    <select name="modelo_vehiculo" class="form-select" id="id_modelo_vehiculo"></select>
+                                    <div class="invalid-feedback">
+                                        Este campo es requerido.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <label class="form-label">Ruta</label>
+                                    <select name="ruta" id="ruta" class="form-select">
+                                        <option value="0">Seleccione...</option>
+
+                                        {% for i in ruta  %}
                                         <option value="{{ i.id }}">{{ i.ruta }}</option>
- 
-                                {% endfor %}
-                                    
-                            </select>
-                            <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Rendimiento Cargado (KM/GLN)</label>
-                            <input type="number" class="form-control" id="cargado" name="rend_cargado">
-                            <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Rendimiento Vacio (KM/GLN)</label>
-                            <input type="number" class="form-control" id="vacio" name="rend_vacio">
-                            <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div> 
-                   
-                        <div class="col-md-6">
-                            <label class="form-label">Kilometros</label>
-                            <input type="number" class="form-control" id="km" name="km">
-                           <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                         
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Rendimiento Promedio (KM/GLN)</label>
-                            <input type="number" class="form-control" id="promedio" name="rend_prom" disabled>
-                           <div class="invalid-feedback">
-                               Este campo es requerido.
-                            </div>
-                        </div>
 
-                        <div class="col-12">
-                            <button class="btn btn-primary" type="button" id="submit_rendimiento">Guardar</button>
-                        </div>
-                    </form>
-                </p>
+                                        {% endfor %}
+
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Este campo es requerido.
+                                    </div>
+                                </div>
+                            </form>
+
+                                <table id="tabla_rendimiento" class="table table-bordered">
+                                    <thead>
+                                        <th style="width: 40%;">Tramo</th>
+                                        <th style="width: 20%;">Recorrido</th>
+                                        <th style="width: 20%;">Galones Abast.</th>
+                                        <th style="width: 10%;">Rend.Objetivo</th>
+                                        <th style="width: 10%;"></th>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <div class="col-12">
+                                    <button class="btn btn-primary" type="button"
+                                        id="submit_rendimiento">Guardar</button>
+                                </div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="rendimientos" role="tabpanel" aria-labelledby="rendimientos-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <table id="tabla_rendimientos" class="table table-bordered" style="width: 100%">
+                            <thead>
+                                <th style="width: 0;">ID</th>
+                                <th style="width: 20;">Marca</th>
+                                <th style="width: 20;">Modelo</th>
+                                <th style="width: 20%;">Tramo</th>
+                                <th style="width: 10%;">Recorrido</th>
+                                <th style="width: 10%;">Galones Abast.</th>
+                                <th style="width: 10%;">Rend.Objetivo</th>
+                                <th style="width: 10%;"></th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -119,88 +122,631 @@
 {% endblock content %}
 
 {% block bottom_scripts %}
-    <script>
-       function clean_fields(input) {
-            $(input).val('');
-          }
-        document.getElementById("submit_rendimiento").addEventListener("click",function(){
-            let error = 0
-            function validar(input){
-                if($(input).val()=="" || $(input).val()==0 ){
-                    $(input).addClass("is-invalid")
-                    error = 1
-                    $(input).on("input",function(){
-                        $(input).removeClass("is-invalid")
+<script>
+    let data_rendimiento = {
+        recorrido: "",
+        tramo: "",
+        galones_abast: "",
+        rend_objetivo: "",
+    }
+    let array_tramo=[]
+    let objeto_tramo={
+        id:"",descripcion:"",
+    }
+    let modal_rendimiento_edit
+    let tabla_rendimiento
+    let tabla_rendimientos
+    let objeto_rendimiento = {
+        items: [],
+        list: function () {
+            tabla_rendimiento = $("#tabla_rendimiento").DataTable({
+                ordering: false,
+                searching: false,
+                paging: false,
+                info: false,
+                data: this.items,
+                destroy: true,
+                columns: [
+                        {
+                        "data": "tramo",
+                        className: "middle"
+                    }, {
+                        "data": "recorrido",
+                        className: "middle"
+                    },
+                    {
+                        "data": "galones_abast",
+                        className: "middle"
+                    },
+
+
+
+                    {
+                        "data": null,
+                        className: "middle"
+                    }, {
+                        "data": null,
+                        className: "middle"
+                    },
+                ],
+                columnDefs: [
+                    {
+                        targets: [0],
+                        render: function (data, type, row) {
+                            
+                            var $select = $('<select name="tramo"  class="form-select form">' +
+                                    '<option value="0">Seleccione...</option>' +
+                                    '</select>');
+                                for (let index = 0; index < array_tramo.length; index++) {
+                                    let option = document.createElement("option")
+                                    option.value=array_tramo[index].id
+                                    option.textContent=array_tramo[index].descripcion
+                                    $select.append(option)
+                                }
+                            if (row.tramo != "") {
+                                $select.find('option[value="' + row.tramo + '"]').attr('selected', 'selected');
+                                return $select[0].outerHTML
+
+
+                            } else {
+                                $select.find('option[value="' + row.tramo + '"]').attr('selected', 'selected');
+
+                                return $select[0].outerHTML
+                            }
+                        }
+                    }, {
+                        targets: [1],
+                        render: function (data, type, row) {
+
+                            if (row.tramo != "") {
+                                return `<input class="form-control form" name="recorrido" min="0" type="number" value="${data}">`;
+
+                            } else {
+                                return `<input class="form-control form" name="recorrido" min="0" type="number">`;
+                            }
+                        }
+                    }, {
+                        targets: [2],
+                        render: function (data, type, row) {
+
+                            if (row.tramo != "") {
+                                return `<input class="form-control form" name="galones_abast" type="number" min="0" step="0.1" value="${data}">`;
+
+                            } else {
+                                return `<input class="form-control form" name="galones_abast" step="0.1" min="0" type="number">`;
+                            }
+                        }
+                    },
+                    {
+                        targets: [3],
+                        render: function (data, type, row) {
+                            console.log(data)
+                            if (row.tramo != "") {
+                                return `<input class="form-control  " name="rend_objetivo" disabled type="number" value="${data.rend_objetivo}">`;
+
+                            } else {
+                                return `<input class="form-control " name="rend_objetivo" disabled type="number">`;
+                            }
+                        }
+                    },
+                    {
+                        targets: [4],
+
+                        render: function (data, type, row) {
+                            if (row.tramo!= "") {
+                            return `<button class="btn btn-success btn-remove"><i class="fas fa-check"></i></button>`;
+
+                            } else {
+                            return `<button class="btn btn-primary btn-add"><i class="fas fa-plus"></i></button>`;
+
+                            }
+
+                        }
+            },
+
+                ],
+
+                initComplete: function (settings, json) {
+                    $(function () {
+                        // $("#ruta").trigger("change")
+                        // console.log($("select[name='tramo']").find("option"))
+                        // $("select[name='tramo']").each(function (i, element) {
+                        //    for (let j = 0; j < settings.aoData.length-1; j++) {
+                        //        let value = settings.aoData[j]._aData;
+                        //        if(j==i){
+                        //         $(element).val(value.tramo)
+                        //        }
+                        //    }
+                            
+                        // });
+                        function valid(that, name, mensaje =
+                            "Revise los campos") {
+                            let ele = $(that).parent().parent().find(name)
+                            if (ele.val() == "0" || ele.val() == "") {
+                                error = 1
+                                ele.addClass("is-invalid")
+                                ele.on("change input", function () {
+                                    ele.removeClass("is-invalid")
+                                })
+                                alerta(1500, "error", mensaje)
+                                $(this).prop("disabled", false)
+
+                            }
+                        }
+                        
+              $(".btn-remove").on("click", function () {
+                var tr = tabla_rendimiento.cell($(this).closest("td", "li")).index()
+
+                let a = confirmar(function () {
+                  objeto_rendimiento.items.splice(tr.row, 1)
+                  objeto_rendimiento.list()
+
+                }, "¿Desea eliminar esta fila?", function () {
+
+                })
+
+
+              })
+              $(".btn-remove").hover(function () {
+
+                  $(this).children().remove()
+                  $(this).append('<i class="fas fa-times"></i>').css("width", "42px")
+                  $(this).removeClass("btn-success").addClass("btn-danger");
+                }, function () {
+                  $(this).children().remove()
+                  $(this).append('<i class="fas fa-check"></i>')
+                  $(this).removeClass("btn-danger").addClass("btn-success");
+                }
+
+              )
+              $("td").on("click", ".btn-add", function (e) {
+                let error = 0   
+                var tr = tabla_rendimiento.cell($(this).closest("td", "li")).index()
+                let tramo = $("td:eq(0)", tabla_rendimiento.row(tr.row).node()).children()
+                let recorrido = $("td:eq(1)", tabla_rendimiento.row(tr.row).node()).children()
+                let gal_abast = $("td:eq(2)", tabla_rendimiento.row(tr.row).node()).children()
+                let rend_objetivo = $("td:eq(3)", tabla_rendimiento.row(tr.row).node()).children()
+                data_rendimiento.tramo=tramo.val()
+                data_rendimiento.recorrido=recorrido.val()
+                data_rendimiento.galones_abast=gal_abast.val()
+                data_rendimiento.rend_objetivo=rend_objetivo.val()
+
+                if (error == 0) {
+                  $(this).prop("disabled", false)
+                  objeto_rendimiento.items.push(data_rendimiento)
+                  data_rendimiento = {
+                      
+                        recorrido: "",
+                        tramo: "",
+                        galones_abast: "",
+                        rend_objetivo: "",
+                    }
+                    $(this).children().remove()
+                  $(this).append('<i class="fas fa-check"></i>')
+                  $(this).removeClass("btn-primary").addClass("btn-success")
+                  $(this).removeClass("btn-add").addClass("btn-remove")
+                  $(this).hover(function () {
+
+                      $(this).children().remove()
+                      $(this).append('<i class="fas fa-times"></i>').css("width",
+                        "42px")
+                      $(this).removeClass("btn-success").addClass("btn-danger");
+                    }, function () {
+                      $(this).children().remove()
+                      $(this).append('<i class="fas fa-check"></i>')
+                      $(this).removeClass("btn-danger").addClass("btn-success");
+                    }
+
+                  )
+                        objeto_rendimiento.list()
+
+                }
+              })
+              $("select[name='tramo']").on("change keyup", function (e) {
+                e.preventDefault()
+                $(this).removeClass("is-invalid")
+
+                var cant = $(this).val();
+                var tr = tabla_rendimiento.cell($(this).closest("td", "li")).index()
+                if ($(this).val() == "0") {
+                  $("#submit_rendimiento").prop("disabled", true)
+                  $(this).addClass("is-invalid")
+                } else {
+                  let errorc = 0
+                  for (let i = 0; i < settings.aoData.length - 1; i++) {
+                    if (settings.aoData[i]._aData.tramo == cant && i != tr.row) {
+                      alerta(1500, "error", "Ese tramo ya se encuentra en la tabla")
+                      $(this).addClass("is-invalid")
+                      errorc = 1
+                      break
+                    }
+                  }
+                  let a = 0
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#submit_rendimiento").prop("disabled", true)
+                    }
+                  });
+                  if (a == 0 && errorc == 0) {
+                    if (typeof objeto_rendimiento.items[tr.row] !== "undefined") {
+                        objeto_rendimiento.items[tr.row].tramo = cant;
+                    }
+                    $("#submit_rendimiento").prop("disabled", false)
+
+                  }
+                }
+
+              })
+                        $("input[name='recorrido']").on("change keyup", function (e) {
+                            e.preventDefault()
+                            $(this).removeClass("is-invalid")
+                            var cant = $(this).val();
+                            let galones = $(this).parent().next().children()
+                                .val()
+                            var tr = tabla_rendimiento.cell($(this).closest(
+                                "td",
+                                "li")).index()
+                            if ($(this).val() == "") {
+                                $("#submit_rendimiento").prop("disabled", true)
+                                $(this).addClass("is-invalid")
+                            } else {
+
+                                let a = 0
+                                $(this).parent().next().next().children().val((
+                                    cant / parseFloat(galones)).toFixed(
+                                    2))
+
+                                $.each($(".form"), function (index, value) {
+                                    if ($(value).hasClass(
+                                            "is-invalid")) {
+                                        a = a + 1
+                                        $("#submit_rendimiento").prop(
+                                            "disabled", true)
+                                    }
+                                });
+                                if (a == 0) {
+                                    if (typeof objeto_rendimiento.items[tr.row] !==
+                                        "undefined") {
+                                        objeto_rendimiento.items[tr.row].recorrido = cant;
+                                        objeto_rendimiento.items[tr.row].rend_objetivo = (
+                                            cant /
+                                            parseFloat(galones)).toFixed(2)
+                                    }
+                                    $("#submit_rendimiento").prop("disabled",
+                                        false)
+                                }
+                            }
+
+                        })
+                        $("input[name='galones_abast']").on("change keyup", function (
+                            e) {
+                            e.preventDefault()
+                            $(this).removeClass("is-invalid")
+                            var cant = $(this).val();
+                            let recorrido = $(this).closest("tr").find(
+                                "input[name='recorrido']").val()
+
+                            var tr = tabla_rendimiento.cell($(this).closest(
+                                "td",
+                                "li")).index()
+                            if ($(this).val() == "") {
+                                $("#submit_rendimiento").prop("disabled", true)
+                                $(this).addClass("is-invalid")
+                            } else {
+
+                                let a = 0
+                                $(this).parent().next().children().val((
+                                    parseFloat(
+                                        recorrido) / cant).toFixed(2))
+
+                                $.each($(".form"), function (index, value) {
+                                    if ($(value).hasClass(
+                                            "is-invalid")) {
+                                        a = a + 1
+                                        $("#submit_rendimiento").prop(
+                                            "disabled", true)
+                                    }
+                                });
+                                if (a == 0) {
+                                    if (typeof objeto_rendimiento.items[tr.row] !==
+                                        "undefined") {
+                                        objeto_rendimiento.items[tr.row].galones_abast =
+                                            cant;
+                                        objeto_rendimiento.items[tr.row].rend_objetivo = (
+                                                parseFloat(recorrido) / cant)
+                                            .toFixed(2)
+                                    }
+                                    $("#submit_rendimiento").prop("disabled",
+                                        false)
+
+                                }
+                            }
+
+                        })
                     })
                 }
+            });
+            tabla_rendimiento.row.add(data_rendimiento).draw()
+
+        }
+
+    }
+
+    function clean_fields(input) {
+        $(input).val('');
+    }
+    document.getElementById("submit_rendimiento").addEventListener("click", function () {
+
+        function validar(input) {
+            if ($(input).val() == "" || $(input).val() == 0) {
+                $(input).addClass("is-invalid")
+                error = 1
+                $(input).on("input", function () {
+                    $(input).removeClass("is-invalid")
+                })
             }
-            validar($("#vacio"))
-            validar($("#cargado"))
-            validar($("#km"))
-            validar($("#galones"))
-            validar($("#fecha"))
-            validar($("#ruta"))
-            validar($("#placa"))
-            let form=document.getElementById("form_rendimiento")
-            let data=new FormData(form)
-            if(error == 0){
-                fetch(window.location.href,{
+        }
+        let error = 0
+
+        validar($("#ruta"))
+        validar($("#fecha"))
+        validar($("#id_marca"))
+        validar($("#id_modelo_vehiculo"))
+        if (error == 0) {
+             $("#loadingCharge").css("visibility", "visible")
+            $("#spinner").css("visibility", "visible")
+                let form = document.getElementById("form_rendimiento")
+                let data = new FormData(form)
+                data.append("objeto", JSON.stringify(objeto_rendimiento.items))
+                fetch(window.location.href, {
                     method: "POST",
                     headers: {
-                              'X-CSRFToken': csrftoken
+                        'X-CSRFToken': csrftoken
                     },
                     body: data
 
-                }).then(data=>data.json()).then(response=>{
-                    console.log(response);
-                    if(response.status == 200){
-                        notificacion(1500,"Genial!","success","Rendimiento agregado!")
-                        $.each($("input"), function (indexInArray, valueOfElement) { 
-                             clean_fields($(valueOfElement))
-                            });
-                     
-                    }else{
-                        notificacion(1500, "Error!","error","Ha ocurrido un error.Revise los campos.")
-                        if(response.form.codigo){
-                            $("#codigo").addClass("is-invalid").on("input",function(){
-                                $(this).removeClass("is-invalid")
-                            })
-                            $("#codigo").next().text(response.form.codigo[0])
-                        }
-                        if(response.form.descripcion){
-                            $("#descripcion").addClass("is-invalid").on("input",function(){
-                                $(this).removeClass("is-invalid")
-                            })
-                            $("#descripcion").next().text(response.form.descripcion[0])
-                        }
+                }).then(data => data.json()).then(response => {
+                     $("#loadingCharge").css("visibility", "hidden")
+            $("#spinner").css("visibility", "hidden")
+                    if (response.status == 200) {
+                        notificacion(1500, "Genial!", "success", "Rendimiento agregado!")
+                        $.each($("input"), function (indexInArray, valueOfElement) {
+                            clean_fields($(valueOfElement))
+                        });
+                        objeto_rendimiento.items=[]
+                        objeto_rendimiento.list()
+                        $("#id_marca").val(0).trigger("change")
+                        tabla_rendimientos.ajax.reload()
+                        $("#ruta").val(0)
+                        array_tramo=[]
+
+                    } else {
+                        if(response.form.tramo){
+                            notificacion(2000, "Error!","error", response.form.tramo[0])
+                        }else{
+                        notificacion(2000, "Error!", "error",
+                            "Ha ocurrido un error.Revise los campos.")}
+
                     }
-               
+
                 })
-            }
-            
-        })
+           
+        }
+    })
 
+    objeto_rendimiento.list()
+    $("#km").on("input", function () {
+        rend_vacio = (parseInt($(this).val()) / parseFloat($("gal_abast").val())).toFixed(2)
+        $("#vacio").val(rend_vacio)
+    })
+    $("#gal_abast").on("input", function () {
+        rend_vacio = (parseInt($("#km").val()) / parseFloat($(this).val())).toFixed(2)
+        $("#vacio").val(rend_vacio)
 
-        $("#vacio").on("input", function(){
-            prom=(parseInt($("#cargado").val())+parseInt($(this).val()))/2
-            $("#promedio").val(prom)
-        })
-        $("#cargado").on("input", function(){
-            prom=(parseInt($("#vacio").val())+parseInt($(this).val()))/2
-            $("#promedio").val(prom)
-
-        })
-            $("#placa").on("change",function(){
-        fetch("../../getVehiculo/"+$(this).val()).then(data =>data.json()).then(response=>{
-            console.log(response);
+    })
+    $("#placa").on("change", function () {
+        fetch("../../getVehiculo/" + $(this).val()).then(data => data.json()).then(response => {
             $("#marca").val(response.marca)
             $("#modelo").val(response.modelo)
             $("#año").val(response.ano)
-            response.chasis==null ?  $("#chasis").val("") : $("#chasis").val(response.chasis) ;           
+            response.chasis == null ? $("#chasis").val("") : $("#chasis").val(response.chasis);
             $("#tipo").val(response.tipo)
 
         })
     })
-    </script>
+    $("#ruta").on("change", function (e) {
+        e.preventDefault()
+        array_tramo=[]
+        objeto_rendimiento.items=[]
+        fetch("../get-tramos/" + $(this).val()).then(data => data.json()).then(res => {
+            if (res.status == 200) {
+                this.num_tramos = res.data.length
+                $("#tramo").prop("disabled", false)
+                for (let i = 0; i < res.data.length; i++) {
+                    objeto_tramo.id = res.data[i].id
+                    objeto_tramo.descripcion = res.data[i].descripcion
+                array_tramo.push(objeto_tramo)
+                objeto_tramo={id:"",descripcion:""}
+                }
+                objeto_rendimiento.list()
+            }
+        })
+
+
+
+    })
+
+    function actualizarmodelo() {
+        $(function () {
+            if ($('#id_marca').val() == "") {
+                $('#id_modelo_vehiculo').prop("disabled", true)
+                $('#id_modelo_vehiculo').empty();
+
+            } else {
+                $('#id_modelo_vehiculo').empty();
+                $('#id_modelo_vehiculo').append($("<option>", {
+                    value: "0",
+                    text: "Seleccione..."
+                }));
+                $.ajax({
+                    'url': '/catalogos/render-option-vehiculo',
+                    'type': 'GET',
+                    'data': {
+                        'id_marca': $('#id_marca').val()
+                    },
+                    'success': function (data) {
+                        $.each(data, function (index, valuex) {
+
+                            if (!valuex.eliminado && valuex.activo) {
+                                let opcion = document.createElement("option")
+                                opcion.value = valuex.id
+                                opcion.textContent = valuex.descripcion
+                                document.getElementById("id_modelo_vehiculo").append(
+                                    opcion)
+
+                            }
+                        })
+                    }
+                });
+            }
+        })
+
+    }
+    tabla_rendimientos = $("#tabla_rendimientos").DataTable({
+        responsive: true,
+        processing:"true",
+        ajax: {
+            url: "{% url 'Web:rendimientos' %}",
+            type: "POST",
+            data: {
+                "action": "searchData"
+            },
+            dataSrc: ""
+        },
+        stateSave: false,
+        "lengthMenu": [
+            [5, 10, 25, 50, -1],
+            [5, 10, 25, 50, "All"]
+        ],
+        language: {
+            "url": "{% static 'language.json' %}",
+        },
+        columns: [{
+                "data": 'id',
+                className: "middle text-center"
+            }, {
+                "data": 'marca',
+                className: "middle text-center"
+            }, {
+                "data": 'modelo',
+                className: "middle text-center"
+            },
+            {
+                "data": 'tramo',
+                className: "middle text-center"
+            },
+            {
+                "data": 'km',
+                className: "middle text-center",
+
+            },
+            {
+                "data": 'gal_abast',
+                className: "middle text-center",
+
+            },
+            {
+                "data": 'rend_vacio',
+                className: "middle text-center",
+
+            },
+            {
+                "data": null,
+                className: "middle text-center",
+
+            },
+        ],
+        columnDefs: [{
+                targets: [0],
+                visible: false,
+            },
+
+            {
+                targets: [-1],
+                render: function (row, data, index) {
+                    var buttons =
+                        '<button class="btn btn-warning btn-sm btn-rendimiento-editar"><i class="fa fa-edit"></i>Editar</a>' +
+                        '</a>';
+
+                    return buttons;
+                }
+            },
+        ],
+        initComplete: function (settings, json) {
+
+
+        }
+    })
+    $(document).on("click", '.btn-rendimiento-editar', function (e) {
+
+        e.preventDefault()
+        var tr = tabla_rendimientos.cell($(this).closest("td")).index();
+        var data = tabla_rendimientos.row(tr.row).data();
+        modal_rendimiento_edit = $.confirm({
+            title: "Editar Rendimiento",
+            content: "URL:../rendimiento/" + data.id,
+            columnClass: 'col-xl-8 col-lg-8 col-md-10 col-sm-12',
+            icon: "fa fa-edit",
+            type: "orange",
+            theme: "material",
+            scrollToPreviousElement: true,
+            scrollToPreviousElementAnimate: true,
+
+            buttons: {
+                Confirm: {
+                    text: 'Guardar cambios',
+                    btnClass: 'btn-orange',
+
+                    action: function url(e) {
+
+                        this.$content[0].ownerDocument.getElementById("submit_rendimiento_edit").click()
+                        return false;
+                    }
+                },
+
+                cancel: function () {
+
+                },
+            },
+            onContentReady: function () {
+                // when content is fetched & rendered in DOM
+                this.$content.find('form').on('submit', function (e) {
+                    e.preventDefault();
+                });;
+            },
+
+
+        });
+
+
+    });
+    $("#rendimiento-tab").on("click", function () {
+    window.localStorage.setItem("tab_rend", 1)
+  })
+  $("#rendimientos-tab").on("click", function () {
+
+    window.localStorage.setItem("tab_rend", 2)
+  })
+
+  let tab_rend = window.localStorage.getItem("tab_rend")
+
+  function select_tab(input) {
+    $(input).click()
+  }
+  if (tab_rend != null) {
+    if (tab_rend == 1) select_tab("#rendimiento-tab")
+    if (tab_rend == 2) select_tab("#rendimientos-tab")
+  }
+</script>
 {% endblock bottom_scripts %}
-    

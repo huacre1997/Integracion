@@ -58,7 +58,7 @@
         url: $("#formMarca").attr("action"),
         data: paramaters,
         dataType: "json",
-        processData: false, // tell jQuery not to process the data
+        processData: false,
         contentType: false,
         success: function (data) {
           if (data["status"] == 200) {

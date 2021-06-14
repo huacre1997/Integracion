@@ -8,34 +8,17 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between">
-        <h5><i class="fas fa-car"></i>&nbsp;Reporte de Rendimiento por Abastecimiento de Flota</h5> 
+        <h5><i class="fas fa-car"></i>&nbsp;Reporte de Rendimiento por Viaje</h5> 
         <button id="clean_filters" class="btn btn-danger">Remover
           Filtros</button>
         </div>
             <div class="card-body">
                <div class="row g-3">
-                    <div class="col-1">
-                        <label for="">Año</label>
-                        <input type="number" name="año" id="año" class="form-control">
-                    </div>
-                    <div class="col-2">
-                        <label for="">Mes</label>
-                        <select name="mes" id="mes" class="form-select">
-                            <option value="0">Seleccione...</option>
-                            <option value="1">ENERO</option>
-                            <option value="2">FEBRERO</option>
-                            <option value="3">MARZO</option>
-                            <option value="4">ABRIL</option>
-                            <option value="5">MAYO</option>
-                            <option value="6">JUNIO</option>
-                            <option value="7">JULIO</option>
-                            <option value="8">AGOSTO</option>
-                            <option value="9">SETIEMBRE</option>
-                            <option value="10">OCTUBRE</option>
-                            <option value="11">NOVIEMBRE</option>
-                            <option value="12">DICIEMBRE</option>
-                        </select>
-                    </div>
+                <div class="col-3">
+                  <label for="">Fecha</label>
+                  <input type="text" name="date_ranger" class="form-control" id="date_ranger" autocomplete="off">
+      
+                </div>
                     <div class="col-2">
                      <label for="">Marca</label>
                             <select name="marca" id="marca" class="form-select">
@@ -62,7 +45,7 @@
                         </select>
                             
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                           <label for="">Empresa</label>
                             <select name="empresa" id="empresa" class="form-select">
                               <option value="0">Seleccione...</option>
@@ -71,14 +54,11 @@
                         {% endfor %}  
                             </select>              
                     </div>
-                    <div class="col-1">
-                        <label for="" class="invisible">Buscar</label></label><button
-                            class="btn btn-primary btn-block"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;</button>
-                    </div>
+                   
                 </div>
                       <br>
                 <div class="table-responsive">
-                    <table  class="display responsive nowrap" id="reporte_rendimiento_flota" style="width:100%">
+                    <table  class="table table-bordered display responsive nowrap" id="reporte_rendimiento_flota" style="width:100%">
                         <thead>
                         <th>Placa</th>
                         <th> Marca</th>
@@ -89,14 +69,15 @@
                         <th>Conductor</th>
                         <th>Tramos/Vuelta</th>     
                         <th>Galones</th>
-               
-                        <th>Precio</th>
+                        <th>Precio P.</th>
+                        <th>KM</th>
                         <th>Monto</th>
                         <th>Recorr.</th>
                         <th>Rend.Real</th>
                         <th>Rend.Obj.</th>
                         <th>Consum</th>
-                        <th>%Rend%</th>
+                        <th>Delta</th>
+                        <th>Ahorro</th>
                       </thead>
                       <tbody>
           
@@ -115,46 +96,47 @@
 
 {% block bottom_scripts %}
 <script>
-     $("#clean_filters").on("click",function () {
-    parameters = {
-    año: "",
-    mes: "",
-    marca:"",
-    modelo:"",
+  $(document).ready(function () {
+    let date_range = null
+  let date_now = new moment().format('YYYY-MM-DD');
+  let        parameters = {
+    marca: "",
+    modelo: "",
     placa: "",
     empresa: "",
-
+    start_date: "",
+    end_date: "",
   }
-  $("#año").val("")
-  $("#mes").val(0)
+    $("#clean_filters").on("click",function () {
+       parameters = {
+    marca: "",
+    modelo: "",
+    placa: "",
+    empresa: "",
+    start_date: "",
+    end_date: "",
+  }
   $("#placa").val(0)
   $("#marca").val(0)
   $("#empresa").val(0)
+  $("#date_ranger").val("")
   $("#modelo").val(0)
     load()
+    console.log(parameters)
     })
-  let parameters = {
-    año: "",
-    mes: "",
-    marca:"",
-    modelo:"",
-    placa: "",
-    empresa: "",
-
-  }
   load()
-  $("#año").on("input", function () {
-    parameters.año = $(this).val()
-  })
-  $("#mes").on("change", function () {
-    parameters.mes = $(this).val()
-  })
+
+
+
   $("#placa").on("change", function () {
-    parameters.placa = $(this).val()
+    ($(this).val() == 0) ? parameters.placa = "": parameters.placa = $(this).val()
+    load()
+
   })
   $("#marca").on("change", function () {
-    parameters.marca = $(this).val()
-      
+    ($(this).val() == 0) ? parameters.marca = "": parameters.marca = $(this).val()
+    load()
+
   if(  $('#marca').val()==""){
 
     $('#modelo').prop("disabled",false)
@@ -177,100 +159,104 @@
     });}
   })
   $("#empresa").on("change", function () {
-    parameters.empresa = $(this).val()
+    
+    ($(this).val() == 0) ? parameters.empresa = "": parameters.empresa = $(this).val()
+    load()
+
   })
   $("#modelo").on("change", function () {
-    parameters.modelo = $(this).val()
-  })
-  $("#search").on("click", function () {
+    ($(this).val() == 0) ? parameters.modelo = "": parameters.modelo = $(this).val()
     load()
+
   })
-
+  
   function load() {
-    let tabla_flota = $("#reporte_rendimiento_flota").DataTable({
+ 
+     var tabla_flota = $("#reporte_rendimiento_flota").DataTable({
+      ordering:false,
       processing: "true",
-      stateSave: true,
-
       responsive: true,
       destroy: true,
       "lengthMenu": [
-        [5, 10, 25, 50, -1],
-        [5, 10, 25, 50, "All"]
+        [10, 25, 50, -1],
+        [10, 25, 50, "All"]
       ],
       language: {
-        "url": "{% static 'language.json' %}"
+        "url": "{% static 'language.json' %}",
+      
+ 
       },
       ajax: {
         url: window.location.pathname,
         type: "POST",
         data: parameters,
-        dataSrc: ""
+        dataSrc: function (json) {
+         json = JSON.parse(json);
+         return json;
+     },
       },
       columns: [
 
 
         {
-          "data": "placa.marca",
+          "data": 'placa__placa',
+          className: "middle"
+        },
+        {
+          "data": "placa__modelo_vehiculo__marca_vehiculo__descripcion",
 
           className: "middle"
         },
 
 
         {
-          "data": "placa.modelo",
+          "data": "placa__modelo_vehiculo__descripcion",
           className: "middle"
 
         },
         {
-          "data": 'placa.ano',
+          "data": 'placa__ano',
 
           className: "middle"
 
         },
         {
-          "data": 'abast.fecha',
+          "data": 'abast__viaje__fecha_fin',
           className: "middle"
         },
         {
-          "data": 'placa.empresa',
-          className: "middle"
-        },
-
-        {
-          "data": 'placa.placa',
+          "data": 'placa__empresa__nombre',
           className: "middle"
         },
 
+
         {
-          "data": 'conductor',
+          "data": "conductor",
           className: "middle"
         },
         {
-          "data": "abast.ruta.ruta",
+          "data": "tramo",
           className: "middle"
         },
         {
-          "data": "abast.tipo",
+          "data": "vol_total",
           className: "middle"
         },
         {
-          "data": "cargado",
+          "data": null,
+          className: "middle"
+        },
+       {
+          "data": "km_total",
+          className: "middle"
+        },
+       
+        {
+          "data": "monto_total",
           className: "middle"
         },
         {
-          "data": "volumen",
-          className: "middle"
-        },
-        {
-          "data": "abast.precio",
-          className: "middle"
-        },
-        {
-          "data": "total",
-          className: "middle"
-        },
-        {
-          "data": "km",
+          "data": "recorrido_total",
           className: "middle"
         },
         {
@@ -281,7 +267,45 @@
           "data": null,
           className: "middle"
         },
+        {
+          "data": null,
+          className: "middle"
+        },  
+        {
+          "data": null,
+          className: "middle"
+        }, {
+          "data": null,
+          className: "middle"
+        },
 
+      ],
+        buttons: [
+        {
+          extend: "excelHtml5",
+          text: "<i class='fas fa-file-excel'></i>&nbsp;Exportar a Excel",
+          titleAttr: "excel",
+          className: "btn btn-success"
+        },
+        {
+          extend: "pdfHtml5",
+          text: "<i class='fas fa-file-pdf'></i>&nbsp;Exportar a PDF",
+          titleAttr: "PDF",
+          className: "btn btn-danger",
+          download: "open",
+          orientation: "landscape",
+          pageSize: "LEGAL",
+
+        },
+        {
+          extend: "print",
+          text: "<i class='fas fa-print'></i>&nbsp;Imprimir",
+          className: "btn btn-secondary",
+          download: "open",
+          orientation: "landscape",
+          pageSize: "LEGAL",
+
+        }
       ],
       columnDefs: [
 
@@ -294,24 +318,27 @@
               return data
             }
           }
+        }, {
+          targets: [9],
+          render: function (data, type, row) {
+            return parseFloat(row.monto_total / row.vol_total).toFixed(2)
+          }
+        },
+  
+        {
+          targets: [13],
+          render: function (data, type, row) {
+            console.log(row)
+            return parseFloat(row.recorrido_total / row.vol_total).toFixed(2)
+          }
         },
         {
           targets: [14],
           render: function (data, type, row) {
-            return parseFloat(row.km / row.volumen).toFixed(2)
-          }
-        },
-        {
-          targets: [15],
-          render: function (data, type, row) {
-            if (row.cargado == 50) {
-              return parseFloat(row.rend_km / row.rend_prom).toFixed(2)
+           
+              return parseFloat(row.r_obj_total / row.g_obj_total).toFixed(2)
 
-            } else if (row.cargado == 0) {
-              return parseFloat(row.rend_km / row.rend_vacio).toFixed(2)
-
-            }
-            return parseFloat(row.rend_km / row.rend_cargado).toFixed(2)
+      
           }
         },
 
@@ -319,19 +346,23 @@
       ],
       "initComplete": function (settings, json) {
         for (let index = 0; index < settings.aoData.length; index++) {
-          let recorrido = $("td:eq(13)", tabla_flota.row(index).node()).text()
-          let real = $("td:eq(14)", tabla_flota.row(index).node()).text()
-
-          let volumen = $("td:eq(10)", tabla_flota.row(index).node()).text()
-          let objetivo = $("td:eq(15)", tabla_flota.row(index).node()).text()
-          $("td:eq(16)", tabla_flota.row(index).node()).html((parseInt(recorrido) / parseFloat(objetivo)).toFixed(
+          let recorrido = $("td:eq(12)", tabla_flota.row(index).node()).text()
+          let volumen = $("td:eq(8)", tabla_flota.row(index).node()).text()
+          let precio = $("td:eq(9)", tabla_flota.row(index).node()).text()
+          let real = $("td:eq(13)", tabla_flota.row(index).node()).text()
+        let objetivo = $("td:eq(14)", tabla_flota.row(index).node()).text()
+          $("td:eq(15)", tabla_flota.row(index).node()).html((parseInt(recorrido) / parseFloat(objetivo)).toFixed(
             2))
-          $("td:eq(17)", tabla_flota.row(index).node()).html((parseInt(real) / parseFloat(objetivo)).toFixed(2))
-          let consumo = $("td:eq(16)", tabla_flota.row(index).node()).text()
-          let precio = $("td:eq(11)", tabla_flota.row(index).node()).text()
-          $("td:eq(18)", tabla_flota.row(index).node()).html(((parseFloat(consumo) - parseFloat(volumen)) *
-            parseFloat(precio)).toFixed(2))
+          $("td:eq(16)", tabla_flota.row(index).node()).html((parseInt(real) - parseFloat(objetivo)).toFixed(2))
+          let delta = $("td:eq(16)", tabla_flota.row(index).node()).text()
+         
+          $("td:eq(17)", tabla_flota.row(index).node()).html(((parseFloat(delta) * parseFloat(volumen) /
+              parseFloat(real)) *
+            parseFloat(precio)).toFixed(3))
         }
+         tabla_flota.buttons().container()
+            .appendTo('#reporte_rendimiento_flota_wrapper .col-md-6:eq(0)');
+
         // console.log( $("td:eq(15)", tabla_flota.row(1).node()))
         //   $("td:eq(16)", tabla_flota.row(tr.row).node()).html('$' + vent.items
         //           .products[tr.row].sub_total.toFixed(2)) 
@@ -339,5 +370,31 @@
 
     })
   }
+  $('input[name="date_ranger"]').daterangepicker({
+    autoUpdateInput: false,
+
+    locale: {
+      format: 'YYYY-MM-DD'
+    },
+    opens: 'right'
+  }).on("apply.daterangepicker", function (ev, picker) {
+    $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+
+    date_range = picker;
+
+    parameters.start_date = date_range.startDate.format("YYYY-MM-DD")
+    parameters.end_date = date_range.endDate.format("YYYY-MM-DD")
+    load()
+
+  }).on('cancel.daterangepicker', function (ev, picker) {
+    date_range = picker;
+    $(this).val("");
+    parameters.start_date = ""
+    parameters.end_date = ""
+
+    load();
+  });
+  });
+    
 </script>
 {% endblock bottom_scripts %}

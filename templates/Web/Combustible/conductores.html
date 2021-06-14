@@ -3,50 +3,83 @@
 {% block collapseProcesos %}show{% endblock collapseProcesos %}
 {% block conductores %}collapse-item active{% endblock  %}
 {% block content %}
+{% load static %}
 <div id="wrapper">
     <div class="container-fluid">
-        <div class="card">
-            <h5 class="card-header"><i class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp;Registro de Conductores</h5>
-            <div class="card-body">
-                <p class="card-text">
-                    <form class="row g-3 needs-validation" id="form_conductores" novalidate>
-                        <div class="col-md-3">
-                            <label class="form-label">Tipo de Documento</label>
-                           <select name="tip_doc" id="tip_doc" class="form-select">
-                           
-                           {% for i in  tip_doc %}
-                               <option value="{{ i.0 }}">{{ i.1 }}</option>
-                           {% endfor %}
-                               
-                           </select>
-                               <div class="invalid-feedback">
-                                Este campo es requerido
-                            </div>
-                        </div>
-                       
-                        <div class="col-md-3">
-                            <label class="form-label">N° de Documento</label>
-                            <input type="text" name="doc" id="doc" class="form-control">
-                            <div class="invalid-feedback">
-                                Este campo es requerido
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Apellidos y Nombres</label>
-                            <input type="text" class="form-control" id="nombres" name="nombres">
-                            <div class="invalid-feedback">
-                                Este campo es requerido
-                            </div>
-                        </div> 
-                        
-                    
+        <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="conductor-tab" data-toggle="tab" data-target="#conductor"
+                    type="button" role="tab" aria-controls="conductor" aria-selected="true">Registro de
+                    Conductores</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="conductores-tab" data-toggle="tab" data-target="#conductores"
+                    type="button" role="tab" aria-controls="conductores" aria-selected="false">Conductores</button>
+            </li>
 
-                   
-                        <div class="col-12">
-                            <button class="btn btn-primary" type="button" id="conductores_submit">Guardar</button>
-                        </div>
-                    </form>
-                </p>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="conductor" role="tabpanel" aria-labelledby="conductor-tab">
+                <div class="card">
+                    {% comment %} <h5 class="card-header"><i class="fa fa-plus-circle"
+                            aria-hidden="true"></i>&nbsp;Registro de Conductores</h5> {% endcomment %}
+                    <div class="card-body">
+                        <form class="row g-3 needs-validation" id="form_conductores" novalidate>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo de Documento</label>
+                                <select name="tip_doc" id="tip_doc" class="form-select">
+
+                                    {% for i in  tip_doc %}
+                                    <option value="{{ i.0 }}">{{ i.1 }}</option>
+                                    {% endfor %}
+
+                                </select>
+                                <div class="invalid-feedback">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">N° de Documento</label>
+                                <input type="text" name="doc" id="doc" class="form-control">
+                                <div class="invalid-feedback">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Apellidos y Nombres</label>
+                                <input type="text" class="form-control" id="nombres" name="nombres">
+                                <div class="invalid-feedback">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="col-12">
+                                <button class="btn btn-primary" type="button" id="conductores_submit">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="conductores" role="tabpanel" aria-labelledby="conductores-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <table id="tabla_conductores" class="table table-bordered" style="width: 100%">
+                            <thead>
+                                <th style="width: 0;">ID</th>
+                                <th style="width: 50;">Apelidos y  Nombres</th>
+                                <th style="width: 20;">Tipo Documento</th>
+                                <th style="width: 20;">N°Documento</th>
+                           
+                                <th style="width: 10%;"></th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -56,71 +89,209 @@
 
 {% block bottom_scripts %}
 <script>
-  function clean_fields(input) {
-            $(input).val('');
-             $(input).removeClass('is-invalid');
-          }
-          $("#tip_doc").on("change", function() {
-              $("doc").removeClass('is-invalid');
-          })
-        document.getElementById("conductores_submit").addEventListener("click",function(){
-            let error = 0
-            function validar(input){
-                if($(input).val()==""){
-                    $(input).addClass("is-invalid")
-                    error = 1
-                    $(input).on("input",function(){
-                        $(input).removeClass("is-invalid")
-                    })
-                }
-            }
-            let passForm=docDigits($("#tip_doc").val(),$("#doc").val())
-            console.log(passForm)
-            if (passForm.status == 500) {
+    let tabla_conductores 
+    function clean_fields(input) {
+        $(input).val('');
+        $(input).removeClass('is-invalid');
+    }
+    $("#tip_doc").on("change", function () {
+        $("doc").removeClass('is-invalid');
+    })
+    document.getElementById("conductores_submit").addEventListener("click", function () {
+        let error = 0
 
-                $("#doc").addClass("is-invalid").on("input",function(){
-                    $(this).removeClass("is-invalid")
-                })
-                $("#doc").next().text(passForm.mensaje) 
+        function validar(input) {
+            if ($(input).val() == "") {
+                $(input).addClass("is-invalid")
                 error = 1
-
-              }
-       
-            validar($("#nombres"))
-
-         
-            if(error == 0){
-                   let form=document.getElementById("form_conductores")
-            let data=new FormData(form)
-                fetch(window.location.href,{
-                    method: "POST",
-                    headers: {
-                              'X-CSRFToken': csrftoken
-                    },
-                    body: data
-
-                }).then(data=>data.json()).then(response=>{
-                    console.log(response);
-                    if(response.status == 200){
-                        notificacion(1500,"Genial!","success","Conductor agregado!")
-                        $.each($("input"), function (indexInArray, valueOfElement) { 
-                             clean_fields($(valueOfElement))
-                            });
-                     
-                    }else{
-                        notificacion(1500, "Error!","error","Ha ocurrido un error.Revise los campos.")
-                        if(response.form.doc){
-                            $("#doc").addClass("is-invalid").on("input",function(){
-                                $(this).removeClass("is-invalid")
-                            })
-                            $("#doc").next().text(response.form.doc[0])
-                        }
-                   
-                    }
-               
+                $(input).on("input", function () {
+                    $(input).removeClass("is-invalid")
                 })
             }
-            
-        })
+        }
+        let passForm = docDigits($("#tip_doc").val(), $("#doc").val())
+        console.log(passForm)
+        if (passForm.status == 500) {
+
+            $("#doc").addClass("is-invalid").on("input", function () {
+                $(this).removeClass("is-invalid")
+            })
+            $("#doc").next().text(passForm.mensaje)
+            error = 1
+
+        }
+
+        validar($("#nombres"))
+
+
+        if (error == 0) {
+            let form = document.getElementById("form_conductores")
+            let data = new FormData(form)
+            fetch(window.location.href, {
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: data
+
+            }).then(data => data.json()).then(response => {
+                console.log(response);
+                if (response.status == 200) {
+                    notificacion(1500, "Genial!", "success", "Conductor agregado!")
+                    $.each($("input"), function (indexInArray, valueOfElement) {
+                        clean_fields($(valueOfElement))
+                    });
+                    tabla_conductores.ajax.reload()
+
+                } else {
+                    notificacion(1500, "Error!", "error", "Ha ocurrido un error.Revise los campos.")
+                    if (response.form.doc) {
+                        $("#doc").addClass("is-invalid").on("input", function () {
+                            $(this).removeClass("is-invalid")
+                        })
+                        $("#doc").next().text(response.form.doc[0])
+                    }
+
+                }
+
+            })
+        }
+
+    })
+    tabla_conductores = $("#tabla_conductores").DataTable({
+        responsive: true,
+        ajax: {
+            url: "{% url 'Web:conductores' %}",
+            type: "POST",
+            data: {
+                "action": "searchData"
+            },
+            dataSrc: ""
+        },
+        stateSave: false,
+        "lengthMenu": [
+            [5, 10, 25, 50, -1],
+            [5, 10, 25, 50, "All"]
+        ],
+        language: {
+            "url": "{% static 'language.json' %}",
+        },
+        columns: [{
+                "data": 'id',
+                className: "middle text-center"
+            }, {
+                "data": 'nombres',
+                className: "middle text-center"
+            }, {
+                "data": 'tip_doc',
+                className: "middle text-center"
+            },
+       {
+                "data": 'doc',
+                className: "middle text-center"
+            },
+       
+     
+            {
+                "data": null,
+                className: "middle text-center",
+
+            },
+        ],
+        columnDefs: [{
+                targets: [0],
+                visible: false,
+            },
+
+            {
+                targets: [2],
+                render: function (row, data, index) {
+                    if(row=="1"){
+                        return "DNI"
+                    }
+                    if(row=="2"){
+                        return "Carnet Extranjería"
+                    } if(row=="3"){
+                        return "PASAPORTE"
+                    } if(row=="4"){
+                        return "RUC"
+                    }
+                }
+            }, {
+                targets: [-1],
+                render: function (row, data, index) {
+                    var buttons =
+                        '<button class="btn btn-warning btn-sm btn-conductor-editar"><i class="fa fa-edit"></i>Editar</a>' +
+                        '</a>';
+
+                    return buttons;
+                }
+            },
+        ],
+        initComplete: function (settings, json) {
+
+
+        }
+    })
+    $(document).on("click", '.btn-conductor-editar', function (e) {
+
+e.preventDefault()
+var tr = tabla_conductores.cell($(this).closest("td")).index();
+var data = tabla_conductores.row(tr.row).data();
+modal_conductor_edit = $.confirm({
+    title: "Editar Conductor",
+    content: "URL:../conductor/" + data.id+"/",
+    columnClass: 'col-xl-8 col-lg-8 col-md-10 col-sm-12',
+    icon: "fa fa-edit",
+    type: "orange",
+    theme: "material",
+    scrollToPreviousElement: true,
+    scrollToPreviousElementAnimate: true,
+
+    buttons: {
+        Confirm: {
+            text: 'Guardar cambios',
+            btnClass: 'btn-orange',
+
+            action: function url(e) {
+
+                this.$content[0].ownerDocument.getElementById("submit_conductor_edit").click()
+                return false;
+            }
+        },
+
+        cancel: function () {
+
+        },
+    },
+    onContentReady: function () {
+        // when content is fetched & rendered in DOM
+        this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
+
+
+});
+
+
+});
+$("#conductor-tab").on("click", function () {
+window.localStorage.setItem("tab_conductor", 1)
+})
+$("#conductores-tab").on("click", function () {
+
+window.localStorage.setItem("tab_conductor", 2)
+})
+
+let tab_conductor = window.localStorage.getItem("tab_conductor")
+
+function select_tab(input) {
+$(input).click()
+}
+if (tab_conductor != null) {
+if (tab_conductor == 1) select_tab("#conductor-tab")
+if (tab_conductor == 2) select_tab("#conductores-tab")
+}
 </script>
 {% endblock bottom_scripts %}

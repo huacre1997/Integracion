@@ -3,130 +3,573 @@
 {% block collapseProcesos %}show{% endblock collapseProcesos %}
 {% block ruta %}collapse-item active{% endblock  %}
 {% block content %}
+{% load static %}
 <div id="wrapper">
     <div class="container-fluid">
-        <div class="card">
-            <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Registro de Ruta</h5>
-            <div class="card-body">
-                <p class="card-text">
-                    <form class="row g-3 needs-validation" id="form_ruta" novalidate>
-                        <div class="col-md-4">
-                            <label class="form-label">Placa</label>
-                            <select name="placa" id="placa" class="form-select">
-                                <option value="0">Seleccione...</option>
-                                
-                                {% for i in placa  %}
-                                    <option value="{{ i.id }}">{{ i.placa }}</option>
-                                {% endfor %}
-                                    
-                            </select>
-                              <div class="invalid-feedback">
-                                Este campo es requerido.
-                            </div>
-                        </div>
-                       
-                       
-                        <div class="col-md-4">
-                            <label class="form-label">Kilometraje</label>
-                            <input type="text" name="km" id="km" class="form-control">
-                            <div class="invalid-feedback">
-                                Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Volumen</label>
-                            <input type="number" class="form-control" id="volumen" name="volumen">
-                            <div class="invalid-feedback">
-                                Este campo es requerido.
-                            </div>
-                        </div> <div class="col-md-4">
-                            <label class="form-label">Ruta</label>
-                            <input type="text" class="form-control" id="ruta" name="ruta">
-                            <div class="invalid-feedback">
-                                Este campo es requerido.
-                            </div>
-                        </div> <div class="col-md-4">
-                            <label class="form-label">Rendimiento</label>
-                            <input type="number" class="form-control" id="rend" name="rend">
-                            <div class="invalid-feedback">
-                                Este campo es requerido.
-                            </div>
-                        </div>
-                     
+
+        <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="ruta-tab" data-toggle="tab" data-target="#ruta" type="button"
+                    role="tab" aria-controls="ruta" aria-selected="true">Registro de Rutas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rutas-tab" data-toggle="tab" data-target="#rutas" type="button" role="tab"
+                    aria-controls="rutas" aria-selected="false">Rutas</button>
+            </li>
+
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="ruta" role="tabpanel" aria-labelledby="ruta-tab">
+                <div class="card">
+
+                    <div class="card-body">
+
+
+                        <table class="table  table-hover table-bordered" id="tabla_tramos" style="width: 100%;">
+                            <thead>
+                                <th style="width: 0%;">id</th>
+                                <th style="width: 95%;">Tramo</th>
+                                <th style="width: 5%;"></th>
+                            </thead>
+                        </table>
                         <div class="col-12">
                             <button class="btn btn-primary" type="button" id="submit_ruta">Guardar</button>
                         </div>
-                    </form>
-                </p>
+                    </div>
+                </div>
+
+
             </div>
+            <div class="tab-pane fade" id="rutas" role="tabpanel" aria-labelledby="rutas-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered display responsive nowrap" id="tabla_rutas"
+                                style="width:100%">
+                                <thead>
+                                    <th></th>
+                                    <th>Ruta</th>
+                                    <th></th>
+
+                                </thead>
+                                <tbody>
+
+
+                                </tbody>
+
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
 </div>
+
+
 {% endblock content %}
 
 {% block bottom_scripts %}
 <script>
- 
-        function clean_fields(input) {
-                        $(input).val(0);
+    var de
+    let data2 = {
+        id: "",
+        descripcion: []
+    }
+    let tabla_tramos
+    let tabla_rutas
 
-            $(input).val('');
-          }
-        document.getElementById("submit_ruta").addEventListener("click",function(){
-            let error = 0
-            function validar(input){
-                if($(input).val()=="" || $(input).val()=="0" ){
-                    $(input).addClass("is-invalid")
-                    error = 1
-                    $(input).on("input change",function(){
-                        $(input).removeClass("is-invalid")
-                    })
-                }
-            }
-            validar($("#placa"))
+    function clean_fields(input) {
 
-            validar($("#km"))
-            validar($("#volumen"))
-            validar($("#rend"))
-            validar($("#ruta"))
-            let form=document.getElementById("form_ruta")
-            let data=new FormData(form)
-            if(error == 0){
-                fetch(window.location.href,{
-                    method: "POST",
-                    headers: {
-                              'X-CSRFToken': csrftoken
-                    },
-                    body: data
+        $(input).val('');
+    }
+    document.getElementById("submit_ruta").addEventListener("click", function () {
+        let error = 0
 
-                }).then(data=>data.json()).then(response=>{
-                    console.log(response);
-                    if(response.status == 200){
-                        notificacion(1500,"Genial!","success","Estación agregada!")
-                        $.each($("input"), function (indexInArray, valueOfElement) { 
-                             clean_fields($(valueOfElement))
-                            });
-                        $("#placa").val(0)
-                    }else{
-                        notificacion(1500, "Error!","error","Ha ocurrido un error.Revise los campos.")
-                        if(response.form.placa){
-                            $("#placa").addClass("is-invalid").on("input",function(){
-                                $(this).removeClass("is-invalid")
-                            })
-                            $("#placa").next().text(response.form.placa[0])
-                        }
-                        if(response.form.ruta){
-                            $("#ruta").addClass("is-invalid").on("input",function(){
-                                $(this).removeClass("is-invalid")
-                            })
-                            $("#ruta").next().text(response.form.ruta[0])
-                        }
-                    }
-               
+        function validar(input) {
+            if ($(input).val() == "" || $(input).val() == "0") {
+                $(input).addClass("is-invalid")
+                error = 1
+                $(input).on("input change", function () {
+                    $(input).removeClass("is-invalid")
                 })
             }
-            
-        })
+        }
+        if (objeto2.items.length == 0) {
+            error == 1
+            notificacion(1500, "Error!", "error", "Ingrese al menos un tramo para esta ruta!")
+
+        }
+        validar($("#placa"))
+        validar($("#km"))
+        validar($("#volumen"))
+        validar($("#rend"))
+
+        if (error == 0) {
+            $("#loadingCharge").css("visibility", "visible")
+            $("#spinner").css("visibility", "visible")
+            let data = new FormData()
+            data.append("objeto", JSON.stringify(objeto2.items))
+            fetch(window.location.href, {
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: data
+
+            }).then(data => data.json()).then(response => {
+                console.log(response);
+                if (response.status == 200) {
+                    $("#loadingCharge").css("visibility", "hidden")
+                    $("#spinner").css("visibility", "hidden")
+                    notificacion(1500, "Genial!", "success", "Ruta agregada!")
+                    objeto2.items = []
+                    data2 = {
+                        id: "",
+                        descripcion: []
+                    }
+                    objeto2.list()
+                    tabla_rutas.ajax.reload()
+                    $.each($("input"), function (indexInArray, valueOfElement) {
+                        clean_fields($(valueOfElement))
+                    });
+                    $("#placa").val(0)
+                } else {
+                    notificacion(1500, "Error!", "error", "Ha ocurrido un error.Revise los campos.")
+                    if (response.form.placa) {
+                        $("#placa").addClass("is-invalid").on("input", function () {
+                            $(this).removeClass("is-invalid")
+                        })
+                        $("#placa").next().text(response.form.placa[0])
+                    }
+                    if (response.form.ruta) {
+                        $("#ruta").addClass("is-invalid").on("input", function () {
+                            $(this).removeClass("is-invalid")
+                        })
+                        $("#ruta").next().text(response.form.ruta[0])
+                    }
+                }
+
+            })
+        }
+
+    })
+    tabla_rutas = $("#tabla_rutas").DataTable({
+        responsive: true,
+                processing:"true",
+
+        ajax: {
+            url: "{% url 'Web:rutas' %}",
+            type: "POST",
+            data: {
+                "action": "searchData"
+            },
+            dataSrc: ""
+        },
+        stateSave: false,
+        "lengthMenu": [
+            [5, 10, 25, 50, -1],
+            [5, 10, 25, 50, "All"]
+        ],
+        language: {
+            "url": "{% static 'language.json' %}",
+        },
+        columns: [{
+                "data": 'id',
+                className: "middle text-center"
+            },
+            {
+                "data": 'ruta',
+                className: "middle text-center"
+            },
+            {
+                "data": null,
+                className: "middle text-center",
+
+            },
+        ],
+        columnDefs: [{
+                targets: [0],
+                visible: false,
+            },
+
+            {
+                targets: [2],
+                render: function (row, data, index) {
+                    var buttons = '<a href="../ruta/' + index.id +
+                        '/" class="btn btn-warning btn-sm btn-edit-ruta"><i class="fa fa-edit"></i>Editar</a>' +
+                        '</a>';
+
+                    return buttons;
+                }
+            },
+        ],
+        initComplete: function (settings, json) {
+
+
+        }
+    })
+    let id = 0
+    let objeto2 = {
+        items: [],
+        list: function () {
+            tabla_tramos = $("#tabla_tramos").DataTable({
+                searching: false,
+                ordering: false,
+                paging: false,
+                info: false,
+                data: this.items,
+                destroy: true,
+                columns: [
+
+                    {
+                        "data": "id",
+                        className: "middle"
+                    }, {
+                        "data": "descripcion",
+                        className: "middle"
+                    },
+
+
+
+                    {
+                        "data": null,
+                        className: "middle"
+                    },
+                ],
+                columnDefs: [{
+                        "targets": [0],
+                        "visible": false,
+                    },
+                    {
+                        targets: [1],
+                        render: function (data, type, row) {
+
+                            var $select = $(`<select size="50" multiple class="js-example-basic-multiple form-select" name="m1-${id}" id="m1-${id}" multiple="multiple">
+                                {% for i in ubicacion %}
+                                <option value="{{i.0}}-{{i.2}}-{{i.1}}">{% if i.2 == "1" %}{{i.1}}{% elif i.2 == "2" %}prov.{{i.1}} ({{i.3}}){%else%}dis.{{i.1}} ({{i.3}}){%endif%}</option>
+                                {%endfor%}
+                                </select>`)
+                            id = id + 1
+                            return $select[0].outerHTML
+
+                        }
+                    },
+
+                    {
+                        targets: [2],
+                        render: function (data, type, row) {
+
+                            if (data.id != "") {
+                                return `<button class="btn btn-success btn-remove"><i class="fas fa-check"></i></button>`;
+
+                            } else {
+                                return `<button class="btn btn-primary btn-add"><i class="fas fa-plus"></i></button>`;
+                            }
+                        }
+                    },
+                ],
+
+                initComplete: function (settings, json) {
+                    $(function () {
+                        function checkDuplicate(arr) {
+                            let result = false;
+                            const s = new Set(arr);
+                            if (arr.length == 2) {
+                                if (arr.length !== s.size) {
+                                    result = true;
+                                }
+                            }
+                            return result
+                        }
+
+                        function formatState(state) {
+                            if (!state.id) {
+                                return state.text;
+                            }
+
+                            var $state = $(
+                                '<span><img class="img-flag" /> <span></span></span>'
+                            );
+
+                            // Use .text() instead of HTML string concatenation to avoid script injection issues
+
+
+                            return $state;
+                        };
+                        var $eventSelect = $('.js-example-basic-multiple')
+
+                        $eventSelect.select2({
+                            allowRepetitionForMultipleSelect: true,
+                            templateSelection: formatState
+
+                        });
+
+                        var selectedM1 = []
+                        let cant = $('select.js-example-basic-multiple').length - 1
+                        console.log($('select.js-example-basic-multiple'))
+                        $('select.js-example-basic-multiple').each(function (i, item) {
+
+
+                            let element = settings.aoData[i]._aData;
+
+                            if (element.descripcion.length != 0) {
+                                for (let index = 0; index < element.descripcion
+                                    .length; index++) {
+
+                                    $(item).find("option").each(function (option_i,
+                                        option) {
+                                        let elemental = element.descripcion[
+                                            index];
+                                        let obj = {
+                                            id: "",
+                                            text: ""
+                                        }
+                                        let opcion = $(option).val()
+                                        if (opcion == elemental) {
+                                            obj.id = $(option).val()
+                                            obj.text = $(option).text()
+                                            selectedM1.push(obj)
+                                            obj = {
+                                                id: "",
+                                                text: ""
+                                            }
+                                            return false;
+
+                                        }
+
+                                    });
+                                }
+
+                            }
+                            console.log(selectedM1)
+                            $(item).select2('data', selectedM1);
+                            selectedM1 = []
+
+                        })
+
+
+
+
+
+                        function valid(that, name, mensaje =
+                            "Revise los campos") {
+                            let ele = $(that).parent().parent().find(name)
+                            if (ele.val() == "0" || ele.val() == "") {
+                                error = 1
+                                ele.addClass("is-invalid")
+                                ele.on("change input", function () {
+                                    ele.removeClass("is-invalid")
+                                })
+                                alerta(1500, "error", mensaje)
+                                $(this).prop("disabled", false)
+
+                            }
+                        }
+                        $(".btn-remove").on("click", function () {
+                            var tr = tabla_tramos.cell($(this).closest("td", "li"))
+                                .index()
+
+                            let a = confirmar(function () {
+                                    objeto2.items.splice(tr.row, 1)
+                                    objeto2.list()
+
+                                }, "¿Desea eliminar este producto de la lista?",
+                                function () {
+
+                                })
+
+
+                        })
+                        $(".btn-remove").hover(function () {
+
+                                $(this).children().remove()
+                                $(this).append('<i class="fas fa-times"></i>').css(
+                                    "width", "42px")
+                                $(this).removeClass("btn-success").addClass(
+                                    "btn-danger");
+                            }, function () {
+                                $(this).children().remove()
+                                $(this).append('<i class="fas fa-check"></i>')
+                                $(this).removeClass("btn-danger").addClass(
+                                    "btn-success");
+                            }
+
+                        )
+
+                        $('select.js-example-basic-multiple').on("change", function (e) {
+                            e.preventDefault()
+                            $(this).removeClass("is-invalid")
+
+                            cant = $(this).find("input").val()
+                            var tr = tabla_tramos.cell($(this).closest("td", "li"))
+                                .index()
+
+                            if ($(this).val() == "") {
+                                $("#submit_ruta").prop("disabled", true)
+                                $(this).addClass("is-invalid")
+                            } else {
+
+                                let errorc = 0
+                                for (let i = 0; i < settings.aoData.length -
+                                    1; i++) {
+                                    if (arraysMatch(settings.aoData[i]._aData
+                                            .descripcion, cant.split(",")) && i !=
+                                        tr.row) {
+                                        alerta(1500, "error",
+                                            "Ese tramo ya se encuentra en la tabla"
+                                        )
+                                        $(this).addClass("is-invalid")
+                                        errorc = 1
+                                        break
+                                    }
+                                }
+
+                                let a = 0
+                                $.each($(".form"), function (index, value) {
+                                    if ($(value).hasClass("is-invalid")) {
+                                        a = a + 1
+                                        $("#submit_ruta").prop("disabled",
+                                            true)
+
+                                    }
+                                });
+                                //     let reg = /^([A-Z\s]+-)+[A-Z\s]+$/
+                                //     let tramo=$(this).val()
+                                // let arr = tramo.split("-")
+                                //     if(checkDuplicate(arr)){
+                                //     error=1
+                                //     $(this).addClass("is-invalid")
+                                // }
+                                // if (!reg.test(tramo)) {
+                                //     error = 1
+                                //     $(this).addClass("is-invalid")
+                                // }
+                                if (a == 0 && errorc == 0) {
+                                    $("#submit_ruta").prop("disabled", false)
+
+                                    if (typeof objeto2.items[tr.row] !==
+                                        "undefined") {
+
+                                        objeto2.items[tr.row].descripcion = cant
+                                            .split(",");
+                                        console.log(objeto2.items)
+                                    }
+
+                                }
+                            }
+
+                        })
+                        $("td").on("click", ".btn-add", function (e) {
+                            array = []
+                            let error = 0
+                            var tr = tabla_tramos.cell($(this).closest("td", "li"))
+                                .index()
+                            let tramos = $("td:eq(0)", tabla_tramos.row(tr.row)
+                                .node()).children().next().find("input").val()
+                            // let descripcion = $("td:eq(1)", tabla_tramos.row(tr.row).node()).children()
+                            data2.descripcion = tramos.split(",")
+                            data2.id = "1"
+                            // let reg = /^([A-Z\s]+-)+[A-Z\s]+$/
+                            // let arr = data2.descripcion.split("-")
+                            // if(checkDuplicate(arr)){
+                            //     error=1
+                            //     descripcion.addClass("is-invalid")
+                            //     alerta(1500, "error", "Ingrese una ruta válida")
+                            // }
+                            // valid(this, "[name='descripcion']")
+                            // if (!reg.test(data2.descripcion)) {
+                            //     error = 1
+                            //     descripcion.addClass("is-invalid")
+                            //     alerta(1500, "error", "Ingrese una ruta válida")
+
+                            // }
+                            if (data2.descripcion.length == 0) {
+                                error = 1
+                                tramos.addClass("is-invalid")
+                                alerta(1500, "error", "Hay  campos vacíos!")
+                            }
+                            for (let i = 0; i < settings.aoData.length - 1; i++) {
+                                if (arraysMatch(settings.aoData[i]._aData
+                                        .descripcion, data2.descripcion)) {
+                                    error = 1
+                                    tramos.addClass("is-invalid")
+                                    alerta(1500, "error", "Hay un tramo duplicado!")
+
+                                }
+                            }
+                            if (error == 0) {
+
+                                $(this).prop("disabled", false)
+                                let before = data2.descripcion[data2.descripcion
+                                    .length - 1]
+                                console.log(before)
+                                objeto2.items.push(data2)
+                                data2 = {
+                                    id: "",
+                                    descripcion: [before]
+                                    // descripcion: arr[arr.length - 1] + "-"
+
+                                }
+                                console.log(objeto2.items)
+                                $(this).children().remove()
+                                $(this).append('<i class="fas fa-check"></i>')
+                                $(this).removeClass("btn-primary").addClass(
+                                    "btn-success")
+                                $(this).removeClass("btn-add").addClass(
+                                    "btn-remove")
+                                $(this).hover(function () {
+
+                                        $(this).children().remove()
+                                        $(this).append(
+                                                '<i class="fas fa-times"></i>')
+                                            .css("width",
+                                                "42px")
+                                        $(this).removeClass("btn-success")
+                                            .addClass("btn-danger");
+                                    }, function () {
+                                        $(this).children().remove()
+                                        $(this).append(
+                                            '<i class="fas fa-check"></i>')
+                                        $(this).removeClass("btn-danger")
+                                            .addClass("btn-success");
+                                    }
+
+                                )
+                                objeto2.list()
+                                $("#submit_ruta").prop("disabled", false)
+
+                            } else {
+                                $("#submit_ruta").prop("disabled", true)
+                            }
+                        })
+                    })
+                }
+            });
+            tabla_tramos.row.add(data2).draw()
+
+        }
+
+    }
+    objeto2.list()
+    $("#ruta-tab").on("click", function () {
+        window.localStorage.setItem("tab-ruta", 1)
+    })
+    $("#rutas-tab").on("click", function () {
+        window.localStorage.setItem("tab-ruta", 2)
+    })
+
+    let tab = window.localStorage.getItem("tab-ruta")
+
+    function select_tab(input) {
+        $(input).click()
+    }
+    if (tab != null) {
+        if (tab == 1) select_tab("#ruta-tab")
+        if (tab == 2) select_tab("#rutas-tab")
+    }
 </script>
 {% endblock bottom_scripts %}

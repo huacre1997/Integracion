@@ -15,12 +15,12 @@
         
         {% block sidebar %}
     
-      <li class="nav-item {% block procesos %}{% endblock procesos %}">
+      <li class="nav-item {% block procesos %}active{% endblock procesos %}">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fa fa-edit"></i>
           <span>Procesos</span>
         </a>
-        <div id="collapseOne" class="collapse {% block collapseProcesos %}{% endblock collapseProcesos %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div id="collapseOne" class="collapse {% block collapseProcesos %}show{% endblock collapseProcesos %}" aria-labelledby="headingOne" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="{% block abastecimiento %}collapse-item{% endblock %}" href="{% url 'Web:abastecimiento' %}">Abastecimiento</a>
             <a class="{% block rendimiento %}collapse-item{% endblock %}"  href="{% url 'Web:rendimiento' %}">Rendimiento</a>
@@ -28,6 +28,7 @@
             <a class="{% block ruta %}collapse-item{% endblock %}" href="{% url 'Web:ruta' %}">Ruta</a>
             <a class="{% block conductores %}collapse-item{% endblock %}" href="{% url 'Web:conductores' %}">Conductores</a>
             <a class="{% block estaciones %}collapse-item{% endblock %}" href="{% url 'Web:estaciones' %}">Estaciones de Servicio</a>
+            <a class="{% block afectaciones %}collapse-item{% endblock %}" style="white-space:break-spaces;"  href="{% url 'Web:afectaciones' %}">Afectación por Carga</a>
 
           </div>
         </div>

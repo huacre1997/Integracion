@@ -1,0 +1,244 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block procesos%}active{% endblock %}
+{% block collapseProcesos %}show{% endblock collapseProcesos %}
+{% block afectaciones %}collapse-item active{% endblock  %}
+{% load static %}
+{% load base_extras %}
+{% block content %}  
+  <div id="wrapper">
+        <div class="container-fluid">
+          <div class="card shadow mb-4">
+      <div class=" card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fa fa-list"></i> Bandeja de Afectaciones por Consumo</h6>
+
+                     {% if 'Web.add_marcallanta' in perm %}
+                      <button id="btn-add-afectacion" class="btn btn-primary"><i class="fa fa-plus-circle "></i>&nbsp;Crear Nuevo</button>
+        {% endif %}
+            </div>
+            <div class="card-body">
+
+              
+                <div class="table-responsive">               
+                <table class="table table-bordered table-hover" id="tabla_afectacion" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th  class="text-center middle">Id</th>
+                      <th  class="text-center middle">% Carga</th>
+                      <th class="text-center middle">Afectación al Consumo</th>
+                        <th  class="text-center middle">Estado</th>
+                      <th style="width: 20%;">Acciones</th>
+                    </tr>
+                  </thead>
+                  
+         
+                    
+                 
+                </table>
+                </div>
+
+            </div>
+          </div>
+        </div>
+  </div>
+  <!-- End of Page Wrapper -->
+  {% endblock %}
+  {% block bottom_scripts %}
+ 
+  <script>
+    var tablaAfectacion
+    $(document).ready(function() {
+      tablaAfectacion = $("#tabla_afectacion").DataTable({
+     responsive:true,
+      ajax: {
+        url: "{% url 'Web:afectaciones' %}",
+        type: "POST",
+        data: {
+          "action": "searchData"
+        },
+        dataSrc: ""
+      },
+        stateSave: true,
+      "lengthMenu": [
+        [5, 10, 25, 50, -1],
+        [5, 10, 25, 50, "All"]
+      ],
+      language:{
+                    "url": "{% static 'language.json' %}",
+          },
+  
+      columns: [
+    
+        {
+          "data": 'id',className: "middle text-center"
+        },
+        
+        {
+          "data": 'per_carga',className: "middle text-center"
+        },  {
+          "data": 'afectacion',className: "middle text-center"
+        },
+        
+          {
+          "data": 'estado',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        },
+        {
+          "data": 'estado',className:"text-center middle"
+        },
+
+
+      ],
+      ordering:false,
+      columnDefs: [ {
+
+          "targets": [0],
+          "visible": false
+        },{
+               
+          targets: [-1],
+   render: function (row, data, index) {
+            var buttons ='<a href="../afectacion-por-carga/'+index.id+'/" class="btn btn-warning btn-sm btn-edit-afectacion"><i class="fa fa-edit"></i>Editar</a>'+
+              '</a>';
+
+            return buttons;
+
+          },
+     
+
+        },
+
+
+      ],
+      "createdRow": function (row, data, index) {
+        // if (!data["estado"]) {
+        //   $('.btn-success', row).eq(0).removeClass().addClass("btn btn-danger btn-circle")
+        //   $(".fa-thumbs-up", row).eq(0).removeClass().addClass("fas fa-thumbs-down")
+
+        // }
+      },
+  "initComplete": function( settings, json ) {
+    $('select[name="tabla_afectacion_length"]').removeClass("form-control").removeClass("form-control-sm")
+
+  }
+    });
+ 
+
+        document.getElementById('btn-add-afectacion').addEventListener("click", function (e) {  
+    e.preventDefault()
+    let url = "{% url 'Web:afectacion' %}";
+    var jc = $.confirm({
+      title: "Nuevo Registro",
+      content: "URL:{% url 'Web:afectacion' %}",
+      columnClass: 'col-xl-4 col-lg-6 col-md-8 col-sm-12',
+      icon: "fa fa-plus-circle",
+      type: "dark",
+      theme:"material",
+      animateFromElement: true,
+      buttons: {
+        submit: {
+          text: 'Registrar',
+          btnClass: 'btn-dark',
+          action: function () {       
+            form = this.$content
+            console.log(form)
+            let data= new FormData(form[0].ownerDocument.forms[0])
+            let check=0
+          
+            fetch(url, {
+              method: "POST",
+              headers: {
+                'X-CSRFToken': csrftoken
+              },
+              body: data
+              
+            }).then(data => data.json()).then(response => {
+              console.log(response)
+              if(response.status==500){
+                if(response.form.afectacion){
+                  document.getElementById("id_afectacion").classList.add("is-invalid")
+                  document.getElementById("invalid_afectacion").innerHTML=response.form.afectacion[0]
+                }   if(response.form.per_carga){
+                  document.getElementById("id_per_carga").classList.add("is-invalid")
+                  document.getElementById("invalid_per_carga").innerHTML=response.form.per_carga[0]
+                }
+              
+              }else{
+                  jc.showLoading(true)
+                    jc.close()
+                    notificacion(2000,"Éxito","success","Registro guardado")
+
+                    tablaAfectacion.ajax.reload()            
+              }
+            })
+              return false;
+          }
+        },
+        cancel: function () {
+
+        },
+      },
+      onContentReady: function () {
+        // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
+    });
+  });
+
+    $(document).on("click",'.btn-edit-afectacion', function (e) {
+      
+    e.preventDefault()
+    var tr = tablaAfectacion.cell($(this).closest("td")).index();
+    var data = tablaAfectacion.row(tr.row).data();
+    de = $.confirm({
+      title: "Editar Registro",
+      content: "URL:../afectacion-por-carga/" + data.id,
+      columnClass: 'col-xl-4 col-lg-6 col-md-8 col-sm-12',
+      icon: "fa fa-edit",
+      type: "orange",
+      theme:"material",
+      scrollToPreviousElement: true,
+      scrollToPreviousElementAnimate: true,
+
+      buttons: {
+        Confirm: {
+          text: 'Guardar cambios',
+          btnClass: 'btn-orange',
+
+          action: function url(e) {
+
+            this.$content[0].ownerDocument.getElementById("btnEditUser").click()
+            return false;
+          }
+        },
+
+        cancel: function () {
+
+        },
+      },
+    onContentReady: function () {
+        // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
+
+
+    });
+  
+
+    });
+    });
+    
+
+  </script>
+  {% endblock %}
+  

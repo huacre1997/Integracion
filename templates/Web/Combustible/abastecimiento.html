@@ -4,237 +4,405 @@
 {% block abastecimiento %}collapse-item active{% endblock  %}
 {% block content %}
 {% now "Y-m-d" as current_year %}
-
 <div id="wrapper">
-    <div class="container-fluid">
-        <div class="card">
-            <h5 class="card-header"><i class="fas fa-gas-pump"></i>&nbsp;Abastecimiento de Unidades en Estaciones de Servicio</h5>
-            <div class="card-body">
-                <p class="card-text">
-                    <form class="row g-3 needs-validation" id="abastecimiento_form" novalidate>
-                        <div class="col-md-6">
-                          <label  class="form-label">Estación de Servicio</label>
-                            <select name="estacion" id="estacion" class="form-select">
-                                <option value="0">Seleccione...</option>
-                                
-                                {% for i in estacion  %}
-                                  <option value="{{ i.id }}">{{ i.descripcion }}</option>
-                                {% endfor %}
-                                  
-                            </select>
-                            <div class="invalid-feedback">
-                              Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                          <label  class="form-label">Fecha</label>
-                          <input type="date" class="form-control" id="fecha" name="fecha" value="{{current_year}}"  required>
-                          <div class="invalid-feedback">
-                            Este campo es requerido.
-                          </div>
-                        </div>
-                        <div class="col-md-2">
-                          <label  class="form-label">Precio</label>
-                            <input type="number" disabled id="precio" name="precio" class="form-control">
-                        </div>
-                        <div class="col-md-1">
-                            <label class="invisible">abcdefghi</label>
-                              <button type="button" class="btn btn-block btn-warning" id="modal_price"><i class="fa fa-eye"></i></button>
-                          </div>
-                        <div class="col-md-6">
-                            <label  class="form-label">Tipo de Abastecimiento</label>
-                            <div class="input-group">
-                              <select class="form-select" name="tipo" id="tipo">
-                                  <option value="0">Seleccione...</option>
-                                  {% for i in tipo  %}
-                                      <option value="{{ i.id }}">{{ i.descripcion }}</option>
-                                  {% endfor %}
-                                      
-                              </select>
-                              {% comment %} <button class="btn btn-primary" type="button" id="btn-add-tipo"><i class="fa fa-plus" aria-hidden="true"></i></button> {% endcomment %}
-                              <div class="invalid-feedback">
-                                  Este campo es requerido.
-                              </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label  class="form-label">Ruta</label>
-                            <select name="ruta" id="ruta" class="form-select">
-                                <option value="0">Seleccione...</option>
-                              
-                                {% for i in ruta  %}
-                                  <option value="{{ i.id }}">{{ i.ruta }}</option>
-                                {% endfor %}
-                                  
-                            </select>
-                          <div class="invalid-feedback">
-                            Este campo es requerido.
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label  class="form-label">Estado de Viaje</label>
-                            <div class="input-group">
-                              <select class="form-select" name="estado" id="estado">
-                                  <option value="0">Seleccione...</option>
-                                  {% for i in estado  %}
-                                      <option value="{{ i.id }}">{{ i.descripcion }}</option>
-                                  {% endfor %}
-                                      
-                              </select>
-                              {% comment %} <button class="btn btn-primary" type="button" id="btn-add-estado"><i class="fa fa-plus" aria-hidden="true"></i></button> {% endcomment %}
-                              <div class="invalid-feedback">
-                                  Este campo es requerido.
-                              </div>
-                          </div>
-                            <div class="invalid-feedback">
-                              Este campo es requerido.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label  class="form-label">Producto</label>
-                            <div class="input-group">
-                              <select class="form-select" name="producto" id="producto">
-                                  <option value="0">Seleccione...</option>
-                                  {% for i in producto  %}
-                                      <option value="{{ i.id }}">{{ i.descripcion }}</option>
-                                  {% endfor %}
-                                      
-                              </select>
-                              {% comment %} <button class="btn btn-primary" type="button" id="btn-add-producto"><i class="fa fa-plus" aria-hidden="true"></i></button> {% endcomment %}
-                              <div class="invalid-feedback">
-                                  Este campo es requerido.
-                              </div>
-                          </div>
-                        </div>
-                      </form>
+  <div class="container-fluid">
+    <div class="card">
+      <h5 class="card-header"><i class="fas fa-gas-pump"></i>&nbsp;Abastecimiento de Unidades en Estaciones de Servicio
+      </h5>
+      <div class="card-body">
+        <form class="row g-3 needs-validation" id="abastecimiento_form" novalidate>
+          <div class="col-md-11">
+            <label class="form-label">Ruta</label>
+            <select name="ruta" id="ruta" class="form-select">
+              <option value="0">Seleccione...</option>
 
-                        <div class="table-responsive">
-                            <table class="table  table-hover table-bordered" id="tablaAbastecimiento" style="width: 100%;">
-                              <thead>
-                                <th style="width: 5%;">Hora</th>
-                                <th style="width: 10%;"> Placa</th>
-                                <th style="width: 10%;">Km</th>
-                                <th style="width: 10%;">Volumen</th>
-                                <th style="width: 10%;">Total</th>
-                                <th style="width: 20%;">Conductor</th>
-                                <th style="width: 10%;">% Cargado</th>
-                                <th style="width: 10%;">Voucher</th>
-                                <th style="width: 10%;">Factura</th>
-                                <th style="width: 5%;"></th>
-                  
-                              </thead>
-                              <tbody>
-                  
-                  
-                              </tbody>
-                  
-                  
-                            </table>
-                          </div>
-                        <div class="col-12">
-                          <button class="btn btn-primary" type="submit" id="btn-save">Guardar</button>
-                        </div>
-                </p>
+
+
+            </select>
+            <div class="invalid-feedback">
+              Este campo es requerido.
             </div>
+          </div>
+          <div class="col-md-1">
+            <label for="" class="invisible">Boton</label>
+            <a href="#" class="btn btn-warning btn-block" id="btn-edit-tramo"><i class="fa fa-edit"></i></a>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Estación de Servicio</label>
+            <select name="estacion" id="estacion" class="form-select">
+              <option value="0">Seleccione...</option>
+            </select>
+            <div class="invalid-feedback">
+              Este campo es requerido.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Fecha</label>
+            <input type="date" class="form-control" id="fecha" name="fecha" value="{{current_year}}" required>
+            <div class="invalid-feedback">
+              Este campo es requerido.
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Precio</label>
+            <input type="number" disabled id="precio" name="precio" class="form-control">
+          </div>
+          <div class="col-md-1">
+            <label class="invisible">Button</label>
+            <button type="button" class="btn btn-block btn-warning" id="modal_price"><i class="fa fa-eye"></i></button>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Tipo de Abastecimiento</label>
+            <div class="input-group">
+              <select class="form-select" name="tipo" id="tipo">
+                <option value="0">Seleccione...</option>
+                {% for i in tipo  %}
+                <option value="{{ i.id }}">{{ i.descripcion }}</option>
+                {% endfor %}
+              </select>
+              {% comment %} <button class="btn btn-primary" type="button" id="btn-add-tipo"><i class="fa fa-plus"
+                  aria-hidden="true"></i></button> {% endcomment %}
+              <div class="invalid-feedback">
+                Este campo es requerido.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tramo</label>
+            <select name="tramo" id="tramo" class="form-select">
+              <option value="0">Seleccione...</option>
+            </select>
+            <div class="invalid-feedback">
+              Este campo es requerido.
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Estado de Viaje</label>
+            <div class="input-group">
+              <select class="form-select" name="estado_viaje" id="estado">
+                <option value="0">Seleccione...</option>
+                {% for i in estado  %}
+                <option value="{{ i.id }}">{{ i.descripcion }}</option>
+                {% endfor %}
+
+              </select>
+              {% comment %} <button class="btn btn-primary" type="button" id="btn-add-estado"><i class="fa fa-plus"
+                  aria-hidden="true"></i></button> {% endcomment %}
+              <div class="invalid-feedback">
+                Este campo es requerido.
+              </div>
+            </div>
+            <div class="invalid-feedback">
+              Este campo es requerido.
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Producto</label>
+            <div class="input-group">
+              <select class="form-select" name="producto" id="producto">
+                <option value="0">Seleccione...</option>
+                {% for i in producto  %}
+                <option value="{{ i.id }}">{{ i.descripcion }}</option>
+                {% endfor %}
+
+              </select>
+              {% comment %} <button class="btn btn-primary" type="button" id="btn-add-producto"><i class="fa fa-plus"
+                  aria-hidden="true"></i></button> {% endcomment %}
+              <div class="invalid-feedback">
+                Este campo es requerido.
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div class="table-responsive">
+          <table class="table  table-hover table-bordered" id="tablaAbastecimiento" style="width: 100%;">
+            <thead>
+              <th style="width: 5%;">Hora</th>
+              <th style="width: 10%;"> Placa</th>
+              <th style="width: 10%;">Km</th>
+              <th style="width: 10%;">Volumen</th>
+              <th style="width: 10%;">Total</th>
+              <th style="width: 20%;">Conductor</th>
+              <th style="width: 10%;">% Cargado</th>
+              <th style="width: 10%;">Voucher</th>
+              <th style="width: 10%;">Factura</th>
+              <th style="width: 5%;"></th>
+            </thead>
+          </table>
+          <input type="hidden" name="" id="hidden_ruta">
         </div>
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit" id="btn-save">Guardar</button>
+        </div>
+      </div>
     </div>
+  </div>
 
 </div>
 {% endblock content %}
 {% block bottom_scripts %}
 <script>
-    var modal_precio
-
+  var de
+  var modal_precio
+  this.num_tramos = 0
   $(document).ready(function () {
-    $("#btn-save").on("click", function (e) {
-       let error=0
-       function validar(input){
-                if($(input).val()==0){
-                    $(input).addClass("is-invalid")
-                    error = 1
-                    $(input).on("input",function(){
-                        $(input).removeClass("is-invalid")
-                    })
-                    notificacion(2000, "Revise los campos", "error")
 
+    $("#ruta").on("change", function (e) {
+      $("#tramo").trigger("change")
+
+
+      $("#loadingCharge").css("visibility", "visible")
+      $("#spinner").css("visibility", "visible")
+      objeto.items = []
+      objeto.list()
+
+      $("#hidden_ruta").val($(this).val())
+      e.preventDefault()
+      $("#btn-edit-tramo").attr("href", "../ruta/" + $(this).val() + "/")
+      window.localStorage.setItem("volver", "abast")
+
+      $("#tramo").prop("disabled", true).empty().append("<option value='0'>Seleccione..</option>")
+      fetch("../get-tramos/" + $(this).val()).then(data => data.json()).then(res => {
+        if (res.status == 200) {
+          this.num_tramos = res.data.length
+          $("#tramo").prop("disabled", false)
+          for (let i = 0; i < res.data.length; i++) {
+
+            let option = document.createElement("option")
+            option.textContent = res.data[i].descripcion
+            option.value = res.data[i].id
+            option.dataset.ruta = res.data[i].ruta
+            $("#tramo").append(option)
+
+          }
+          fetch("../get-vehiculos-ruta/" + $(this).val()).then(data => data.json()).then(res => {
+            console.log(res)
+            $("#loadingCharge").css("visibility", "hidden")
+            $("#spinner").css("visibility", "hidden")
+            if (res.status == 200) {
+
+              response = JSON.parse(res.data)
+
+              for (let i = 0; i < response.length; i++) {
+                let element = response[i];
+                data.placa.descripcion = element.placa
+                data.placa.disabled = true
+                objeto.items.push(data)
+                data = {
+                  hora: "",
+                  placa: {
+                    descripcion: "",
+                    disabled: false
+                  },
+                  km: "",
+                  volumen: "",
+                  total: 0.00,
+                  conductor: "",
+                  cargado:{
+                    id:0,
+                    valor:0
+                  },
+                  voucher: "",
+                  factura: ""
                 }
+              }
+              let next
+              for (const option of document.getElementById("tramo").options) {
+                if (option.text == res.tramo) {
+                   next=option.nextSibling.value
+                  break;
+                }
+                
+              }
+              for (const option of document.getElementById("tramo").options) {
+                if (option.value !=next) {
+                  option.disabled=true
+                  continue;
+                }
+              }
+              objeto.list()
+              $("#tramo").val(next).trigger("change")
+
+            tablaAbastecimiento.row(tablaAbastecimiento.data().length-1).remove().draw();
+            tablaAbastecimiento.column( -1 ).visible(false);
+            } else {
+              objeto.items = []
             }
+         
+
+          })
+
+        }
+      })
+
+
+
+    })
+
+    $("#tramo").on("change", function (e) {
+
+      document.getElementById("estacion").options.length = 0
+      let opt1 = document.createElement("option")
+      opt1.value = "0"
+      opt1.textContent = "Seleccione..."
+      document.getElementById("estacion").append(opt1)
+      let tramo = e.target.options[e.target.selectedIndex].value;
+      if(tramo!=0){
+        fetch(`../get-estaciones/${tramo}/`).then(data => data.json()).then(res => {
+        for (let index = 0; index < res.data.length; index++) {
+          let element = res.data[index];
+          let opt = document.createElement("option")
+          opt.value = element.id
+          opt.textContent = element.descripcion
+          document.getElementById("estacion").append(opt)
+        }
+      })
+      }
+    })
+    $("#btn-save").on("click", function (e) {
+      let error = 0
+
+      function validar(input) {
+        if ($(input).val() == 0) {
+          $(input).addClass("is-invalid")
+          error = 1
+          $(input).on("input", function () {
+            $(input).removeClass("is-invalid")
+          })
+          notificacion(2000, "Revise los campos", "error")
+
+        }
+      }
       e.preventDefault()
       if (objeto.items.length === 0) {
-        error=1
+        error = 1
         notificacion(2000, "Debes ingresar almenos una fila!", "error")
-      }      
+      }
       validar($("#estacion"))
       validar($("#fecha"))
       validar($("#tipo"))
       validar($("#ruta"))
       validar($("#estado"))
       validar($("#producto"))
-      if(error==0) {
-        
+      if (($("#estado").val() == 2 && !$('#tramo option:last-child').is(":selected")) || $("#estado").val() ==
+        1 && $('#tramo option:last-child').is(":selected")) {
+        error = 1
+        notificacion(3000, "Seleccione Fin de Viaje! ", "error")
+
+      }
+      if (error == 0) {
+
         let b = 0
         $.each($(".form"), function (index, value) {
           let name = $(value).attr("name")
 
-          if ($(value).hasClass("is-invalid")) {
+          if ($(value).hasClass("is-invalid") || $(value).val()=="") {
             b = b + 1
-            $("#btn-save").prop("disabled", true)
           }
         });
-
         if (b == 0) {
-           $("#loadingCharge").css("visibility","visible")
-        $("#spinner").css("visibility","visible")
-          let result = !Object.values(objeto.items).every(o => o === "")
-            var parameters = new FormData(document.getElementById("abastecimiento_form"));
-            parameters.append("objeto", JSON.stringify(objeto.items))
-            parameters.append("precio", document.getElementById("precio").value)
-            fetch(window.location.href, {
-              method: "POST",
-              headers: {
-                "X-CSRFToken": csrftoken
-              },
-              body: parameters
+          $("#loadingCharge").css("visibility", "visible")
+          $("#spinner").css("visibility", "visible")
+          let form = document.getElementById("abastecimiento_form")
+          var parameters = new FormData(form);
+          parameters.append("objeto", JSON.stringify(objeto.items))
+          parameters.append("precio", $("#precio").val())
+          parameters.append("tramo", document.getElementById("tramo").options[document.getElementById("tramo")
+            .selectedIndex].text)    
+          parameters.append("tramo_id", document.getElementById("tramo").options[document.getElementById("tramo")
+            .selectedIndex].value)
+          fetch(window.location.href, {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": csrftoken
+            },
+            body: parameters
 
-            }).then(l => l.json()).then(res => {
-             
-              window.localStorage.clear()
+          }).then(l => l.json()).then(res => {
+            console.log(res)
+            $("#loadingCharge").css("visibility", "hidden")
+            $("#spinner").css("visibility", "hidden")
+            if (res.status == 200) {
+              window.localStorage.setItem("ruta", $("#ruta").val())
               objeto.items = []
               objeto.list()
-               $("#loadingCharge").css("visibility","hidden")
-              $("#spinner").css("visibility","hidden")
+
               notificacion(2000, "Registro guardados!", "success")
               $("#estacion").val(0)
               $("#precio").val("")
               $("#tipo").val(0)
-              $("#ruta").val(0)
+              if ($("#estado").val() == 2) {
+                $("#ruta").val(0).trigger("change")
+                window.localStorage.removeItem("ruta")
+
+              }
+              $("#ruta").trigger("change")
+
               $("#estado").val(0)
               $("#producto").val(0)
-            let today = new Date().toISOString().slice(0, 10)
+              let today = new Date().toISOString().slice(0, 10)
               $("#fecha").val(today)
-            })
-                  
+            } else {
+              if (res.form.tramo) {
+                alerta(3000, "error", res.form.tramo[0])
+              } 
+              if (res.form.viaje) {
+                alerta(3000, "error", res.form.viaje[0])
+              } 
+              if (res.form.fecha) {
+                alerta(3000, "error", res.form.fecha[0])
+              }
+              
+              if (res.form.rendimiento) {
+                alerta(3000, "error", res.form.rendimiento[0])
+              }
+             
+            }
+          })
+
           $("#btn-save").prop("disabled", false)
+
+
+
+
+
+
+        }else{
+          alerta(1500, "error", "Revise la tabla!.Hay campos vacíos.")
+
         }
+        // if (b == 0) {
+
+        // }
       }
     });
     $("#btn-click").on("click", function (param) {
       document.getElementById("btn-click").disabled = true
       $("#submit-form").click()
     })
-    var tablaAbastecimiento
-     var data = {
-                        hora: "",
-                        placa: "",
-                        km: 0,
-                        volumen: 0.00,
-                        total: 0.00,
-                        conductor: "",
-                        cargado: "",
-                        voucher: "",
-                        factura: ""
-                      }
-    var objeto = {
+
+    let tablaAbastecimiento
+    let data = {
+      hora: "",
+      placa: {
+        descripcion: "",
+        disabled: false
+      },
+
+      km: "",
+      volumen: "",
+      total: 0.00,
+      conductor: "",
+      cargado:{
+        id:0,
+        valor:0
+      },
+      voucher: "",
+      factura: ""
+    }
+    let objeto = {
       items: [],
       cu: [],
       list: function () {
@@ -245,10 +413,7 @@
           info: false,
           data: this.items,
           destroy: true,
-          columns: [
-
-
-            {
+          columns: [{
               "data": 'hora',
               className: "middle"
             },
@@ -296,78 +461,139 @@
               className: "middle"
             },
           ],
- 
-          columnDefs: [
-
-            {
+          columnDefs: [{
               targets: [0],
               width: "5%",
               render: function (data, type, row) {
-                return `<input type="time" name="hora" class="form-control form"  value="${data}">`;
+                if(row.placa.descripcion==""){
+                return `<input type="time" name="hora" class="form-control"  value="${data}">`;
+                }else{
+                  return `<input type="time" name="hora" class="form form-control"  value="${data}">`;
+
+                }
               }
             },
 
             {
               targets: [1],
               width: "10%",
-
               render: function (data, type, row) {
-                var $select = $('<select name="placa"  class="form form-select placa">' +
-                  ' <option value="0">Seleccione...</option>' +
-                  '{% for i in placa  %}' +
-                  '{% if  i.activo and not i.eliminado %}' +
-                  '<option value="{{i.id}}">{{i.placa}}</option>' +
-                  '{% endif %}' +
-                  '{% endfor %}' +
-                  '</select>');
-                $select.find('option[value="' + row.placa + '"]').attr('selected', 'selected');
+                let $select
+                
+                  if(row.placa.descripcion==""){
+                    if (data.disabled) {
+                  $select = $('<select name="placa"  class="form-select placa" disabled>' +
+                    ' <option value="0">Seleccione...</option>' +
+                    '{% for i in placa  %}' +
+                    '{% if  i.activo and not i.eliminado %}' +
+                    '<option value="{{i.id}}">{{i.placa}}</option>' +
+                    '{% endif %}' +
+                    '{% endfor %}' +
+                    '</select>');
+                } else {
+                  $select = $('<select name="placa"  class="form-select placa">' +
+                    ' <option value="0">Seleccione...</option>' +
+                    '{% for i in placa  %}' +
+                    '{% if  i.activo and not i.eliminado %}' +
+                    '<option value="{{i.id}}">{{i.placa}}</option>' +
+                    '{% endif %}' +
+                    '{% endfor %}' +
+                    '</select>');
+                }
+                $select.find('option[value="' + row.placa.descripcion + '"]').attr('selected',
+                  'selected');
                 return $select[0].outerHTML
+                  }else{
+                    if (data.disabled) {
+                  $select = $('<select name="placa"  class="form form-select placa" disabled>' +
+                    ' <option value="0">Seleccione...</option>' +
+                    '{% for i in placa  %}' +
+                    '{% if  i.activo and not i.eliminado %}' +
+                    '<option value="{{i.id}}">{{i.placa}}</option>' +
+                    '{% endif %}' +
+                    '{% endfor %}' +
+                    '</select>');
+                } else {
+                  $select = $('<select name="placa"  class="form form-select placa">' +
+                    ' <option value="0">Seleccione...</option>' +
+                    '{% for i in placa  %}' +
+                    '{% if  i.activo and not i.eliminado %}' +
+                    '<option value="{{i.id}}">{{i.placa}}</option>' +
+                    '{% endif %}' +
+                    '{% endfor %}' +
+                    '</select>');
+                }
+                $select.find('option[value="' + row.placa.descripcion + '"]').attr('selected',
+                  'selected');
+                return $select[0].outerHTML
+                  }
               }
             },
             {
               targets: [2],
               width: "10%",
               render: function (data, type, row) {
-                    return `<input type="number" name="km" step="0.01" min="0.00" class="form form-control" value="${data}">`;
+                  if(row.placa.descripcion==""){
+                    return `<input type="number" name="km" step="1" min="0" class="form-control" value="${data}">`;
 
+                  }else{
+                    return `<input type="number" name="km" step="1" min="0" class="form form-control" value="${data}">`;
+
+                  }
               }
             },
             {
               targets: [3],
               width: "10%",
-
               render: function (data, type, row) {
-                      return `<input type="number" name="volumen" step="0.01" min="0.00" class="form form-control" value="${data}">`;
+                if(row.placa.descripcion==""){
+                  return `<input type="number" name="volumen" step="0.01" min="0.00" class="form-control" value="${data}">`;
 
+                }else{
+                  return `<input type="number" name="volumen" step="0.01" min="0.00" class="form form-control" value="${data}">`;
 
-
+                }
               }
             },
             {
               targets: [4],
               width: "14%",
-
               render: function (data, type, row) {
-                    return `<input type="number" name="total" step="0.01" disabled min="0.00" class="form form-control" value="${data}">`;
+                if(row.placa.descripcion==""){
+                  return `<input type="number" name="total" step="0.01" disabled min="0.00" class="form-control" value="${data}">`;
 
+                }
+                else{
+                  return `<input type="number" name="total" step="0.01" disabled min="0.00" class="form form-control" value="${data}">`;
+
+                }
               }
             },
             {
               targets: 5,
               width: "20%",
-
-
               render: function (data, type, row) {
+                if(row.placa.descripcion==""){
 
-
-                        var $select = $('<select name="conductor"  class="form form-select change_marca">' +
-                  ' <option value="0">Seleccione...</option>' +
+                  var $select = $('<select name="conductor"  class="form-select change_marca">' +
+                  ' <option value="">Seleccione...</option>' +
                   '{% for i in conductor  %}' +
                   '<option value="{{i.id}}">{{i.nombres}}</option>' +
                   '{% endfor %}' +
                   '</select>');
                 $select.find('option[value="' + row.conductor + '"]').attr('selected', 'selected');
                 return $select[0].outerHTML
+                }else{
+                  
+                var $select = $('<select name="conductor"  class="form form-select change_marca">' +
+                  ' <option value="">Seleccione...</option>' +
+                  '{% for i in conductor  %}' +
+                  '<option value="{{i.id}}">{{i.nombres}}</option>' +
+                  '{% endfor %}' +
+                  '</select>');
+                $select.find('option[value="' + row.conductor + '"]').attr('selected', 'selected');
+                return $select[0].outerHTML
+                }
 
               }
             },
@@ -377,9 +603,27 @@
               width: "6%",
 
               render: function (data, type, row) {
+                if(row.placa.descripcion==""){
 
-                    return `<input type="number" name="cargado" step="1" min="0" max="100" class="form form-control" value="${data}">`;
+                    var $select = $('<select name="cargado"  class="form-select change_marca">' +
+                    ' <option value="0">0</option>' +
+                    '{% for i in afectacion  %}' +
+                    '<option value="{{i.id}}">{{i.per_carga}}</option>' +
+                    '{% endfor %}' +
+                    '</select>');
+                    $select.find('option[value="' + row.cargado.id + '"]').attr('selected', 'selected');
+                    return $select[0].outerHTML
+                    }else{
 
+                    var $select = $('<select name="cargado"  class="form form-select change_marca">' +
+                    ' <option value="0">0</option>' +
+                    '{% for i in afectacion  %}' +
+                    '<option value="{{i.id}}">{{i.per_carga}}</option>' +
+                    '{% endfor %}' +
+                    '</select>');
+                    $select.find('option[value="' + row.cargado.id + '"]').attr('selected', 'selected');
+                    return $select[0].outerHTML
+                    }
               }
             },
             {
@@ -388,8 +632,13 @@
 
               render: function (data, type, row) {
 
-                    return `<input type="text" name="voucher"    class="form form-control" value="${data}">`;
+                if(row.placa.descripcion==""){
+                  return `<input type="text" name="voucher"  class="form-control" value="${data}">`;
 
+                }else{
+                  return `<input type="text" name="voucher"  class="form form-control" value="${data}">`;
+
+                }
               }
             },
             {
@@ -397,8 +646,13 @@
               width: "10%",
 
               render: function (data, type, row) {
+                if(row.placa.descripcion==""){
+                  return `<input type="text" name="factura" class="form-control" value="${data}">`;
 
-                    return `<input type="text" name="factura" class="form form-control" value="${data}">`;
+                }else{
+                  return `<input type="text" name="factura" class="form form-control" value="${data}">`;
+
+                }
 
               }
             },
@@ -407,8 +661,7 @@
               width: "5%",
 
               render: function (data, type, row) {
-                console.log(data)
-                if (data.hora != "") {
+                if (data.placa.descripcion != "") {
                   return `<button class="btn btn-success btn-remove"><i class="fas fa-check"></i></button>`;
 
                 } else {
@@ -419,14 +672,13 @@
               }
             },
           ],
-   
+
           initComplete: function (settings, json) {
             $(function () {
-              function refreshStorage() {
-                window.localStorage.removeItem("abastecimiento")
-                window.localStorage.setItem("abastecimiento", JSON.stringify(objeto.items))
-              }
-     
+
+              // if( $("input[name='volumen']").val()=="0"){
+              //   btn
+              // }
 
               $(".btn-remove").on("click", function () {
                 var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
@@ -434,9 +686,8 @@
                 let a = confirmar(function () {
                   objeto.items.splice(tr.row, 1)
                   objeto.list()
-                  refreshStorage()
 
-                }, "¿Desea eliminar este neumático de la lista?", function () {
+                }, "¿Desea eliminar esta fila?", function () {
 
                 })
 
@@ -454,25 +705,34 @@
                 }
 
               )
-                $("input[name='volumen']").on("change keyup", function (e) {
+              $("input[name='volumen']").on("change keyup", function (e) {
                 e.preventDefault()
                 var cant = $(this).val();
                 var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
-                if ($(this).val() == "") {
-                  $("#btn-save").prop("disabled", true)
-                  $(this).addClass("is-invalid")
-                } else {
-                  $(this).parent().next().children().val((cant*parseFloat($("#precio").val())).toFixed(2))
-                  $("#btn-save").prop("disabled", false)
+                if ($("#precio").val() != "") {
                   $(this).removeClass("is-invalid")
-                  if (typeof objeto.items[tr.row] !== "undefined") {
-                    objeto.items[tr.row].volumen = cant;
-                    refreshStorage()
+
+                  if ($(this).val() == "") {
+                    $("#btn-save").prop("disabled", true)
+                    $(this).addClass("is-invalid")
+                  } else {
+                    $(this).parent().next().children().val((cant * parseFloat($("#precio").val()))
+                      .toFixed(2))
+                    let total = cant * parseFloat($("#precio").val())
+                    $("#btn-save").prop("disabled", false)
+                    $(this).removeClass("is-invalid")
+                    if (typeof objeto.items[tr.row] !== "undefined") {
+                      objeto.items[tr.row].volumen = cant;
+                      objeto.items[tr.row].total = total;
+                    }
                   }
+                } else {
+                  $(this).addClass("is-invalid")
+                  alerta(1500, "error", "Seleccione un producto!")
                 }
 
               })
-                    $("input[name='km']").on("change keyup", function (e) {
+              $("input[name='km']").on("change keyup", function (e) {
                 e.preventDefault()
                 var cant = $(this).val();
                 var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
@@ -483,23 +743,22 @@
                   $("#btn-save").prop("disabled", false)
                   $(this).removeClass("is-invalid")
                   let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#btn-save").prop("disabled", true)
-                  }
-                });
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#btn-save").prop("disabled", true)
+                    }
+                  });
                   if (a == 0) {
                     if (typeof objeto.items[tr.row] !== "undefined") {
                       objeto.items[tr.row].km = cant;
-                      refreshStorage()
                     }
                     $("#btn-save").prop("disabled", false)
 
                   }
                 }
-                })
-           $("input[name='hora']").on("change keyup", function (e) {
+              })
+              $("input[name='hora']").on("change keyup", function (e) {
                 e.preventDefault()
                 var cant = $(this).val();
                 var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
@@ -509,73 +768,16 @@
                 } else {
                   $("#btn-save").prop("disabled", false)
                   $(this).removeClass("is-invalid")
-                   let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#btn-save").prop("disabled", true)
-                  }
-                });
+                  let a = 0
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#btn-save").prop("disabled", true)
+                    }
+                  });
                   if (a == 0) {
                     if (typeof objeto.items[tr.row] !== "undefined") {
                       objeto.items[tr.row].hora = cant;
-                      refreshStorage()
-                    }
-                    $("#btn-save").prop("disabled", false)
-
-                  }
-                }
-
-              })    
-            $("select[name='conductor']").on("change keyup", function (e) {
-                e.preventDefault()
-                var cant = $(this).val();
-                var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
-                if ($(this).val() == "0") {
-                  $("#btn-save").prop("disabled", true)
-                  $(this).addClass("is-invalid")
-                } else {
-                  $("#btn-save").prop("disabled", false)
-                  $(this).removeClass("is-invalid")
-                  let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#btn-save").prop("disabled", true)
-                  }
-                });
-                  if (a == 0) {
-                    if (typeof objeto.items[tr.row] !== "undefined") {
-                      objeto.items[tr.row].conductor = cant;
-                      refreshStorage()
-                    }
-                    $("#btn-save").prop("disabled", false)
-
-                  }
-                }
-
-              })      
-            $("select[name='placa']").on("change keyup", function (e) {
-                e.preventDefault()
-                var cant = $(this).val();
-                var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
-                if ($(this).val() == "0") {
-                  $("#btn-save").prop("disabled", true)
-                  $(this).addClass("is-invalid")
-                } else {
-                  $("#btn-save").prop("disabled", false)
-                  $(this).removeClass("is-invalid")
-                  let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#btn-save").prop("disabled", true)
-                  }
-                });
-                  if (a == 0) {
-                    if (typeof objeto.items[tr.row] !== "undefined") {
-                      objeto.items[tr.row].placa = cant;
-                      refreshStorage()
                     }
                     $("#btn-save").prop("disabled", false)
 
@@ -583,63 +785,143 @@
                 }
 
               })
-            $("input[name='cargado']").on("change keyup", function (e) {
+              $("select[name='conductor']").on("change keyup", function (e) {
                 e.preventDefault()
-                var cant = $(this).val();
-                var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
-                if ($(this).val() == "" || $(this).val()>100) {
-                  $("#btn-save").prop("disabled", true)
-                  $(this).addClass("is-invalid")
-                } else {
-                  $("#btn-save").prop("disabled", false)
-                  $(this).removeClass("is-invalid")
-                    let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#btn-save").prop("disabled", true)
-                  }
-                });
-                  if (a == 0) {
-                    if (typeof objeto.items[tr.row] !== "undefined") {
-                      objeto.items[tr.row].cargado = cant;
-                      refreshStorage()
-                    }
-                    $("#btn-save").prop("disabled", false)
+                $(this).removeClass("is-invalid")
 
-                  }
-                }
-
-              })   
-            $("input[name='voucher']").on("change keyup", function (e) {
-                e.preventDefault()
                 var cant = $(this).val();
                 var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
                 if ($(this).val() == "") {
                   $("#btn-save").prop("disabled", true)
                   $(this).addClass("is-invalid")
                 } else {
+                  let errorc = 0
+                  for (let i = 0; i < settings.aoData.length - 1; i++) {
+                    if (settings.aoData[i]._aData.conductor == cant && i != tr.row) {
+                      alerta(1500, "error", "Ese conductor ya se encuentra en la tabla")
+                      $(this).addClass("is-invalid")
+                      errorc = 1
+                      break
+                    }
+                  }
+                  let a = 0
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#btn-save").prop("disabled", true)
+                    }
+                  });
+                  if (a == 0 && errorc == 0) {
+                    if (typeof objeto.items[tr.row] !== "undefined") {
+                      objeto.items[tr.row].conductor = cant;
+                    }
+                    $("#btn-save").prop("disabled", false)
+
+                  }
+                }
+
+              })
+              $("select[name='placa']").on("change keyup", function (e) {
+                $(this).removeClass("is-invalid")
+                e.preventDefault()
+                var cant = $(this).val();
+                var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
+                if ($(this).val() == "0") {
+                  $("#btn-save").prop("disabled", true)
+                  $(this).addClass("is-invalid")
+                } else {
+                  let errorc = 0
+                  for (let i = 0; i < settings.aoData.length - 1; i++) {
+                    if (settings.aoData[i]._aData.placa == cant && i != tr.row) {
+                      alerta(1500, "error", "Esa placa ya se encuentra en la tabla")
+                      $(this).addClass("is-invalid")
+                      errorc = 1
+                      break
+                    }
+                  }
+                  let a = 0
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#btn-save").prop("disabled", true)
+                    }
+                  });
+                  if (a == 0 && errorc == 0) {
+                    if (typeof objeto.items[tr.row] !== "undefined") {
+                      objeto.items[tr.row].placa.descripcion = cant;
+                    }
+                    $("#btn-save").prop("disabled", false)
+
+                  }
+                }
+
+              })
+              $("select[name='cargado']").on("change keyup", function (e) {
+                e.preventDefault()
+                let cant = $(this).val();
+                let valor = $(this).children("option:selected").text()
+                console.log(valor)
+                var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
+                if ($(this).val() == "" || $(this).val() > 100) {
+                  $("#btn-save").prop("disabled", true)
+                  $(this).addClass("is-invalid")
+                } else {
                   $("#btn-save").prop("disabled", false)
                   $(this).removeClass("is-invalid")
-                    let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#btn-save").prop("disabled", true)
-                  }
-                });
+                  let a = 0
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#btn-save").prop("disabled", true)
+                    }
+                  });
                   if (a == 0) {
+                    if (typeof objeto.items[tr.row] !== "undefined") {
+                      objeto.items[tr.row].cargado.id = cant;
+                      objeto.items[tr.row].cargado.valor = valor  ;
+                    }
+                    $("#btn-save").prop("disabled", false)
+
+                  }
+                }
+
+              })
+              $("input[name='voucher']").on("change keyup", function (e) {
+                e.preventDefault()
+                $(this).removeClass("is-invalid")
+                var cant = $(this).val();
+                var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
+                if ($(this).val() == "") {
+                  $("#btn-save").prop("disabled", true)
+                  $(this).addClass("is-invalid")
+                } else {
+                  let errorc = 0
+                  for (let i = 0; i < settings.aoData.length - 1; i++) {
+                    if (settings.aoData[i]._aData.voucher == cant && i != tr.row) {
+                      alerta(1500, "error", "Ese voucher ya se encuentra en la tabla")
+                      $(this).addClass("is-invalid")
+                      errorc = 1
+                      break
+                    }
+                  }
+                  let a = 0
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#btn-save").prop("disabled", true)
+                    }
+                  });
+                  if (a == 0 && errorc == 0) {
                     if (typeof objeto.items[tr.row] !== "undefined") {
                       objeto.items[tr.row].voucher = cant;
-                      refreshStorage()
                     }
                     $("#btn-save").prop("disabled", false)
 
                   }
                 }
 
-              }) 
-               $("input[name='factura']").on("change keyup", function (e) {
+              })
+              $("input[name='factura']").on("change keyup", function (e) {
                 e.preventDefault()
                 var cant = $(this).val();
                 var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
@@ -649,17 +931,16 @@
                 } else {
                   $("#btn-save").prop("disabled", false)
                   $(this).removeClass("is-invalid")
-                    let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#btn-save").prop("disabled", true)
-                  }
-                });
+                  let a = 0
+                  $.each($(".form"), function (index, value) {
+                    if ($(value).hasClass("is-invalid")) {
+                      a = a + 1
+                      $("#btn-save").prop("disabled", true)
+                    }
+                  });
                   if (a == 0) {
                     if (typeof objeto.items[tr.row] !== "undefined") {
                       objeto.items[tr.row].factura = cant;
-                      refreshStorage()
                     }
                     $("#btn-save").prop("disabled", false)
 
@@ -679,18 +960,25 @@
                 let cargado = $("td:eq(6)", tablaAbastecimiento.row(tr.row).node()).children()
                 let voucher = $("td:eq(7)", tablaAbastecimiento.row(tr.row).node()).children()
                 let factura = $("td:eq(8)", tablaAbastecimiento.row(tr.row).node()).children()
-    
-              
+                hora.addClass("form")
+                placa.addClass("form")
+                km.addClass("form")
+                volumen.addClass("form")
+                total.addClass("form")
+                conductor.addClass("form")
+                cargado.addClass("form")
+                voucher.addClass("form")
+                factura.addClass("form")
                 data.hora = hora.val()
-                data.placa = placa.val()
+                data.placa.descripcion = placa.val()
                 data.km = parseInt(km.val())
                 data.volumen = parseFloat(volumen.val())
                 data.total = parseFloat(total.val())
                 data.conductor = conductor.val()
-                data.cargado = cargado.val()
+                data.cargado.id = parseInt(cargado.val())
+                data.cargado.valor = parseInt(cargado.find("option:selected").text())
                 data.voucher = voucher.val()
                 data.factura = factura.val()
-                     
 
                 function valid(that, name, mensaje = "Revise los campos") {
                   let ele = $(that).parent().parent().find(name)
@@ -712,11 +1000,10 @@
                 valid(this, "[name='volumen']")
                 valid(this, "[name='total']")
                 valid(this, "[name='conductor']")
-                valid(this, "[name='cargado']")
                 valid(this, "[name='voucher']")
                 valid(this, "[name='factura']")
-   
-                if (cargado.val() == "0" || cargado.val() == "") {
+
+                if (cargado.val() == "") {
                   error = 1
                   cargado.addClass("is-invalid")
                   cargado.on("change input", function () {
@@ -724,42 +1011,47 @@
                   })
                   alerta(1500, "error", "Revise los campos")
                   $(this).prop("disabled", false)
-                }       
-                if (error == 0) {                  
-                        $(this).prop("disabled", false)
-                        objeto.items.push(data)
-                        window.localStorage.setItem("abastecimiento", JSON.stringify(objeto.items))
-                        data = {
-                        hora: "",
-                        placa: "",
-                        km: 0,
-                        volumen: 0.00,
-                        total: 0.00,
-                        conductor: "",
-                        cargado: "",
-                        voucher: "",
-                        factura: ""
-                      }
-                       $(this).children().remove()
-                        $(this).append('<i class="fas fa-check"></i>')
-                        $(this).removeClass("btn-primary").addClass("btn-success")
-                        $(this).removeClass("btn-add").addClass("btn-remove")
-                        $(this).hover(function () {
-
-                            $(this).children().remove()
-                            $(this).append('<i class="fas fa-times"></i>').css("width",
-                              "42px")
-                            $(this).removeClass("btn-success").addClass("btn-danger");
-                          }, function () {
-                            $(this).children().remove()
-                            $(this).append('<i class="fas fa-check"></i>')
-                            $(this).removeClass("btn-danger").addClass("btn-success");
-                          }
-
-                        )
-                        objeto.list()
                 }
-                console.log(objeto.items)
+                if (error == 0) {
+                  $(this).prop("disabled", false)
+                  objeto.items.push(data)
+                  // window.localStorage.setItem("abastecimiento", JSON.stringify(objeto.items))
+                  data = {
+                    hora: "",
+                    placa: {
+                      descripcion: "",
+                      disabled: false
+                    },
+                    km: "",
+                    volumen: "",
+                    total: 0.00,
+                    conductor: "",
+                    cargado:{
+                      id:0,
+                      valor:0
+                    },
+                    voucher: "",
+                    factura: ""
+                  }
+                  $(this).children().remove()
+                  $(this).append('<i class="fas fa-check"></i>')
+                  $(this).removeClass("btn-primary").addClass("btn-success")
+                  $(this).removeClass("btn-add").addClass("btn-remove")
+                  $(this).hover(function () {
+
+                      $(this).children().remove()
+                      $(this).append('<i class="fas fa-times"></i>').css("width",
+                        "42px")
+                      $(this).removeClass("btn-success").addClass("btn-danger");
+                    }, function () {
+                      $(this).children().remove()
+                      $(this).append('<i class="fas fa-check"></i>')
+                      $(this).removeClass("btn-danger").addClass("btn-success");
+                    }
+
+                  )
+                  objeto.list()
+                }
               })
             })
           }
@@ -768,162 +1060,181 @@
 
       }
     }
-    if (window.localStorage.getItem("abastecimiento")) {
-      objeto.items = JSON.parse(window.localStorage.getItem("abastecimiento"))
-      objeto.list()
-      console.log(objeto.items)
-    } else {
-      objeto.list()
+    // if (window.localStorage.getItem("abastecimiento")) {
+    //   objeto.items = JSON.parse(window.localStorage.getItem("abastecimiento"))
+    //   objeto.list()
+    //   console.log(objeto.items)
+    // } else {
+    objeto.list()
 
 
-    }
-    $("#producto").on("change",function () { 
-      console.log()
+    // }
+    $("#producto").on("change", function () {
       $("#precio").val($(this).find(':selected').attr('data-price'))
-     })
-    $("#estacion").on("change", function (){
+    })
+    $("#estacion").on("change", function () {
       $("#producto").empty()
       $("#precio").val("")
       $("#producto").append("<option value='0'>Seleccione..</option>")
 
-      fetch("../get-products/"+$(this).val()).then(data =>data.json()).then(res=>{
-        console.log(res)
-        if(res.status==200){
+      fetch("../get-products/" + $(this).val()).then(data => data.json()).then(res => {
+        if (res.status == 200) {
           for (let i = 0; i < res.data.length; i++) {
-            let option=document.createElement("option")
-            option.textContent=res.data[i].producto.descripcion
-            option.value=res.data[i].producto.id
-            option.dataset.price=res.data[i].precio
+            let option = document.createElement("option")
+            option.textContent = res.data[i].producto.descripcion
+            option.value = res.data[i].producto.id
+            option.dataset.price = res.data[i].precio
             $("#producto").append(option)
-            
+
           }
         }
       })
     })
-    $("#modal_price").on("click",function(){
-        if($("#producto").val()!=0){
-                modal_precio=$.confirm({
-                  title: "Precio de Lista",
-                  type: 'dark',
-                  theme: "material",
-                  icon: 'fas fa-dollar-sign',
-                  animation: 'left',
-                  content:`URL: ../precio/${$("#estacion").val()}/${$("#producto").val()}/`,
-                  closeAnimation: 'right',
-                  columnClass: "col-lg-6 col-md-6 col-md-offset-3",
-                  containerFluid: true, 
-  
-                  typeAnimated: true,
-                  buttons: {
-                    registrar: {
-                      btnClass: 'btn-success',
-                      keys: ['enter', 'shift'],
-                      action: function () {
-                        
-                        this.$content.find(".btn").trigger("click")
-                 
-                      return false;
-                      }
-                    },
-                    close: function () {
-  
-                    }
-                  },
-                  onContentReady: function (e) {
-                        // bind to events
-                        var jc = this;
-                     console.log(e)
-
-                    },
- 
-                })
-        }
+    fetch("../get-rutas").then(data => data.json()).then(res => {
+      for (let index = 0; index < res.data.length; index++) {
+        let element = res.data[index];
+        let opt = document.createElement("option")
+        opt.value = element.id
+        opt.textContent = element.ruta
+        $("#ruta").append(opt)
+      }
+      if (window.localStorage.getItem("ruta")) {
+        $("#ruta").val(window.localStorage.getItem("ruta"))
+        $("#ruta").trigger("change")
+      }
     })
-    $("#btn-add-producto").on("click",function () {
-        jc= $.confirm({
-                  title: "Registrar producto",
-                  type: 'dark',
-                  theme: "material",
-                  content:'URL: ../producto/',
-                  icon: 'fas fa-plus-circle',
-                  animation: 'left',
-                  closeAnimation: 'right',
-                  columnClass: "col-lg-6 col-md-6 col-md-offset-3",
-                  containerFluid: true, 
-                  typeAnimated: true,
-                  buttons: {
-                    guardar: {
-                      btnClass: 'btn-success',
-                      keys: ['enter', 'shift'],
-                      action: function () {
-                        this.$content.find(".btn").trigger("click")
-                 
-                      return false;
-                      }
-                    },
-                    cancel: function () {
-                    }
-                  },
-      
-                })
-      })
-      $("#btn-add-tipo").on("click",function () {
-        jc= $.confirm({
-                  title: "Registrar Tipo Abastecimiento",
-                  type: 'dark',
-                  theme: "material",
-                  content:'URL: ../tipo/',
-                  icon: 'fas fa-plus-circle',
-                  animation: 'left',
-                  closeAnimation: 'right',
-                  columnClass: "col-lg-6 col-md-6 col-md-offset-3",
-                  containerFluid: true, 
-                  typeAnimated: true,
-                  buttons: {
-                    guardar: {
-                      btnClass: 'btn-success',
-                      keys: ['enter', 'shift'],
-                      action: function () {
-                        this.$content.find(".btn").trigger("click")
-                 
-                      return false;
-                      }
-                    },
-                    cancel: function () {
-                    }
-                  },
-      
-                })
-      })
-      $("#btn-add-estado").on("click",function () {
-        jc= $.confirm({
-                  title: "Registrar Estado de Abastecimiento",
-                  type: 'dark',
-                  theme: "material",
-                  content:'URL: ../estado/',
-                  icon: 'fas fa-plus-circle',
-                  animation: 'left',
-                  closeAnimation: 'right',
-                  columnClass: "col-lg-6 col-md-6 col-md-offset-3",
-                  containerFluid: true, 
-                  typeAnimated: true,
-                  buttons: {
-                    guardar: {
-                      btnClass: 'btn-success',
-                      keys: ['enter', 'shift'],
-                      action: function () {
-                        this.$content.find(".btn").trigger("click")
-                 
-                      return false;
-                      }
-                    },
-                    cancel: function () {
-                    }
-                  },
-      
-                })
-      })
+    $("#modal_price").on("click", function () {
+      if ($("#producto").val() != 0) {
+        modal_precio = $.confirm({
+          title: "Precio de Lista",
+          type: 'dark',
+          theme: "material",
+          icon: 'fas fa-dollar-sign',
+          animation: 'left',
+          content: `URL: ../precio/${$("#estacion").val()}/${$("#producto").val()}/`,
+          closeAnimation: 'right',
+          columnClass: "col-lg-6 col-md-6 col-md-offset-3",
+          containerFluid: true,
+          typeAnimated: true,
+          buttons: {
+            registrar: {
+              btnClass: 'btn-success',
+              keys: ['enter', 'shift'],
+              action: function () {
 
+                this.$content.find(".btn").trigger("click")
+
+                return false;
+              }
+            },
+            close: function () {
+
+            }
+          },
+          onContentReady: function (e) {
+            // bind to events
+            var jc = this;
+
+          },
+
+        })
+      }
+    })
+    $("#btn-add-producto").on("click", function () {
+      jc = $.confirm({
+        title: "Registrar producto",
+        type: 'dark',
+        theme: "material",
+        content: 'URL: ../producto/',
+        icon: 'fas fa-plus-circle',
+        animation: 'left',
+        closeAnimation: 'right',
+        columnClass: "col-lg-6 col-md-6 col-md-offset-3",
+        containerFluid: true,
+        typeAnimated: true,
+        buttons: {
+          guardar: {
+            btnClass: 'btn-success',
+            keys: ['enter', 'shift'],
+            action: function () {
+              this.$content.find(".btn").trigger("click")
+
+              return false;
+            }
+          },
+          cancel: function () {}
+        },
+
+      })
+    })
+    $("#btn-add-tipo").on("click", function () {
+      jc = $.confirm({
+        title: "Registrar Tipo Abastecimiento",
+        type: 'dark',
+        theme: "material",
+        content: 'URL: ../tipo/',
+        icon: 'fas fa-plus-circle',
+        animation: 'left',
+        closeAnimation: 'right',
+        columnClass: "col-lg-6 col-md-6 col-md-offset-3",
+        containerFluid: true,
+        typeAnimated: true,
+        buttons: {
+          guardar: {
+            btnClass: 'btn-success',
+            keys: ['enter', 'shift'],
+            action: function () {
+              this.$content.find(".btn").trigger("click")
+
+              return false;
+            }
+          },
+          cancel: function () {}
+        },
+
+      })
+    })
+    $("#btn-add-estado").on("click", function () {
+      jc = $.confirm({
+        title: "Registrar Estado de Abastecimiento",
+        type: 'dark',
+        theme: "material",
+        content: 'URL: ../estado/',
+        icon: 'fas fa-plus-circle',
+        animation: 'left',
+        closeAnimation: 'right',
+        columnClass: "col-lg-6 col-md-6 col-md-offset-3",
+        containerFluid: true,
+        typeAnimated: true,
+        buttons: {
+          guardar: {
+            btnClass: 'btn-success',
+            keys: ['enter', 'shift'],
+            action: function () {
+              this.$content.find(".btn").trigger("click")
+
+              return false;
+            }
+          },
+          cancel: function () {}
+        },
+
+      })
+    })
+
+    // if (window.localStorage.getItem("global_abast")) {
+    //   let res = JSON.parse(window.localStorage.getItem("global_abast"))
+    //   global_obj=res
+    //   $("#ruta").prop("disabled", true).val(res.ruta)
+    //   $("#ruta").trigger("change")
+    //   this.num_tramos=3
+    //   console.log(document.getElementById("tramo").options.length)
+
+    //   let num_option = document.getElementById("tramo").options.length - 1
+    //   if (res.abast.length == num_option) {
+    //     $("#btn-save").removeClass("btn-primary").addClass("btn-success").text("Guardar Abastecimientos")
+    //   }
+    // }
 
   });
 </script>

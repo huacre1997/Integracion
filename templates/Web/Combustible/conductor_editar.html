@@ -1,0 +1,117 @@
+{% load static %}
+{% block content %}
+<style>
+
+</style>
+
+<div class="container">
+    {% if obj %}
+    <form method="POST" id="form_conductor_edit" action="{% url 'Web:edit-conductor' obj.pk %}" class="needs-validation"
+        novalidate>
+
+
+        {% else %}
+        <form method="POST" id="form_conductor_edit" class="needs-validation" novalidate>
+
+            {% endif %}
+            {% csrf_token %}
+            <div class="row g-3">
+                     <div class="col-md-3">
+                                <label class="form-label">Tipo de Documento</label>
+                                <select name="tip_doc" id="tip_doc_editar" class="form-select">
+                                    {% for i in  tip_doc %}
+                                    <option value="{{ i.0 }}"  {% if obj.tip_doc == i.0 %}selected{% endif %}
+                                      >{{ i.1 }}</option>
+                                    {% endfor %}
+
+                                </select>
+                                <div class="invalid-feedback">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">N° de Documento</label>
+                                <input type="text" name="doc" id="doc_editar" class="form-control" value="{{ obj.doc }}">
+                                <div class="invalid-feedback">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Apellidos y Nombres</label>
+                                <input type="text" class="form-control" id="nombres_edit" name="nombres" value="{{ obj.nombres }}">
+                                <div class="invalid-feedback">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+              
+             
+
+            </div>
+
+
+            <button type="submit" class="btn btn-primary" id="submit_conductor_edit" style="display:none">Submit</button>
+
+        </form>
+</div>
+{% endblock %}
+{% block js_page %}
+<script>
+   $(document).ready(function () {
+    
+    $("#submit_conductor_edit").click(function(){
+        let error= 0
+        function validar_input(input){
+          console.log($(input).val())
+        if($(input).val()=="0" || $(input).val()=="" ){
+            $(input).addClass("is-invalid").on("change",function(){
+                $(input).removeClass("is-invalid")
+            })
+            error=1
+            alerta(1500, "error", "Revise los campos!")
+
+        }
+       }
+        validar_input("#nombres_editar")
+        validar_input("#doc_editar")
+        validar_input("#tip_doc_editar")
+        if(error == 0){
+            modal_conductor_edit.showLoading()
+
+            let form = document.getElementById("form_conductor_edit")
+            let data=new FormData(form)
+            fetch( form.getAttribute("action"), {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                },
+                body: data
+
+              }).then(data => data.json()).then(response => {
+                modal_conductor_edit.hideLoading()
+                console.log(response)
+                if(response.status == 200){
+                    modal_conductor_edit.close()
+                    tabla_conductores.ajax.reload()
+                    alerta(2000, "success", "Conductor guardado!")
+
+                }else{
+
+                    if(response.form.nombres){
+                        $("#nombres").addClass("is-invalid").on("change", function (){
+                            $(this).removeClass("is-invalid")
+                        })
+                        $("#nombres").next().text(response.form.nombres[0])
+                    }
+                }
+              })
+        }
+    })
+
+
+
+
+   });
+
+</script>
+{% endblock %}

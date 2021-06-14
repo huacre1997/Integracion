@@ -1,0 +1,395 @@
+{% extends 'Web/combustible/combustible_base.html' %}
+{% block procesos%}active{% endblock %}
+{% block collapseProcesos %}show{% endblock collapseProcesos %}
+{% block ruta %}collapse-item active{% endblock  %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <div class="table-responsive">
+                        <table class="table  table-hover table-bordered" id="tabla_edit_tramos" style="width: 100%;">
+                            <thead>
+                                <th style="width: 0%;">id</th>
+                                <th style="width: 95%;">Tramo</th>
+                                <th style="width: 5%;"></th>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="col-12">
+            <button class="btn btn-primary" type="button" id="submit_tramo">Guardar</button>
+            <button class="btn btn-primary" id="back_to" >Regresar</button>
+        </div>
+</div>
+{% endblock content %}
+{% block bottom_scripts %}
+
+<script>
+    $(document).ready(function (){
+        document.getElementById("back_to").addEventListener("click",function(){
+            if( (window.localStorage.getItem("volver"))=="abast"){
+                        window.location.href="{% url 'Web:abastecimiento' %}"
+                        window.localStorage.removeItem("volver")
+
+                    }
+        })
+        document.getElementById("submit_tramo").addEventListener("click", function () {
+        let error = 0
+
+        function validar(input) {
+            if ($(input).val() == "" || $(input).val() == "0") {
+                $(input).addClass("is-invalid")
+                error = 1
+                $(input).on("input change", function () {
+                    $(input).removeClass("is-invalid")
+                })
+            }
+        }
+        if(objeto_tramos.items.length==0){
+            error==1
+            notificacion(1500, "Error!", "error", "Ingrese al menos un tramo para esta ruta!")
+
+        }
+   $("#loadingCharge").css("visibility", "visible")
+            $("#spinner").css("visibility", "visible")
+            
+        let data = new FormData()
+        data.append("objeto", JSON.stringify(objeto_tramos.items))
+            fetch("{% url 'Web:edit-ruta' ruta %}", {
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: data
+            }).then(data => data.json()).then(response => {
+                console.log(response);
+                if (response.status == 200) {
+  $("#loadingCharge").css("visibility", "hidden")
+                    $("#spinner").css("visibility", "hidden")
+                    notificacion(1500, "Genial!", "success", "Ruta actualizada!")
+                    objeto_tramos.items = []
+                    if( (window.localStorage.getItem("volver"))=="abast"){
+                        window.location.href="{% url 'Web:abastecimiento' %}"
+                        window.localStorage.removeItem("volver")
+                        window.localStorage.setItem("ruta",response.ruta)
+
+                    }
+         
+                } else {
+                    notificacion(1500, "Error!", "error", "Ha ocurrido un error.Revise los campos.")
+                    if (response.form.placa) {
+                        $("#placa").addClass("is-invalid").on("input", function () {
+                            $(this).removeClass("is-invalid")
+                        })
+                        $("#placa").next().text(response.form.placa[0])
+                    }
+                    if (response.form.ruta) {
+                        $("#ruta").addClass("is-invalid").on("input", function () {
+                            $(this).removeClass("is-invalid")
+                        })
+                        $("#ruta").next().text(response.form.ruta[0])
+                    }
+                }
+
+            })
+        
+
+    })
+    let id=0
+        let data3 = {
+        id: "",
+        descripcion: ""
+    }
+        let objeto_tramos = {
+        items: [],
+        list: function () {
+          let  tabla_edit_tramo = $("#tabla_edit_tramos").DataTable({
+                searching: false,
+                ordering: false,
+                paging: false,
+                info: false,
+                data: this.items,
+                destroy: true,
+                columns: [
+
+                    {
+                        "data": "id",
+                        className: "middle"
+                    }, {
+                        "data": "descripcion",
+                        className: "middle"
+                    },
+
+
+
+                    {
+                        "data": null,
+                        className: "middle"
+                    },
+                ],
+                columnDefs: [{
+                        "targets": [0],
+                        "visible": false,
+                    },
+                    {
+                        targets: [1],
+                        render: function (data, type, row) {
+      var $select2 = $(`<select size="50" multiple class="js-example-basic-multiple-2 form-select" name="m2-${id}" id="m2-${id}" multiple="multiple">
+                                {% for i in ubicacion2 %}
+                                <option value="{{i.0}}-{{i.2}}-{{i.1}}">{% if i.2 == "1" %}{{i.1}}{% elif i.2 == "2" %}prov.{{i.1}} ({{i.3}}){%else%}dis.{{i.1}} ({{i.3}}){%endif%}</option>
+                                {%endfor%}
+                                </select>`)
+                             id=id+1       
+                            return $select2[0].outerHTML
+                        }
+                    },
+
+                    {
+                        targets: [2],
+                        render: function (data, type, row) {
+                            console.log(typeof(data.id))
+                            if (typeof(data.id)=="string") {
+                                return `<button class="btn btn-primary btn-add"><i class="fas fa-plus"></i></button>`;
+
+                            } 
+                            return `<button class="btn btn-primary btn-add d-none"><i class="fas fa-plus"></i></button>`;
+
+                        }
+                    },
+                ],
+
+                initComplete: function (settings, json) {
+                    $(function () {
+                        function checkDuplicate(arr) {
+                                let result = false;
+                                const s = new Set(arr);
+                                if(arr.length==2){
+                                    if (arr.length !== s.size) {
+                                    result = true;
+                                    }
+                                }
+                                return result
+                            }
+                                 var $eventSelect =  $('.js-example-basic-multiple-2')
+  
+                            $eventSelect.select2({
+                                allowRepetitionForMultipleSelect: true,
+                                dropdownParent: $("body")
+
+                            });
+                       
+                        var selectedM2 = []
+                        let cant= $('select.js-example-basic-multiple-2').length-1
+                            $('select.js-example-basic-multiple-2').each(function (i, item) {
+                               
+
+                                let element = settings.aoData[i]._aData;
+                              
+                                if(element.descripcion.length!=0){
+                                    for (let index = 0; index < element.descripcion.length; index++) {
+
+                                    $(item).find("option").each(function (option_i, option) {
+                                          let elemental = element.descripcion[index];
+                                          let obj={id:"",text:""}
+                                            let opcion=$(option).val()
+                                          if(opcion==elemental){
+                                                obj.id=$(option).val()
+                                                obj.text=$(option).text()
+                                                selectedM2.push(obj)
+                                                 obj={id:"",text:""}
+                                                 return false;
+
+                                        }
+                                      
+                                   });}
+                              
+                                }
+                                $(item).select2('data', selectedM2);
+                                selectedM2=[]
+
+                            })
+
+                            function valid(that, name, mensaje =
+                                "Revise los campos") {
+                                let ele = $(that).parent().parent().find(name)
+                                if (ele.val() == "0" || ele.val() == "") {
+                                    error = 1
+                                    ele.addClass("is-invalid")
+                                    ele.on("change input", function () {
+                                        ele.removeClass("is-invalid")
+                                    })
+                                    alerta(1500, "error", mensaje)
+                                    $(this).prop("disabled", false)
+
+                                }
+                            }
+                        $(".btn-remove").on("click", function () {
+                            var tr = tabla_edit_tramo.cell($(this).closest("td", "li"))
+                                .index()
+
+                            let a = confirmar(function () {
+                                    objeto_tramos.items.splice(tr.row, 1)
+                                    objeto_tramos.list()
+
+                                }, "¿Desea eliminar este tramo de la lista?",
+                                function () {
+
+                                })
+
+
+                        })
+                        $(".btn-remove").hover(function () {
+
+                                $(this).children().remove()
+                                $(this).append('<i class="fas fa-times"></i>').css(
+                                    "width", "42px")
+                                $(this).removeClass("btn-success").addClass(
+                                    "btn-danger");
+                            }, function () {
+                                $(this).children().remove()
+                                $(this).append('<i class="fas fa-check"></i>')
+                                $(this).removeClass("btn-danger").addClass(
+                                    "btn-success");
+                            }
+
+                        )
+       $('select.js-example-basic-multiple-2').on("change", function (e) {
+                            $(this).removeClass("is-invalid")
+                            console.log(e)
+                            cant=$(this).find("input").val().split(",")
+                            if (e.removed) {
+                                for( var i = 0; i < cant.length; i++){ 
+                                   
+                                   if ( cant[i] === e.removed.id) { 
+                                       cant.splice(i, 1); 
+                                       i--; 
+                                   }
+                               }
+                            }
+                            var tr = tabla_edit_tramo.cell($(this).closest("td", "li"))
+                                .index()
+                             
+                            if ($(this).val() == "") {
+                                $("#submit_tramo").prop("disabled", true)
+                                $(this).addClass("is-invalid")
+                            } else {
+
+                                let errorc = 0
+                                for (let i = 0; i < settings.aoData.length -
+                                    1; i++) {
+                                    if (arraysMatch(settings.aoData[i]._aData
+                                            .descripcion, cant) && i != tr.row) {
+                                        alerta(1500, "error",
+                                            "Ese tramo ya se encuentra en la tabla"
+                                        )
+                                        $(this).addClass("is-invalid")
+                                        errorc = 1
+                                        break
+                                    }
+                                }
+
+                                let a = 0
+                                $.each($(".form"), function (index, value) {
+                                    if ($(value).hasClass("is-invalid")) {
+                                        a = a + 1
+                                        $("#submit_tramo").prop("disabled",
+                                            true)
+
+                                    }
+                                });
+                         
+                                if (a == 0 && errorc == 0) {
+                                    $("#submit_tramo").prop("disabled", false)
+
+                                    if (typeof objeto_tramos.items[tr.row] !==
+                                        "undefined") {
+                                            
+                                        objeto_tramos.items[tr.row].descripcion = cant
+                                        console.log(objeto_tramos.items)
+                                    }
+
+                                }
+                            }
+
+                        })
+                    
+                        $("td").on("click", ".btn-add", function (e) {
+                            array=[]
+                            let error = 0
+                            var tr = tabla_edit_tramo.cell($(this).closest("td", "li"))
+                                .index()
+                            let tramos = $("td:eq(0)", tabla_edit_tramo.row(tr.row)
+                                .node()).children().next().find("input").val()
+                            data3.descripcion=tramos.split(",")
+                            data3.id = 0
+             
+                            if (data3.descripcion.length==0) {
+                                error = 1
+                                tramos.addClass("is-invalid")
+                                alerta(1500, "error", "Hay  campos vacíos!")
+                            }
+                            for (let i = 0; i < settings.aoData.length - 1; i++) {
+                                if (arraysMatch(settings.aoData[i]._aData
+                                        .descripcion, data3.descripcion)) {
+                                    error = 1
+                                    tramos.addClass("is-invalid")
+                                    alerta(1500, "error", "Hay un tramo duplicado!")
+
+                                }
+                            }
+                            if (error == 0) {
+
+                                $(this).prop("disabled", false)
+                                let before = data3.descripcion[ data3.descripcion.length-1]
+                                console.log(before)
+                                objeto_tramos.items.push(data3)
+                                data3 = {
+                                    id: "",
+                                    descripcion: [before]
+                                    // descripcion: arr[arr.length - 1] + "-"
+
+                                }
+                                console.log(objeto_tramos.items)
+                                $(this).children().remove()
+                                $(this).append('<i class="fas fa-check"></i>')
+                                $(this).removeClass("btn-primary").addClass(
+                                    "btn-success")
+                                $(this).removeClass("btn-add").addClass(
+                                    "btn-remove")
+                                $(this).hover(function () {
+
+                                        $(this).children().remove()
+                                        $(this).append(
+                                                '<i class="fas fa-times"></i>')
+                                            .css("width",
+                                                "42px")
+                                        $(this).removeClass("btn-success")
+                                            .addClass("btn-danger");
+                                    }, function () {
+                                        $(this).children().remove()
+                                        $(this).append(
+                                            '<i class="fas fa-check"></i>')
+                                        $(this).removeClass("btn-danger")
+                                            .addClass("btn-success");
+                                    }
+
+                                )
+                                objeto_tramos.list()
+                                $("#submit_ruta").prop("disabled", false)
+
+                            } else {
+                                $("#submit_ruta").prop("disabled", true)
+                            }
+                        })
+                    })
+                }
+            });
+            tabla_edit_tramo.row.add(data3).draw()
+
+        }
+
+    }
+    objeto_tramos.items={{ tramo | safe }}
+    objeto_tramos.list()
+
+        })
+</script>
+{% endblock %}

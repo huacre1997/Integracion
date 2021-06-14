@@ -3,12 +3,25 @@
 {% block collapseProcesos %}show{% endblock collapseProcesos %}
 {% block flota %}collapse-item active{% endblock  %}
 {% block content %}
+{% load static %}
 <div id="wrapper">
     <div class="container-fluid">
+       <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="flota-tab" data-toggle="tab" data-target="#flota"
+                    type="button" role="tab" aria-controls="flota" aria-selected="true">Registro de
+                    Flota</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="flotas-tab" data-toggle="tab" data-target="#flotas"
+                    type="button" role="tab" aria-controls="flotas" aria-selected="false">Flota Total</button>
+            </li>
+
+        </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="flota" role="tabpanel" aria-labelledby="flota-tab">
         <div class="card">
-            <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Flota Total</h5>
             <div class="card-body">
-                <p class="card-text">
                     <form class="row g-3 needs-validation" id="form-flota" novalidate>
                         <div class="col-md-4">
                             <label class="form-label">Placa</label>
@@ -79,9 +92,26 @@
                             <button class="btn btn-primary" type="button" id="submit-flota">Guardar</button>
                         </div>
                     </form>
-                </p>
             </div>
         </div>
+       </div>
+         <div class="tab-pane fade" id="flotas" role="tabpanel" aria-labelledby="flotas-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <table id="tabla_flotas" class="table table-bordered" style="width: 100%">
+                            <thead>
+                                <th style="width: 0;">ID</th>
+                                <th style="width: 40;">Placa</th>
+                                <th style="width: 50;">Empresa</th>
+                           
+                                <th style="width: 10%;"></th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+       </div>
     </div>
 
 </div>
@@ -89,7 +119,8 @@
 
 {% block bottom_scripts %}
 <script>
-     var jc
+        let modal_flota_edit
+     let tabla_flotas
    $("#submit-flota").on("click",function (e){
        let error= 0
        let data=new FormData(document.getElementById("form-flota"))
@@ -181,5 +212,125 @@
 
         })
     })
+        tabla_flotas = $("#tabla_flotas").DataTable({
+        responsive: true,
+                processing:"true",
+
+        ajax: {
+            url: "{% url 'Web:flotas' %}",
+            type: "POST",
+            data: {
+                "action": "searchData"
+            },
+            dataSrc: ""
+        },
+        stateSave: false,
+        "lengthMenu": [
+            [5, 10, 25, 50, -1],
+            [5, 10, 25, 50, "All"]
+        ],
+        language: {
+            "url": "{% static 'language.json' %}",
+        },
+        columns: [{
+                "data": 'id',
+                className: "middle text-center"
+            }, {
+                "data": 'placa',
+                className: "middle text-center"
+            }, 
+       {
+                "data": 'empresa',
+                className: "middle text-center"
+            },
+       
+     
+            {
+                "data": null,
+                className: "middle text-center",
+
+            },
+        ],
+        columnDefs: [{
+                targets: [0],
+                visible: false,
+            },
+
+     {
+                targets: [-1],
+                render: function (row, data, index) {
+                    var buttons =
+                        '<button class="btn btn-warning btn-sm btn-flota-editar"><i class="fa fa-edit"></i>Editar</a>' +
+                        '</a>';
+
+                    return buttons;
+                }
+            },
+        ],
+        initComplete: function (settings, json) {
+
+
+        }
+    })
+    $(document).on("click", '.btn-flota-editar', function (e) {
+
+e.preventDefault()
+var tr = tabla_flotas.cell($(this).closest("td")).index();
+var data = tabla_flotas.row(tr.row).data();
+modal_flota_edit = $.confirm({
+    title: "Editar Flota",
+    content: "URL:../flota/" + data.id+"/",
+    columnClass: 'col-xl-8 col-lg-8 col-md-10 col-sm-12',
+    icon: "fa fa-edit",
+    type: "orange",
+    theme: "material",
+    scrollToPreviousElement: true,
+    scrollToPreviousElementAnimate: true,
+
+    buttons: {
+        Confirm: {
+            text: 'Guardar cambios',
+            btnClass: 'btn-orange',
+
+            action: function url(e) {
+
+                this.$content[0].ownerDocument.getElementById("submit_flota_edit").click()
+                return false;
+            }
+        },
+
+        cancel: function () {
+
+        },
+    },
+    onContentReady: function () {
+        // when content is fetched & rendered in DOM
+        this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+        });;
+    },
+
+
+});
+
+
+});
+$("#flota-tab").on("click", function () {
+window.localStorage.setItem("tab_flota", 1)
+})
+$("#flotas-tab").on("click", function () {
+
+window.localStorage.setItem("tab_flota", 2)
+})
+
+let tab_flota = window.localStorage.getItem("tab_flota")
+
+function select_tab(input) {
+$(input).click()
+}
+if (tab_flota != null) {
+if (tab_flota == 1) select_tab("#flota-tab")
+if (tab_flota == 2) select_tab("#flotas-tab")
+}
 </script>
 {% endblock bottom_scripts %}

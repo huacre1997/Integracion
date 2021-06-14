@@ -1,0 +1,87 @@
+
+{% load static %}
+{% block content %}  
+<style>
+
+</style>  
+
+          <div class="container">
+           {% if obj %}
+  <form method="POST" id="formAfectacion" action="{% url 'Web:afectacion' obj.pk %}" class="needs-validation" novalidate >
+
+
+    {% else %}
+    <form method="POST" id="formAfectacion" class="needs-validation" novalidate >
+
+      {% endif %}
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-lg-12">
+                <input type="hidden" name="action" value="add">
+                    <label>% Carga</label>
+                  <input type="number" name="per_carga" value="{{ obj.per_carga }}" class="form-control" id="id_per_carga">
+                  <div class="invalid-feedback" id="invalid_per_carga"></div>
+                  <label>Afectación Por Consumo</label>
+                  <input type="number" name="afectacion" value="{{ obj.afectacion }}" class="form-control"  id="id_afectacion">
+                  <div class="invalid-feedback" id="invalid_afectacion"></div>
+  
+                </div>
+                
+                </div>
+                <div class="form-check">
+                    {{form.estado}}
+        <label class="form-check-label" for="flexCheckChecked">
+          Activo
+        </label>
+              
+        <button type="submit" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
+			
+      <button type="submit" class="btn btn-primary" id="btnEditUser" style="display:none">Submit</button>
+                {% comment %} <a href="{% url 'Web:afectacions' %}" class="btn btn-secondary">Cancelar</a> {% endcomment %}
+          	</form>
+          </div>				
+{% endblock %}
+{% block bottom_scripts %}
+
+<script>
+  $('.btn_x').on('click', function() {
+    //var $this = $(this);
+    //archivo = $('#id_solicitud').val()
+    //if (archivo!='') { $this.button('loading');}
+    $this.button('loading');
+  });
+  
+    $("#btnEditUser").on("click", function (e) {
+
+      var paramaters = new FormData($('.needs-validation')[0])
+      $.ajax({
+        type: "POST",
+        url: $("#formAfectacion").attr("action"),
+        data: paramaters,
+        dataType: "json",
+        processData: false,
+        contentType: false,
+        success: function (data) {
+          if (data["status"] == 200) {
+            de.close()
+            notificacion(1500, "Genial!", "success", "Registro guardado!")
+          } else {
+                if(data.form.afectacion){
+                  document.getElementById("id_afectacion").classList.add("is-invalid")
+                  document.getElementById("invalid_afectacion").innerHTML=data.form.afectacion[0]
+                } if(data.form.per_carga){
+                  document.getElementById("id_per_carga").classList.add("is-invalid")
+                  document.getElementById("invalid_per_carga").innerHTML=data.form.per_carga[0]
+                }
+          }
+          tablaAfectacion.ajax.reload()
+        }
+      }).done(function (data) {}).fail(function (jqXHR, textStatus, errorThrown) {
+        alert("done:" + textStatus + ': ' + errorThrown);
+      }).always(function (data) {
+
+      });;
+      return false;
+    });
+  </script>
+{% endblock %}

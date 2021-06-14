@@ -70,7 +70,20 @@ class LoginForm(forms.Form):
         if data is None:
             raise forms.ValidationError("Debe Ingresar un usuario")
         return data
-    
+class DepartamentoForm(forms.ModelForm):
+    class Meta:
+        model = Departamento
+        fields = "__all__"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+      
+        self.fields['code'].required = False
+    def clean_descripcion(self):
+        data=self.cleaned_data["descripcion"]
+        if self.instance.descripcion!=data:
+            if Departamento.objects.filter(descripcion=data).exists():
+                self.add_error("descripcion",f" El departamento {data} ya se encuentra registrado .")
+        return data
 
 class PersonaForm(forms.ModelForm):
     departamento = forms.ModelChoiceField(queryset=Departamento.objects.all(), empty_label="Seleccione departamento...")
@@ -726,10 +739,11 @@ class InspeccionForm(forms.ModelForm):
 class EstacionesForm(forms.ModelForm):
     class Meta:  
         model=Estaciones
-        exclude=["changed_by","estado"]   
+        exclude=["changed_by","estado","ruta"]   
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['contacto'].required = False 
+        self.fields['direccion'].required = False 
     def clean_codigo(self):
         data=self.cleaned_data["codigo"]
         
@@ -758,7 +772,7 @@ class ConductoresForm(forms.ModelForm):
 class Rutaform(forms.ModelForm):
     class Meta:  
         model=Ruta
-        exclude=["changed_by","estado"]  
+        exclude=["changed_by","estado","ruta"]  
     def clean_ruta(self):
         data=self.cleaned_data["ruta"]
         
@@ -792,11 +806,38 @@ class ProductoForm(forms.ModelForm):
 class RendimientoForm(forms.ModelForm):
     class Meta:
         model=Rendimiento
-        exclude=["changed_by","estado","rend_prom"]  
+        exclude=["changed_by","estado","rend_vacio"] 
+    def clean(self):
+        tramo = self.cleaned_data.get('tramo')
+        modelo = self.cleaned_data.get('modelo')
+        print(self.instance)
+        if self.instance.tramo!=tramo or self.instance.modelo!=modelo :
+
+            rend=Rendimiento.objects.filter(tramo=tramo,modelo=modelo)
+            
+            if rend.exists():
+                self.add_error("tramo",f"Ya existe un rendimiento asociado a este tramo y modelo de vehículo!")
+     
+    
+        return self.cleaned_data
+ 
 class AbastecimientoForm(forms.ModelForm):
     class Meta:
         model=Abastecimiento
-        exclude=["changed_by","estado"]
+        exclude=["changed_by","estado","viaje"]
+    def clean(self):
+        subject = self.cleaned_data.get('tramo')
+        viaje=Viaje.objects.filter(ruta=self.data["ruta"],estado=True)
+          
+        if viaje.exists():
+            qs=Abastecimiento.objects.filter(viaje=viaje.get())
+            exist_tramo=qs.values_list('tramo',flat=True)
+            if subject in exist_tramo:
+                self.add_error("tramo",f"Ya existe una ruta activa con ese tramo seleccionado.")
+           
+       
+        return self.cleaned_data
+
 class EstadoViajeForm(forms.ModelForm):
     class Meta:
         model=EstadoViaje
@@ -829,3 +870,23 @@ class TipoAbastecimientoForm(forms.ModelForm):
             if TipoAbastecimiento.objects.filter(descripcion=data).exists():
                 self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
         return data
+class AfectacionConsumoForm(forms.ModelForm):
+    class Meta:
+        model=AfectacionConsumo
+        exclude=["changed_by"]
+        widgets = {
+            'per_carga': forms.NumberInput( attrs={'class':'form-control'}),
+            'afectacion': forms.NumberInput( attrs={'class':'form-control'}),
+            "estado":forms.CheckboxInput(attrs={"class":"form-check-input","checked":"true"})
+
+        } 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["estado"].checked=True
+    def clean_per_carga(self):
+        data=self.cleaned_data["per_carga"]
+        
+        if self.instance.per_carga!=data:
+            if AfectacionConsumo.objects.filter(per_carga=data).exists():
+                self.add_error("per_carga",f" : EL porcentaje de carga {data}% ya se encuentra registrado.")
+        return data     

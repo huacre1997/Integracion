@@ -1,0 +1,99 @@
+{% load static %}
+{% block content %}
+<style>
+
+</style>
+
+<div class="container">
+    {% if obj %}
+    <form method="POST" id="form_flota_edit" action="{% url 'Web:edit-flota' obj.pk %}" class="needs-validation"
+        novalidate>
+
+
+        {% else %}
+        <form method="POST" id="form_flota_edit" class="needs-validation" novalidate>
+
+            {% endif %}
+            {% csrf_token %}
+                     
+                              <div class="col-md-12">
+                            <label class="form-label">Empresa</label>
+                                <select class="form-select" name="empresa" id="empresa_editar" aria-label="Example select with button addon">
+                                    <option value="0">Seleccione...</option>
+                                    {% for i in empresa  %}
+                                        <option value="{{ i.id }}" {% if obj.empresa.id == i.id %}selected{% endif %}>{{ i.nombre }}</option>
+                                    {% endfor %}
+                                        
+                                </select>
+                                <div class="invalid-feedback">
+                                    Este campo es requerido.
+                                </div>
+                              
+                        </div>
+
+                   
+
+            <button type="submit" class="btn btn-primary" id="submit_flota_edit" style="display:none">Submit</button>
+
+        </form>
+</div>
+{% endblock %}
+{% block js_page %}
+<script>
+   $(document).ready(function () {
+    
+    $("#submit_flota_edit").click(function(){
+        let error= 0
+        function validar_input(input){
+          console.log($(input).val())
+        if($(input).val()=="0" || $(input).val()=="" ){
+            $(input).addClass("is-invalid").on("change",function(){
+                $(input).removeClass("is-invalid")
+            })
+            error=1
+            alerta(1500, "error", "Revise los campos!")
+
+        }
+       }
+        validar_input("#empresa_editar")
+       
+        if(error == 0){
+            modal_flota_edit.showLoading()
+
+            let form = document.getElementById("form_flota_edit")
+            let data=new FormData(form)
+            fetch( form.getAttribute("action"), {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                },
+                body: data
+
+              }).then(data => data.json()).then(response => {
+                modal_flota_edit.hideLoading()
+                console.log(response)
+                if(response.status == 200){
+                    modal_flota_edit.close()
+                    tabla_flotas.ajax.reload()
+                    alerta(2000, "success", "Flota guardada!")
+
+                }else{
+
+                    if(response.form.nombres){
+                        $("#nombres").addClass("is-invalid").on("change", function (){
+                            $(this).removeClass("is-invalid")
+                        })
+                        $("#nombres").next().text(response.form.nombres[0])
+                    }
+                }
+              })
+        }
+    })
+
+
+
+
+   });
+
+</script>
+{% endblock %}

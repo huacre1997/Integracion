@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 from django.urls import reverse_lazy
-from django.views.decorators.cache import cache_page
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse,Http404,JsonResponse
 from django.shortcuts import render,redirect
 from django.views.generic.base import TemplateView, View
 from django.views.generic import FormView, CreateView, ListView, UpdateView,DetailView
-from django.views.generic import FormView
-from django.contrib.auth.models import Group,Permission
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.cache import cache_page
+from django.core.serializers.json import DjangoJSONEncoder
+
+from django.utils.decorators import method_decorator
 from .forms import *
 from django.http.response import HttpResponseRedirect
 from django.contrib import messages, auth
@@ -17,21 +19,18 @@ from django.urls import reverse
 from .models import *
 from django.db import transaction	
 from datetime import datetime, timedelta
-from django.db.models import Q
-from django.http import Http404
 from Web.constanst import ACCION_NUEVO, ACCION_EDITAR, ACCION_ELIMINAR
-from django.http import HttpResponse
-from django.http import JsonResponse
 import json
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.utils.decorators import method_decorator
+
+from django.db.models import Count,OuterRef, Subquery,Q,Sum,F,Case,When
 
 from .mixins import ValidateMixin
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from six import text_type
-from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
-from django.core import serializers
+from django.contrib.auth.models import Group,Permission
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
+
 from .many_load import *
 def imports(request):
     if request.method=="GET":
@@ -163,7 +162,6 @@ class LogueoView(FormView):
         password = form.cleaned_data['clave']
         user = auth.authenticate(username=username, password=password)
         if user is not None and user.is_active:
-            print("aeaaaaa")
             auth.login(self.request, user)
             messages.success(self.request,f"Bienvenido {self.request.user}",extra_tags="login")
 
@@ -171,7 +169,6 @@ class LogueoView(FormView):
         else:
             auth.logout(self.request)    
             messages.error(self.request, 'El usuario o la clave es incorrecto.')
-            print("aea")
             return redirect(reverse_lazy("Web:login"))            
         return super().form_valid(form)
 
@@ -193,8 +190,27 @@ class LogoutView(LoginSelectPerfilView, View):
         auth.logout(request)
         return render(request, self.template_name)
 
+class DepartamentoCreateView(LoginRequiredMixin,TemplateView):
+    template_name = "Web/Catalogos/departamento.html"
 
-
+    model=Departamento
+    form_class=DepartamentoForm
+    def post(self,request,*args, **kwargs):
+        try:
+            form=self.form_class(request.POST)
+            if form.is_valid():
+                instance=form.save(commit=False)
+                instance.save()
+                data={"status":200,"id":instance.id,"descripcion":instance.descripcion}
+            else:
+                data = {
+                "form":form.errors,
+                'status': 500,
+                }
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
 class PerfilesTemplateView(LoginRequiredMixin,ValidateMixin ,TemplateView):
     template_name = "Web/Seguridad/perfiles.html"
     context_object_name = 'perfiles'
@@ -333,7 +349,6 @@ class PersonaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
                     data = {
                     'status': 200
                    }
-                    print("update")
                 else:
                     data = {
                     "error":form.errors,
@@ -412,7 +427,6 @@ class UsuariosListView(LoginRequiredMixin, ValidateMixin,ListView):
                 for i in Usuario.objects.all():
                     if i.persona:
                         data.append(i.toJSON())
-                print("if")
                 return JsonResponse(data,safe=False)
 
             else:
@@ -436,7 +450,6 @@ class UsuarioCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
 
     def post(self,request,*args, **kwargs):
         data={}
-        print(request.POST)
         try:
             form = self.get_form()
 
@@ -989,15 +1002,9 @@ class AnchoBandaRenovacionesListView(LoginRequiredMixin,ValidateMixin ,ListView)
     permission_required=["Web.view_anchobandarenova"]
 
     def get_queryset(self):
-   
         qs = super().get_queryset()
         qs = qs.filter(eliminado=False).order_by('-created_at')
-        print(qs)
         return qs
-
-
-
-
 class AnchoBandaRenovacionCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     form_class = AnchoBandaRenovaForm
     template_name = 'Web/Catalogos/ancho_banda_renovacion.html'
@@ -1126,7 +1133,6 @@ class MarcaLlantaCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
     
     
     def post(self, request,*args, **kwargs):      
-        print(request.POST) 
         try:
             form = self.get_form()
 
@@ -1178,14 +1184,11 @@ class MarcaLlantaUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
 
     def post(self, request,*args, **kwargs):       
         try:
-            print(self.request.POST)
             form = self.get_form()
 
             if form.is_valid():
-                print(form)
                 instance=form.save(commit=False)
                 if not "activo" in self.request.POST:
-                    print("aeaaaa")
                     instance.activo=False
                 instance.changed_by = self.request.user
                 instance.save()
@@ -1217,7 +1220,6 @@ class MarcaLlantaDeleteView(LoginRequiredMixin,ValidateMixin, View):
         existe = MarcaLlanta.objects.filter(pk=id)
         if existe.exists():
             obj=existe.first()
-            print(obj)
             obj.changed_by=request.user
             obj.eliminado = True
             obj.activo=False
@@ -1402,8 +1404,6 @@ class MedidaLlantaDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
 def RenderOptionLlanta(request,id):
     if id!="":
-       
-        print(id)
         modelos = ModeloLlanta.objects.filter(marca_llanta=id)
     
         return HttpResponse(json.dumps(list(modelos.values('id','descripcion',"eliminado","activo"))), content_type="application/json")
@@ -1780,7 +1780,7 @@ class DetalleTipoVehiculo(LoginRequiredMixin,ValidateMixin, ListView):
             if  i!=0:
                 pos.append((self.request.POST.getlist(f'{i}')))
         for i,x in enumerate(self.get_queryset()):
-            print(i)
+            
             x.posx=pos[i][0]
             x.posy=pos[i][1]
             x.save()
@@ -1805,7 +1805,6 @@ class TipoVehiculoUpdateView(LoginRequiredMixin, ValidateMixin,UpdateView):
     context_object_name="obj"
     def form_valid(self, form):
         instance = form.save(commit=False)
-        print(instance.image)
 
         if instance.image!="":
             if default_storage.exists(f'vehiculo2/Y/{instance.image}'):
@@ -1896,7 +1895,6 @@ class ModeloVehiculoUpdateView(LoginRequiredMixin,ValidateMixin, UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        print(form)
 
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
@@ -1934,16 +1932,13 @@ class CubiertaListView(LoginRequiredMixin,ValidateMixin,TemplateView):
     
     def post(self,request,*args, **kwargs):
         try:
-            print("entro al post")
             codigo=self.request.POST["codigo"]
-            print(codigo)
             llanta=CubiertaLlanta.objects.select_related("renovadora","modelo_renova","ancho_banda","llanta").filter(activo=True)
             if codigo:
                 llanta=llanta.filter(llanta_id=codigo)
             data=[]
             for i in llanta:
                 data.append(i.toJSON2())  
-            print(data)
             return JsonResponse(data,safe=False)
         except Exception as e:
             print(e)
@@ -1980,7 +1975,6 @@ class CubiertaCreateView(LoginRequiredMixin,ValidateMixin,TemplateView):
             
                 data={"status":200}
             else:
-                print(form.errors)
                 data={"status":500,"errors":form.errors}
             return JsonResponse(data,safe=False)
         except Exception as e:
@@ -2012,7 +2006,6 @@ class CubiertaEditView(LoginRequiredMixin,ValidateMixin,UpdateView):
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):
         try:
-            print(self.request.POST)
             form=CubiertaForm(self.request.POST,instance=self.get_object())
             if form.is_valid():
                 instance=self.get_object()
@@ -2036,7 +2029,6 @@ class CubiertaEditView(LoginRequiredMixin,ValidateMixin,UpdateView):
                 data={"status":200}
 
             else:
-                print(form.errors)
                 data={"status":500,"errors":form.errors}
             return JsonResponse(data,safe=False)
         except Exception as e:
@@ -2130,9 +2122,7 @@ class LlantaCreateView(LoginRequiredMixin,ValidateMixin, CreateView):
         
         try:
             data = json.loads(self.request.body.decode("utf-8"))
-            
-            print(data)
-            
+                        
             for i in data:
                 instance=Llanta()
                 instance.codigo=i["codigo"]
@@ -2182,7 +2172,6 @@ def NeumaticoExists(request,codigo):
 
 def PosicionExists(request):
     if request.method=="GET":
-        print(request.GET)
         if Llanta.objects.filter(vehiculo=request.GET["vehiculo"],posicion=request.GET["posicion"]).exists():
             return JsonResponse({"status":300,"mensaje":"El vehpiculo ya tiene un neumático colocado es ensa posición."})
         else:
@@ -2191,17 +2180,14 @@ def PosicionExists(request):
             nrorepuesto=data.tipo_vehiculo.max_rep
             placa=data.placa
             total=int(nrollantas)+int(nrorepuesto)
-            print(total)
             if request.GET["repuesto"]=="true":
                 a=""
                 for i in range(nrollantas,total):
                     a+=str(i+1)+" "
                 if not (int(request.GET["posicion"])<=int(total) and int(request.GET["posicion"])>int(nrollantas)):
-                    print("repuesto")
                     return JsonResponse({"status":300,"mensaje":f"Este neumático de repuesto solo puede ocupar las posiciones {a}."})
 
             else:
-                print("else")
                 if int(request.GET["posicion"]) > total :
                     return JsonResponse({"status":300,"mensaje":f"El vehiculo {placa} no puede tener mas de {total} neumáticos totales."})
                 elif int(request.GET["posicion"]) > nrollantas :
@@ -2270,7 +2256,6 @@ class LlantaUpdateView(LoginRequiredMixin,ValidateMixin,UpdateView):
         try:
             # data = json.loads(self.request.body.decode("utf-8"))            
             data=request.POST
-            print(data)     
             instance=self.get_object()
             instance.codigo=data["codigo"]
             instance.costo=data["costo"]
@@ -2469,7 +2454,6 @@ class VehiculoCreateView(LoginRequiredMixin, ValidateMixin,CreateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        print(form.errors)
         messages.warning(self.request, form.errors)
         return super().form_invalid(form)
 
@@ -2516,7 +2500,6 @@ class VehiculoDeleteView(LoginRequiredMixin, ValidateMixin,View):
 
     def post(self, request, *args, **kwargs):
         id = self.kwargs['pk']
-        print(id)
         obj = Vehiculo.objects.get(pk=id)
         obj.changed_by=request.user
         obj.eliminado = True
@@ -2609,12 +2592,10 @@ def getLlanta(request):
     if request.method=="POST":
         post = json.loads(request.body.decode("utf-8"))
         qs = Llanta.objects.get(id=int(post)).toJSON()
-        print(qs)
         return JsonResponse(qs, content_type='application/json')
 def getVehiculo(request):
     if request.method=="POST":
         post = json.loads(request.body.decode("utf-8"))
-        print(post)
         qs = Vehiculo.objects.get(id=post["id"])
         qs_json = serializers.serialize('json', [qs],  use_natural_foreign_keys=True,use_natural_primary_keys=True)
         return HttpResponse(qs_json, content_type='application/json')
@@ -2693,7 +2674,6 @@ class DesmontajeLlantaView(LoginRequiredMixin,ValidateMixin,TemplateView):
         context={"obs":CHOICES_OBSERVACION,"obj":request.GET,"estado":CHOICES_ESTADO_LLANTA}
         return render(self.request,self.template_name,context)
     def post(self,request,*args, **kwargs):
-        print(request.POST)
         try:
             llanta=Llanta.objects.filter(id=request.POST["llanta"])
             if llanta.exists():
@@ -2746,7 +2726,6 @@ class MontajeLlantasView(LoginRequiredMixin,TemplateView):
         llanta=Llanta.objects.filter(vehiculo=None,activo=True,eliminado=False)
         return render(self.request,self.template_name,{"obj":request.GET,"llanta":llanta})
     def post(self,request,*args, **kwargs):
-        print(request.POST)
         try:
             llanta=Llanta.objects.filter(id=request.POST["llanta"])
             if llanta.exists():
@@ -2937,50 +2916,134 @@ def AgregarInspeccion(request):
 class HistorialLlantas(LoginRequiredMixin,ListView):
     template_name="Web/reportes/historial.html"
     model=Movimientos_Historial
+from django.db import IntegrityError, transaction
+
 class AbastecimientoView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/abastecimiento.html"
     model=Abastecimiento
     form_class=AbastecimientoForm  
+    def dispatch(self, request, *args, **kwargs):
+        if request.method =="POST":
+            self.data=json.loads(request.POST["objeto"])
+            self.placas=[]
+            self.contador=0
+            self.tramo=request.POST["tramo"]
+            for k in self.data:
+                
+                self.modelo=Vehiculo.objects.get(id=k["placa"]["descripcion"])
+                self.rend=Rendimiento.objects.filter(tramo=request.POST["tramo_id"],modelo=self.modelo.modelo_vehiculo)
+                self.exist_placa=DetalleAbastecimiento.objects.filter(placa=self.modelo)
+                if self.exist_placa.exists():
+                    self.exist_fecha=self.exist_placa.order_by("abast__fecha").last()
+                    if datetime.strptime(request.POST["fecha"], '%Y-%m-%d').date()<= self.exist_fecha.abast.fecha:
+                        return JsonResponse({"status":500,"form":{"fecha":["La fecha ingresada es menor o igual a la del último abastecimiento registrado de una de las placas en la tabla."]}})
+
+                if not self.rend.exists():
+                    self.contador+=1
+                    self.placas.append(self.modelo.placa)
+            if self.contador>0:
+                return JsonResponse({"status":500,"form":{"rendimiento":[f"No se ha configurado un rendimiento para las placas {','.join(self.placas)} y el tramo {self.tramo}."]}})
+
+        return super().dispatch(request, *args, **kwargs)
+        
     def post(self,request,*args, **kwargs):
         try:
-            a=Abastecimiento()
-            a.estacion_id=request.POST["estacion"]
-            a.fecha=request.POST["fecha"]
-            a.tipo_id=request.POST["tipo"]
-            a.ruta_id=request.POST["ruta"]
-            a.estado_id=request.POST["estado"]
-            a.producto_id=request.POST["producto"]
-            a.precio=request.POST["precio"]
-            a.estado=True
-            a.changed_by=self.request.user
-            a.save()
-            for i in json.loads( request.POST["objeto"]):
-                date_time_str = i["hora"]
-                date_time_obj = datetime.strptime(date_time_str, '%H:%M')
-                d=DetalleAbastecimiento()
-                d.abast=a
-                d.hora=i["hora"]
-                d.placa_id=i["placa"]
-                d.km=i["km"]
-                d.volumen=i["volumen"]
-                d.total=i["total"]
-                d.conductor_id=i["conductor"]
-                d.cargado=i["cargado"]
-                d.voucher=i["voucher"]
-                d.factura=i["factura"]
-                d.save()
-            # form=self.form_class(request.POST)
-            # if form.is_valid():
-            #     instance=form.save(commit=False)
-            #     instance.changed_by=request.user
-            #     instance.save()
-            #     data={"status":200}
-            # else:
-            #     data = {
-            #     "form":form.errors,
-            #     'status': 500,
-            #     }
-            return JsonResponse({"status":200},safe=False)
+            with transaction.atomic():
+
+                form=self.form_class(request.POST)
+                if form.is_valid():
+                    viaje=Viaje.objects.filter(ruta=request.POST["ruta"],estado=True)
+                    if viaje.exists():
+                    
+                            
+                        abast=Abastecimiento()
+                        abast.viaje=viaje.get()
+                        
+                        abast.estacion_id=request.POST["estacion"]
+                        abast.fecha=request.POST["fecha"]
+                        abast.tipo_id=request.POST["tipo"]
+                        abast.tramo=request.POST["tramo"]
+                        abast.estado_viaje_id=request.POST["estado_viaje"]
+                        abast.producto_id=request.POST["producto"]
+                        abast.precio=request.POST["precio"]
+                        abast.estado=True
+                        abast.changed_by=self.request.user
+                        abast.save()
+                        for k in self.data:
+
+                            date_time_str = k["hora"]
+                            date_time_obj = datetime.strptime(date_time_str, '%H:%M')
+                            det_abast=DetalleAbastecimiento()
+                            det_abast.abast=abast
+                            det_abast.hora=k["hora"]
+                            det_abast.placa_id=k["placa"]["descripcion"]
+                            det_abast.km=k["km"]
+                            det_abast.volumen=float(k["volumen"])
+                            det_abast.total=k["total"]
+                            det_abast.conductor_id=k["conductor"]
+                            det_abast.cargado=k["cargado"]["valor"]
+                            if request.POST["tipo"]=="1" and k["cargado"]["id"]!=0:
+                                afectacion=AfectacionConsumo.objects.filter(pk=k["cargado"]["id"]).get()
+
+                                det_abast.afectacion=afectacion.afectacion
+                                det_abast.gal_obj=float(self.rend.get().gal_abast)*(1+afectacion.afectacion/100)
+                                det_abast.recorrido_obj=self.rend.get().km
+
+                            elif request.POST["tipo"]=="2" or k["cargado"]["id"]==0:
+                                det_abast.recorrido_obj=self.rend.get().km
+                                det_abast.gal_obj=self.rend.get().gal_abast
+                            det_abast.voucher=k["voucher"]
+                            det_abast.factura=k["factura"]
+                            det_abast.save()
+                    else:
+
+                        nuevo_viaje=Viaje()
+                        nuevo_viaje.ruta_id=request.POST["ruta"]
+                        nuevo_viaje.estado=True
+                        nuevo_viaje.changed_by=request.user
+                        nuevo_viaje.save()
+                        nuevo_abast=Abastecimiento()
+                        nuevo_abast.viaje=nuevo_viaje
+                        nuevo_abast.estacion_id=request.POST["estacion"]
+                        nuevo_abast.fecha=request.POST["fecha"]
+                        nuevo_abast.tipo_id=request.POST["tipo"]
+                        nuevo_abast.tramo=request.POST["tramo"]
+                        nuevo_abast.estado_viaje_id=request.POST["estado_viaje"]
+                        nuevo_abast.producto_id=request.POST["producto"]
+                        nuevo_abast.precio=request.POST["precio"]
+                        nuevo_abast.estado=True
+                        nuevo_abast.changed_by=self.request.user
+                        nuevo_abast.save()
+                        for k in self.data:
+
+                            date_time_str = k["hora"]
+                            date_time_obj = datetime.strptime(date_time_str, '%H:%M')
+                            nuevo_det_abast=DetalleAbastecimiento()
+                            nuevo_det_abast.abast=nuevo_abast
+                            nuevo_det_abast.hora=k["hora"]
+                            nuevo_det_abast.placa_id=k["placa"]["descripcion"]
+                            nuevo_det_abast.km=k["km"]
+                            nuevo_det_abast.volumen=float(k["volumen"])
+                            nuevo_det_abast.total=k["total"]
+                            nuevo_det_abast.conductor_id=k["conductor"]
+                            nuevo_det_abast.cargado=k["cargado"]["valor"]
+                            if request.POST["tipo"]=="1" and k["cargado"]["id"]!=0:
+                                afectacion=AfectacionConsumo.objects.filter(pk=k["cargado"]["id"]).get()
+
+                                nuevo_det_abast.afectacion=afectacion.afectacion
+                                nuevo_det_abast.gal_obj=float(self.rend.get().gal_abast)*(1+afectacion.afectacion/100)
+                                nuevo_det_abast.recorrido_obj=self.rend.get().km
+                            elif  request.POST["tipo"]=="2" or k["cargado"]["id"]==0:
+                                nuevo_det_abast.recorrido_obj=self.rend.get().km
+                                nuevo_det_abast.gal_obj=self.rend.get().gal_abast
+                            nuevo_det_abast.voucher=k["voucher"]
+                            nuevo_det_abast.factura=k["factura"]
+                            nuevo_det_abast.save()
+                           
+                    return JsonResponse({"status":200},safe=False)
+                else:
+                    return JsonResponse({"status":500,"form":form.errors},safe=False)
+
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
@@ -2989,38 +3052,102 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
         context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
         context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True)
         context["conductor"]=Conductor.objects.values("id","nombres").filter(estado=True)
-        context["estacion"]=Estaciones.objects.values("id","descripcion").filter(estado=True)
         context["tipo"]=TipoAbastecimiento.objects.values("id","descripcion")
         context["estado"]=EstadoViaje.objects.values("id","descripcion")
+        context["afectacion"]=AfectacionConsumo.objects.values("id","afectacion","per_carga")
 
         return context
-class RendimientoView(LoginRequiredMixin,TemplateView):
+class RendimientoView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/rendimiento.html"
     model=Rendimiento
     form_class=RendimientoForm
+    def dispatch(self, request, *args, **kwargs):
+        if request.method =="POST":
+            self.data=json.loads(request.POST["objeto"])
+            for i in self.data:
+                rendimiento=Rendimiento.objects.filter(modelo=request.POST["modelo_vehiculo"],tramo__id=i["tramo"])
+                if rendimiento.exists():
+                    return JsonResponse({"status":500,"form":{"tramo":["Hay un tramo que ya se ingresó para este modelo de vehículo.Revise la tabla!"]}})
+        return super().dispatch(request, *args, **kwargs)
+    
+
     def post(self,request,*args, **kwargs):
-        try:
-            print(request.POST)
-            form=self.form_class(request.POST)
-            if form.is_valid():
-                instance=form.save(commit=False)
-                instance.changed_by=request.user
-                instance.save()
-                data={"status":200}
-            else:
-                data = {
-                "form":form.errors,
-                'status': 500,
-                }
-            return JsonResponse(data,safe=False)
+        try:        
+ 
+            for i in self.data:
+                nuevo=Rendimiento()
+                nuevo.tramo_id=i["tramo"]
+                nuevo.fech_hora=request.POST["fech_hora"]
+                nuevo.modelo_id=request.POST["modelo_vehiculo"]
+                nuevo.changed_by=request.user
+                nuevo.km=int(i["recorrido"])
+                nuevo.gal_abast=float(i["galones_abast"])
+                nuevo.rend_vacio =float(i["rend_objetivo"])
+                nuevo.save()
+            return JsonResponse({"status":200},safe=False)
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
+        context['marca_vehiculo'] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
         context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True)
         return context
+class RendimientoListView(LoginRequiredMixin,TemplateView):
+    model=Rendimiento
+    template_name="Web/combustible/rendimiento.html"
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Rendimiento.objects.filter(estado=True):
+                    data.append(i.toJSON())
+            else:
+                data["error"]="Ha ocurrido un error"
+            return JsonResponse(data,safe=False)
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url) 
+class RendimientoEditView(LoginRequiredMixin,UpdateView):
+    model=Rendimiento
+    template_name="Web/combustible/rendimiento_editar.html"
+    context_object_name="obj"
+    form_class=RendimientoForm
+    def post(self,request,*args, **kwargs):
+        try:
+            form=self.form_class(request.POST,instance=self.get_object())
+            if form.is_valid():
+                self.object=self.get_object()
+                self.object.modelo_id=request.POST["modelo"]
+                self.object.fech_hora=request.POST["fech_hora"]
+                self.object.tramo_id=request.POST["tramo"]
+                self.object.km=request.POST["km"]
+                self.object.gal_abast=request.POST["gal_abast"]
+                self.object.rend_vacio=float(request.POST["km"])/float(request.POST["gal_abast"])
+                self.object.save()
+                data={"status":200}
+            else:
+                data={"status":500,"form":form.errors}
+            
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["marca_vehiculo"] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
+        context["ruta"]=Ruta.objects.filter(estado=True)
+        return context
+    
 class FlotaView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/flota.html"
     def post(self,request,*args, **kwargs):
@@ -3034,20 +3161,122 @@ class FlotaView(LoginRequiredMixin,TemplateView):
             return JsonResponse({"status":500})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
+        context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True,empresa=None) 
         context["empresa"]=Empresa.objects.values("id","nombre")
         return context
+    
+class FlotaListView(LoginRequiredMixin,TemplateView):
+    model=Vehiculo
+    template_name="Web/combustible/flota.html"
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Vehiculo.objects.filter(activo=True).exclude(empresa=None):
+                    data.append(i.toJSON_flota())
+            else:
+                data["error"]="Ha ocurrido un error"
+            return JsonResponse(data,safe=False)
+
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500},safe=False)
+
+class FlotaEditView(LoginRequiredMixin,UpdateView):
+    model=Vehiculo
+    template_name="Web/combustible/flota_editar.html"
+    context_object_name="obj"
+    form_class=ConductoresForm
+    def post(self,request,*args, **kwargs):
+        try:
+            self.object=self.get_object()
+            self.object.empresa_id = request.POST["empresa"]
+            self.object.save()
+            data={"status":200}
+            
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
+    def get_context_data(self, **kwargs):   
+        context = super().get_context_data(**kwargs)
+        context["tip_doc"] = CHOICES_TIPO_DOC2
+        context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True,empresa=None) 
+        context["empresa"]=Empresa.objects.values("id","nombre")
+
+        return context
+class RutasListView(LoginRequiredMixin,TemplateView):
+    model=Ruta
+    template_name="Web/combustible/ruta.html"
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Ruta.objects.filter(estado=True):
+                    data.append(i.toJSON())
+            else:
+                data["error"]="Ha ocurrido un error"
+            return JsonResponse(data,safe=False)
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url) 
 class RutaView(LoginRequiredMixin,CreateView):
     model=Ruta
     template_name="Web/combustible/ruta.html"
     form_class=Rutaform
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
     def post(self,request,*args, **kwargs):
         try:
             form=self.form_class(request.POST)
+            
             if form.is_valid():
                 instance=form.save(commit=False)
                 instance.changed_by=request.user
                 instance.save()
+                js=json.loads(request.POST["objeto"])
+                print(js)
+                tramo_completo=[]
+                formato=[]
+                ids=[]
+                for x,i in enumerate(js):
+                    
+                    tramo=Tramo()
+                    for a in i["descripcion"]:
+                        selected=a.split("-")
+                        tramo_completo.append(selected[2])  
+                        ids.append(selected[0])  
+                        formato.append(selected[1])
+                    selected_tramo = '-'.join(map(str,tramo_completo)) 
+                    selected_ids = '-'.join(map(str,ids)) 
+                    selected_type = '-'.join(map(str,  formato))
+                    tramo.descripcion=selected_tramo
+                    tramo.ruta=instance
+                    tramo.changed_by=request.user
+                    tramo.formato=selected_type
+                    tramo.ids=selected_ids
+                    tramo.state=1 if x==0 else 2
+                        
+                    tramo.save()
+                    tramo_completo=[]
+                    formato=[]
+                    ids=[]
+
                 data={"status":200}
             else:
                 data = {
@@ -3060,8 +3289,97 @@ class RutaView(LoginRequiredMixin,CreateView):
             return JsonResponse({"status":500})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
+        context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True)
+        dep=Departamento.objects.values_list("id","descripcion","code","descripcion")
+        pro=Provincia.objects.values_list("id","descripcion","code","departamento__descripcion")
+        dis=Distrito.objects.values_list("id","descripcion","code","provincia__descripcion")
+        context["ubicacion"]=(dep.union(pro,dis).order_by("code","descripcion"))
+       
         return context
+class RutaEditView(LoginRequiredMixin,TemplateView):
+    model=Ruta
+    template_name="Web/combustible/ruta_editar.html"
+    def get(self,request,**kwargs):
+        data=[]
+        objeto={"id":"","descripcion":[]}
+        tramos=Tramo.objects.filter(ruta=kwargs["pk"])
+       
+        for j,i in enumerate(tramos):
+            ids_array=i.ids.split("-")
+            format_array=i.formato.split("-")
+            tramo_array=i.descripcion.split("-")
+            
+            data_list=[]
+            for k in range(len(ids_array)):
+                code=ids_array[k]+"-"+format_array[k]+"-"+tramo_array[k]
+
+                data_list.append(code)
+            objeto["descripcion"]=data_list
+            objeto["id"]=i.pk
+            data.append(objeto)
+            objeto={"id":"","descripcion":[]}
+        dep=Departamento.objects.values_list("id","descripcion","code","descripcion")
+        pro=Provincia.objects.values_list("id","descripcion","code","departamento__descripcion")
+        dis=Distrito.objects.values_list("id","descripcion","code","provincia__descripcion")
+        ubicacion=(dep.union(pro,dis).order_by("code","descripcion"))
+        return render(self.request,self.template_name,{"tramo":data,"ruta":kwargs["pk"],"ubicacion2":ubicacion})
+    def post(self,request,*args, **kwargs):
+        try:
+           
+            js=json.loads(request.POST["objeto"])
+            tramo_completo=[]
+            formato=[]
+            ids=[]
+            for x,i in enumerate(js):
+                
+                if i["id"]!=0:
+                    update=Tramo.objects.get(id=i["id"])
+                    update.state=1 if x==0 else 2
+                    for a in i["descripcion"]:
+                        selected=a.split("-")
+                        tramo_completo.append(selected[2])  
+                        ids.append(selected[0])  
+                        formato.append(selected[1])
+                    selected_tramo = '-'.join(map(str,tramo_completo)) 
+                    selected_ids = '-'.join(map(str,ids)) 
+                    selected_type = '-'.join(map(str,  formato))
+                    update.descripcion=selected_tramo
+                    update.formato=selected_type
+                    update.ids=selected_ids
+                    update.state=1 if x==0 else 2
+                    update.save()
+                    tramo_completo=[]
+                    formato=[]
+                    ids=[]
+                    
+                else:
+                    create=Tramo()
+                    create.ruta_id=kwargs["pk"]
+                    for a in i["descripcion"]:
+                        selected=a.split("-")
+                        tramo_completo.append(selected[2])  
+                        ids.append(selected[0])  
+                        formato.append(selected[1])
+                    selected_tramo = '-'.join(map(str,tramo_completo)) 
+                    selected_ids = '-'.join(map(str,ids)) 
+                    selected_type = '-'.join(map(str,  formato))
+                    create.descripcion=selected_tramo
+                    create.formato=selected_type
+                    create.ids=selected_ids
+                    create.state=1 if x==0 else 2
+                    create.changed_by=self.request.user
+                    create.save()
+                    tramo_completo=[]
+                    formato=[]
+                    ids=[]
+                    
+            data={"status":200,"ruta":kwargs["pk"]}
+        
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
+ 
 def getVehiculo(request,id): 
     data=Vehiculo.objects.get(id=id)
     return JsonResponse(data.toJSON3())
@@ -3071,7 +3389,6 @@ class EstacionesView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/estaciones.html"
     def post(self,request,*args, **kwargs):
         try:
-            print(request.POST)
             form=self.form_class(request.POST)
             if form.is_valid():
                 instance=form.save(commit=False)
@@ -3083,7 +3400,7 @@ class EstacionesView(LoginRequiredMixin,CreateView):
                     product.precio=i["precio"]
                     product.estacion=instance
                     product.save()
-                data={"status":200}
+                data={"status":200,"id":instance.id,"descripcion":instance.descripcion}
             else:
                 data = {
                 "form":form.errors,
@@ -3097,6 +3414,7 @@ class EstacionesView(LoginRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context["producto"] = Producto.objects.filter(estado=True)
         context["eess"]=Estaciones.objects.filter(estado=True)
+        context["departamento"]=Departamento.objects.all()
         context["unidad"]=UnidadMedida.objects.filter(estado=True)
         return context
     
@@ -3106,7 +3424,6 @@ class EmpresaCreateView(LoginRequiredMixin,CreateView):
     form_class=EmpresaForm
     def post(self,request,*args, **kwargs):
         try:
-            print(request.POST)
             form=self.form_class(request.POST)
             if form.is_valid():
                 instance=form.save(commit=False)
@@ -3190,7 +3507,6 @@ class PrecioUpdateView(LoginRequiredMixin,TemplateView):
             return JsonResponse({"status":500})
 def getProducts(request,id):
     p=EstacionProducto.objects.filter(estacion_id=id)
-
     if request.method=="GET":
         data=[]
         for i in p:
@@ -3198,11 +3514,9 @@ def getProducts(request,id):
         return JsonResponse({"status":200,"data":data})
     elif request.method=="POST":
         post = json.loads(request.body.decode("utf-8"))
-        print(post)
         for i in post:
             if i["id"]!="":
                 EstacionProducto.objects.filter(id=i["id"]).update(precio=i["precio"],producto_id=i["producto"]["id"])
-                print("uen")
             else:
                 es=EstacionProducto()
                 es.producto_id=i["producto"]["id"]
@@ -3210,13 +3524,66 @@ def getProducts(request,id):
                 es.precio=i["precio"]
                 es.save()
         return JsonResponse({"status":200})
+def getTramos(request,id):
+
+    
+    if request.method=="GET":
+        data=[]
+        p=Tramo.objects.filter(ruta_id=id)
+
+        for i in p:
+            data.append(i.cbo_ruta())
+        res={"status":200,"data":data}
+      
+    else:
+        res={"status":500}
+    return JsonResponse(res)
+def getRutas(request):
+    p=Ruta.objects.filter(estado=True)
+    if request.method=="GET":
+        data=[]
+        for i in p:
+            data.append(i.cbo_ruta())
+        res={"status":200,"data":data}
+    else:
+        res={"status":500}
+    return JsonResponse(res)
+def getEstaciones(request,tramo):
+   
+    if tramo!="0":
+        tramo=Tramo.objects.get(id=tramo)
+        array_formato=tramo.formato.split("-")
+        array_ids=tramo.ids.split("-")
+        p=Estaciones.objects.filter(Q(ubicacion__provincia__in=array_ids)|Q(ubicacion__provincia__departamento__in=array_ids)|Q(ubicacion__in=array_ids))
+        if request.method=="GET":
+            data=[]
+            for i in p:
+                data.append(i.cbo_ruta())
+            res={"status":200,"data":data}
+        else:
+            res={"status":500}
+    else:
+        res={"status":500}
+
+    return JsonResponse(res,safe=False)
+
+def getVehiculosRuta(request,id):
+    qs1=DetalleAbastecimiento.objects.filter(abast__viaje__ruta__id=id,abast__viaje__estado=True).values("placa","abast__tramo").order_by("-abast__fecha").first()
+    qs=DetalleAbastecimiento.objects.filter(abast__viaje__ruta__id=id,abast__viaje__estado=True).values("placa").annotate(Count("placa"))
+    if qs.exists():
+
+        serialized_q = json.dumps(list(qs), cls=DjangoJSONEncoder)
+        data={"data":serialized_q,"status":200,"tramo":qs1["abast__tramo"]}
+    else:
+        data={"status":500}
+
+    return JsonResponse(data,safe=False)
 class EstadoAbastecimientoCreateView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/estado.html"
     model=EstadoViaje
     form_class=EstadoViajeForm
     def post(self,request,*args, **kwargs):
         try:
-            print(request.POST)
             form=self.form_class(request.POST)
             if form.is_valid():
                 instance=form.save(commit=False)
@@ -3279,9 +3646,9 @@ class ConductoresView(LoginRequiredMixin,CreateView):
     template_name="Web/combustible/conductores.html"
     model=Conductor
     form_class=ConductoresForm
-    def get(self,request,*args, **kwargs):
-        context={"tip_doc":CHOICES_TIPO_DOC2}
-        return render(request,self.template_name,context)
+    # def get(self,request,*args, **kwargs):
+    #     context={"tip_doc":CHOICES_TIPO_DOC2}
+    #     return render(request,self.template_name,context)
     def post(self,request,*args, **kwargs):
         try:
             form=self.form_class(request.POST)
@@ -3299,7 +3666,60 @@ class ConductoresView(LoginRequiredMixin,CreateView):
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["aea"] = 123
+        return context
+    
+class ConductorListView(LoginRequiredMixin,TemplateView):
+    model=Conductor
+    template_name="Web/combustible/conductores.html"
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in Conductor.objects.filter(estado=True):
+                    data.append(i.toJSON())
+            else:
+                data["error"]="Ha ocurrido un error"
+            return JsonResponse(data,safe=False)
 
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500},safe=False)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tip_doc"] = CHOICES_TIPO_DOC2
+        return context
+    
+class ConductorEditView(LoginRequiredMixin,UpdateView):
+    model=Conductor
+    template_name="Web/combustible/conductor_editar.html"
+    context_object_name="obj"
+    form_class=ConductoresForm
+    def post(self,request,*args, **kwargs):
+        try:
+            form=self.form_class(request.POST,instance=self.get_object())
+            if form.is_valid():
+                form.save()
+                data={"status":200}
+            else:
+                data={"status":500,"form":form.errors}
+            
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
+    def get_context_data(self, **kwargs):   
+        context = super().get_context_data(**kwargs)
+        context["tip_doc"] = CHOICES_TIPO_DOC2
+        return context
 class LiquidacionView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/liquidacion.html"
     @method_decorator(csrf_exempt)
@@ -3308,61 +3728,103 @@ class LiquidacionView(LoginRequiredMixin,TemplateView):
     def post(self,request,*args, **kwargs):
         data={}
         try:
-            año=request.POST["año"]
-            mes=request.POST["mes"]
-            factura=request.POST["factura"]
-            eess=request.POST["eess"]
-                
+            factura=self.request.POST["factura"]
+            eess=self.request.POST["eess"]
+            start_date=self.request.POST["start_date"]
+            end_date=self.request.POST["end_date"]        
             data=[]
-            print(request.POST)
-         
-            qs=DetalleAbastecimiento.objects.select_related("abast","placa","conductor","abast__ruta","abast__tipo","abast__estacion","abast__estado_viaje")
-  
-            if año and factura and eess and mes:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,factura=factura,abast__estacion__codigo=eess)
-            elif año and mes and factura:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,factura=fatura)
-            elif año and mes and eess:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,abast__estacion__codigo=eess)
-            elif mes and factura and eess:
-                qs=qs.filter(abast__fecha__month=mes,factura=fatura,abast__estacion__codigo=eess)
-            elif año and factura and eess:
-                qs=qs.filter(abast__fecha__year=año,factura=factura,abast__estacion__codigo=eess)   
-            elif año  and mes:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes)
-            elif año and factura:
-                qs=qs.filter(abast__fecha__year=año,factura=factura)  
-            elif año and eess:
-                qs=qs.filter(abast__fecha__year=año,abast__estacion__codigo=eess)
-            elif mes and factura:
-                qs=qs.filter(abast__fecha__month=mes,factura=factura)
-            elif mes and eess:
-                qs=qs.filter(abast__fecha__month=mes,abast__estacion__codigo=eess) 
+            newest = DetalleAbastecimiento.objects.filter(placa=OuterRef('placa'),abast__fecha__lt=OuterRef('abast__fecha')).order_by('-abast__fecha')
+
+            qs=(DetalleAbastecimiento.objects.select_related("abast","placa","conductor","abast__tipo","abast__estacion","abast__estado_viaje").
+                                annotate(recorrido=F("km")-Subquery(newest.values('km')[:1])).
+                                 order_by("-abast__viaje","-abast__fecha"))
+            # if año and factura and eess and mes:
+            #     qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,factura=factura,abast__estacion__codigo=eess)
+            # elif start_date and end_date and factura:
+            #     qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,factura=fatura)
+            # elif start_date and end_date and eess:
+            #     qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,abast__estacion__codigo=eess)
+            # elif mes and factura and eess:
+            #     qs=qs.filter(abast__fecha__month=mes,factura=fatura,abast__estacion__codigo=eess)
+            # elif año and factura and eess:
+            #     qs=qs.filter(abast__fecha__year=año,factura=factura,abast__estacion__codigo=eess)   
+            # elif año  and mes:
+            #     qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes)
+            # elif año and factura:
+            #     qs=qs.filter(abast__fecha__year=año,factura=factura)  
+            # elif año and eess:
+            #     qs=qs.filter(abast__fecha__year=año,abast__estacion__codigo=eess)
+            # elif mes and factura:
+            #     qs=qs.filter(abast__fecha__month=mes,factura=factura)
+            # elif mes and eess:
+            #     qs=qs.filter(abast__fecha__month=mes,abast__estacion__codigo=eess) 
+            # elif factura and eess:
+            #     qs=qs.filter(factura=factura,abast__estacion__codigo=eess)    
+            # elif año:
+            #     qs=qs.filter(abast__fecha__year=año)
+            # elif mes:
+            #     qs=qs.filter(abast__fecha__month=mes) 
+            if  start_date and end_date and factura and eess:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,factura=factura,abast__estacion=eess)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],factura=factura,abast__estacion=eess)
             elif factura and eess:
                 qs=qs.filter(factura=factura,abast__estacion__codigo=eess)    
-            elif año:
-                qs=qs.filter(abast__fecha__year=año)
-            elif mes:
-                qs=qs.filter(abast__fecha__month=mes)  
+            elif start_date and end_date and factura:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,factura=factura)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],factura=factura)
+            elif start_date and end_date and eess:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,abast__estacion=eess)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],abast__estacion=eess)
+            elif start_date and end_date:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date])
+
             elif factura:
                 qs=qs.filter(factura=factura)
             elif eess:
-                qs=qs.filter(abast__estacion__codigo=eess)         
+                qs=qs.filter(abast__estacion=eess)         
             for i in qs:
                 item=(i.get_report_liquidacion())
-                a=i.abast.ruta.rendimiento_set.all()
-                for i in a:
-                    item["rend_vacio"]=i.rend_vacio
-                    item["rend_cargado"]=i.rend_cargado
-                    item["rend_prom"]=i.rend_prom
-                    item["rend_km"]=i.km
+                item["recorrido"]=i.recorrido
+                # a=i.abast.tramo.ruta.rendimiento_set.all()
+                # for i in a:
+                #     item["rend_vacio"]=i.rend_vacio
+                #     item["rend_cargado"]=i.rend_cargado
+                #     item["rend_prom"]=i.rend_prom
+                #     item["rend_km"]=i.km
                 data.append(item)
             return JsonResponse(data,safe=False)
         except Exception as e:
             print(e)
         return JsonResponse(data,safe=False)
-    
-class RendimientoViajeView(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["eess"] = Estaciones.objects.filter(estado=True)
+        return context
+from django.db.models import Aggregate, CharField
+
+class GroupConcat(Aggregate):
+    function = 'GROUP_CONCAT'
+    template = '%(function)s(%(distinct)s%(expressions)s%(ordering)s%(separator)s)'
+
+    def __init__(self, expression, distinct=False, ordering=None, separator=',', **extra):
+        super(GroupConcat, self).__init__(
+            expression,
+            distinct='DISTINCT ' if distinct else '',
+            ordering=' ORDER BY %s' % ordering if ordering is not None else '',
+            separator=' SEPARATOR "%s"' % separator,
+            output_field=CharField(),
+            **extra
+        )
+class RendimientoViajeView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/rendimiento_viaje.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
@@ -3370,127 +3832,174 @@ class RendimientoViajeView(TemplateView):
     def post(self,request,*args, **kwargs):
         try:
             data=[]
-            año=request.POST["año"]
-            mes=request.POST["mes"]
+            start_date=self.request.POST["start_date"]
+            end_date=self.request.POST["end_date"]     
             placa=request.POST["placa"]
             marca=request.POST["marca"]            
             empresa=request.POST["empresa"]            
             modelo=request.POST["modelo"] 
-            
-            
-            if año and placa and marca and mes and empresa and modelo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,placa__marca=marca,placa__empresa=empresa,placa__modelo=modelo)
-            
-            elif año and mes and placa and marca:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,placa__marca=marca)
+            km_prev = DetalleAbastecimiento.objects.filter(placa=OuterRef('placa'),abast__viaje=OuterRef('abast__viaje')).order_by('-abast__fecha')
 
-            elif año and mes and placa and empresa:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,placa__empresa=empresa)
-            elif año and mes and placa and modelo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,placa__modelo=modelo)  
-            elif año and mes and empresa and modelo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa__empresa=empresa,placa__modelo=modelo)  
-            elif año and mes and marca and modelo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa__marca=marca,placa__modelo=modelo)
-            
-            elif mes and placa and marca and empresa:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa,placa__marca=marca,placa__empresa=empresa)
-            elif mes and placa and marca and modelo:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa,placa__marca=marca,placa__modelo=modelo)
+            newest = DetalleAbastecimiento.objects.filter(placa=OuterRef('placa'),abast__fecha__lt=OuterRef('abast__fecha')).order_by('-abast__fecha')
+
+            # newest = Rendimiento.objects.filter(ruta_id=OuterRef('abast__tramo__ruta'))
+            qs =(DetalleAbastecimiento.objects.select_related("placa","abast__viaje","abast__tramo").
+                 values("placa__modelo_vehiculo__descripcion","placa__placa","placa__modelo_vehiculo__marca_vehiculo__descripcion",
+                        "placa__ano","placa__empresa__nombre",
+                        "abast__viaje","abast__viaje__fecha_fin").exclude(abast__viaje__fecha_fin=None).
+                #  annotate(rend_cargado=Subquery(newest.values('rend_cargado')[:1])). 
+                #  annotate(rend_vacio=Subquery(newest.values('rend_vacio')[:1])). 
+                #  annotate(rend_prom=Subquery(newest.values('rend_prom')[:1])). 
+                #  annotate(rend_km=Subquery(newest.values('km')[:1])). 
+                 annotate(conductor=Subquery(km_prev.values('conductor__nombres')[:1])). 
+                annotate(recorrido_total=Sum(F("km")-Subquery(newest.values('km')[:1]))).
+                annotate(last_km=Subquery(km_prev.values('km')[:1])). 
+
+                 annotate(vol_total=Sum("volumen")).
+                 annotate(km_total=Sum("km")).
+                 annotate(g_obj_total=Sum("gal_obj")).
+                 annotate(r_obj_total=Sum("recorrido_obj")).
+                 annotate(monto_total=Sum("total")).
+                annotate(count=Count("abast"), tramo=GroupConcat('abast__tramo', ordering="abast_id",separator=' / ')).
+                 order_by("-abast__viaje","-abast__viaje__fecha_fin"))
+            # annotate(km_total=Sum("abastecimiento__detalleabastecimiento__km")).      
+            # annotate(end_date=Subquery(newest.values('fecha')[:1])).      
+            # annotate(precio=Subquery(newest.values('precio')[:1])))
+            if start_date and end_date and placa and marca  and empresa and modelo:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa,placa__modelo_vehiculo=modelo)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa,placa__modelo_vehiculo=modelo)
+            elif start_date and end_date and placa and marca and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)
+            elif start_date and end_date  and placa and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,placa__empresa=empresa)
+            elif start_date and end_date and placa and marca:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca)
+            elif start_date and end_date and placa and marca and modelo:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__modelo_vehiculo=modelo)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__modelo_vehiculo=modelo)
+            elif start_date and end_date and marca and modelo:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__modelo_vehiculo=modelo)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa__modelo_vehiculo__marca_vehiculo=marca,placa__modelo_vehiculo=modelo)            
+            elif start_date and end_date and placa and marca and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)          
+            elif  start_date and end_date  and marca and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)    
             elif placa and marca and empresa and modelo:
-                qs=qs.filter(placa__empresa=empresa,placa=placa,placa__marca=marca,placa__modelo=modelo)
-            elif placa and marca and empresa and año:
-                qs=qs.filter(placa__empresa=empresa,placa=placa,placa__marca=marca,abast__fecha__year=año)
-            elif marca and empresa and modelo and año:
-                qs=qs.filter(placa__empresa=empresa,placa__modelo=modelo,placa__marca=marca,abast__fecha__year=año)
-            elif marca and empresa and modelo and mes:
-                qs=qs.filter(placa__empresa=empresa,placa__modelo=modelo,placa__marca=marca,abast__fecha__month=mes)
-            elif año and mes and placa:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa)
-            elif año and mes and marca:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa__marca=marca)
-            elif año and mes and empresa:
-                qs=qs.filter(abast__fecha__month=mes,factura=fatura,placa__empresa=empresa)
-            elif año and mes and modelo:
-                qs=qs.filter(abast__fecha__year=año,factura=factura,placa__modelo=eess)  
-            elif mes and placa and marca:
-                qs=qs.filter(placa=placa,abast__fecha__month=mes,placa__marca=marca)
-            elif mes and placa and empresa:
-                qs=qs.filter(placa=placa,abast__fecha__month=mes,placa__empresa=empresa)
-            elif mes and placa and modelo:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa,placa__modelo=modelo)
+                qs=qs.filter(placa__empresa=empresa,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__modelo_vehiculo=modelo)
             elif placa and marca and empresa:
-                qs=qs.filter(placa=placa,placa__marca=marca,placa__empresa=empresa)  
+                qs=qs.filter(placa__empresa=empresa,placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca)
+            elif marca and empresa and modelo:
+                qs=qs.filter(placa__empresa=empresa,placa__modelo_vehiculo=modelo,placa__modelo_vehiculo__marca_vehiculo=marca)
+          
+            elif start_date and end_date and placa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa) 
+            elif start_date and end_date and marca:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa__modelo_vehiculo__marca_vehiculo=marca)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa__modelo_vehiculo__marca_vehiculo=marca) 
+            elif start_date and end_date and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa__empresa=empresa) 
+        
+            elif placa and marca:
+                qs=qs.filter(placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca)
+            elif placa and empresa:
+                qs=qs.filter(placa=placa,placa__empresa=empresa)
+          
+            elif placa and marca and empresa:
+                qs=qs.filter(placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)  
             elif placa and marca and modelo:
-                qs=qs.filter(placa=placa,placa__marca=marca,placa__modelo=modelo)    
+                qs=qs.filter(placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,placa__modelo_vehiculo=modelo)    
             elif placa and marca and año:
-                qs=qs.filter(placa=placa,placa__marca=marca,abast__fecha__year=año)
-            elif modelo and marca and empresa:
-                qs=qs.filter(placa__modelo=modelo,placa__marca=marca,placa__empresa=empresa)   
-            elif marca and empresa and año:
-                qs=qs.filter(abast__fecha__year=año,placa__marca=marca,placa__empresa=empresa)
-            elif marca and empresa and mes:
-                qs=qs.filter(abast__fecha__month=mes,placa__marca=marca,placa__empresa=empresa)   
-            elif modelo and empresa and año:
-                qs=qs.filter(abast__fecha__year=year,placa__modelo=modelo,placa__empresa=empresa)
-            elif placa and empresa and año:
-                qs=qs.filter(placa=placa,abast__fecha__year=año,placa__empresa=empresa)     
-            elif modelo and empresa and mes:
-                qs=qs.filter(abast__fecha__month=mes,placa__modelo=modelo,placa__empresa=empresa)
-            elif modelo and empresa and placa:
-                qs=qs.filter(placa=placa,placa__modelo=modelo,placa__empresa=empresa)              
-                 
-            elif año  and mes:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes)
-            elif año and marca:
-                qs=qs.filter(abast__fecha__year=año,placa__marca=marca)  
-            elif año and empresa:
-                qs=qs.filter(abast__fecha__year=año,placa__empresa=empresa)
-            elif año and placa:
-                qs=qs.filter(abast__fecha__year=año,placa=placa)
-            elif año and modelo:
-                qs=qs.filter(abast__fecha__year=año,placa__modelo=modelo)
-            elif mes and marca:
-                qs=qs.filter(abast__fecha__month=mes,placa__marca=marca)
-            elif mes and empresa:
-                qs=qs.filter(abast__fecha__month=mes,placa__empresa=empresa) 
-            elif mes and modelo:
-                qs=qs.filter(abast__fecha__month=mes,placa__modelo=modelo)     
-            elif mes and placa:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa)    
-            elif marca and placa:
-                qs=qs.filter(placa__marca=marca,placa=placa)   
+                qs=qs.filter(placa=placa,placa__modelo_vehiculo__marca_vehiculo=marca,abast__fecha__year=año)
+          
             elif marca and empresa:
-                qs=qs.filter(placa__marca=marca,placa__empresa=empresa)    
+                qs=qs.filter(placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)
+            elif marca and empresa:
+                qs=qs.filter(placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)   
+            elif modelo and empresa:
+                qs=qs.filter(placa__modelo_vehiculo=modelo,placa__empresa=empresa)
+            elif placa and empresa:
+                qs=qs.filter(placa=placa,placa__empresa=empresa)     
+            elif modelo and empresa:
+                qs=qs.filter(placa__modelo_vehiculo=modelo,placa__empresa=empresa)
+                 
+                 
+  
+            elif marca and placa:
+                qs=qs.filter(placa__modelo_vehiculo__marca_vehiculo=marca,placa=placa)   
+            elif marca and empresa:
+                qs=qs.filter(placa__modelo_vehiculo__marca_vehiculo=marca,placa__empresa=empresa)    
             elif marca and modelo:
-                qs=qs.filter(placa__marca=marca,placa__modelo=modelo)    
+                qs=qs.filter(placa__modelo_vehiculo__marca_vehiculo=marca,placa__modelo_vehiculo=modelo)    
             elif empresa and placa:
-                qs=qs.filter(placa=placa,placa__modelo=modelo)    
+                qs=qs.filter(placa=placa,placa__modelo_vehiculo=modelo)    
             elif empresa and modelo:
-                qs=qs.filter(placa__empresa=empresa,placa__modelo=modelo)             
-            elif placa and modelo:
-                qs=qs.filter(placa=placa,placa__modelo=modelo)    
-            elif año:
-                qs=qs.filter(abast__fecha__year=año)
-            elif mes:
-                qs=qs.filter(abast__fecha__month=mes)  
+                qs=qs.filter(placa__empresa=empresa,placa__modelo_vehiculo=modelo)             
+   
+            elif start_date and end_date:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date]) 
+        
             elif placa:
                 qs=qs.filter(placa=placa)
             elif marca:
-                qs=qs.filter(placa__marca=marca)         
+                qs=qs.filter(placa__modelo_vehiculo__marca_vehiculo=marca)         
             elif empresa:
                 qs=qs.filter(placa__empresa=empresa)
             elif modelo:
-                qs=qs.filter(placa__modelo=modelo)         
+                qs=qs.filter(placa__modelo_vehiculo=modelo)       
+            
+            # data = serializers.serialize('json', list(qs), fields=('fileName','id'))
+            serialized_q = json.dumps(list(qs), cls=DjangoJSONEncoder)
+            # for i in qs:
+            #     item=i.get_report_viaje()
+            #     item["vol_total"]=i.vol_total
+            #     item["km_total"]=i.km_total
+            #     item["precio"]=i.precio
+            #     item["end_date"]=i.end_date
+                              
+            #     data.append(item)  
+            return JsonResponse(serialized_q,safe=False)
         except Exception as e:
-            raise e
+            print(e)
+            return JsonResponse({"status":500})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
         context["marca"] =MarcaVehiculo.objects.values("id","descripcion","activo","eliminado")
         context["empresa"]=Empresa.objects.values("id","nombre").filter(estado=True)
         return context
-    
+
 class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
     template_name="Web/combustible/rendimiento_eess.html"
     @method_decorator(csrf_exempt)
@@ -3500,126 +4009,109 @@ class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
         data={}
         try:
             data=[]
-            año=request.POST["año"]
-            mes=request.POST["mes"]
+       
+            start_date=self.request.POST["start_date"]
+            end_date=self.request.POST["end_date"]     
             placa=request.POST["placa"]
             ruta=request.POST["ruta"]            
             empresa=request.POST["empresa"]            
-            tipo=request.POST["tipo"]    
-            qs=DetalleAbastecimiento.objects.all().select_related("abast","placa","conductor","abast__ruta","abast__tipo","abast__estacion","abast__estado_viaje")
-              
-            if año and placa and ruta and mes and empresa and tipo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,abast__ruta=ruta,placa__empresa=empresa,abast__tipo=tipo)
-            
-            elif año and mes and placa and ruta:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,abast__ruta=ruta)
+            afectacion = AfectacionConsumo.objects.filter(per_carga=OuterRef('cargado'))
 
-            elif año and mes and placa and empresa:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,placa__empresa=empresa)
-            elif año and mes and placa and tipo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa,abast__tipo=tipo)  
-            elif año and mes and empresa and tipo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa__empresa=empresa,abast__tipo=tipo)  
-            elif año and mes and ruta and tipo:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,abast__ruta=ruta,abast__tipo=tipo)
+            newest = DetalleAbastecimiento.objects.filter(placa=OuterRef('placa'),abast__fecha__lt=OuterRef('abast__fecha')).order_by('-abast__fecha')
+            relleno = (DetalleAbastecimiento.objects.filter(placa=OuterRef('placa'),abast__viaje=OuterRef('abast__viaje'),abast__fecha__lt=OuterRef('abast__fecha')).annotate(recorrido=F("km")-Subquery(newest.values('km')[:1])).order_by('-abast__fecha'))
+            # qs =(DetalleAbastecimiento.objects.filter(abast__tipo=1).
+            #     select_related("abast","abast__tipo","abast__estado_viaje","abast__viaje","placa","conductor").
+            #         values("id","km","volumen","gal_obj","total").
+            #         annotate(recorrido=F("km")-Subquery(newest.values('km')[:1])).
+            #         annotate(relleno=Subquery(relleno.values('km')[:1])).
+            #         order_by("-id","placa")) 
+            qs =(DetalleAbastecimiento.objects.filter(abast__tipo=1).select_related("abast","abast__tipo","abast__estado_viaje","abast__viaje","placa","conductor").
+                    annotate(recorrido=F("km")-Subquery(newest.values('km')[:1])).
+                    # annotate(tramo_relleno=Subquery(relleno.values('abast__tramo')[:1])).
+                    annotate(previous_tipo=Subquery(newest.values('abast__tipo')[:1])).
+                    annotate(tramo_relleno=Case(
+                        When(previous_tipo=2,then=Subquery(newest.values('abast__tramo')[:1])
+                    ))).
+                    annotate(recorrido_relleno=Case(
+                        When(previous_tipo=2,then=Subquery(relleno.values('recorrido')[:1])
+                    ))).
+
+                    annotate(volumen_relleno=Case(
+                        When(previous_tipo=2,then=Subquery(relleno.values('volumen')[:1])
+                    ))).
+                    annotate(total_relleno=Case(
+                        When(previous_tipo=2,then=Subquery(relleno.values('total')[:1])
+                    ))).
+                    exclude(recorrido=None).order_by("-abast__viaje","placa","-abast__fecha",))
+            print(qs.query)
+            if start_date and end_date and placa and ruta and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,abast__tramo=tramo,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,abast__tramo=ruta,placa__empresa=empresa)
             
-            elif mes and placa and ruta and empresa:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa,abast__ruta=ruta,placa__empresa=empresa)
-            elif mes and placa and ruta and tipo:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa,abast__ruta=ruta,abast__tipo=tipo)
-            elif placa and ruta and empresa and tipo:
-                qs=qs.filter(placa__empresa=empresa,placa=placa,abast__ruta=ruta,abast__tipo=tipo)
-            elif placa and ruta and empresa and año:
-                qs=qs.filter(placa__empresa=empresa,placa=placa,abast__ruta=ruta,abast__fecha__year=año)
-            elif ruta and empresa and tipo and año:
-                qs=qs.filter(placa__empresa=empresa,abast__tipo=tipo,abast__ruta=ruta,abast__fecha__year=año)
-            elif ruta and empresa and tipo and mes:
-                qs=qs.filter(placa__empresa=empresa,abast__tipo=tipo,abast__ruta=ruta,abast__fecha__month=mes)
-            elif año and mes and placa:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,placa=placa)
-            elif año and mes and ruta:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes,abast__ruta=ruta)
-            elif año and mes and empresa:
-                qs=qs.filter(abast__fecha__month=mes,factura=fatura,placa__empresa=empresa)
-            elif año and mes and tipo:
-                qs=qs.filter(abast__fecha__year=año,factura=factura,abast__tipo=eess)  
-            elif mes and placa and ruta:
-                qs=qs.filter(placa=placa,abast__fecha__month=mes,abast__ruta=ruta)
-            elif mes and placa and empresa:
-                qs=qs.filter(placa=placa,abast__fecha__month=mes,placa__empresa=empresa)
-            elif mes and placa and tipo:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa,abast__tipo=tipo)
-            elif placa and ruta and empresa:
-                qs=qs.filter(placa=placa,abast__ruta=ruta,placa__empresa=empresa)  
-            elif placa and ruta and tipo:
-                qs=qs.filter(placa=placa,abast__ruta=ruta,abast__tipo=tipo)    
-            elif placa and ruta and año:
-                qs=qs.filter(placa=placa,abast__ruta=ruta,abast__fecha__year=año)
-            elif tipo and ruta and empresa:
-                qs=qs.filter(abast__tipo=tipo,abast__ruta=ruta,placa__empresa=empresa)   
-            elif ruta and empresa and año:
-                qs=qs.filter(abast__fecha__year=año,abast__ruta=ruta,placa__empresa=empresa)
-            elif ruta and empresa and mes:
-                qs=qs.filter(abast__fecha__month=mes,abast__ruta=ruta,placa__empresa=empresa)   
-            elif tipo and empresa and año:
-                qs=qs.filter(abast__fecha__year=year,abast__tipo=tipo,placa__empresa=empresa)
-            elif placa and empresa and año:
-                qs=qs.filter(placa=placa,abast__fecha__year=año,placa__empresa=empresa)     
-            elif tipo and empresa and mes:
-                qs=qs.filter(abast__fecha__month=mes,abast__tipo=tipo,placa__empresa=empresa)
-            elif tipo and empresa and placa:
-                qs=qs.filter(placa=placa,abast__tipo=tipo,placa__empresa=empresa)
-    
-            elif año  and mes:
-                qs=qs.filter(abast__fecha__year=año,abast__fecha__month=mes)
-            elif año and ruta:
-                qs=qs.filter(abast__fecha__year=año,abast__ruta=ruta)  
-            elif año and empresa:
-                qs=qs.filter(abast__fecha__year=año,placa__empresa=empresa)
-            elif año and placa:
-                qs=qs.filter(abast__fecha__year=año,placa=placa)
-            elif año and tipo:
-                qs=qs.filter(abast__fecha__year=año,abast__tipo=tipo)
-            elif mes and ruta:
-                qs=qs.filter(abast__fecha__month=mes,abast__ruta=ruta)
-            elif mes and empresa:
-                qs=qs.filter(abast__fecha__month=mes,placa__empresa=empresa) 
-            elif mes and tipo:
-                qs=qs.filter(abast__fecha__month=mes,abast__tipo=tipo)     
-            elif mes and placa:
-                qs=qs.filter(abast__fecha__month=mes,placa=placa)    
-            elif ruta and placa:
-                qs=qs.filter(abast__ruta=ruta,placa=placa)   
+            elif start_date and end_date and placa and ruta:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,abast__tramo=ruta)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,abast__tramo=ruta)
+            elif start_date and end_date and placa and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa,placa__empresa=empresa)
+
+            elif  start_date and end_date and ruta and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa__empresa=empresa,abast__tramo=ruta)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa__empresa=empresa,abast__tramo=ruta)
+          
+            elif  start_date and end_date and ruta:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,abast__tramo=ruta)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],abast__tramo=ruta)   
+            elif  start_date and end_date and empresa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa__empresa=empresa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa__empresa=empresa)           
+            elif  start_date and end_date and placa:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date,placa=placa)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date],placa=placa)
+          
             elif ruta and empresa:
-                qs=qs.filter(abast__ruta=ruta,placa__empresa=empresa)    
-            elif ruta and tipo:
-                qs=qs.filter(abast__ruta=ruta,abast__tipo=tipo)    
+                qs=qs.filter(abast__tramo=ruta,placa__empresa=empresa) 
+            elif ruta and placa:
+                qs=qs.filter(abast__tramo=ruta,placa=placa)        
             elif empresa and placa:
-                qs=qs.filter(placa=placa,abast__tipo=tipo)    
-            elif empresa and tipo:
-                qs=qs.filter(placa__empresa=empresa,abast__tipo=tipo)             
-            elif placa and tipo:
-                qs=qs.filter(placa=placa,abast__tipo=tipo)    
-            elif año:
-                qs=qs.filter(abast__fecha__year=año)
-            elif mes:
-                qs=qs.filter(abast__fecha__month=mes)  
+                qs=qs.filter(placa__empresa=empresa,placa=placa) 
+
+            elif start_date and end_date:
+                if start_date==end_date:     
+                    qs=qs.filter(abast__fecha__contains=start_date)
+                else:
+                    qs=qs.filter(abast__fecha__range=[start_date,end_date]) 
+        
             elif placa:
                 qs=qs.filter(placa=placa)
-            elif ruta:
-                qs=qs.filter(abast__ruta=ruta)         
+         
             elif empresa:
-                qs=qs.filter(placa__empresa=empresa)
-            elif tipo:
-                qs=qs.filter(abast__tipo=tipo)         
+                qs=qs.filter(placa__empresa=empresa) 
+            elif ruta:
+                qs=qs.filter(abast__tramo=ruta)
+     
             for i in qs:
-                item=(i.get_report_liquidacion())
-                a=i.abast.ruta.rendimiento_set.all()
-                for i in a:
-                    item["rend_vacio"]=i.rend_vacio
-                    item["rend_cargado"]=i.rend_cargado
-                    item["rend_prom"]=i.rend_prom
-                    item["rend_km"]=i.km
+                item=i.get_report_abast()
+                item["recorrido"]=i.recorrido
+                item["volumen_relleno"]=i.volumen_relleno
+                item["tramo_relleno"]=i.tramo_relleno
+                item["total_relleno"]=i.total_relleno
+                item["recorrido_relleno"]=i.recorrido_relleno
+          
                 data.append(item)
             return JsonResponse(data,safe=False)
         except Exception as e:
@@ -3629,6 +4121,126 @@ class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
         context = super().get_context_data(**kwargs)
         context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
         context["empresa"]=Empresa.objects.values("id","nombre").filter(estado=True)
-        context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True)
+        context["ruta"]=Abastecimiento.objects.values("tramo").annotate(Count("tramo"))
         context["tipo"]=TipoAbastecimiento.objects.values("id","descripcion")
         return context
+class AfectacionListView(LoginRequiredMixin,ListView):
+    template_name = 'Web/Combustible/afectaciones.html'
+    model = AfectacionConsumo
+    login_url=reverse_lazy("Web:login")
+    success_url=reverse_lazy("Web:afectaciones")
+    @method_decorator(csrf_exempt)
+    def dispatch(self,request,*args, **kwargs):
+        return super().dispatch(request,*args,**kwargs)
+ 
+    def post(self,request,*args, **kwargs):
+        data={}
+        try:
+            action=request.POST["action"]
+            if action=="searchData":
+                data=[]
+                for i in AfectacionConsumo.objects.filter(estado=True):
+                    data.append(i.toJSON())
+
+            else:
+                data["error"]="Ha ocurrido un error"
+            return JsonResponse(data,safe=False)
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+
+
+class AfectacionCreateView(LoginRequiredMixin,CreateView):
+    form_class = AfectacionConsumoForm
+    template_name = 'Web/Combustible/afectacion.html'
+    login_url=reverse_lazy("Web:login")
+    def get(self,*args, **kwargs):
+        form=self.get_form()
+        return render(self.request,self.template_name,{"form":form})
+    def post(self, request,*args, **kwargs):      
+        try:
+            form = self.get_form()
+
+            if form.is_valid():
+
+                instance=form.save(commit=False)
+              
+                instance.changed_by = self.request.user
+                instance.save()
+                data = {
+                'status': 200
+                }
+                return JsonResponse(data,safe=False)
+            else:
+                data = {
+                "form":form.errors,
+                'status': 500,
+                }
+                return JsonResponse(data)
+            
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+
+class AfectacionUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = AfectacionConsumoForm
+    model = AfectacionConsumo  
+    template_name = 'Web/Combustible/afectacion.html'
+    context_object_name="obj"
+    login_url=reverse_lazy("Web:login")
+
+    def dispatch(self,request,*args, **kwargs):
+        self.object=self.get_object() 
+        return super().dispatch(request,*args,**kwargs)
+
+
+
+    def post(self, request,*args, **kwargs):       
+        try:
+            form = self.get_form()
+
+            if form.is_valid():
+                print(form)
+                instance=form.save(commit=False)
+                if not "activo" in self.request.POST:
+                    instance.activo=False
+                instance.changed_by = self.request.user
+                instance.save()
+                data = {
+                'status': 200
+                }
+                return JsonResponse(data,safe=False)
+            else:
+                data = {
+                "form":form.errors,
+                'status': 500,
+                }
+                return JsonResponse(data)
+            
+
+        except Exception as e:
+            print(e)
+            messages.error(self.request, 'Algo salió mal.Intentel nuevamente.')
+            return HttpResponseRedirect(self.success_url)
+
+class AfectacionDeleteView(LoginRequiredMixin, View):
+    login_url=reverse_lazy("Web:login")
+
+    def post(self, request, *args, **kwargs):
+        id=self.kwargs["pk"]
+        existe = AfectacionConsumo.objects.filter(pk=id)
+        if existe.exists():
+            obj=existe.first()
+            obj.changed_by=request.user
+            obj.eliminado = True
+            obj.activo=False
+            obj.save()
+            return JsonResponse({"status":200},safe=False)
+            
+        else:
+            return JsonResponse({"status":500},safe=False)
+

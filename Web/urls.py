@@ -93,6 +93,7 @@ urlpatterns = [
     path('catalogos/cubierta-llantas/', views.CubiertaListView.as_view(), name="cubierta-llantas"),
     path('catalogos/cubierta-llantas/<int:pk>/', views.CubiertaEditView.as_view(), name="cubierta-llanta"),
     path('catalogos/cubierta-llanta/', views.CubiertaCreateView.as_view(), name="cubierta-add"),
+    path('catalogos/departmento/crear/', views.DepartamentoCreateView.as_view(), name="departamento"),
 
     # path('estado-llantas/', views.EstadoLlantasListView.as_view(), name='estado-llantas'),
     # path('estado-llanta/', views.EstadoLlantaCreateView.as_view(), name='estado-llanta'),
@@ -157,14 +158,32 @@ urlpatterns = [
     path("combustible/",views.CombustibleView.as_view(),name="combustible"),
     path("combustible/abastecimiento/",views.AbastecimientoView.as_view(),name="abastecimiento"),
     path("combustible/rendimiento/",views.RendimientoView.as_view(),name="rendimiento"),
+    path("combustible/rendimiento/<int:pk>/",views.RendimientoEditView.as_view(),name="edit-rendimiento"),
+    path("combustible/rendimientos/",views.RendimientoListView.as_view(),name="rendimientos"),
+
     path("combustible/flota/",views.FlotaView.as_view(),name="flota"),
+    path("combustible/flota/<int:pk>/",views.FlotaEditView.as_view(),name="edit-flota"),
+    path("combustible/flotas/",views.FlotaListView.as_view(),name="flotas"),
+    
     path("combustible/ruta/",views.RutaView.as_view(),name="ruta"),
-    path("combustible/conductores/",views.ConductoresView.as_view(),name="conductores"),
+    path("combustible/ruta/<int:pk>/",views.RutaEditView.as_view(),name="edit-ruta"),
+    path("combustible/rutas/",views.RutasListView.as_view(),name="rutas"),
+    
+    path("combustible/conductor/",views.ConductoresView.as_view(),name="conductores"),
+    path("combustible/conductor/<int:pk>/",views.ConductorEditView.as_view(),name="edit-conductor"),
+    path("combustible/conductores/",views.ConductorListView.as_view(),name="conductores"),
+    
     path("combustible/estaciones/",views.EstacionesView.as_view(),name="estaciones"),
     path("combustible/productos/",views.ProductosListView.as_view(),name="productos"),
     path("combustible/liquidacion/",views.LiquidacionView.as_view(),name="liquidacion"),
     path("combustible/rendimiento/viaje/",views.RendimientoViajeView.as_view(),name="rend_viaje"),
     path("combustible/rendimiento/abastecimiento/",views.RendimientoAbastecimientoView.as_view(),name="rend_abast"),
+
+    path('combustible/afectaciones-por-carga/', views.AfectacionListView.as_view(), name='afectaciones'),
+    path('combustible/afectacion-por-carga/', views.AfectacionCreateView.as_view(), name='afectacion'),
+    path('combustible/afectacion-por-carga/<int:pk>/', views.AfectacionUpdateView.as_view(), name='afectacion'),
+    path('combustible/afectacion-por-carga/<int:pk>/delete/', views.AfectacionDeleteView.as_view(), name='afectacion-delete'),
+
 
     path("combustible/empresa/",views.EmpresaCreateView.as_view(),name="empresa"),
     path("combustible/producto/",views.ProductoCreateView.as_view(),name="producto"),
@@ -173,6 +192,11 @@ urlpatterns = [
     path("combustible/tipo/",views.TipoAbastecimientoCreateView.as_view(),name="tipo"),
     path("combustible/precio/<int:eess>/<int:prod>/",views.PrecioUpdateView.as_view(),name="precio"),
     path("combustible/get-products/<int:id>/",views.getProducts),
+    path("combustible/get-estaciones/<str:tramo>/",views.getEstaciones),
+    path("combustible/get-tramos/<int:id>/",views.getTramos),
+    path("combustible/get-rutas/",views.getRutas),
+    path("combustible/get-vehiculos-ruta/<int:id>/",views.getVehiculosRuta),
+
 
     path('inspeccion-agregar/', views.AgregarInspeccion, name='inspeccion-agregar'),
     path('getTipo/<int:id>/', views.getTipo, name='get-tipo'),

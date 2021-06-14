@@ -1,0 +1,73 @@
+<form action="{% url 'Web:departamento' %}" id="form_departamento" class="formName" novalidate>
+    <div class="form-group">
+        <label for="">Descripción</label>
+        <input type="text" name="descripcion" id="descripcion_departamento_departamento" class="form-control">
+        <div class="invalid-feedback">
+            Este campo es requerido
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="">Código</label>
+        <input type="text" name="code" id="code" class="form-control">
+   
+    </div>
+    <button type="button" class="btn d-none" id="btn-departamento">as</button>
+</form>
+
+<script>
+  $(document).ready(function () {
+    // $("input").on("keyup", function () {
+    //     $(this).val($(this).val().toUpperCase());
+    // })
+    $("#btn-departamento").on("click", function () {
+        let error = 0
+
+        console.log($("#descripcion_departamento_departamento"))
+        if ($("#descripcion_departamento_departamento").val() == "") {
+            console.log("if")
+            error = 1
+            $("#descripcion_departamento_departamento").addClass("is-invalid").on("input", function () {
+                $("#descripcion_departamento_departamento").removeClass("is-invalid")
+            })
+        }
+   
+        if (error == 0) {
+            let data = new FormData(document.getElementById("form_departamento"))
+
+            fetch($("#form_departamento").attr("action"), {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                body: data
+            }).then(data => data.json()).then(response => {
+                console.log(response)
+                if (response.status == 200) {
+                    jc.close();
+                    alerta(2000, "success", "Departamento registrado!", "top-end")
+                    let opt = document.createElement("option")
+                    opt.value = response.id
+                    opt.textContent = response.descripcion
+                    opt.selected = true
+                    document.getElementById("ubicacion").append(opt)
+
+                } else {
+                    if (response.form.descripcion) {
+                        $("#descripcion_departamento").addClass("is-invalid").on("input", function () {
+                            $("#descripcion_departamento").removeClass("is-invalid")
+                        })
+                        $("#descripcion_departamento").next().text(response.form.descripcion[0])
+                    }
+                    if (response.form.code) {
+                        $("#code").addClass("is-invalid").on("input", function () {
+                            $("#code").removeClass("is-invalid")
+                        })
+                        $("#code").next().text(response.form.code[0])
+                    }
+
+                }
+            })
+        }
+    })
+  });
+</script>
