@@ -70,9 +70,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
 
 ]
 
