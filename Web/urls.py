@@ -169,7 +169,7 @@ urlpatterns = [
     path("combustible/ruta/<int:pk>/",views.RutaEditView.as_view(),name="edit-ruta"),
     path("combustible/rutas/",views.RutasListView.as_view(),name="rutas"),
     
-    path("combustible/conductor/",views.ConductoresView.as_view(),name="conductores"),
+    path("combustible/conductor/",views.ConductoresView.as_view(),name="create-conductor"),
     path("combustible/conductor/<int:pk>/",views.ConductorEditView.as_view(),name="edit-conductor"),
     path("combustible/conductores/",views.ConductorListView.as_view(),name="conductores"),
     

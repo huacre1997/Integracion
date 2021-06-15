@@ -146,6 +146,7 @@
 
                 }).then(data=>data.json()).then(response => {
                     if(response.status == 200){
+                        tabla_flotas.ajax.reload()
                         notificacion(1500,"Genial!","success","Flota agregada!")
                         $("#placa").val(0)
                         $("#empresa").val(0)
@@ -215,7 +216,7 @@
         tabla_flotas = $("#tabla_flotas").DataTable({
         responsive: true,
                 processing:"true",
-
+    
         ajax: {
             url: "{% url 'Web:flotas' %}",
             type: "POST",

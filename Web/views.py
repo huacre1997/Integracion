@@ -3049,7 +3049,7 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
             return JsonResponse({"status":500})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
+        context["placa"] =Vehiculo.objects.values("id","placa","activo","eliminado").filter(activo=True) 
         context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True)
         context["conductor"]=Conductor.objects.values("id","nombres").filter(estado=True)
         context["tipo"]=TipoAbastecimiento.objects.values("id","descripcion")
@@ -3814,8 +3814,9 @@ from django.db.models import Aggregate, CharField
 class GroupConcat(Aggregate):
     function = 'GROUP_CONCAT'
     template = '%(function)s(%(distinct)s%(expressions)s%(ordering)s%(separator)s)'
+    separator = '/'
 
-    def __init__(self, expression, distinct=False, ordering=None, separator=',', **extra):
+    def __init__(self, expression, distinct=False, ordering=None, separator='/', **extra):
         super(GroupConcat, self).__init__(
             expression,
             distinct='DISTINCT ' if distinct else '',
@@ -3824,10 +3825,14 @@ class GroupConcat(Aggregate):
             output_field=CharField(),
             **extra
         )
+    
+from django.db.models.expressions import RawSQL,Value,ExpressionWrapper
+from django.db.models import IntegerField
 class RendimientoViajeView(LoginRequiredMixin,TemplateView):
     template_name="Web/Combustible/rendimiento_viaje.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
+        print("aea")
         return super().dispatch(request,*args,**kwargs)
     def post(self,request,*args, **kwargs):
         try:
@@ -3860,8 +3865,10 @@ class RendimientoViajeView(LoginRequiredMixin,TemplateView):
                  annotate(g_obj_total=Sum("gal_obj")).
                  annotate(r_obj_total=Sum("recorrido_obj")).
                  annotate(monto_total=Sum("total")).
-                annotate(count=Count("abast"), tramo=GroupConcat('abast__tramo', ordering="abast_id",separator=' / ')).
+                 annotate(tramo=RawSQL("""select string_agg(a.tramo,'/' ORDER BY d.abast_id) from "Web_detalleabastecimiento" as d inner join "Web_abastecimiento" as a on d.abast_id=a.id where a.viaje_id = "Web_abastecimiento".viaje_id""",())).
+                # annotate(count=Count("abast"), tramo=GroupConcat('abast__tramo', ordering="abast_id",separator=' / ')).
                  order_by("-abast__viaje","-abast__viaje__fecha_fin"))
+            print(qs.query)
             # annotate(km_total=Sum("abastecimiento__detalleabastecimiento__km")).      
             # annotate(end_date=Subquery(newest.values('fecha')[:1])).      
             # annotate(precio=Subquery(newest.values('precio')[:1])))
@@ -4236,8 +4243,7 @@ class AfectacionDeleteView(LoginRequiredMixin, View):
         if existe.exists():
             obj=existe.first()
             obj.changed_by=request.user
-            obj.eliminado = True
-            obj.activo=False
+            obj.estado=False
             obj.save()
             return JsonResponse({"status":200},safe=False)
             

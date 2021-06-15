@@ -70,8 +70,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'simple_history.middleware.HistoryRequestMiddleware',
 
 
 ]
@@ -142,7 +143,7 @@ COLLECTFAST_CACHE = 'collectfast'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': "bdprueba",
+#         'NAME': "vg35",
 #         "HOST": "localhost",
 #         "USER": "postgres",
 #         "PASSWORD": "123",

@@ -24,7 +24,7 @@
                     {% comment %} <h5 class="card-header"><i class="fa fa-plus-circle"
                             aria-hidden="true"></i>&nbsp;Registro de Conductores</h5> {% endcomment %}
                     <div class="card-body">
-                        <form class="row g-3 needs-validation" id="form_conductores" novalidate>
+                        <form class="row g-3 needs-validation" action="{% url 'Web:create-conductor' %}" id="form_conductores" novalidate>
                             <div class="col-md-3">
                                 <label class="form-label">Tipo de Documento</label>
                                 <select name="tip_doc" id="tip_doc" class="form-select">
@@ -127,7 +127,7 @@
         if (error == 0) {
             let form = document.getElementById("form_conductores")
             let data = new FormData(form)
-            fetch(window.location.href, {
+            fetch(form.getAttribute("action"), {
                 method: "POST",
                 headers: {
                     'X-CSRFToken': csrftoken
