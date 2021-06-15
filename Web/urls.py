@@ -192,6 +192,7 @@ urlpatterns = [
     path("combustible/tipo/",views.TipoAbastecimientoCreateView.as_view(),name="tipo"),
     path("combustible/precio/<int:eess>/<int:prod>/",views.PrecioUpdateView.as_view(),name="precio"),
     path("combustible/get-products/<int:id>/",views.getProducts),
+    path("combustible/get-all-products/",views.getAllProducts),
     path("combustible/get-estaciones/<str:tramo>/",views.getEstaciones),
     path("combustible/get-tramos/<int:id>/",views.getTramos),
     path("combustible/get-rutas/",views.getRutas),

@@ -3505,6 +3505,13 @@ class PrecioUpdateView(LoginRequiredMixin,TemplateView):
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
+def getAllProducts(request):
+    if request.method=="GET":
+        p=Producto.objects.filter(estado=True)
+        data=[]
+        for i in p:
+            data.append(i.toJSON())
+        return JsonResponse({"status":200,"data":data})
 def getProducts(request,id):
     p=EstacionProducto.objects.filter(estacion_id=id)
     if request.method=="GET":

@@ -347,7 +347,8 @@
         body: data
 
       }).then(data => data.json()).then(response => {
-        console.log(response);
+        $("#loadingCharge").css("visibility", "hidden")
+          $("#spinner").css("visibility", "hidden")
         if (response.status == 200) {
           window.localStorage.clear()
           objeto.items = []
@@ -356,8 +357,7 @@
           option.value=response.id
           option.textContent=response.descripcion
           $("#prod_eess").append(option)
-          $("#loadingCharge").css("visibility", "hidden")
-          $("#spinner").css("visibility", "hidden")
+        
           notificacion(1500, "Genial!", "success", "Estación agregada!")
           $.each($("input"), function (indexInArray, valueOfElement) {
             clean_fields($(valueOfElement))
@@ -429,15 +429,17 @@
         columnDefs: [{
             targets: [0],
             render: function (data, type, row) {
+              console.log(row)
 
-              let $select = $('<select name="producto"  class="form form-select ">' +
-                ' <option value="0">Seleccione...</option>' +
-                '{% for i in producto  %}' +
-                '<option value="{{i.id}}">{{i.descripcion}}</option>' +
-                '{% endfor %}' +
-                '</select>');
-              $select.find('option[value="' + row.producto + '"]').attr('selected', 'selected');
-              return $select[0].outerHTML
+                let $select = $('<select name="producto"  class="form select-producto form-select "><option value="0">Seleccione...</option></select>');
+
+          
+                $select.find('option[value="' + row.producto + '"]').attr('selected', 'selected');
+                return $select[0].outerHTML
+
+          
+            
+
             }
           },
           {
@@ -462,11 +464,22 @@
 
         initComplete: function (settings, json) {
           $(function () {
-            function refreshStorage() {
-              window.localStorage.removeItem("productos")
-              window.localStorage.setItem("productos", JSON.stringify(objeto.items))
-            }
+            $(".select-producto").each(function (index, element) {
+              fetch("../get-all-products/").then(data =>data.json()).then(res=>{
 
+                for (let i = 0; i < res.data.length; i++) {
+                  console.log("aea")
+                  let option = document.createElement("option")
+                  option.value =res.data[i].id
+                  option.textContent =res.data[i].descripcion
+                  $(this).append(option)
+                }
+                $(element).find('option[value="' + settings.aoData[
+                      index]._aData.producto + '"]').attr('selected', 'selected');
+                })
+              
+            });
+          
 
             $(".btn-remove").on("click", function () {
               var tr = tabla_producto.cell($(this).closest("td", "li")).index()
@@ -474,7 +487,6 @@
               let a = confirmar(function () {
                 objeto.items.splice(tr.row, 1)
                 objeto.list()
-                refreshStorage()
 
               }, "¿Desea eliminar este producto de la lista?", function () {
 
@@ -515,7 +527,6 @@
                 if (a == 0) {
                   if (typeof objeto.items[tr.row] !== "undefined") {
                     objeto.items[tr.row].precio = cant;
-                    refreshStorage()
                   }
                   $("#submit_eess").prop("disabled", false)
 
@@ -553,7 +564,6 @@
 
                   if (typeof objeto.items[tr.row] !== "undefined") {
                     objeto.items[tr.row].producto = cant;
-                    refreshStorage()
                   }
 
                 }
@@ -595,7 +605,6 @@
               if (error == 0) {
                 $(this).prop("disabled", false)
                 objeto.items.push(data)
-                window.localStorage.setItem("productos", JSON.stringify(objeto.items))
                 data = {
                   producto: "",
                   precio: 0.00,
@@ -629,15 +638,7 @@
 
     }
   }
-  if (window.localStorage.getItem("productos")) {
-    objeto.items = JSON.parse(window.localStorage.getItem("productos"))
-    objeto.list()
-    console.log(objeto.items)
-  } else {
-    objeto.list()
-
-
-  }
+  
   let data2 = {
     id: "",
     producto: {
@@ -880,7 +881,7 @@
 
   $("#prod_eess").on("change", function () {
     if($(this).val()!=0){
-      fetch("../../Combustible/get-products/" + $(this).val() + "/").then(data => data.json()).then(res => {
+      fetch("../../combustible/get-products/" + $(this).val() + "/").then(data => data.json()).then(res => {
       console.log(res)
       objeto2.items = res.data
       objeto2.list()
@@ -999,6 +1000,7 @@
       },
     ]
   })
+  objeto.list()
   $("#create_producto").on("click", function () {
     let error = 0
     if ($("#descripcion_producto").val() == "") {

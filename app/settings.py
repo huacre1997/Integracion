@@ -140,16 +140,16 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # }
 
 COLLECTFAST_CACHE = 'collectfast'
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': "vg35",
-#         "HOST": "localhost",
-#         "USER": "postgres",
-#         "PASSWORD": "123",
-#         "PORT": 5432
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': "vg35",
+        "HOST": "localhost",
+        "USER": "postgres",
+        "PASSWORD": "123",
+        "PORT": 5432
+    }
+}
 
 import dj_database_url
 from decouple import config
@@ -198,6 +198,7 @@ USE_L10N = False
 THOUSAND_SEPARATOR="."
 USE_TZ = False
 LOGGING = {
+    
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
