@@ -196,21 +196,21 @@ USE_I18N = True
 USE_L10N = False
 THOUSAND_SEPARATOR="."
 USE_TZ = False
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
-#              'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-#         },
-#     },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },
+    },
+}
 
 AWS_ACCESS_KEY_ID = 'AKIAVTWEJMBX5NYJYD6Q'
 AWS_SECRET_ACCESS_KEY = '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'
