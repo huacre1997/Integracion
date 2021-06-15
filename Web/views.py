@@ -2919,7 +2919,7 @@ class HistorialLlantas(LoginRequiredMixin,ListView):
 from django.db import IntegrityError, transaction
 
 class AbastecimientoView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/abastecimiento.html"
+    template_name="Web/Combustible/abastecimiento.html"
     model=Abastecimiento
     form_class=AbastecimientoForm  
     def dispatch(self, request, *args, **kwargs):
@@ -3058,7 +3058,7 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
 
         return context
 class RendimientoView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/rendimiento.html"
+    template_name="Web/Combustible/rendimiento.html"
     model=Rendimiento
     form_class=RendimientoForm
     def dispatch(self, request, *args, **kwargs):
@@ -3095,7 +3095,7 @@ class RendimientoView(LoginRequiredMixin,CreateView):
         return context
 class RendimientoListView(LoginRequiredMixin,TemplateView):
     model=Rendimiento
-    template_name="Web/combustible/rendimiento.html"
+    template_name="Web/Combustible/rendimiento.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -3118,7 +3118,7 @@ class RendimientoListView(LoginRequiredMixin,TemplateView):
             return HttpResponseRedirect(self.success_url) 
 class RendimientoEditView(LoginRequiredMixin,UpdateView):
     model=Rendimiento
-    template_name="Web/combustible/rendimiento_editar.html"
+    template_name="Web/Combustible/rendimiento_editar.html"
     context_object_name="obj"
     form_class=RendimientoForm
     def post(self,request,*args, **kwargs):
@@ -3149,7 +3149,7 @@ class RendimientoEditView(LoginRequiredMixin,UpdateView):
         return context
     
 class FlotaView(LoginRequiredMixin,TemplateView):
-    template_name="Web/combustible/flota.html"
+    template_name="Web/Combustible/flota.html"
     def post(self,request,*args, **kwargs):
         try:
             Vehiculo.objects.filter(id=request.POST["placa"]).update(empresa=request.POST["empresa"])
@@ -3167,7 +3167,7 @@ class FlotaView(LoginRequiredMixin,TemplateView):
     
 class FlotaListView(LoginRequiredMixin,TemplateView):
     model=Vehiculo
-    template_name="Web/combustible/flota.html"
+    template_name="Web/Combustible/flota.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -3190,7 +3190,7 @@ class FlotaListView(LoginRequiredMixin,TemplateView):
 
 class FlotaEditView(LoginRequiredMixin,UpdateView):
     model=Vehiculo
-    template_name="Web/combustible/flota_editar.html"
+    template_name="Web/Combustible/flota_editar.html"
     context_object_name="obj"
     form_class=ConductoresForm
     def post(self,request,*args, **kwargs):
@@ -3213,7 +3213,7 @@ class FlotaEditView(LoginRequiredMixin,UpdateView):
         return context
 class RutasListView(LoginRequiredMixin,TemplateView):
     model=Ruta
-    template_name="Web/combustible/ruta.html"
+    template_name="Web/Combustible/ruta.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -3236,7 +3236,7 @@ class RutasListView(LoginRequiredMixin,TemplateView):
             return HttpResponseRedirect(self.success_url) 
 class RutaView(LoginRequiredMixin,CreateView):
     model=Ruta
-    template_name="Web/combustible/ruta.html"
+    template_name="Web/Combustible/ruta.html"
     form_class=Rutaform
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
@@ -3298,7 +3298,7 @@ class RutaView(LoginRequiredMixin,CreateView):
         return context
 class RutaEditView(LoginRequiredMixin,TemplateView):
     model=Ruta
-    template_name="Web/combustible/ruta_editar.html"
+    template_name="Web/Combustible/ruta_editar.html"
     def get(self,request,**kwargs):
         data=[]
         objeto={"id":"","descripcion":[]}
@@ -3386,7 +3386,7 @@ def getVehiculo(request,id):
 class EstacionesView(LoginRequiredMixin,CreateView):
     model=Estaciones
     form_class=EstacionesForm
-    template_name="Web/combustible/estaciones.html"
+    template_name="Web/Combustible/estaciones.html"
     def post(self,request,*args, **kwargs):
         try:
             form=self.form_class(request.POST)
@@ -3419,7 +3419,7 @@ class EstacionesView(LoginRequiredMixin,CreateView):
         return context
     
 class EmpresaCreateView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/empresa.html"
+    template_name="Web/Combustible/empresa.html"
     model=Empresa
     form_class=EmpresaForm
     def post(self,request,*args, **kwargs):
@@ -3466,7 +3466,7 @@ class ProductosListView(LoginRequiredMixin,ListView):
             return HttpResponseRedirect(self.success_url)
 
 class ProductoCreateView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/producto.html"
+    template_name="Web/Combustible/producto.html"
     model=Producto
     form_class=ProductoForm
     def post(self,request,*args, **kwargs):
@@ -3487,7 +3487,7 @@ class ProductoCreateView(LoginRequiredMixin,CreateView):
             print(e)
             return JsonResponse({"status":500})
 class PrecioUpdateView(LoginRequiredMixin,TemplateView):
-    template_name="Web/combustible/precio_lista.html"
+    template_name="Web/Combustible/precio_lista.html"
     model=EstacionProducto
     context_object_name="obj"
     form_class=EstacionesForm
@@ -3579,7 +3579,7 @@ def getVehiculosRuta(request,id):
 
     return JsonResponse(data,safe=False)
 class EstadoAbastecimientoCreateView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/estado.html"
+    template_name="Web/Combustible/estado.html"
     model=EstadoViaje
     form_class=EstadoViajeForm
     def post(self,request,*args, **kwargs):
@@ -3600,7 +3600,7 @@ class EstadoAbastecimientoCreateView(LoginRequiredMixin,CreateView):
             print(e)
             return JsonResponse({"status":500})
 class TipoAbastecimientoCreateView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/tipo.html"
+    template_name="Web/Combustible/tipo.html"
     model=TipoAbastecimiento
     form_class=TipoAbastecimientoForm
     def post(self,request,*args, **kwargs):
@@ -3621,7 +3621,7 @@ class TipoAbastecimientoCreateView(LoginRequiredMixin,CreateView):
             print(e)
             return JsonResponse({"status":500})
 class UnidadMedidaCreateView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/unidad.html"
+    template_name="Web/Combustible/unidad.html"
     model=UnidadMedida
     form_class=UnidadMedidaForm
     def post(self,request,*args, **kwargs):
@@ -3643,7 +3643,7 @@ class UnidadMedidaCreateView(LoginRequiredMixin,CreateView):
             return JsonResponse({"status":500})
 
 class ConductoresView(LoginRequiredMixin,CreateView):
-    template_name="Web/combustible/conductores.html"
+    template_name="Web/Combustible/conductores.html"
     model=Conductor
     form_class=ConductoresForm
     # def get(self,request,*args, **kwargs):
@@ -3673,7 +3673,7 @@ class ConductoresView(LoginRequiredMixin,CreateView):
     
 class ConductorListView(LoginRequiredMixin,TemplateView):
     model=Conductor
-    template_name="Web/combustible/conductores.html"
+    template_name="Web/Combustible/conductores.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -3700,7 +3700,7 @@ class ConductorListView(LoginRequiredMixin,TemplateView):
     
 class ConductorEditView(LoginRequiredMixin,UpdateView):
     model=Conductor
-    template_name="Web/combustible/conductor_editar.html"
+    template_name="Web/Combustible/conductor_editar.html"
     context_object_name="obj"
     form_class=ConductoresForm
     def post(self,request,*args, **kwargs):
@@ -3721,7 +3721,7 @@ class ConductorEditView(LoginRequiredMixin,UpdateView):
         context["tip_doc"] = CHOICES_TIPO_DOC2
         return context
 class LiquidacionView(LoginRequiredMixin,TemplateView):
-    template_name="Web/combustible/liquidacion.html"
+    template_name="Web/Combustible/liquidacion.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -3825,7 +3825,7 @@ class GroupConcat(Aggregate):
             **extra
         )
 class RendimientoViajeView(LoginRequiredMixin,TemplateView):
-    template_name="Web/combustible/rendimiento_viaje.html"
+    template_name="Web/Combustible/rendimiento_viaje.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
@@ -4001,7 +4001,7 @@ class RendimientoViajeView(LoginRequiredMixin,TemplateView):
         return context
 
 class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
-    template_name="Web/combustible/rendimiento_eess.html"
+    template_name="Web/Combustible/rendimiento_eess.html"
     @method_decorator(csrf_exempt)
     def dispatch(self,request,*args, **kwargs):
         return super().dispatch(request,*args,**kwargs)
