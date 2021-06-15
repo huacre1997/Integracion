@@ -384,6 +384,9 @@
 
 
                         })
+                        $("btn-edit-ruta").on("click", function () {
+                            window.localStorage.setItem("volver","editar")
+                        })
                         $(".btn-remove").hover(function () {
 
                                 $(this).children().remove()

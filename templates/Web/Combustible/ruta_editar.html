@@ -29,6 +29,10 @@
                         window.location.href="{% url 'Web:abastecimiento' %}"
                         window.localStorage.removeItem("volver")
 
+                    }else
+                    if((window.localStorage.getItem("volver"))=="editar"){
+                         window.location.href="{% url 'Web:rutas' %}"
+                        window.localStorage.removeItem("volver")
                     }
         })
         document.getElementById("submit_tramo").addEventListener("click", function () {
@@ -71,7 +75,12 @@
                         window.localStorage.removeItem("volver")
                         window.localStorage.setItem("ruta",response.ruta)
 
-                    }
+                    }else
+                      if( (window.localStorage.getItem("volver"))=="editar"){
+                        window.location.href="{% url 'Web:rutas' %}"
+                        window.localStorage.removeItem("volver")
+
+                      }
          
                 } else {
                     notificacion(1500, "Error!", "error", "Ha ocurrido un error.Revise los campos.")
