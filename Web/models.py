@@ -1026,7 +1026,7 @@ class UnidadMedida(models.Model):
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Unidad',user_model=Usuario)
    def __str__(self):
-      return f'{self.descripcion}({self.unidad})'
+      return f'{self.descripcion}({self.abrev})'
    def toJSON(self):
       item=model_to_dict(self,exclude=["changed_by"])
       return item
