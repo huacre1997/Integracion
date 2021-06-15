@@ -1031,6 +1031,7 @@
           $("#spinner").css("visibility", "hidden")
           alerta(2000, "success", "Producto registrado!", "top-end")
           lista_productos.ajax.reload()
+          objeto.list()
           $("descripcion_producto").val("")
           $("unidad").val(0)
 
