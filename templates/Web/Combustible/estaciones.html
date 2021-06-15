@@ -1,4 +1,4 @@
-{% extends 'Web/combustible/combustible_base.html' %}
+{% extends 'Web/Combustible/combustible_base.html' %}
 {% block procesos%}active{% endblock %}
 {% block collapseProcesos %}show{% endblock collapseProcesos %}
 {% block estaciones %}collapse-item active{% endblock  %}
@@ -880,7 +880,7 @@
 
   $("#prod_eess").on("change", function () {
     if($(this).val()!=0){
-      fetch("../../combustible/get-products/" + $(this).val() + "/").then(data => data.json()).then(res => {
+      fetch("../../Combustible/get-products/" + $(this).val() + "/").then(data => data.json()).then(res => {
       console.log(res)
       objeto2.items = res.data
       objeto2.list()
