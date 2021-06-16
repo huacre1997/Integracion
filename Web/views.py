@@ -2984,16 +2984,20 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
                             det_abast.total=k["total"]
                             det_abast.conductor_id=k["conductor"]
                             det_abast.cargado=k["cargado"]["valor"]
+                            modelo_placa=Vehiculo.objects.get(id=k["placa"]["descripcion"])
+
+                            rendimiento=Rendimiento.objects.filter(tramo=request.POST["tramo_id"],modelo=modelo_placa.modelo_vehiculo)
                             if request.POST["tipo"]=="1" and k["cargado"]["id"]!=0:
+                               
                                 afectacion=AfectacionConsumo.objects.filter(pk=k["cargado"]["id"]).get()
 
                                 det_abast.afectacion=afectacion.afectacion
-                                det_abast.gal_obj=float(self.rend.get().gal_abast)*(1+afectacion.afectacion/100)
-                                det_abast.recorrido_obj=self.rend.get().km
+                                det_abast.gal_obj=float(rendimiento.get().gal_abast)*(1+afectacion.afectacion/100)
+                                det_abast.recorrido_obj=rendimiento.get().km
 
                             elif request.POST["tipo"]=="2" or k["cargado"]["id"]==0:
-                                det_abast.recorrido_obj=self.rend.get().km
-                                det_abast.gal_obj=self.rend.get().gal_abast
+                                det_abast.recorrido_obj=rendimiento.get().km
+                                det_abast.gal_obj=rendimiento.get().gal_abast
                             det_abast.voucher=k["voucher"]
                             det_abast.factura=k["factura"]
                             det_abast.save()
@@ -3029,15 +3033,20 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
                             nuevo_det_abast.total=k["total"]
                             nuevo_det_abast.conductor_id=k["conductor"]
                             nuevo_det_abast.cargado=k["cargado"]["valor"]
+                            modelo_placa=Vehiculo.objects.get(id=k["placa"]["descripcion"])
+
+                            rendimiento=Rendimiento.objects.filter(tramo=request.POST["tramo_id"],modelo=modelo_placa.modelo_vehiculo)
                             if request.POST["tipo"]=="1" and k["cargado"]["id"]!=0:
+                              
+
                                 afectacion=AfectacionConsumo.objects.filter(pk=k["cargado"]["id"]).get()
 
                                 nuevo_det_abast.afectacion=afectacion.afectacion
-                                nuevo_det_abast.gal_obj=float(self.rend.get().gal_abast)*(1+afectacion.afectacion/100)
-                                nuevo_det_abast.recorrido_obj=self.rend.get().km
+                                nuevo_det_abast.gal_obj=float(rendimiento.get().gal_abast)*(1+afectacion.afectacion/100)
+                                nuevo_det_abast.recorrido_obj=rendimiento.get().km
                             elif  request.POST["tipo"]=="2" or k["cargado"]["id"]==0:
-                                nuevo_det_abast.recorrido_obj=self.rend.get().km
-                                nuevo_det_abast.gal_obj=self.rend.get().gal_abast
+                                nuevo_det_abast.recorrido_obj=rendimiento.get().km
+                                nuevo_det_abast.gal_obj=rendimiento.get().gal_abast
                             nuevo_det_abast.voucher=k["voucher"]
                             nuevo_det_abast.factura=k["factura"]
                             nuevo_det_abast.save()
