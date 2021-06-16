@@ -2933,8 +2933,10 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
                 self.modelo=Vehiculo.objects.get(id=k["placa"]["descripcion"])
                 self.rend=Rendimiento.objects.filter(tramo=request.POST["tramo_id"],modelo=self.modelo.modelo_vehiculo)
                 self.exist_placa=DetalleAbastecimiento.objects.filter(placa=self.modelo)
+                print( self.exist_placa.order_by("abast__fecha").query)
                 if self.exist_placa.exists():
                     self.exist_fecha=self.exist_placa.order_by("abast__fecha").last()
+                    print(self.exist_fecha.abast.fecha)
                     if datetime.strptime(request.POST["fecha"], '%Y-%m-%d').date()<= self.exist_fecha.abast.fecha:
                         return JsonResponse({"status":500,"form":{"fecha":["La fecha ingresada es menor o igual a la del último abastecimiento registrado de una de las placas en la tabla."]}})
 
@@ -3863,6 +3865,7 @@ class RendimientoViajeView(LoginRequiredMixin,TemplateView):
                 #  annotate(rend_vacio=Subquery(newest.values('rend_vacio')[:1])). 
                 #  annotate(rend_prom=Subquery(newest.values('rend_prom')[:1])). 
                 #  annotate(rend_km=Subquery(newest.values('km')[:1])). 
+         
                  annotate(conductor=Subquery(km_prev.values('conductor__nombres')[:1])). 
                 annotate(recorrido_total=Sum(F("km")-Subquery(newest.values('km')[:1]))).
                 annotate(last_km=Subquery(km_prev.values('km')[:1])). 
@@ -4040,7 +4043,12 @@ class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
             #         annotate(relleno=Subquery(relleno.values('km')[:1])).
             #         order_by("-id","placa")) 
             qs =(DetalleAbastecimiento.objects.filter(abast__tipo=1).select_related("abast","abast__tipo","abast__estado_viaje","abast__viaje","placa","conductor").
-                    annotate(recorrido=F("km")-Subquery(newest.values('km')[:1])).
+                    annotate(previous_km=Subquery(newest.values('km')[:1])).
+
+                    annotate(recorrido=Case(
+                        When(previous_km=None,then=F("km")),
+                        When(previous_km__gte=0,then=F("km")-Subquery(newest.values('km')[:1]))
+                    )).
                     # annotate(tramo_relleno=Subquery(relleno.values('abast__tramo')[:1])).
                     annotate(previous_tipo=Subquery(newest.values('abast__tipo')[:1])).
                     annotate(tramo_relleno=Case(
@@ -4055,8 +4063,8 @@ class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
                     ))).
                     annotate(total_relleno=Case(
                         When(previous_tipo=2,then=Subquery(relleno.values('total')[:1])
-                    ))).
-                    exclude(recorrido=None).order_by("-abast__viaje","placa","-abast__fecha",))
+                    ))).exclude(previous_km=None).
+                    order_by("-abast__viaje","placa","-abast__fecha",))
             print(qs.query)
             if start_date and end_date and placa and ruta and empresa:
                 if start_date==end_date:     

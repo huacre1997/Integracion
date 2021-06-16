@@ -105,17 +105,17 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "vg35",
-#         # "HOST": "macbook-pro-de-jackeline.local",
-#         "HOST":"localhost",
-#         "USER": "root",
-#         "PASSWORD": "",
-#         "PORT": ""
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "vg35",
+        # "HOST": "macbook-pro-de-jackeline.local",
+        "HOST":"localhost",
+        "USER": "root",
+        "PASSWORD": "",
+        "PORT": ""
+    }
+}
 
 # DATABASES = {
 
@@ -140,24 +140,24 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # }
 
 COLLECTFAST_CACHE = 'collectfast'
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': "vg35",
-        "HOST": "localhost",
-        "USER": "postgres",
-        "PASSWORD": "123",
-        "PORT": 5432
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': "vg35",
+#         "HOST": "localhost",
+#         "USER": "postgres",
+#         "PASSWORD": "123",
+#         "PORT": 5432
+#     }
+# }
 
-import dj_database_url
-from decouple import config
-DATABASES={
-    "default":dj_database_url.config(
-        default=config("DATABASE_URL")
-    )
-}
+# import dj_database_url
+# from decouple import config
+# DATABASES={
+#     "default":dj_database_url.config(
+#         default=config("DATABASE_URL")
+#     )
+# }
 
 
 # Password validation
@@ -197,22 +197,22 @@ USE_I18N = True
 USE_L10N = False
 THOUSAND_SEPARATOR="."
 USE_TZ = False
-LOGGING = {
+# LOGGING = {
     
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
-        },
-    },
-}
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#              'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+#         },
+#     },
+# }
 
 AWS_ACCESS_KEY_ID = 'AKIAVTWEJMBX5NYJYD6Q'
 AWS_SECRET_ACCESS_KEY = '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'

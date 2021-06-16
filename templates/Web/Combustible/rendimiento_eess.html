@@ -14,7 +14,7 @@
       </div>
       <div class="card-body">
         <div class="row g-3">
-         
+
           <div class="col-3">
             <label for="">Fecha</label>
             <input type="text" name="date_ranger" class="form-control" id="date_ranger" autocomplete="off">
@@ -48,8 +48,8 @@
               {% endfor %}
             </select>
           </div>
-        
-         
+
+
         </div>
         <br>
         <div class="table-responsive">
@@ -93,8 +93,8 @@
 <script>
   $("#clean_filters").on("click", function () {
     parameters = {
-     start_date:"",
-     end_date: "",
+      start_date: "",
+      end_date: "",
       placa: "",
       ruta: "",
       empresa: "",
@@ -108,13 +108,13 @@
     load()
   })
   let parameters = {
-     start_date:"",
-     end_date: "",
-      placa: "",
-      ruta: "",
-      empresa: "",
+    start_date: "",
+    end_date: "",
+    placa: "",
+    ruta: "",
+    empresa: "",
 
-    }
+  }
   load()
 
   $("#placa").on("change", function () {
@@ -161,6 +161,8 @@
       "ordering": false,
       responsive: true,
       destroy: true,
+      deferRender: true,
+
       "lengthMenu": [
         [10, 25, 50, -1],
         [10, 25, 50, "All"]
@@ -243,7 +245,7 @@
           "data": "abast.tramo",
           className: "middle"
         },
-    
+
 
         {
           "data": "volumen",
@@ -257,7 +259,7 @@
           "data": "total",
           className: "middle"
         },
-        
+
         {
           "data": "km",
           className: "middle"
@@ -281,7 +283,7 @@
         {
           "data": null,
           className: "middle"
-        },   {
+        }, {
           "data": null,
           className: "middle"
         },
@@ -302,100 +304,125 @@
           targets: [7],
           render: function (data, type, row) {
             console.log(row.tramo_relleno)
-            if (row.tramo_relleno !=null) {
-              return row.tramo_relleno+"/"+data
-            } 
-              return data
-            
+            if (row.tramo_relleno != null) {
+              return row.tramo_relleno + "/" + data
+            }
+            return data
+
           }
         },
         {
           targets: [8],
           render: function (data, type, row) {
-            if(row.volumen_relleno!=null){
-                return (parseFloat(row.volumen)+parseFloat(row.volumen_relleno)).toFixed(2)
-              }else{
-                return data          
+            if (row.volumen_relleno != null) {
+              return (parseFloat(row.volumen) + parseFloat(row.volumen_relleno)).toFixed(2)
+            } else {
+              return data
 
-              }
-              }
-        },  
+            }
+          }
+        },
         {
           targets: [9],
           render: function (data, type, row) {
-            if(row.volumen_relleno!=null){
-                return ((parseFloat(row.total_relleno)+ parseFloat(row.total))/ (parseFloat(row.volumen)+ parseFloat(row.volumen_relleno))).toFixed(2)
-              }
-              return data          
-              }
+            if (row.volumen_relleno != null) {
+              return ((parseFloat(row.total_relleno) + parseFloat(row.total)) / (parseFloat(row.volumen) +
+                parseFloat(row.volumen_relleno))).toFixed(2)
+            }
+            return data
+          }
         },
         {
           targets: [10],
           render: function (data, type, row) {
             console.log(row)
-            if(row.total_relleno!=null){
-                return (parseFloat(row.total)+parseFloat(row.total_relleno)).toFixed(2)
-              }
-              return data          
-              }
-        },  
-         {
+            if (row.total_relleno != null) {
+              return (parseFloat(row.total) + parseFloat(row.total_relleno)).toFixed(2)
+            }
+            return data
+          }
+        },
+        {
           targets: [11],
           render: function (data, type, row) {
-          
-                return parseFloat(data).toFixed(2)
+
+            return parseFloat(data).toFixed(2)
           }
-        },     {
+        }, {
           targets: [12],
           render: function (data, type, row) {
             console.log(row)
-            if(row.recorrido_relleno!=null){
-                return (parseFloat(row.recorrido_relleno)+parseFloat(row.recorrido)).toFixed(2)
-              }else{
-                return data          
+            if (row.recorrido_relleno != null) {
+              return (parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido)).toFixed(2)
+            } else {
+              return data
 
-              }
-              }
+            }
+          }
+        },
+        {
+          targets: [13],
+          render: function (data, type, row) {
+            console.log(row)
+            return (row.recorrido/parseFloat(row.volumen)).toFixed(2);
+          }
         },
 
         {
           targets: [14],
           render: function (data, type, row) {
-            
-              return parseFloat(row.recorrido_obj/ row.gal_obj).toFixed(2)
+
+            return parseFloat(row.recorrido_obj / row.gal_obj).toFixed(2)
           }
-          
+
+        },
+     {
+          targets: [15],
+          render: function (data, type, row) {
+
+            return parseFloat(row.recorrido /( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
+          }
+
+        },  
+        {
+          targets: [16],
+          render: function (data, type, row) {
+
+            return parseFloat( (row.recorrido/parseFloat(row.volumen))-parseFloat(row.recorrido_obj / row.gal_obj)).toFixed(2)
+          }
+
+        },  
+        {
+          targets: [17],
+          render: function (data, type, row) {
+            let delta=row.recorrido/parseFloat(row.volumen)-parseFloat(row.recorrido_obj / row.gal_obj)
+            let volumen
+            let real=row.recorrido/parseFloat(row.volumen)
+            let precio
+            if (row.volumen_relleno != null) {
+              volumen=parseFloat(row.volumen) + parseFloat(row.volumen_relleno)
+            } else {
+              volumen=row.volumen
+
+            }
+            if (row.volumen_relleno != null) {
+              precio= (parseFloat(row.total_relleno) + parseFloat(row.total)) / (parseFloat(row.volumen) +
+                parseFloat(row.volumen_relleno))
+            }else{
+              precio=row.abast.precio
+            }
+            return parseFloat((delta*volumen/real)*precio).toFixed(2)
+          }
+
         },
 
 
       ],
 
       "initComplete": function (settings, json) {
-
-        for (let index = 0; index < settings.aoData.length; index++) {
-          let recorrido = $("td:eq(12)", tabla_rend.row(index).node()).text()
-
-          let volumen = $("td:eq(8)", tabla_rend.row(index).node()).text()
-          let objetivo = $("td:eq(14)", tabla_rend.row(index).node()).text()
-          $("td:eq(13)", tabla_rend.row(index).node()).html((parseInt(recorrido) / parseFloat(volumen)).toFixed(
-            2))
-          $("td:eq(15)", tabla_rend.row(index).node()).html((parseInt(recorrido) / parseFloat(objetivo)).toFixed(
-            2))
-          let real = $("td:eq(13)", tabla_rend.row(index).node()).text()
-
-          $("td:eq(16)", tabla_rend.row(index).node()).html((parseFloat(real) - parseFloat(objetivo)).toFixed(2))
-          let consumo = $("td:eq(15)", tabla_rend.row(index).node()).text()
-          let precio = $("td:eq(9)", tabla_rend.row(index).node()).text()
-          let delta = $("td:eq(16)", tabla_rend.row(index).node()).text()
-          $("td:eq(17)", tabla_rend.row(index).node()).html(((parseFloat(delta) * parseFloat(volumen) /
-              parseFloat(real)) *
-            parseFloat(precio)).toFixed(3))
-          tabla_rend.buttons().container()
+        tabla_rend.buttons().container()
             .appendTo('#tabla_rendimiento_eess_wrapper .col-md-6:eq(0)');
-        }
-        // console.log( $("td:eq(15)", tabla_rend.row(1).node()))
-        //   $("td:eq(16)", tabla_rend.row(tr.row).node()).html('$' + vent.items
-        //           .products[tr.row].sub_total.toFixed(2)) 
+    
       }
     })
   }

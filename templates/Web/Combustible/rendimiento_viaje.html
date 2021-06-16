@@ -312,6 +312,7 @@
         {
           targets: [4],
           render: function (data, type, row) {
+            console.log(row)
             if (data == undefined) {
               return ""
             } else {
@@ -340,8 +341,40 @@
 
       
           }
-        },
+        }, 
+        {
+          targets: [15],
+          render: function (data, type, row) {
+            console.log(row.recorrido_total )
+            console.log((row.r_obj_total / row.g_obj_total).toFixed(2) )
+            console.log(row.recorrido_total / (row.r_obj_total / row.g_obj_total) )
+              return parseFloat(row.recorrido_total / (row.r_obj_total / row.g_obj_total).toFixed(2) ).toFixed(2)
 
+      
+          }
+        },        
+        {
+          targets: [16],
+          render: function (data, type, row) {
+           
+              return parseFloat((row.recorrido_total / row.vol_total )- (row.r_obj_total / row.g_obj_total)).toFixed(2)
+
+      
+          }
+        },
+    {
+          targets: [17],
+          render: function (data, type, row) {
+            let delta=(row.recorrido_total / row.vol_total )- (row.r_obj_total / row.g_obj_total)
+            let volumen=parseFloat(row.vol_total)
+            let real=row.recorrido_total/parseFloat(row.vol_total)
+            let precio=row.monto_total / row.vol_total
+        
+          console.log(delta,volumen,real,precio)
+            return parseFloat((delta*volumen/real)*precio).toFixed(2)
+          }
+
+        }
 
       ],
       "initComplete": function (settings, json) {
@@ -351,9 +384,8 @@
           let precio = $("td:eq(9)", tabla_flota.row(index).node()).text()
           let real = $("td:eq(13)", tabla_flota.row(index).node()).text()
         let objetivo = $("td:eq(14)", tabla_flota.row(index).node()).text()
-          $("td:eq(15)", tabla_flota.row(index).node()).html((parseInt(recorrido) / parseFloat(objetivo)).toFixed(
-            2))
-          $("td:eq(16)", tabla_flota.row(index).node()).html((parseInt(real) - parseFloat(objetivo)).toFixed(2))
+     
+       
           let delta = $("td:eq(16)", tabla_flota.row(index).node()).text()
          
           $("td:eq(17)", tabla_flota.row(index).node()).html(((parseFloat(delta) * parseFloat(volumen) /
