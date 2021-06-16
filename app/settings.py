@@ -105,17 +105,17 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "vg35",
-        # "HOST": "macbook-pro-de-jackeline.local",
-        "HOST":"localhost",
-        "USER": "root",
-        "PASSWORD": "",
-        "PORT": ""
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': "vg35",
+#         # "HOST": "macbook-pro-de-jackeline.local",
+#         "HOST":"localhost",
+#         "USER": "root",
+#         "PASSWORD": "",
+#         "PORT": ""
+#     }
+# }
 
 # DATABASES = {
 
@@ -151,13 +151,13 @@ COLLECTFAST_CACHE = 'collectfast'
 #     }
 # }
 
-# import dj_database_url
-# from decouple import config
-# DATABASES={
-#     "default":dj_database_url.config(
-#         default=config("DATABASE_URL")
-#     )
-# }
+import dj_database_url
+from decouple import config
+DATABASES={
+    "default":dj_database_url.config(
+        default=config("DATABASE_URL")
+    )
+}
 
 
 # Password validation
