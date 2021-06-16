@@ -349,7 +349,7 @@
           targets: [12],
           render: function (data, type, row) {
             if (row.recorrido_relleno != null) {
-              return (parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido)).toFixed(2)
+              return parseInt(parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido))
             } else {
               return data
 
@@ -380,13 +380,13 @@
      {
           targets: [15],
           render: function (data, type, row) {
-            console.log(row)
             if (row.recorrido_relleno != null) {
-              console.log("If")
-              return parseFloat((parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido)/( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
+              console.log(row)
+              console.log("if")
+              return parseFloat((parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido))/ parseFloat(row.recorrido_obj / row.gal_obj).toFixed(2)).toFixed(2)
 
             }else{
-              return parseFloat(row.recorrido /( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
+              return parseFloat(row.recorrido /( parseFloat(row.recorrido_obj / row.gal_obj)).toFixed(2)).toFixed(2)
 
             }
           }
@@ -396,16 +396,16 @@
           targets: [16],
           render: function (data, type, row) {
 
-            return parseFloat( (row.recorrido/parseFloat(row.volumen))-parseFloat(row.recorrido_obj / row.gal_obj)).toFixed(2)
+            return parseFloat( (row.recorrido/parseFloat(row.volumen))-parseFloat(row.recorrido_obj / row.gal_obj).toFixed(2)).toFixed(2)
           }
 
         },  
         {
           targets: [17],
           render: function (data, type, row) {
-            let delta=row.recorrido/parseFloat(row.volumen)-parseFloat(row.recorrido_obj / row.gal_obj)
+            let delta=(row.recorrido/parseFloat(row.volumen)).toFixed(2)-parseFloat(row.recorrido_obj / row.gal_obj).toFixed(2)
             let volumen
-            let real=row.recorrido/parseFloat(row.volumen)
+            let real=(row.recorrido/parseFloat(row.volumen)).toFixed(2)
             let precio
             if (row.volumen_relleno != null) {
               volumen=parseFloat(row.volumen) + parseFloat(row.volumen_relleno)
@@ -415,7 +415,7 @@
             }
             if (row.volumen_relleno != null) {
               precio= (parseFloat(row.total_relleno) + parseFloat(row.total)) / (parseFloat(row.volumen) +
-                parseFloat(row.volumen_relleno))
+                parseFloat(row.volumen_relleno)).toFixed(2)
             }else{
               precio=row.abast.precio
             }
