@@ -363,8 +363,13 @@
         {
           targets: [13],
           render: function (data, type, row) {
-            console.log(row)
-            return (row.recorrido/parseFloat(row.volumen)).toFixed(2);
+            if (row.recorrido_relleno != null) {
+              return ((parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido))/(parseFloat(row.volumen) +
+                parseFloat(row.volumen_relleno))).toFixed(2)
+            } else {
+              return (row.recorrido/parseFloat(row.volumen)).toFixed(2);
+
+            }
           }
         },
 
