@@ -397,7 +397,8 @@
           render: function (data, type, row) {
             if (row.recorrido_relleno != null) {
               console.log(row)
-              return parseFloat( ((parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido))/parseFloat(row.volumen))-(row.recorrido_obj / parseFloat(row.gal_obj)).toFixed(2)).toFixed(2)
+              return parseFloat( ((parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido))/(parseFloat(row.volumen) +
+                parseFloat(row.volumen_relleno)))-(row.recorrido_obj / parseFloat(row.gal_obj)).toFixed(2)).toFixed(2)
 
 
             }else{
