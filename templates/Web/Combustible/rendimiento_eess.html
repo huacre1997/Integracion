@@ -384,8 +384,13 @@
      {
           targets: [15],
           render: function (data, type, row) {
+            if (row.recorrido_relleno != null) {
+              return parseFloat(row.recorrido+row.recorrido_relleno /( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
 
-            return parseFloat(row.recorrido /( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
+            }else{
+              return parseFloat(row.recorrido /( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
+
+            }
           }
 
         },  
