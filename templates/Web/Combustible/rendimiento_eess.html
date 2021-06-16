@@ -293,7 +293,6 @@
         {
           targets: [4],
           render: function (data, type, row) {
-            console.log(row)
             if (data == undefined) {
               return ""
             } else {
@@ -303,7 +302,6 @@
         }, {
           targets: [7],
           render: function (data, type, row) {
-            console.log(row.tramo_relleno)
             if (row.tramo_relleno != null) {
               return row.tramo_relleno + "/" + data
             }
@@ -335,7 +333,6 @@
         {
           targets: [10],
           render: function (data, type, row) {
-            console.log(row)
             if (row.total_relleno != null) {
               return (parseFloat(row.total) + parseFloat(row.total_relleno)).toFixed(2)
             }
@@ -351,7 +348,6 @@
         }, {
           targets: [12],
           render: function (data, type, row) {
-            console.log(row)
             if (row.recorrido_relleno != null) {
               return (parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido)).toFixed(2)
             } else {
@@ -384,8 +380,10 @@
      {
           targets: [15],
           render: function (data, type, row) {
+            console.log(row)
             if (row.recorrido_relleno != null) {
-              return parseFloat(row.recorrido+row.recorrido_relleno /( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
+              console.log("If")
+              return parseFloat((parseFloat(row.recorrido_relleno) + parseFloat(row.recorrido)/( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
 
             }else{
               return parseFloat(row.recorrido /( parseFloat(row.recorrido_obj / row.gal_obj))).toFixed(2)
