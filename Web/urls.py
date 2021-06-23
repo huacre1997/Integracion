@@ -212,6 +212,7 @@ urlpatterns = [
     path('importMedidas/', views.importMedidas, name='import-medidas'),
     path('importLlantas/', views.importLlantas, name='import-llantas'),
     path('importCubiertas/', views.importCubiertas, name='import-cubiertas'),
+    path('importAbastecimiento/', views.import_abastecimiento, name='import-abastecimiento'),
 
     path('imports/', views.imports, name='imports'),
 

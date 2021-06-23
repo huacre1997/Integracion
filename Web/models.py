@@ -1122,9 +1122,10 @@ class Abastecimiento(models.Model):
          item["fecha"]=self.fecha.strftime('%Y-%m-%d')  
          return item  
    def toJSON2(self):
-         item=model_to_dict(self,exclude=["changed_by","producto","viaje","tramo"])
+         item=model_to_dict(self,exclude=["changed_by","viaje","tramo"])
          item["tipo"]=self.tipo.descripcion
          item["estacion"]=self.estacion.descripcion
+         item["producto"]=self.producto.descripcion
          item["precio"]=format(self.precio, '.2f')      
          item["fecha"]=self.fecha.strftime('%Y-%m-%d')  
          return item

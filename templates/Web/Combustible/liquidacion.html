@@ -10,6 +10,16 @@
       <h5 class="card-header"><i class="fas fa-car"></i>&nbsp;Liquidación de Factura</h5>
       <div class="card-body">
         <div class="row g-3">
+          {% csrf_token %}
+          <div class="col-lg-10">
+                    <input type="file" class="form-control" name="abastecimiento_xlsx" id="file">
+</div>
+<div class="col-lg-2">
+          <button type="submit" id="send_excel" class="btn btn-success"><i class="fas fa-file-excel"></i>&nbsp;Importar Excel</button>
+
+</div>
+          </div>
+        <div class="row g-3">
           <div class="col-4">
             <label for="">Fecha</label>
             <input type="text" name="date_ranger" class="form-control" id="date_ranger" autocomplete="off">
@@ -51,10 +61,12 @@
               <th>EESS</th>
               <th>KM</th>
               <th>Recorrido</th>
+              <th>Producto</th>
               <th>Gal.Abast.</th>
               <th>Precio</th>
               <th>Monto</th>
               <th>Voucher</th>
+              <th>Factura</th>
             </thead>
             <tfoot>
               <tr>
@@ -78,6 +90,7 @@
 <script>
   let date_range = null
   let date_now = new moment().format('YYYY-MM-DD');
+  let tabla_liquidacion
   let parameters = {
     factura: "",
     eess: "",
@@ -102,7 +115,7 @@
   })
 
   function load() {
-    let tabla_liquidacion = $("#tabla_liquidacion").DataTable({
+     tabla_liquidacion = $("#tabla_liquidacion").DataTable({
       processing: "true",
       "ordering": false,
       lengthChange: false,
@@ -205,7 +218,10 @@
           "data": "recorrido",
           className: "middle"
         }, 
-     
+        {
+          "data": "abast.producto",
+          className: "middle"
+        },
 
         {
           "data": "volumen",
@@ -220,6 +236,9 @@
         },
         {
           "data": "voucher",
+          className: "middle"
+        },  {
+          "data": "factura",
           className: "middle"
         },
       ],
@@ -238,7 +257,7 @@
         //   }
         // },
         {
-          targets: [-2],
+          targets: [-3],
           render: function (data, type, row) {
             return (parseFloat(row.abast.precio) * parseFloat(row.volumen)).toFixed(2)
           }
@@ -293,5 +312,57 @@
       load()
     }
   })
+  document.getElementById('send_excel').onclick = function(e) {
+    let files = document.getElementById("file").files;
+            let file = files[0];
+            console.log(file.name);
+        let form=new FormData()
+        form.append("file",file)
+    fetch("{% url 'Web:import-abastecimiento' %}",{
+      method:"POST",
+      headers:{
+        "X-CSRFToken": csrftoken,
+      },
+      body:form
+
+    }).then(data=>data.json()).then(res=>{
+      console.log(res)
+      for (let index = 0; index < res.length; index++) {
+        let row = tabla_liquidacion.row( index );
+        let equal=0
+    let data = row.data();
+    console.log(data)
+     if(res[index].placa==data.placa){
+        equal=1
+     } 
+     if(res[index].precio[0]==data.abast.precio){
+        equal=1
+     } 
+     if(res[index].total[0]==data.total){
+        equal=1
+     }    
+     if(res[index].factura==data.factura){
+        equal=1
+     } 
+     if(res[index].voucher==data.voucher){
+        equal=1
+     }      
+     if(res[index].producto==data.abast.producto){
+        equal=1
+     }   
+     if(res[index].volumen[0]==data.volumen){
+        equal=1
+     }  
+     if(equal==1){
+       console.log("Son iguales")
+     }else{
+       console.log("No son iguales")
+     }
+        
+      }
+
+
+    })
+};
 </script>
 {% endblock bottom_scripts %}

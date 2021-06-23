@@ -254,3 +254,29 @@ def updateLlantas(file):
         
         print(e)
     return False
+def import_abastecimento_xlsx(file):
+    try:
+        df = pd.read_excel(file, sheet_name='Hoja1')
+        data=[]
+        objeto={"placa":"","precio":"","producto":"","total":"","factura":"","voucher":"","volumen":""}
+        for i in df.index:
+            def l(v):
+                value=v  if  not pd.isna(v) else None 
+                return value
+            
+            objeto["placa"]=df["placa"][i]
+            objeto["producto"]=df["producto"][i]
+            objeto["factura"]=df["factura"][i]
+            objeto["voucher"]=df["voucher"][i]
+            objeto["precio"]='{0:.2f}'.format(np.float64(df["precio"][i]).item()),
+            objeto["total"]='{0:.2f}'.format(np.float64(df["total"][i]).item()),
+            objeto["volumen"]='{0:.2f}'.format(np.float64(df["volumen"][i]).item()),
+            data.append(objeto)
+            objeto={"placa":"","precio":"","producto":"","total":"","factura":"","volumen":""}
+
+            
+        return data
+    except Exception as e:
+        data=[]
+        print(e)
+    return data

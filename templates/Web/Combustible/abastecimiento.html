@@ -346,17 +346,22 @@
               $("#fecha").val(today)
             } else {
               if (res.form.tramo) {
-                alerta(3000, "error", res.form.tramo[0])
+                alerta(4000, "error", res.form.tramo[0])
               } 
               if (res.form.viaje) {
-                alerta(3000, "error", res.form.viaje[0])
+                alerta(4000, "error", res.form.viaje[0])
               } 
               if (res.form.fecha) {
-                alerta(3000, "error", res.form.fecha[0])
+                alerta(4000, "error", res.form.fecha[0])
               }
               
               if (res.form.rendimiento) {
-                alerta(3000, "error", res.form.rendimiento[0])
+                alerta(4000, "error", res.form.rendimiento[0])
+              }      
+              if (res.form.voucher) {
+                alerta(4000, "error", res.form.voucher[0])
+              }       if (res.form.factura) {
+                alerta(4000, "error", res.form.factura[0])
               }
              
             }

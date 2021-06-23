@@ -2926,25 +2926,41 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
         if request.method =="POST":
             self.data=json.loads(request.POST["objeto"])
             self.placas=[]
+            self.vouchers=[]
+            self.facturas=[]
             self.contador=0
+            self.contador_v=0
+            self.contador_f=0
             self.tramo=request.POST["tramo"]
+
             for k in self.data:
                 
                 self.modelo=Vehiculo.objects.get(id=k["placa"]["descripcion"])
                 self.rend=Rendimiento.objects.filter(tramo=request.POST["tramo_id"],modelo=self.modelo.modelo_vehiculo)
                 self.exist_placa=DetalleAbastecimiento.objects.filter(placa=self.modelo)
+                self.exist_voucher=DetalleAbastecimiento.objects.filter(voucher=k["voucher"])
+                self.exist_factura=DetalleAbastecimiento.objects.filter(factura=k["factura"])
+
                 print( self.exist_placa.order_by("abast__fecha").query)
                 if self.exist_placa.exists():
                     self.exist_fecha=self.exist_placa.order_by("abast__fecha").last()
-                    print(self.exist_fecha.abast.fecha)
                     if datetime.strptime(request.POST["fecha"], '%Y-%m-%d').date()<= self.exist_fecha.abast.fecha:
                         return JsonResponse({"status":500,"form":{"fecha":["La fecha ingresada es menor o igual a la del último abastecimiento registrado de una de las placas en la tabla."]}})
-
                 if not self.rend.exists():
                     self.contador+=1
                     self.placas.append(self.modelo.placa)
+                if self.exist_voucher.exists():
+                    self.contador_v+=1
+                    self.vouchers.append(k["voucher"])
+                if self.exist_factura.exists():
+                    self.contador_f+=1
+                    self.facturas.append(k["factura"])
             if self.contador>0:
                 return JsonResponse({"status":500,"form":{"rendimiento":[f"No se ha configurado un rendimiento para las placas {','.join(self.placas)} y el tramo {self.tramo}."]}})
+            if self.contador_v>0:
+                return JsonResponse({"status":500,"form":{"voucher":[f"Los voucher {','.join(self.vouchers)} ya se han registrado!."]}})
+            if self.contador_f>0:
+                return JsonResponse({"status":500,"form":{"factura":[f"Las facturas {','.join(self.facturas)} ya se han registrado!."]}})
 
         return super().dispatch(request, *args, **kwargs)
         
@@ -3753,7 +3769,7 @@ class LiquidacionView(LoginRequiredMixin,TemplateView):
             data=[]
             newest = DetalleAbastecimiento.objects.filter(placa=OuterRef('placa'),abast__fecha__lt=OuterRef('abast__fecha')).order_by('-abast__fecha')
 
-            qs=(DetalleAbastecimiento.objects.select_related("abast","placa","conductor","abast__tipo","abast__estacion","abast__estado_viaje").
+            qs=(DetalleAbastecimiento.objects.select_related("abast","placa","conductor","abast__tipo","abast__estacion","abast__producto","abast__estado_viaje").
                                 annotate(recorrido=F("km")-Subquery(newest.values('km')[:1])).
                                  order_by("-abast__viaje","-abast__fecha"))
             # if año and factura and eess and mes:
@@ -3819,6 +3835,7 @@ class LiquidacionView(LoginRequiredMixin,TemplateView):
                 #     item["rend_prom"]=i.rend_prom
                 #     item["rend_km"]=i.km
                 data.append(item)
+                print(data)
             return JsonResponse(data,safe=False)
         except Exception as e:
             print(e)
@@ -4274,3 +4291,12 @@ class AfectacionDeleteView(LoginRequiredMixin, View):
         else:
             return JsonResponse({"status":500},safe=False)
 
+def import_abastecimiento(request):
+    if request.method=="POST":
+      
+        file=request.FILES.get('file', '')
+        if not file.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo cargado no es .xlsx')
+        data=import_abastecimento_xlsx(file)
+        print(data)
+        return JsonResponse(data,safe=False)
