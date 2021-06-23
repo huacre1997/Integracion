@@ -12,13 +12,14 @@
         <div class="row g-3">
           {% csrf_token %}
           <div class="col-lg-10">
-                    <input type="file" class="form-control" name="abastecimiento_xlsx" id="file">
-</div>
-<div class="col-lg-2">
-          <button type="submit" id="send_excel" class="btn btn-success"><i class="fas fa-file-excel"></i>&nbsp;Importar Excel</button>
-
-</div>
+            <input type="file" class="form-control" name="abastecimiento_xlsx" id="file">
           </div>
+          <div class="col-lg-2">
+            <button type="submit" id="send_excel" class="btn btn-success"><i
+                class="fas fa-file-excel"></i>&nbsp;Importar Excel</button>
+
+          </div>
+        </div>
         <div class="row g-3">
           <div class="col-4">
             <label for="">Fecha</label>
@@ -70,14 +71,14 @@
             </thead>
             <tfoot>
               <tr>
-                  <th colspan="14" style="text-align:right">Total:</th>
-                  <th id="total"></th>
+                <th colspan="14" style="text-align:right">Total:</th>
+                <th id="total"></th>
               </tr>
-          </tfoot>
-            </table>
-           
+            </tfoot>
+          </table>
+
         </div>
-       
+
       </div>
     </div>
   </div>
@@ -115,12 +116,12 @@
   })
 
   function load() {
-     tabla_liquidacion = $("#tabla_liquidacion").DataTable({
+    tabla_liquidacion = $("#tabla_liquidacion").DataTable({
       processing: "true",
       "ordering": false,
       lengthChange: false,
 
-      
+
       responsive: true,
       destroy: true,
       "lengthMenu": [
@@ -210,14 +211,14 @@
           className: "middle"
         },
 
-           {
+        {
           "data": "km",
           className: "middle"
         },
         {
           "data": "recorrido",
           className: "middle"
-        }, 
+        },
         {
           "data": "abast.producto",
           className: "middle"
@@ -237,7 +238,7 @@
         {
           "data": "voucher",
           className: "middle"
-        },  {
+        }, {
           "data": "factura",
           className: "middle"
         },
@@ -263,11 +264,11 @@
           }
         },
       ],
- 
+
       initComplete: function (settings, json) {
-        let sum=0
-        for (let i = 0; i <settings.aoData.length; i++) {
-          sum+=parseFloat(settings.aoData[i].anCells[13].textContent)
+        let sum = 0
+        for (let i = 0; i < settings.aoData.length; i++) {
+          sum += parseFloat(settings.aoData[i].anCells[13].textContent)
         }
         $("#total").html(sum.toFixed(2))
         tabla_liquidacion.buttons().container()
@@ -304,65 +305,184 @@
     load()
   })
   $("#factura").on("input", function () {
-   
-     parameters.año = $(this).val()
-      load()
+
+    parameters.año = $(this).val()
+    load()
     if ($(this).val().length == 0) {
       parameters.año = ""
       load()
     }
   })
-  document.getElementById('send_excel').onclick = function(e) {
+  document.getElementById('send_excel').onclick = function (e) {
     let files = document.getElementById("file").files;
-            let file = files[0];
-            console.log(file.name);
-        let form=new FormData()
-        form.append("file",file)
-    fetch("{% url 'Web:import-abastecimiento' %}",{
-      method:"POST",
-      headers:{
+    let file = files[0];
+    console.log(file.name);
+    let form = new FormData()
+    form.append("file", file)
+    fetch("{% url 'Web:import-abastecimiento' %}", {
+      method: "POST",
+      headers: {
         "X-CSRFToken": csrftoken,
       },
-      body:form
+      body: form
 
-    }).then(data=>data.json()).then(res=>{
+    }).then(data => data.json()).then(res => {
       console.log(res)
-      for (let index = 0; index < res.length; index++) {
-        let row = tabla_liquidacion.row( index );
-        let equal=0
-    let data = row.data();
-    console.log(data)
-     if(res[index].placa==data.placa){
-        equal=1
-     } 
-     if(res[index].precio[0]==data.abast.precio){
-        equal=1
-     } 
-     if(res[index].total[0]==data.total){
-        equal=1
-     }    
-     if(res[index].factura==data.factura){
-        equal=1
-     } 
-     if(res[index].voucher==data.voucher){
-        equal=1
-     }      
-     if(res[index].producto==data.abast.producto){
-        equal=1
-     }   
-     if(res[index].volumen[0]==data.volumen){
-        equal=1
-     }  
-     if(equal==1){
-       console.log("Son iguales")
-     }else{
-       console.log("No son iguales")
-     }
+      let mensajes = []
+      for (let a = 0; a < res.length; a++) {
+        let found1=true 
+        let found2 =true 
+        let found3=true 
+  
+        tabla_liquidacion.rows().eq(0).each(function (index) {
+          let row = tabla_liquidacion.row(index);
+          let data = row.data();
+
+          if (res[a].factura != null && res[a].voucher == null) {
+            if (data.factura == res[a].factura) {
+              found1=true
+              if (res[a].placa != data.placa.placa) {
+                mensajes.push(`La placa  ${data.placa.placa}  no coincide con la factura ${res[a].factura}`)
+                equal_1 = 1
+              }
+              if (res[a].precio[0] != data.abast.precio) {
+                equal = 1
+                mensajes.push(
+                  `El  precio  ${data.abast.precio} del producto no coincide con la factura ${res[a].factura}`
+                )
+              }
+              if (res[a].total[0] != data.total) {
+                mensajes.push(`El  total  ${data.total}  no coincide con la factura ${res[a].factura}`)
+
+                equal = 1
+              }
+
+              if (res[a].volumen[0] != data.volumen) {
+                mensajes.push(`El  volumen  ${data.volumen}  no coincide con la factura ${res[a].factura}`)
+
+                equal = 1
+              }
+            }else{
+              found1=false
+            }
+          } else
+          if (res[a].voucher != null && res[a].factura == null) {
+            if (data.voucher == res[a].voucher) {
+              found2 = true
+              if (res[a].placa != data.placa.placa) {
+                mensajes.push(`La placa  ${data.placa.placa}  no coincide con el voucher  ${res[a].voucher}`)
+                equal = 1
+              }
+              if (res[a].precio[0] != data.abast.precio) {
+                equal = 1
+                mensajes.push(
+                  `El  precio  ${data.abast.precio} del producto no coincide con el voucher ${res[a].voucher}`
+                )
+              }
+              if (res[a].total[0] != data.total) {
+                mensajes.push(`El  total  ${data.total}no coincide con el voucher ${res[a].voucher}`)
+
+                equal = 1
+              }
+
+              if (res[a].volumen[0] != data.volumen) {
+                mensajes.push(`El  volumen  ${data.volumen}  no coincide con el voucher ${res[a].voucher}`)
+
+                equal = 1
+              }
+            } else{
+              found2=false
+            }
+          } else
+          if (res[a].voucher != null && res[a].factura != null) {
+            if (data.voucher == res[a].voucher && data.factura == res[a].factura) {
+              found3 = true
+              if (res[a].placa != data.placa.placa) {
+                mensajes.push(
+                  `La placa  ${data.placa.placa}  no coincide con el voucher  ${res[a].voucher} y factura  con el voucher  ${res[a].factura}`
+                )
+                equal = 1
+              }
+              if (res[a].precio[0] != data.abast.precio) {
+                equal = 1
+                mensajes.push(
+                  `El  precio  ${data.abast.precio} del producto no coincide con el voucher ${res[a].voucher}  y factura  con el voucher  ${res[a].factura}`
+                )
+              }
+              if (res[a].total[0] != data.total) {
+                mensajes.push(
+                  `El  total  ${data.total}no coincide con el voucher ${res[a].voucher}  y factura  con el voucher  ${res[a].factura}`
+                )
+
+                equal = 1
+              }
+
+              if (res[a].volumen[0] != data.volumen) {
+                mensajes.push(
+                  `El  volumen  ${data.volumen}  no coincide con el voucher ${res[a].voucher}  y factura  con el voucher  ${res[a].factura}`
+                )
+
+                equal = 1
+              }
+            }else{
+              found3=false
+            }
+          }
+
+
+        })
+        if(!found1 ){
+          mensajes.push(`La factura  ${res[a].factura} no se encuentra en la tabla`)
+
+        }
+        if(!found2){
+          mensajes.push(`El voucher  ${res[a].voucher}  no se encuentra en la tabla`)
+
+        }
+        if(!found3){
+          mensajes.push(`El voucher  ${res[a].voucher} y la factura  ${res[a].factura} no se encuentra en la tabla`)
+
+        }
+
+
+      }
+      console.log(mensajes)
+      var doc = new jsPDF();
+      doc.setFontSize(12);
+
+doc.text(20, 20, 'Observaciones:');
+      for (let index = 0; index < mensajes.length; index++) {
+        let mensaje = mensajes[index];
+          doc.text(20, (index+1)*10+20, "- "+mensaje);
         
       }
+// Optional - set properties on the document
+// doc.setProperties({
+//     title: 'Title',
+//     subject: 'This is the subject',
+//     author: 'James Hall',
+//     keywords: 'generated, javascript, web 2.0, ajax',
+//     creator: 'MEEE'
+// });
+
+window.open(doc.output('bloburl'))
 
 
+
+// Output as Data URI
+  // Swal.fire({
+      //   title: 'Advertencia',
+      //   icon: 'info',
+      //   html: '<li>' + mensajes.join('</li><li>') + '</li>',
+      //   showCloseButton: true,
+      //   showCancelButton: true,
+      //   focusConfirm: false,
+      //   confirmButtonText: '<i class="fa fa-thumbs-up"></i> Ok!',
+      //   confirmButtonAriaLabel: 'Thumbs up, great!',
+      //   cancelButtonText: '<i class="fa fa-thumbs-down"></i>',
+      //   cancelButtonAriaLabel: 'Thumbs down'
+      // })
     })
-};
+  };
 </script>
 {% endblock bottom_scripts %}
