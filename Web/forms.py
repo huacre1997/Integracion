@@ -81,7 +81,7 @@ class DepartamentoForm(forms.ModelForm):
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
-            if Departamento.objects.filter(descripcion=data).exists():
+            if Departamento.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" El departamento {data} ya se encuentra registrado .")
         return data
 
@@ -298,7 +298,7 @@ class UbicacionForm(forms.ModelForm):
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
-            if Ubicacion.objects.filter(descripcion=data).exists():
+            if Ubicacion.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : La ubicación {data} ya se encuentra registrada .")
         return data  
 
@@ -331,7 +331,7 @@ class LugarForm(forms.ModelForm):
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
-            if Lugar.objects.filter(descripcion=data).exists():
+            if Lugar.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : La ubicación {data} ya se encuentra registrada .")
         return data
 class MarcaRenovaForm(forms.ModelForm):
@@ -347,7 +347,7 @@ class MarcaRenovaForm(forms.ModelForm):
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
-            if MarcaRenova.objects.filter(descripcion=data).exists():
+            if MarcaRenova.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : La marca de renovación {data} ya se encuentra registrada .")
         return data
 class ModeloRenovaForm(forms.ModelForm):
@@ -394,7 +394,7 @@ class AnchoBandaRenovaForm(forms.ModelForm):
 
         print(data2)
         if self.instance.descripcion!=data:
-            if AnchoBandaRenova.objects.filter(descripcion=data,modelo_renova=data2,ancho_banda=data3).exists():
+            if AnchoBandaRenova.objects.filter(descripcion=data,modelo_renova=data2,ancho_banda=data3,eliminado=False).exists():
                 self.add_error("ancho_banda",f" : El ancho de banda {data3} ya se encuentra registrado .")
         return self.cleaned_data  
 
@@ -411,7 +411,7 @@ class MarcaLlantaForm(forms.ModelForm):
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
-            if MarcaLlanta.objects.filter(descripcion=data).exists():
+            if MarcaLlanta.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : La marca {data} ya se encuentra registrada .")
         return data
 class TipoVehiculoForm(forms.ModelForm):
@@ -437,7 +437,7 @@ class TipoVehiculoForm(forms.ModelForm):
         print(data2)
         print(data)
         if self.instance.descripcion!=data:
-            if TipoVehiculo.objects.filter(descripcion=data,nro_llantas=data2).exists():
+            if TipoVehiculo.objects.filter(descripcion=data,nro_llantas=data2,eliminado=False).exists():
                 self.add_error("descripcion",f" : El tipo de vehiculo {data} ya se encuentra registrado .")
         return self.cleaned_data
 class ModeloLlantaForm(forms.ModelForm):
@@ -533,7 +533,7 @@ class MarcaVehiculoForm(forms.ModelForm):
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
-            if MarcaVehiculo.objects.filter(descripcion=data).exists():
+            if MarcaVehiculo.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : La marca de vehículo {data} ya se encuentra registrada .")
         return data
 class ModeloVehiculoForm(forms.ModelForm):
@@ -554,7 +554,7 @@ class ModeloVehiculoForm(forms.ModelForm):
         data2=self.cleaned_data.get("marca_vehiculo")
         if self.instance.descripcion!=data:
 
-            if ModeloVehiculo.objects.filter(descripcion=data,marca_vehiculo=data2).exists():
+            if ModeloVehiculo.objects.filter(descripcion=data,marca_vehiculo=data2,eliminado=False).exists():
                 self.add_error("descripcion",f" : La marca {data2} ya tiene registrado un modelo {data} .")
         return self.cleaned_data
 
@@ -755,7 +755,7 @@ class EstacionesForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         
         if self.instance.descripcion!=data:
-            if Estaciones.objects.filter(descripcion=data).exists():
+            if Estaciones.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : La estación {data} ya se encuentra registrada .")
         return data
 class ConductoresForm(forms.ModelForm):
@@ -800,7 +800,7 @@ class ProductoForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         
         if self.instance.descripcion!=data:
-            if Producto.objects.filter(descripcion=data).exists():
+            if Producto.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : EL producto {data} ya se encuentra registrado.")
         return data
 class RendimientoForm(forms.ModelForm):
@@ -845,7 +845,7 @@ class EstadoViajeForm(forms.ModelForm):
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         if self.instance.descripcion!=data:
-            if EstadoViaje.objects.filter(descripcion=data).exists():
+            if EstadoViaje.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
         return data
 class UnidadMedidaForm(forms.ModelForm):
@@ -856,7 +856,7 @@ class UnidadMedidaForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         
         if self.instance.descripcion!=data:
-            if UnidadMedida.objects.filter(descripcion=data).exists():
+            if UnidadMedida.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
         return data     
 class TipoAbastecimientoForm(forms.ModelForm):
@@ -867,7 +867,7 @@ class TipoAbastecimientoForm(forms.ModelForm):
         data=self.cleaned_data["descripcion"]
         
         if self.instance.descripcion!=data:
-            if TipoAbastecimiento.objects.filter(descripcion=data).exists():
+            if TipoAbastecimiento.objects.filter(descripcion=data,eliminado=False).exists():
                 self.add_error("descripcion",f" : EL tipo {data} ya se encuentra registrado.")
         return data
 class AfectacionConsumoForm(forms.ModelForm):

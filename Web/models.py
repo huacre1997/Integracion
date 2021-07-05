@@ -899,7 +899,8 @@ class Conductor(models.Model):
        choices=CHOICES_TIPO_DOC2, default=TIPO_DOC_DNI)
    doc=models.CharField(max_length=20)
    nombres=models.CharField(max_length=100)
-   estado=models.BooleanField(default=True)
+   estado=models.BooleanField(default=False)
+   eliminado=models.BooleanField(default=False)
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Conductores',user_model=Usuario)
 
@@ -917,6 +918,8 @@ class Conductor(models.Model):
 class Ruta(models.Model):
    ruta = models.CharField(max_length=255)
    estado=models.BooleanField(default=True)
+   eliminado=models.BooleanField(default=False)
+
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Ruta',user_model=Usuario)  
    def __str__(self):
@@ -942,6 +945,8 @@ class Estaciones(models.Model):
    direccion = models.CharField(max_length=200)
    contacto=models.CharField(max_length=100)
    estado=models.BooleanField(default=True)
+   eliminado=models.BooleanField(default=False)
+   
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Estaciones',user_model=Usuario)
    def cbo_ruta(self):
@@ -996,7 +1001,8 @@ class Rendimiento(models.Model):
    rend_vacio=models.DecimalField(max_digits=10, decimal_places=2)
    km=models.IntegerField()
    gal_abast=models.DecimalField(max_digits=10, decimal_places=2)
-   estado=models.BooleanField(default=True)
+   estado=models.BooleanField(default=False)
+   eliminado=models.BooleanField(default=False)
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Rendimiento',user_model=Usuario)
    @property
@@ -1022,7 +1028,8 @@ class EstadoViaje(models.Model):
 class UnidadMedida(models.Model):
    descripcion=models.CharField(max_length=100)
    abrev=models.CharField(max_length=50)
-   estado=models.BooleanField(default=True)
+   estado=models.BooleanField(default=False)
+   eliminado=models.BooleanField(default=False)
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Unidad',user_model=Usuario)
    def __str__(self):
@@ -1040,7 +1047,8 @@ class UnidadMedida(models.Model):
 class Producto(models.Model):
    descripcion = models.CharField(max_length=100)
    unidad=models.ForeignKey(UnidadMedida,on_delete=models.CASCADE)
-   estado=models.BooleanField(default=True)
+   estado=models.BooleanField(default=False)
+   eliminado=models.BooleanField(default=False)
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Productos',user_model=Usuario)
    def __str__(self):
@@ -1064,6 +1072,8 @@ class EstacionProducto(models.Model):
    pre_fech_fin=models.DateField(null=True)
    pre_fech_ini=models.DateField(null=True)
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+   eliminado=models.BooleanField(default=False)
+   estado=models.BooleanField(default=False)
    history = HistoricalRecords(table_name='Web_Historial_EstacionProductos',user_model=Usuario)
    def toJSON(self):
       item = model_to_dict(self,exclude=["changed_by","inspeccion","estacion"])
@@ -1173,7 +1183,8 @@ class DetalleAbastecimiento(models.Model):
 class AfectacionConsumo(models.Model):
    per_carga=models.IntegerField()
    afectacion=models.IntegerField()
-   estado=models.BooleanField()
+   estado=models.BooleanField(default=False)
+   eliminado=models.BooleanField(default=False)
 
 
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)

@@ -28,6 +28,16 @@
             <a href="#" class="btn btn-warning btn-block" id="btn-edit-tramo"><i class="fa fa-edit"></i></a>
           </div>
           <div class="col-md-6">
+          
+              <label class="form-label">Tramo</label>
+            <select name="tramo" id="tramo" class="form-select">
+              <option value="0">Seleccione...</option>
+            </select>
+            <div class="invalid-feedback">
+              Este campo es requerido.
+            </div>
+          </div>
+             <div class="col-md-6">
             <label class="form-label">Estación de Servicio</label>
             <select name="estacion" id="estacion" class="form-select">
               <option value="0">Seleccione...</option>
@@ -36,21 +46,7 @@
               Este campo es requerido.
             </div>
           </div>
-          <div class="col-md-3">
-            <label class="form-label">Fecha</label>
-            <input type="date" class="form-control" id="fecha" name="fecha" value="{{current_year}}" required>
-            <div class="invalid-feedback">
-              Este campo es requerido.
-            </div>
-          </div>
-          <div class="col-md-2">
-            <label class="form-label">Precio</label>
-            <input type="number" disabled id="precio" name="precio" class="form-control">
-          </div>
-          <div class="col-md-1">
-            <label class="invisible">Button</label>
-            <button type="button" class="btn btn-block btn-warning" id="modal_price"><i class="fa fa-eye"></i></button>
-          </div>
+
 
           <div class="col-md-6">
             <label class="form-label">Tipo de Abastecimiento</label>
@@ -68,14 +64,20 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Tramo</label>
-            <select name="tramo" id="tramo" class="form-select">
-              <option value="0">Seleccione...</option>
-            </select>
+                <div class="col-md-3">
+            <label class="form-label">Fecha</label>
+            <input type="date" class="form-control" id="fecha" name="fecha" value="{{current_year}}" required>
             <div class="invalid-feedback">
               Este campo es requerido.
             </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Precio</label>
+            <input type="number" disabled id="precio" name="precio" class="form-control">
+          </div>
+          <div class="col-md-1">
+            <label class="invisible">Button</label>
+            <button type="button" class="btn btn-block btn-warning" id="modal_price"><i class="fa fa-eye"></i></button>
           </div>
           <div class="col-md-6">
             <label class="form-label">Estado de Viaje</label>

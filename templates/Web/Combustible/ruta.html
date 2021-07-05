@@ -99,14 +99,11 @@
             }
         }
         if (objeto2.items.length == 0) {
-            error == 1
+            error = 1
             notificacion(1500, "Error!", "error", "Ingrese al menos un tramo para esta ruta!")
 
         }
-        validar($("#placa"))
-        validar($("#km"))
-        validar($("#volumen"))
-        validar($("#rend"))
+
 
         if (error == 0) {
             $("#loadingCharge").css("visibility", "visible")

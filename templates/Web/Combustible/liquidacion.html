@@ -333,11 +333,13 @@
         let found1=true 
         let found2 =true 
         let found3=true 
-  
+        let ret=0
         tabla_liquidacion.rows().eq(0).each(function (index) {
+
           let row = tabla_liquidacion.row(index);
           let data = row.data();
-
+          if(ret==0){
+         
           if (res[a].factura != null && res[a].voucher == null) {
             if (data.factura == res[a].factura) {
               found1=true
@@ -362,6 +364,8 @@
 
                 equal = 1
               }
+              ret=1;
+
             }else{
               found1=false
             }
@@ -390,6 +394,8 @@
 
                 equal = 1
               }
+              ret=1;
+
             } else{
               found2=false
             }
@@ -424,12 +430,14 @@
 
                 equal = 1
               }
+              ret=1;
+
             }else{
               found3=false
             }
           }
 
-
+        }
         })
         if(!found1 ){
           mensajes.push(`La factura  ${res[a].factura} no se encuentra en la tabla`)

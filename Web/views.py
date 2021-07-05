@@ -905,6 +905,7 @@ class MarcaRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
         obj = MarcaRenova.objects.get(pk=id)
         obj.changed_by=request.user
         obj.eliminado = True
+        obj.estado = False
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
         return HttpResponseRedirect(reverse('Web:marca-renovaciones',))
@@ -989,6 +990,7 @@ class ModeloRenovacionDeleteView(LoginRequiredMixin,ValidateMixin, View):
         obj = ModeloRenova.objects.get(pk=id)
         obj.changed_by=request.user
         obj.eliminado = True
+        obj.estado = True
         obj.save()
         messages.success(self.request, 'Operación realizada correctamente.')
         return HttpResponseRedirect(reverse('Web:modelo-renovaciones',))
@@ -3077,11 +3079,11 @@ class AbastecimientoView(LoginRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["placa"] =Vehiculo.objects.values("id","placa","activo","eliminado").filter(activo=True) 
-        context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True)
-        context["conductor"]=Conductor.objects.values("id","nombres").filter(estado=True)
+        context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True,eliminado=False)
+        context["conductor"]=Conductor.objects.values("id","nombres").filter(estado=True,eliminado=False)
         context["tipo"]=TipoAbastecimiento.objects.values("id","descripcion")
         context["estado"]=EstadoViaje.objects.values("id","descripcion")
-        context["afectacion"]=AfectacionConsumo.objects.values("id","afectacion","per_carga")
+        context["afectacion"]=AfectacionConsumo.objects.values("id","afectacion","per_carga").filter(estado=True,eliminado=False)
 
         return context
 class RendimientoView(LoginRequiredMixin,CreateView):
@@ -3107,6 +3109,7 @@ class RendimientoView(LoginRequiredMixin,CreateView):
                 nuevo.fech_hora=request.POST["fech_hora"]
                 nuevo.modelo_id=request.POST["modelo_vehiculo"]
                 nuevo.changed_by=request.user
+                nuevo.estado=True
                 nuevo.km=int(i["recorrido"])
                 nuevo.gal_abast=float(i["galones_abast"])
                 nuevo.rend_vacio =float(i["rend_objetivo"])
@@ -3118,7 +3121,7 @@ class RendimientoView(LoginRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['marca_vehiculo'] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
-        context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True)
+        context["ruta"]=Ruta.objects.values("id","ruta").filter(estado=True,eliminado=False)
         return context
 class RendimientoListView(LoginRequiredMixin,TemplateView):
     model=Rendimiento
@@ -3133,7 +3136,7 @@ class RendimientoListView(LoginRequiredMixin,TemplateView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Rendimiento.objects.filter(estado=True):
+                for i in Rendimiento.objects.filter(eliminado=False):
                     data.append(i.toJSON())
             else:
                 data["error"]="Ha ocurrido un error"
@@ -3172,7 +3175,7 @@ class RendimientoEditView(LoginRequiredMixin,UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["marca_vehiculo"] = MarcaVehiculo.objects.filter().values("id",'descripcion',"activo","eliminado")
-        context["ruta"]=Ruta.objects.filter(estado=True)
+        context["ruta"]=Ruta.objects.filter(estado=True,eliminado=False)
         return context
     
 class FlotaView(LoginRequiredMixin,TemplateView):
@@ -3205,7 +3208,7 @@ class FlotaListView(LoginRequiredMixin,TemplateView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Vehiculo.objects.filter(activo=True).exclude(empresa=None):
+                for i in Vehiculo.objects.filter(eliminado=False).exclude(empresa=None):
                     data.append(i.toJSON_flota())
             else:
                 data["error"]="Ha ocurrido un error"
@@ -3251,7 +3254,7 @@ class RutasListView(LoginRequiredMixin,TemplateView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Ruta.objects.filter(estado=True):
+                for i in Ruta.objects.filter(eliminado=False):
                     data.append(i.toJSON())
             else:
                 data["error"]="Ha ocurrido un error"
@@ -3275,6 +3278,7 @@ class RutaView(LoginRequiredMixin,CreateView):
             if form.is_valid():
                 instance=form.save(commit=False)
                 instance.changed_by=request.user
+                instance.estado=True
                 instance.save()
                 js=json.loads(request.POST["objeto"])
                 print(js)
@@ -3420,12 +3424,14 @@ class EstacionesView(LoginRequiredMixin,CreateView):
             if form.is_valid():
                 instance=form.save(commit=False)
                 instance.changed_by=request.user
+                instance.estado=True
                 instance.save()
                 for i in json.loads(request.POST["producto"]):
                     product=EstacionProducto()
                     product.producto_id=i["producto"]
                     product.precio=i["precio"]
                     product.estacion=instance
+                    product.estado=True
                     product.save()
                 data={"status":200,"id":instance.id,"descripcion":instance.descripcion}
             else:
@@ -3439,10 +3445,9 @@ class EstacionesView(LoginRequiredMixin,CreateView):
             return JsonResponse({"status":500})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["producto"] = Producto.objects.filter(estado=True)
-        context["eess"]=Estaciones.objects.filter(estado=True)
+        context["producto"] = Producto.objects.filter(estado=True,eliminado=False)
+        context["eess"]=Estaciones.objects.filter(estado=True,eliminado=False)
         context["departamento"]=Departamento.objects.all()
-        context["unidad"]=UnidadMedida.objects.filter(estado=True)
         return context
     
 class EmpresaCreateView(LoginRequiredMixin,CreateView):
@@ -3455,6 +3460,7 @@ class EmpresaCreateView(LoginRequiredMixin,CreateView):
             if form.is_valid():
                 instance=form.save(commit=False)
                 instance.changed_by=request.user
+                instance.estado=True
                 instance.save()
                 data={"status":200,"id":instance.id,"nombre":instance.nombre}
             else:
@@ -3481,7 +3487,7 @@ class ProductosListView(LoginRequiredMixin,ListView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Producto.objects.filter(estado=True):
+                for i in Producto.objects.filter(eliminado=False).order_by("-id"):
                     data.append(i.toJSON())
             else:
                 data["error"]="Ha ocurrido un error"
@@ -3502,6 +3508,7 @@ class ProductoCreateView(LoginRequiredMixin,CreateView):
             if form.is_valid():
                 instance=form.save(commit=False)
                 instance.changed_by=request.user
+                instance.estado=True
                 instance.save()
                 data={"status":200,"id":instance.id,"descripcion":instance.descripcion}
             else:
@@ -3509,6 +3516,55 @@ class ProductoCreateView(LoginRequiredMixin,CreateView):
                 "form":form.errors,
                 'status': 500,
                 }
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["unidad"]=UnidadMedida.objects.filter(estado=True,eliminado=False)
+        return context
+    
+class ProductosUpdateView(LoginRequiredMixin,UpdateView):
+    template_name="Web/Combustible/producto.html"
+    model=Producto
+    form_class=ProductoForm
+    context_object_name="obj"
+    def post(self,request,*args, **kwargs):
+        try:
+            form=self.form_class(data=request.POST,instance=self.get_object())
+            if form.is_valid():
+                instance=form.save(commit=False)
+                instance.changed_by=request.user
+                instance.save()
+                data={"status":200,"id":instance.id,"descripcion":instance.descripcion}
+            else:
+                data = {
+                "form":form.errors,
+                'status': 500,
+                }
+            return JsonResponse(data,safe=False)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status":500})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["unidad"]=UnidadMedida.objects.filter(estado=True,eliminado=False)
+        return context
+    
+class ProductosDeleteView(LoginRequiredMixin,UpdateView):
+    template_name="Web/Combustible/producto.html"
+    model=Producto
+    form_class=ProductoForm
+  
+    def post(self,request,*args, **kwargs):
+        try:
+            instance=self.get_object()
+            instance.eliminado=True
+            instance.estado=False
+            instance.save()
+            data={"status":200,}
+      
             return JsonResponse(data,safe=False)
         except Exception as e:
             print(e)
@@ -3534,7 +3590,7 @@ class PrecioUpdateView(LoginRequiredMixin,TemplateView):
             return JsonResponse({"status":500})
 def getAllProducts(request):
     if request.method=="GET":
-        p=Producto.objects.filter(estado=True)
+        p=Producto.objects.filter(estado=True,eliminado=False)
         data=[]
         for i in p:
             data.append(i.toJSON())
@@ -3573,7 +3629,7 @@ def getTramos(request,id):
         res={"status":500}
     return JsonResponse(res)
 def getRutas(request):
-    p=Ruta.objects.filter(estado=True)
+    p=Ruta.objects.filter(estado=True,eliminado=False)
     if request.method=="GET":
         data=[]
         for i in p:
@@ -3664,6 +3720,7 @@ class UnidadMedidaCreateView(LoginRequiredMixin,CreateView):
             if form.is_valid():
                 instance=form.save(commit=False)
                 instance.changed_by=request.user
+                instance.estado=True
                 instance.save()
                 data={"status":200,"id":instance.id,"descripcion":instance.descripcion}
             else:
@@ -3688,6 +3745,7 @@ class ConductoresView(LoginRequiredMixin,CreateView):
             form=self.form_class(request.POST)
             if form.is_valid():
                 instance=form.save(commit=False)
+                instance.estado=True
                 instance.changed_by=request.user
                 instance.save()
                 data={"status":200}
@@ -3700,10 +3758,7 @@ class ConductoresView(LoginRequiredMixin,CreateView):
         except Exception as e:
             print(e)
             return JsonResponse({"status":500})
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["aea"] = 123
-        return context
+
     
 class ConductorListView(LoginRequiredMixin,TemplateView):
     model=Conductor
@@ -3718,7 +3773,7 @@ class ConductorListView(LoginRequiredMixin,TemplateView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Conductor.objects.filter(estado=True):
+                for i in Conductor.objects.filter(eliminado=False):
                     data.append(i.toJSON())
             else:
                 data["error"]="Ha ocurrido un error"
@@ -3842,7 +3897,7 @@ class LiquidacionView(LoginRequiredMixin,TemplateView):
         return JsonResponse(data,safe=False)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["eess"] = Estaciones.objects.filter(estado=True)
+        context["eess"] = Estaciones.objects.filter(estado=True,eliminado=False)
         return context
 from django.db.models import Aggregate, CharField
 
@@ -4040,7 +4095,7 @@ class RendimientoViajeView(LoginRequiredMixin,TemplateView):
         context = super().get_context_data(**kwargs)
         context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
         context["marca"] =MarcaVehiculo.objects.values("id","descripcion","activo","eliminado")
-        context["empresa"]=Empresa.objects.values("id","nombre").filter(estado=True)
+        context["empresa"]=Empresa.objects.values("id","nombre").filter(estado=True,eliminado=False)
         return context
 
 class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
@@ -4168,7 +4223,7 @@ class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["placa"] =Vehiculo.objects.values("id","placa","activo").filter(activo=True) 
-        context["empresa"]=Empresa.objects.values("id","nombre").filter(estado=True)
+        context["empresa"]=Empresa.objects.values("id","nombre").filter(estado=True,eliminado=False)
         context["ruta"]=Abastecimiento.objects.values("tramo").annotate(Count("tramo"))
         context["tipo"]=TipoAbastecimiento.objects.values("id","descripcion")
         return context
@@ -4187,7 +4242,7 @@ class AfectacionListView(LoginRequiredMixin,ListView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in AfectacionConsumo.objects.filter(estado=True):
+                for i in AfectacionConsumo.objects.filter(eliminado=False):
                     data.append(i.toJSON())
 
             else:
@@ -4214,7 +4269,7 @@ class AfectacionCreateView(LoginRequiredMixin,CreateView):
             if form.is_valid():
 
                 instance=form.save(commit=False)
-              
+                instance.estado=True
                 instance.changed_by = self.request.user
                 instance.save()
                 data = {

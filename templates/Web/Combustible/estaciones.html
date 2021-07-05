@@ -10,7 +10,7 @@
     <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="estaciones-tab" data-toggle="tab" data-target="#estaciones" type="button"
-          role="tab" aria-controls="estaciones" aria-selected="true">Registro de Estaciones de Servicio</button>
+          role="tab" aria-controls="estaciones" aria-selected="true">Estaciones de Servicio</button>
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="estacionesxprod-tab" data-toggle="tab" data-target="#estacionesxprod" type="button"
@@ -153,49 +153,18 @@
         <div class="card">
 
           <div class="card-body">
-            <form class="row g-3 needs-validation" action="{% url 'Web:producto' %}" id="form_producto" novalidate>
-              <div class="col-md-6">
-                <label class="form-label">Descripción</label>
-                <input type="text" name="descripcion" id="descripcion_producto" class="form-control">
-                <div class="invalid-feedback">
-                  Este campo es requerido
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <label class="form-label">Unidad de Medida</label>
-                <div class="input-group">
-                  <select class="form-select" name="unidad" id="unidad">
-                    <option value="0">Seleccione...</option>
-                    {% for i in unidad  %}
-                    <option value="{{ i.id }}">{{ i.descripcion }}</option>
-                    {% endfor %}
-
-                  </select>
-                  <button class="btn btn-primary" type="button" id="btn-add-unidad"><i class="fa fa-plus"
-                      aria-hidden="true"></i></button>
-                  <div class="invalid-feedback">
-                    Este campo es requerido.
-                  </div>
-                </div>
-
-              </div>
-              <div class="col-2">
-                <label for="" class="invisible">Submit</label>
-                <button type="button" class="btn btn-block btn-primary" id="create_producto">Guardar</button>
-              </div>
-
-            </form>
-            <br>
-            <div class="table-responsive">
+          <div class="row mb-3">
+            <div class="col-lg-10"></div>
+            <div class="col-lg-2"> <button id="btn-add-producto" class="btn btn-primary">Nuevo Producto</button></div>
+          </div>
               <table class="table  table-hover table-bordered" id="tabla_lista_productos" style="width: 100%;">
                 <thead>
-                  <th style="width: 70%;">Producto</th>
+                  <th style="width: 50%;">Producto</th>
                   <th style="width: 25%;"> Unidad</th>
-                  <th style="width: 5%;"></th>
+                  <th style="width: 10%;"> Estado</th>
+                  <th style="width: 15%;"></th>
                 </thead>
               </table>
-            </div>
 
 
           </div>
@@ -643,7 +612,8 @@
     id: "",
     producto: {
       id: "",
-      descripcion: ""
+      descripcion: "",
+      estado:true,
     },
     precio: 0.00
   }
@@ -913,33 +883,7 @@
     })
 
   })
-  $("#btn-add-unidad").on("click", function () {
-    jc = $.confirm({
-      title: "Registrar Unidad de Medida",
-      type: 'dark',
-      theme: "material",
-      content: 'URL: ../unidad-medida/',
-      icon: 'fas fa-plus-circle',
-      animation: 'left',
-      closeAnimation: 'right',
-      columnClass: "col-lg-6 col-md-6 col-md-offset-3",
-      containerFluid: true,
-      typeAnimated: true,
-      buttons: {
-        guardar: {
-          btnClass: 'btn-success',
-          keys: ['enter', 'shift'],
-          action: function () {
-            this.$content.find(".btn").trigger("click")
 
-            return false;
-          }
-        },
-        cancel: function () {}
-      },
-
-    })
-  }) 
   $("#btn-add-departamento").on("click", function () {
     jc = $.confirm({
       title: "Registrar Departamento",
@@ -968,7 +912,7 @@
     })
   })
   let lista_productos = $("#tabla_lista_productos").DataTable({
-    responsive: true,
+    ordering:false,
     ajax: {
       url: "{% url 'Web:productos' %}",
       type: "POST",
@@ -977,7 +921,6 @@
       },
       dataSrc: ""
     },
-    stateSave: true,
     "lengthMenu": [
       [5, 10, 25, 50, -1],
       [5, 10, 25, 50, "All"]
@@ -997,9 +940,143 @@
         render: function (data, type, row) {
           return `${row.unidad.descripcion} (${row.unidad.abrev})`
         }
-      },
+      }, 
+      {
+          "data": 'estado',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        },     
+   {
+        "data": null,
+        className: "middle text-center",
+   
+      },      
+
+    ],
+    columnDefs:[
+    {
+               
+               targets: [-1],
+        render: function (row, data, index) {
+                 var buttons ='<button class="btn btn-warning btn-sm btn-edit-producto"><i class="fa fa-edit"></i>Editar</button>'+
+                   '<button class="btn btn-danger btn-sm btn-delete-producto"><i class="fa fa-ban"></i></button>';
+     
+                 return buttons;
+     
+               },
+              
+           },
     ]
   })
+  let modal_producto_create
+  let modal_producto_edit
+   document.getElementById('btn-add-producto').addEventListener("click", function (e) {
+      e.preventDefault()
+      let url = "{% url 'Web:producto-create' %}";
+     modal_producto_create= $.confirm({
+        title: "Nuevo Producto",
+        content: "URL:{% url 'Web:producto-create' %}",
+        columnClass: 'col-xl-5 col-lg-5 col-md-12 col-sm-10',
+        icon: "fa fa-plus-circle",
+        type: "dark",
+        theme: "material",
+        animateFromElement: true,
+        buttons: {
+          guardar: {
+            btnClass: 'btn-success',
+            keys: ['enter', 'shift'],
+            action: function () {
+              this.$content.find(".btn-add-producto").trigger("click")
+              return false;
+            }
+          },
+          cancel: function () {}
+        },
+
+        onContentReady: function () {
+          // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+          });;
+        },
+      });
+    });
+    $(document).on("click", '.btn-edit-producto', function (e) {
+
+      e.preventDefault()
+      var tr = lista_productos.cell($(this).closest("td")).index();
+      var data = lista_productos.row(tr.row).data();
+      modal_producto_edit = $.confirm({
+        title: "Editar Producto",
+        content: "URL:../producto/update/" + data.id+"/",
+        columnClass: 'col-xl-5 col-lg-5 col-md-12 col-sm-10',
+        icon: "fa fa-edit",
+        type: "orange",
+        scrollToPreviousElement: true,
+        scrollToPreviousElementAnimate: true,
+
+        buttons: {
+          Confirm: {
+            text: 'Guardar cambios',
+            btnClass: 'btn-orange',
+
+            action: function url(e) {
+              this.$content[0].ownerDocument.getElementById("btn_edit_producto").click()
+              return false;
+            }
+          },
+
+          cancel: function () {
+
+          },
+        },
+        onContentReady: function () {
+          // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+          });;
+        },
+
+
+      });
+
+
+    });
+        $(document).on("click", '.btn-delete-producto', function (e) {
+
+      e.preventDefault()
+      var tr = lista_productos.cell($(this).closest("td")).index();
+      var data = lista_productos.row(tr.row).data();
+
+        confirmar(function(){
+          $("#loadingCharge").css("visibility", "visible")
+      $("#spinner").css("visibility", "visible")
+          fetch("../producto/delete/" + data.id+"/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                }}).then(data=>data.json()).then(response=>{
+                  
+      $("#loadingCharge").css("visibility", "hidden")
+      $("#spinner").css("visibility", "hidden")
+                  if(response.status==200){
+
+                    lista_productos.ajax.reload()
+                    notificacion(1500, "Genial!","success", "Producto eliminado!")
+                    objeto.list()
+
+                  }
+
+                })
+        },"¿Desea eliminar esta Producto?",function () {})
+
+      });
   objeto.list()
   $("#create_producto").on("click", function () {
     let error = 0

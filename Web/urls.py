@@ -175,6 +175,8 @@ urlpatterns = [
     
     path("combustible/estaciones/",views.EstacionesView.as_view(),name="estaciones"),
     path("combustible/productos/",views.ProductosListView.as_view(),name="productos"),
+    path("combustible/producto/update/<int:pk>/",views.ProductosUpdateView.as_view(),name="producto-update"),
+    path("combustible/producto/delete/<int:pk>/",views.ProductosDeleteView.as_view(),name="producto-delete"),
     path("combustible/liquidacion/",views.LiquidacionView.as_view(),name="liquidacion"),
     path("combustible/rendimiento/viaje/",views.RendimientoViajeView.as_view(),name="rend_viaje"),
     path("combustible/rendimiento/abastecimiento/",views.RendimientoAbastecimientoView.as_view(),name="rend_abast"),
@@ -186,7 +188,7 @@ urlpatterns = [
 
 
     path("combustible/empresa/",views.EmpresaCreateView.as_view(),name="empresa"),
-    path("combustible/producto/",views.ProductoCreateView.as_view(),name="producto"),
+    path("combustible/producto/create/",views.ProductoCreateView.as_view(),name="producto-create"),
     path("combustible/estado/",views.EstadoAbastecimientoCreateView.as_view(),name="estado"),
     path("combustible/unidad-medida/",views.UnidadMedidaCreateView.as_view(),name="unidad"),
     path("combustible/tipo/",views.TipoAbastecimientoCreateView.as_view(),name="tipo"),
