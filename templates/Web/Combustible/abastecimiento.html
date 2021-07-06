@@ -255,12 +255,15 @@
       let tramo = e.target.options[e.target.selectedIndex].value;
       if(tramo!=0){
         fetch(`../get-estaciones/${tramo}/`).then(data => data.json()).then(res => {
+          console.log(res)
         for (let index = 0; index < res.data.length; index++) {
           let element = res.data[index];
-          let opt = document.createElement("option")
+          if(element.estado && !element.eliminado){
+              let opt = document.createElement("option")
           opt.value = element.id
           opt.textContent = element.descripcion
           document.getElementById("estacion").append(opt)
+          }
         }
       })
       }
@@ -1198,12 +1201,16 @@
 
       fetch("../get-products/" + $(this).val()).then(data => data.json()).then(res => {
         if (res.status == 200) {
+          console.log(res)
           for (let i = 0; i < res.data.length; i++) {
             let option = document.createElement("option")
-            option.textContent = res.data[i].producto.descripcion
+            if(res.data[i].producto.estado && !res.data[i].producto.eliminado)
+            {
+              option.textContent = res.data[i].producto.descripcion
             option.value = res.data[i].producto.id
             option.dataset.price = res.data[i].precio
             $("#producto").append(option)
+            }
 
           }
         }

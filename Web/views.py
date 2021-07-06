@@ -3543,7 +3543,7 @@ class EstacionesView(LoginRequiredMixin,CreateView):
             return JsonResponse({"status":500})
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["producto"] = Producto.objects.filter(estado=True,eliminado=False)
+        context["productos"]=Producto.objects.values("id","descripcion","estado","eliminado")
         context["eess"]=Estaciones.objects.filter(estado=True,eliminado=False)
         context["departamento"]=Departamento.objects.all()
         return context
@@ -3558,7 +3558,6 @@ class EstacionesUpdateView(LoginRequiredMixin,UpdateView):
             print(request.POST)
             if form.is_valid():
                 instance=form.save(commit=False)
-                instance.estado=True
                 instance.save()
                 objeto=EstacionProducto.objects.filter(estacion=instance)
 
@@ -4158,8 +4157,8 @@ class RendimientoViajeView(LoginRequiredMixin,TemplateView):
                  annotate(g_obj_total=Sum("gal_obj")).
                  annotate(r_obj_total=Sum("recorrido_obj")).
                  annotate(monto_total=Sum("total")).
-                #  annotate(tramo=RawSQL("""select string_agg(a.tramo,'/' ORDER BY d.abast_id) from "Web_detalleabastecimiento" as d inner join "Web_abastecimiento" as a on d.abast_id=a.id where a.viaje_id = "Web_abastecimiento".viaje_id""",())).
-                annotate(count=Count("abast"), tramo=GroupConcat('abast__tramo', ordering="abast_id",separator=' / ')).
+                 annotate(tramo=RawSQL("""select string_agg(a.tramo,'/' ORDER BY d.abast_id) from "Web_detalleabastecimiento" as d inner join "Web_abastecimiento" as a on d.abast_id=a.id where a.viaje_id = "Web_abastecimiento".viaje_id""",())).
+                # annotate(count=Count("abast"), tramo=GroupConcat('abast__tramo', ordering="abast_id",separator=' / ')).
                  order_by("-abast__viaje","-abast__viaje__fecha_fin"))
             print(qs.query)
             # annotate(km_total=Sum("abastecimiento__detalleabastecimiento__km")).      

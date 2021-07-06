@@ -950,7 +950,7 @@ class Estaciones(models.Model):
    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
    history = HistoricalRecords(table_name='Web_Historial_Estaciones',user_model=Usuario)
    def cbo_ruta(self):
-      item=model_to_dict(self,exclude=["changed_by","red","ubicacion","ruta","estado","direccion"])
+      item=model_to_dict(self,exclude=["changed_by","red","ubicacion","ruta","direccion"])
       return item
    def __str__(self):
       return self.codigo

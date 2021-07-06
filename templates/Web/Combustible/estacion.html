@@ -65,7 +65,7 @@
                       Este campo es requerido.
                     </div>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-6">
                   <label class="form-label">Dirección</label>
                   <input type="text" class="form-control" id="direccion" name="direccion" value="{% if obj.direccion  %}{{obj.direccion}} {% endif %}">
                   <div class="invalid-feedback">
@@ -82,7 +82,13 @@
                     Este campo es requerido
                   </div>
                 </div>
-          
+              <div class="form-check col-md-2">
+              <label for="" class="form-label w-100 invisible">w</label> 
+                    {{form.estado}}
+        <label class="form-check-label" for="flexCheckChecked">
+          Activo
+        </label>
+              </div>
               </form>
               <div class="table-responsive">
                 <table class="table  table-hover table-bordered" id="tabla_estacion_productos" style="width: 100%;">
@@ -442,8 +448,9 @@ $(row).hide();
                 $(this).addClass("is-invalid")
               } else {
                 let errorc = 0
+                console.log( settings.aoData)
                 for (let i = 0; i < settings.aoData.length - 1; i++) {
-                  if (settings.aoData[i]._aData.producto == cant && i != tr.row) {
+                  if (settings.aoData[i]._aData.producto == cant && i != tr.row && !settings.aoData[i]._aData.eliminado) {
                     alerta(1500, "error", "Ese producto ya se encuentra en la tabla")
                     $(this).addClass("is-invalid")
                     errorc = 1
@@ -619,7 +626,14 @@ $(row).hide();
 
   })
 
+  
+  {% if obj %}
     objeto.items={{ data|safe }}
       objeto.list()
+    {%else %}
+    objeto.items=[]
+    objeto.list()
+  {% endif %}
+    
 
 </script>

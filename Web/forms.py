@@ -887,7 +887,6 @@ class AfectacionConsumoForm(forms.ModelForm):
         } 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["estado"].checked=True
     def clean_per_carga(self):
         data=self.cleaned_data["per_carga"]
         
