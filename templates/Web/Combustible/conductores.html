@@ -71,8 +71,9 @@
                             <thead>
                                 <th style="width: 0;">ID</th>
                                 <th style="width: 50;">Apelidos y  Nombres</th>
-                                <th style="width: 20;">Tipo Documento</th>
+                                <th style="width: 10;">Tipo Documento</th>
                                 <th style="width: 20;">N°Documento</th>
+                                <th style="width: 10;">Estado</th>
                            
                                 <th style="width: 10%;"></th>
                             </thead>
@@ -160,6 +161,8 @@
     })
     tabla_conductores = $("#tabla_conductores").DataTable({
         responsive: true,
+                ordering: false,
+    processing: "true",
         ajax: {
             url: "{% url 'Web:conductores' %}",
             type: "POST",
@@ -191,7 +194,17 @@
                 className: "middle text-center"
             },
        
-     
+       {
+          "data": 'estado',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        },     
             {
                 "data": null,
                 className: "middle text-center",
@@ -221,8 +234,8 @@
                 targets: [-1],
                 render: function (row, data, index) {
                     var buttons =
-                        '<button class="btn btn-warning btn-sm btn-conductor-editar"><i class="fa fa-edit"></i>Editar</a>' +
-                        '</a>';
+                        '<button class="btn btn-warning btn-sm btn-conductor-editar"><i class="fa fa-edit"></i>Editar</button>' +
+                   '<button class="btn btn-danger btn-sm btn-delete-conductor"><i class="fa fa-ban"></i></button>';
 
                     return buttons;
                 }
@@ -233,6 +246,34 @@
 
         }
     })
+            $(document).on("click", '.btn-delete-conductor', function (e) {
+
+      e.preventDefault()
+      var tr = tabla_conductores.cell($(this).closest("td")).index();
+      var data = tabla_conductores.row(tr.row).data();
+
+        confirmar(function(){
+          $("#loadingCharge").css("visibility", "visible")
+      $("#spinner").css("visibility", "visible")
+          fetch("../conductor/delete/" + data.id+"/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                }}).then(data=>data.json()).then(response=>{
+                  
+      $("#loadingCharge").css("visibility", "hidden")
+      $("#spinner").css("visibility", "hidden")
+                  if(response.status==200){
+
+                    tabla_conductores.ajax.reload()
+                    notificacion(1500, "Genial!","success", "Conductor eliminado!")
+
+                  }
+
+                })
+        },"¿Desea eliminar este Conductor?",function () {})
+
+      });
     $(document).on("click", '.btn-conductor-editar', function (e) {
 
 e.preventDefault()

@@ -100,10 +100,9 @@
                     <div class="card-body">
                         <table id="tabla_flotas" class="table table-bordered" style="width: 100%">
                             <thead>
-                                <th style="width: 0;">ID</th>
-                                <th style="width: 40;">Placa</th>
-                                <th style="width: 50;">Empresa</th>
-                           
+                                <th style="width: 0%;">ID</th>
+                                <th style="width: 40%;">Placa</th>
+                                <th style="width: 50%;">Empresa</th>
                                 <th style="width: 10%;"></th>
                             </thead>
                             <tbody></tbody>
@@ -216,6 +215,8 @@
         tabla_flotas = $("#tabla_flotas").DataTable({
         responsive: true,
                 processing:"true",
+                        ordering: false,
+
     
         ajax: {
             url: "{% url 'Web:flotas' %}",
@@ -240,12 +241,12 @@
                 "data": 'placa',
                 className: "middle text-center"
             }, 
-       {
+        {
                 "data": 'empresa',
                 className: "middle text-center"
             },
        
-     
+       
             {
                 "data": null,
                 className: "middle text-center",
@@ -261,8 +262,8 @@
                 targets: [-1],
                 render: function (row, data, index) {
                     var buttons =
-                        '<button class="btn btn-warning btn-sm btn-flota-editar"><i class="fa fa-edit"></i>Editar</a>' +
-                        '</a>';
+                        '<button class="btn btn-warning btn-sm btn-flota-editar"><i class="fa fa-edit"></i>Editar</button>' +
+                   '<button class="btn btn-danger btn-sm btn-delete-flota"><i class="fa fa-ban"></i></button>';
 
                     return buttons;
                 }
@@ -273,6 +274,34 @@
 
         }
     })
+            $(document).on("click", '.btn-delete-flota', function (e) {
+
+      e.preventDefault()
+      var tr = tabla_flotas.cell($(this).closest("td")).index();
+      var data = tabla_flotas.row(tr.row).data();
+
+        confirmar(function(){
+          $("#loadingCharge").css("visibility", "visible")
+      $("#spinner").css("visibility", "visible")
+          fetch("../flota/delete/" + data.id+"/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                }}).then(data=>data.json()).then(response=>{
+                  
+      $("#loadingCharge").css("visibility", "hidden")
+      $("#spinner").css("visibility", "hidden")
+                  if(response.status==200){
+
+                    tabla_flotas.ajax.reload()
+                    notificacion(1500, "Genial!","success", "Flota eliminada!")
+
+                  }
+
+                })
+        },"¿Desea eliminar esta Flota?",function () {})
+
+      });
     $(document).on("click", '.btn-flota-editar', function (e) {
 
 e.preventDefault()

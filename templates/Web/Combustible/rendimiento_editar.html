@@ -4,7 +4,7 @@
 
 </style>
 
-<div class="container">
+<div class="container-fluid">
     {% if obj %}
     <form method="POST" id="form_rendimiento_edit" action="{% url 'Web:edit-rendimiento' obj.pk %}" class="needs-validation"
         novalidate>
@@ -16,13 +16,21 @@
             {% endif %}
             {% csrf_token %}
             <div class="row g-3">
-                <div class="col-md-12">
+                <div class="col-md-8">
                     <label class="form-label">Fecha y Hora</label>
                     <input type="datetime-local" id="fecha" name="fech_hora" class="form-control" value="{{obj.fech_hora|date:'c'}}">
                     <div class="invalid-feedback">
                         Este campo es requerido.
                     </div>
                 </div>
+                    <div class="form-check col-md-4">
+                                        <label class="w-100 form-label invisible">Marca</label>
+
+              {{form.estado}}
+  <label class="form-check-label" for="id_estado">
+    Estado
+  </label>
+</div>
                 <div class="col-md-6">
                     <label class="form-label">Marca</label>
                     <select name="marca_vehiculo" id="id_marca_vehiculo" class="form-select" >
@@ -73,6 +81,8 @@
                         Este campo es requerido.
                     </div>
                 </div>
+              
+			
                 <div class="col-md-6">
                     <label class="form-label">Recorrido</label>
                     <input type="text" name="km" id="km" class="form-control" value="{{ obj.km }}">

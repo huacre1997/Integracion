@@ -23,6 +23,7 @@
                   <thead>
                     <tr>
                       <th  class="text-center middle">Id</th>
+                      <th  class="text-center middle">Placa</th>
                       <th  class="text-center middle">% Carga</th>
                       <th class="text-center middle">Afectación al Consumo</th>
                         <th  class="text-center middle">Estado</th>
@@ -49,6 +50,9 @@
     $(document).ready(function() {
       tablaAfectacion = $("#tabla_afectacion").DataTable({
      responsive:true,
+     processing: "true",
+             ordering: false,
+
       ajax: {
         url: "{% url 'Web:afectaciones' %}",
         type: "POST",
@@ -57,7 +61,6 @@
         },
         dataSrc: ""
       },
-        stateSave: true,
       "lengthMenu": [
         [5, 10, 25, 50, -1],
         [5, 10, 25, 50, "All"]
@@ -71,7 +74,9 @@
         {
           "data": 'id',className: "middle text-center"
         },
-        
+         {
+          "data": 'placa',className: "middle text-center"
+        }, 
         {
           "data": 'per_carga',className: "middle text-center"
         },  {
@@ -105,7 +110,7 @@
           targets: [-1],
    render: function (row, data, index) {
             var buttons ='<a href="../afectacion-por-carga/'+index.id+'/" class="btn btn-warning btn-sm btn-edit-afectacion"><i class="fa fa-edit"></i>Editar</a>'+
-              '</a>';
+              '</a><button class="btn btn-danger btn-sm btn-delete-afectacion"><i class="fa fa-ban"></i></button>';
 
             return buttons;
 
@@ -192,7 +197,34 @@
     },
     });
   });
+        $(document).on("click", '.btn-delete-afectacion', function (e) {
 
+      e.preventDefault()
+      var tr = tablaAfectacion.cell($(this).closest("td")).index();
+      var data = tablaAfectacion.row(tr.row).data();
+
+        confirmar(function(){
+          $("#loadingCharge").css("visibility", "visible")
+      $("#spinner").css("visibility", "visible")
+          fetch("../afectacion-por-carga/delete/" + data.id+"/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                }}).then(data=>data.json()).then(response=>{
+                  
+      $("#loadingCharge").css("visibility", "hidden")
+      $("#spinner").css("visibility", "hidden")
+                  if(response.status==200){
+
+                    tablaAfectacion.ajax.reload()
+                    notificacion(1500, "Genial!","success", "Afectación eliminada!")
+
+                  }
+
+                })
+        },"¿Desea eliminar esta Afectación?",function () {})
+
+      });
     $(document).on("click",'.btn-edit-afectacion', function (e) {
       
     e.preventDefault()

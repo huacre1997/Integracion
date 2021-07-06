@@ -962,6 +962,9 @@ class Estaciones(models.Model):
    @_history_user.setter
    def _history_user(self, value):
       self.changed_by = value
+   def toJSON(self):
+      item=model_to_dict(self,exclude=["changed_by"])
+      return item
 class Tramo(models.Model):
    descripcion=models.CharField(max_length=255)
    formato=models.CharField(max_length=50,null=True)
@@ -982,6 +985,7 @@ class Tramo(models.Model):
    def toJSON(self):
       item=model_to_dict(self,exclude=["changed_by"])
       return item  
+from django.utils import timezone
 
 @receiver(post_save, sender=Tramo)
 def Tramo_Ruta(sender,instance,**kwargs):
@@ -995,7 +999,7 @@ def Tramo_Ruta(sender,instance,**kwargs):
    
 
 class Rendimiento(models.Model):
-   fech_hora = models.DateTimeField()
+   fech_hora = models.DateTimeField(default=timezone.now)
    modelo=models.ForeignKey(ModeloVehiculo,on_delete=models.PROTECT)
    tramo=models.ForeignKey(Tramo,on_delete=models.PROTECT)
    rend_vacio=models.DecimalField(max_digits=10, decimal_places=2)
@@ -1013,7 +1017,7 @@ class Rendimiento(models.Model):
       self.changed_by = value
    
    def toJSON(self):
-      item=model_to_dict(self,exclude=["changed_by"])
+      item=model_to_dict(self,exclude=["changed_by","fech_hora"])
       item["tramo"]=self.tramo.descripcion
       item["gal_abast"]=format(self.gal_abast,".2f")
       item["rend_vacio"]=format(self.rend_vacio,".2f")
@@ -1078,6 +1082,15 @@ class EstacionProducto(models.Model):
    def toJSON(self):
       item = model_to_dict(self,exclude=["changed_by","inspeccion","estacion"])
       item["producto"]=self.producto.toJSON()
+      return item
+   def toJSON_update(self):
+      item = model_to_dict(self,exclude=["changed_by","inspeccion","estacion","estado","eliminado","pre_fech_ini","pre_fech_fin"])
+      item["producto"]=self.producto.id
+      item["descripcion"]=self.producto.descripcion
+      item["precio"]=format(self.precio,".2f") 
+      item["estado"]=1 if self.estado else 0
+      item["eliminado"]=1 if self.eliminado else 0
+        
       return item
    @property
    def _history_user(self):
@@ -1183,6 +1196,7 @@ class DetalleAbastecimiento(models.Model):
 class AfectacionConsumo(models.Model):
    per_carga=models.IntegerField()
    afectacion=models.IntegerField()
+   placa=models.ForeignKey(Vehiculo, on_delete=models.CASCADE)
    estado=models.BooleanField(default=False)
    eliminado=models.BooleanField(default=False)
 
@@ -1197,5 +1211,8 @@ class AfectacionConsumo(models.Model):
    def _history_user(self, value):
       self.changed_by = value
    def toJSON(self):
-      item=model_to_dict(self)
+      item=model_to_dict(self,exclude=["changed_by"])
+      item["placa"]=self.placa.placa
+      item["estado"]=1 if self.estado else 0
+      item["eliminado"]=1 if self.eliminado else 0
       return item

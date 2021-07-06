@@ -152,8 +152,9 @@
   $(document).ready(function () {
 
     $("#ruta").on("change", function (e) {
-      $("#tramo").trigger("change")
+            e.preventDefault()
 
+      
 
       $("#loadingCharge").css("visibility", "visible")
       $("#spinner").css("visibility", "visible")
@@ -161,7 +162,6 @@
       objeto.list()
 
       $("#hidden_ruta").val($(this).val())
-      e.preventDefault()
       $("#btn-edit-tramo").attr("href", "../ruta/" + $(this).val() + "/")
       window.localStorage.setItem("volver", "abast")
 
@@ -226,11 +226,13 @@
               }
               objeto.list()
               $("#tramo").val(next).trigger("change")
-
             tablaAbastecimiento.row(tablaAbastecimiento.data().length-1).remove().draw();
             tablaAbastecimiento.column( -1 ).visible(false);
             } else {
               objeto.items = []
+                    $("#estacion").empty()
+      $("#tramo").trigger("change")
+
             }
          
 
@@ -489,7 +491,7 @@
                 
                   if(row.placa.descripcion==""){
                     if (data.disabled) {
-                  $select = $('<select name="placa"  class="form-select placa" disabled>' +
+                  $select = $('<select name="placa"  class="form form-select placa" disabled>' +
                     ' <option value="0">Seleccione...</option>' +
                     '{% for i in placa  %}' +
                     '{% if  i.activo and not i.eliminado %}' +
@@ -498,7 +500,7 @@
                     '{% endfor %}' +
                     '</select>');
                 } else {
-                  $select = $('<select name="placa"  class="form-select placa">' +
+                  $select = $('<select name="placa"  class="form form-select placa">' +
                     ' <option value="0">Seleccione...</option>' +
                     '{% for i in placa  %}' +
                     '{% if  i.activo and not i.eliminado %}' +
@@ -613,20 +615,14 @@
                 if(row.placa.descripcion==""){
 
                     var $select = $('<select name="cargado"  class="form-select change_marca">' +
-                    ' <option value="0">0</option>' +
-                    '{% for i in afectacion  %}' +
-                    '<option value="{{i.id}}">{{i.per_carga}}</option>' +
-                    '{% endfor %}' +
+               
                     '</select>');
                     $select.find('option[value="' + row.cargado.id + '"]').attr('selected', 'selected');
                     return $select[0].outerHTML
                     }else{
 
                     var $select = $('<select name="cargado"  class="form form-select change_marca">' +
-                    ' <option value="0">0</option>' +
-                    '{% for i in afectacion  %}' +
-                    '<option value="{{i.id}}">{{i.per_carga}}</option>' +
-                    '{% endfor %}' +
+                 
                     '</select>');
                     $select.find('option[value="' + row.cargado.id + '"]').attr('selected', 'selected');
                     return $select[0].outerHTML
@@ -829,17 +825,24 @@
 
               })
               $("select[name='placa']").on("change keyup", function (e) {
+                e.stopPropagation();
                 $(this).removeClass("is-invalid")
-                e.preventDefault()
-                var cant = $(this).val();
-                var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
+                let cant = $(this).val();
+                let  tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
+                select = $(this).closest("tr").find("select[name='cargado']")
+                select.empty()
+                select.append($("<option>", {
+                  value: "",
+                  text: "Seleccione.. "
+                }));                select.prop("disabled", true)
+           
                 if ($(this).val() == "0") {
                   $("#btn-save").prop("disabled", true)
                   $(this).addClass("is-invalid")
                 } else {
                   let errorc = 0
                   for (let i = 0; i < settings.aoData.length - 1; i++) {
-                    if (settings.aoData[i]._aData.placa == cant && i != tr.row) {
+                    if (settings.aoData[i]._aData.placa.descripcion == cant && i != tr.row) {
                       alerta(1500, "error", "Esa placa ya se encuentra en la tabla")
                       $(this).addClass("is-invalid")
                       errorc = 1
@@ -853,9 +856,51 @@
                       $("#btn-save").prop("disabled", true)
                     }
                   });
-                  if (a == 0 && errorc == 0) {
+              
+                    if (a == 0 && errorc == 0) {
+                      fetch('../get-afectaciones/' + $(this).val()).then(
+                      res => res
+                      .json())
+                    .then(data => {
+                      console.log(data)
+                      select.prop("disabled", false)
+                              let opciones = []
+                              let modelo={
+                                id:"",per_carga:"",estado:"",afectacion:""
+                              }
+                      $.each(data.data, function (index, valuex) {
+                        console.log(valuex)
+                          modelo.estado=valuex.estado
+                                modelo.id=valuex.id
+                                modelo.per_carga=valuex.per_carga
+                                modelo.afectacion=valuex.afectacion
+                                opciones.push(modelo)
+                                modelo={id:"",descripcion:"",estado:""}
+                        if (!valuex.eliminado && valuex.estado) {
+                          let opcion = document.createElement("option")
+                          opcion.value = valuex.id
+                          opcion.textContent = valuex.per_carga
+                          select.append(opcion)
+                        }
+                      });
+                      if (settings.aoData[tr.row]._aData.placa.descripcion == $(this).val()) {
+                         for (let i = 0; i < opciones.length; i++) {
+                           if(opciones[i].id==settings.aoData[tr.row]._aData.cargado.id && opciones[i].estado==false){
+                            let option4 = document.createElement("option")
+                                     option4.textContent = opciones[i].per_carga
+                                       option4.value = opciones[i].id
+                                       select.append(option4)
+                           }
+                           
+                         }
+                      
+                  
+                            }
+                      select.prop("disabled", false)
+
+                    })
                     if (typeof objeto.items[tr.row] !== "undefined") {
-                      objeto.items[tr.row].placa.descripcion = cant;
+                      objeto.items[tr.row].placa = cant;
                     }
                     $("#btn-save").prop("disabled", false)
 
@@ -930,14 +975,23 @@
               })
               $("input[name='factura']").on("change keyup", function (e) {
                 e.preventDefault()
+                $(this).removeClass("is-invalid")
+
                 var cant = $(this).val();
                 var tr = tablaAbastecimiento.cell($(this).closest("td", "li")).index()
                 if ($(this).val() == "") {
                   $("#btn-save").prop("disabled", true)
                   $(this).addClass("is-invalid")
                 } else {
-                  $("#btn-save").prop("disabled", false)
-                  $(this).removeClass("is-invalid")
+                  let errorc = 0
+                  for (let i = 0; i < settings.aoData.length - 1; i++) {
+                    if (settings.aoData[i]._aData.factura == cant && i != tr.row) {
+                      alerta(1500, "error", "Esa factura ya se encuentra en la tabla")
+                      $(this).addClass("is-invalid")
+                      errorc = 1
+                      break
+                    }
+                  }
                   let a = 0
                   $.each($(".form"), function (index, value) {
                     if ($(value).hasClass("is-invalid")) {
@@ -945,7 +999,7 @@
                       $("#btn-save").prop("disabled", true)
                     }
                   });
-                  if (a == 0) {
+                  if (a == 0 && errorc == 0) {
                     if (typeof objeto.items[tr.row] !== "undefined") {
                       objeto.items[tr.row].factura = cant;
                     }
@@ -954,6 +1008,63 @@
                   }
                 }
 
+              })
+              $("select[name='placa']").each(function (index, el) {
+
+                
+                let select = $(el).closest("tr").find("select[name='cargado']")
+                 select.append($("<option>", {
+                  value: "",
+                  text: " Seleccione "
+                }));
+                let valor=$(el).val()
+
+                if(valor!="0"){
+                  fetch('../get-afectaciones/' + valor).then(res => res
+                    .json())
+                  .then(data => {
+                    let b=0
+                    console.log(data)
+                    let opciones2 = []
+                    let modelo={
+                                id:"",per_carga:"",estado:"",afectacion:""
+                              }
+                    $.each(data.data, function (index, valuex) {
+                      modelo.estado=valuex.estado
+                                modelo.id=valuex.id
+                                modelo.per_carga=valuex.per_carga
+                                modelo.afectacion=valuex.afectacion
+                                opciones2.push(modelo)
+                                modelo={  id:"",per_carga:"",estado:"",afectacion:""}
+                      if (!valuex.eliminado && valuex.estado) {
+                        let opcion = document.createElement("option")
+                          opcion.value = valuex.id
+                          opcion.textContent = valuex.per_carga
+                          select.append(opcion)
+                      }
+                    });
+                    if (settings.aoData[index]._aData.placa.descripcion == valor) {
+                         for (let i = 0; i < opciones2.length; i++) {
+                           if(opciones2[i].id==settings.aoData[index]._aData.cargado.id && opciones2[i].estado==false){
+                            let option4 = document.createElement("option")
+                                     option4.textContent = opciones2[i].per_carga
+                                      option4.selected = true
+                                       option4.value = opciones2[i].id
+                              select.append(option4)
+                              b=1
+
+                           }
+                           
+                         }
+                         if(b==0){
+                          select.find('option[value="' + settings.aoData[
+                      index]._aData.cargado.id + '"]').attr('selected', 'selected');
+                         }
+                            }
+           
+            
+                  })
+                }
               })
               $("td").on("click", ".btn-add", function (e) {
                 let error = 0
@@ -1022,6 +1133,7 @@
                 if (error == 0) {
                   $(this).prop("disabled", false)
                   objeto.items.push(data)
+                  console.log(objeto.items)
                   // window.localStorage.setItem("abastecimiento", JSON.stringify(objeto.items))
                   data = {
                     hora: "",

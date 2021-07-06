@@ -1,0 +1,625 @@
+<div class="container">
+{% load static %}
+{% if obj %}
+ <form class="row g-3 needs-validation" action="{% url 'Web:estacion-update' obj.pk %}" id="form_estacion" novalidate>
+
+{% else %}
+ <form class="row g-3 needs-validation" action="{% url 'Web:estacion-create' %}" id="form_estacion" novalidate>
+{% endif %}
+    
+                <div class="col-md-2">
+                  <label class="form-label">Código EESS</label>
+                  <input type="text" name="codigo" id="codigo" class="form-control" value="{{ obj.codigo }}">
+                  <div class="invalid-feedback">
+                    Este campo es requerido
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Nombre EESS</label>
+                  <input type="text" name="descripcion" id="descripcion" class="form-control"  value="{{ obj.descripcion }}">
+                  <div class="invalid-feedback">
+                    Este campo es requerido
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Red</label>
+                  <input type="text" class="form-control" id="red" name="red" value="{{ obj.red }}">
+                  <div class="invalid-feedback">
+                    Este campo es requerido
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Ubicación</label>
+                    <select class="form-select" name="departamento" id="departamento">
+                      <option value="0">Seleccione...</option>
+                      {% for i in departamento  %}
+                      <option value="{{ i.id }}">{{ i.descripcion }}</option>
+                      {% endfor %}
+  
+                    </select>
+            
+                    <div class="invalid-feedback">
+                      Este campo es requerido.
+                    </div>
+                </div>    
+                <div class="col-md-4">
+                  <label class="form-label">Provincia</label>
+                    <select class="form-select" name="provincia" id="provincia">
+                      <option value="0">Seleccione...</option>
+            
+                    </select>
+            
+                    <div class="invalid-feedback">
+                      Este campo es requerido.
+                    </div>
+                </div>   
+                <div class="col-md-4">
+                  <label class="form-label">Distrito</label>
+                    <select class="form-select" name="ubicacion" id="ubicacion">
+                      <option value="0">Seleccione...</option>
+            
+                    </select>
+            
+                    <div class="invalid-feedback">
+                      Este campo es requerido.
+                    </div>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label">Dirección</label>
+                  <input type="text" class="form-control" id="direccion" name="direccion" value="{% if obj.direccion  %}{{obj.direccion}} {% endif %}">
+                  <div class="invalid-feedback">
+                    Este campo es requerido
+                  </div>
+                </div>
+                      <input type="hidden" value="{{obj.ubicacion.provincia.departamento.id}}" id="departamentoid">
+                      <input type="hidden" value="{{obj.ubicacion.provincia.id}}" id="provinciaid">
+                  <input type="hidden" value="{{obj.ubicacion.id}}" id="distritoid">
+                <div class="col-md-4">
+                  <label class="form-label">Contacto</label>
+                  <input type="text" class="form-control" id="contacto" name="contacto" value="{% if obj.contacto  %}{{obj.contacto}} {% endif %}">
+                  <div class="invalid-feedback">
+                    Este campo es requerido
+                  </div>
+                </div>
+          
+              </form>
+              <div class="table-responsive">
+                <table class="table  table-hover table-bordered" id="tabla_estacion_productos" style="width: 100%;">
+                  <thead>
+                    <th style="width: 70%;">Producto</th>
+                    <th style="width: 25%;"> Precio</th>
+                    <th style="width: 5%;"></th>
+                  </thead>
+                </table>
+              </div>
+              <div class="col-12">
+                <button type="button" class="btn btn-primary d-none btn-add-estacion" id="btn_edit_estacion">Guardar</button>
+              </div>
+</div>
+
+<script>
+  selectDepart = document.getElementById("departamento")
+    selectProvince = document.getElementById("provincia")
+    selectDistrict = document.getElementById("ubicacion")
+    
+
+
+    selectDepart.addEventListener("change", function (e) {
+
+      selectProvince.setAttribute("disabled",true)
+      selectDistrict.setAttribute("disabled",true)
+      selectDistrict.length=0
+      selectProvince.length=0
+      let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
+      if (id != "") {
+       
+      fetch("{% url 'Web:Provincia' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+          },
+          body: JSON.stringify(id)
+        }).then(data => data.json()).then(response => {
+          selectProvince.innerHTML = ""
+          selectProvince.disabled = false
+          let selectfirst = document.createElement("option")
+          selectfirst.value=0
+          selectfirst.innerText = "Seleccione provincia..."
+          selectProvince.appendChild(selectfirst)
+
+          for (let index = 0; index < response.length; index++) {
+            let option = document.createElement("option")
+            option.innerText = response[index].fields.descripcion
+            option.setAttribute("value", response[index].pk)
+            selectProvince.appendChild(option)
+          }
+        })
+      } else {
+
+        selectProvince.innerHTML = ""
+        let selectfirst = document.createElement("option")
+        selectfirst.value=0
+        selectfirst.innerText = "Seleccione provincia..."
+        selectProvince.appendChild(selectfirst)
+        selectProvince.disabled=true
+        
+        selectDistrict.innerHTML = ""
+        let selectfirstd = document.createElement("option")
+        selectfirstd.value=0
+
+        selectfirstd.innerText = "Seleccione distrito..."
+        selectDistrict.appendChild(selectfirstd)
+        selectDistrict.disabled = true
+      }
+
+    })
+
+
+
+
+    selectProvince.addEventListener("change", function (e) {
+      let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
+      if(id!=0){
+   
+      fetch("{% url 'Web:Distrito' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify(id)
+      }).then(data => data.json()).then(response => {
+        selectDistrict.innerHTML = ""
+        selectDistrict.disabled = false
+        let selectfirst = document.createElement("option")
+        selectfirst.value=0
+        selectfirst.innerText = "Seleccione ditrito..."
+        selectDistrict.appendChild(selectfirst)
+
+        for (let index = 0; index < response.length; index++) {
+          let option = document.createElement("option")
+          option.innerText = response[index].fields.descripcion
+          option.setAttribute("value", response[index].pk)
+          selectDistrict.appendChild(option)
+        }
+      })
+    }
+    else{
+      selectDistrict.innerHTML = ""
+      let selectfirst = document.createElement("option")
+      selectfirst.value=0
+      selectfirst.innerText = "Seleccione ditrito..."
+      selectDistrict.appendChild(selectfirst)
+      selectDistrict.disabled=true
+    }
+    })
+     data_producto = {
+       id:0,
+       descripcion:"",
+    producto: "",
+    precio: 0.00,
+    eliminado:0,
+
+  }
+      {% if obj %}
+      selectDepart.value= document.getElementById("departamentoid").value
+      fetch("{% url 'Web:Provincia' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+          },
+          body: JSON.stringify( selectDepart.value)
+        }).then(data => data.json()).then(response => {
+          selectProvince.innerHTML = ""
+          selectProvince.disabled = false
+          let selectfirst = document.createElement("option")
+          selectfirst.value=0
+          selectfirst.innerText = "Seleccione provincia..."
+          selectProvince.appendChild(selectfirst)
+
+          for (let index = 0; index < response.length; index++) {
+            let option = document.createElement("option")
+            option.innerText = response[index].fields.descripcion
+            option.setAttribute("value", response[index].pk)
+            selectProvince.appendChild(option)
+          }
+          selectProvince.value = document.getElementById("provinciaid").value
+          fetch("{% url 'Web:Distrito' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify( selectProvince.value)
+      }).then(data => data.json()).then(response => {
+        selectDistrict.innerHTML = ""
+        selectDistrict.disabled = false
+        let selectfirst = document.createElement("option")
+        selectfirst.value=0
+        selectfirst.innerText = "Seleccione ditrito..."
+        selectDistrict.appendChild(selectfirst)
+
+        for (let index = 0; index < response.length; index++) {
+          let option = document.createElement("option")
+          option.innerText = response[index].fields.descripcion
+          option.setAttribute("value", response[index].pk)
+          selectDistrict.appendChild(option)
+        }
+        selectDistrict.value = document.getElementById("distritoid").value
+
+      })
+        })
+    {% endif %}
+objeto = {
+    items: [],
+    list: function () {
+      tabla_producto = $("#tabla_estacion_productos").DataTable({
+        searching: false,
+        ordering: false,
+        paging: false,
+        info: false,
+        data: this.items,
+        destroy: true,
+        language: {
+        "url": "{% static 'language.json' %}"
+      },
+        columns: [
+
+
+          {
+            "data": 'producto',
+            className: "middle"
+          },
+
+
+          {
+            "data": "precio",
+            className: "middle"
+
+          },
+
+          {
+            "data": null,
+            className: "middle"
+          },
+        ],
+
+        columnDefs: [{
+            targets: [0],
+            render: function (data, type, row) {
+              console.log(row)
+
+                var $select = $('<select name="producto"  class="form select-producto form-select ">' +
+                  ' <option value="0">Seleccione...</option>' +
+                  '{% for i in productos  %}' +
+                  '{% if  i.estado and not i.eliminado %}' +
+                  '<option value="{{i.id}}">{{i.descripcion}}</option>' +
+                  '{% endif %}' +
+                  '{% endfor %}' +
+                  '</select>');
+                $select.find('option[value="' + row.producto + '"]').attr('selected', 'selected');
+                return $select[0].outerHTML
+            
+
+            }
+          },
+          {
+            targets: [1],
+            render: function (data, type, row) {
+              return `<input type="number" name="precio" step="0.01" min="0.00" class="form form-control" value="${data}">`;
+
+            }
+          },
+          {
+            targets: [2],
+            render: function (data, type, row) {
+              if (data.producto != "") {
+                return `<button class="btn btn-success btn-remove"><i class="fas fa-check"></i></button>`;
+
+              } else {
+                return `<button class="btn btn-primary btn-add"><i class="fas fa-plus"></i></button>`;
+              }
+            }
+          },
+        ],
+        "createdRow": function( row, data, dataIndex ) {
+          console.log(data)
+if (data.eliminado==1 && dataIndex!=objeto.items.length) {
+$(row).hide();
+};
+},
+        initComplete: function (settings, json) {
+          $(function () {
+            let arrays=[]
+
+            $(".select-producto").each(function (index, element) {
+                //  let response=JSON.parse(res.data)
+                //  console.log(response)
+                // for (let i = 0; i < response.length; i++) {
+                //   if(!response[i].eliminado && response[i].estado ){
+                //   let option = document.createElement("option")
+                //   option.value =response[i].id
+                //   option.textContent =response[i].descripcion
+                //   $(this).append(option)
+                //   }
+                // }
+                arrays.push(parseInt($(element).val()))
+                console.log(arrays)
+                if (typeof objeto.items[index] !== "undefined") {
+
+                if(!arrays.includes(objeto.items[index].producto)){
+                  console.log(objeto.items);
+                  console.log(index);
+                if(objeto.items.length>index  ){
+                  console.log("dentro del if");
+                  let option9 = document.createElement("option")
+                option9.textContent = objeto.items[index].descripcion
+                option9.value = objeto.items[index].producto
+                console.log(option9)
+                $(element).append(option9)
+                $(element).find('option[value="' + settings.aoData[
+                      index]._aData.producto + '"]').attr('selected', 'selected');
+                }
+                }}
+           
+              
+            });
+          
+
+            $(".btn-remove").on("click", function () {
+              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
+                let error=0
+                let a = confirmar(function () {
+                  if (typeof objeto.items[tr.row] !== "undefined") {
+                    objeto.items[tr.row].eliminado = 1;
+                  }
+                  objeto.list()
+                  for (let i = 0; i < objeto.items.length; i++) {
+                    if(objeto.items[i].eliminado==1){
+                      error=error+1
+                    }
+                    
+                  }
+                  if (error==objeto.items.length){
+                    $("#id_estado").val("1")
+                    $("tbody .form").prop("disabled",true)
+
+                  }
+                }, "¿Desea eliminar este producto de la lista?", function () {
+
+                })
+
+            })
+            $(".btn-remove").hover(function () {
+
+                $(this).children().remove()
+                $(this).append('<i class="fas fa-times"></i>').css("width", "42px")
+                $(this).removeClass("btn-success").addClass("btn-danger");
+              }, function () {
+                $(this).children().remove()
+                $(this).append('<i class="fas fa-check"></i>')
+                $(this).removeClass("btn-danger").addClass("btn-success");
+              }
+
+            )
+
+            $("input[name='precio']").on("change keyup", function (e) {
+              e.preventDefault()
+              var cant = $(this).val();
+              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
+              if ($(this).val() == "") {
+                $("#submit_eess").prop("disabled", true)
+                $(this).addClass("is-invalid")
+              } else {
+                $("#submit_eess").prop("disabled", false)
+                $(this).removeClass("is-invalid")
+                let a = 0
+                $.each($(".form"), function (index, value) {
+                  if ($(value).hasClass("is-invalid")) {
+                    a = a + 1
+                    $("#submit_eess").prop("disabled", true)
+                  }
+                });
+                if (a == 0) {
+                  if (typeof objeto.items[tr.row] !== "undefined") {
+                    objeto.items[tr.row].precio = cant;
+                  }
+                  $("#submit_eess").prop("disabled", false)
+
+                }
+              }
+            })
+            $("select[name='producto']").on("change", function (e) {
+              e.preventDefault()
+              $(this).removeClass("is-invalid")
+              var cant = $(this).val();
+              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
+              if ($(this).val() == "0") {
+                $("#submit_eess").prop("disabled", true)
+                $(this).addClass("is-invalid")
+              } else {
+                let errorc = 0
+                for (let i = 0; i < settings.aoData.length - 1; i++) {
+                  if (settings.aoData[i]._aData.producto == cant && i != tr.row) {
+                    alerta(1500, "error", "Ese producto ya se encuentra en la tabla")
+                    $(this).addClass("is-invalid")
+                    errorc = 1
+                    break
+                  }
+                }
+
+                let a = 0
+                $.each($(".form"), function (index, value) {
+                  if ($(value).hasClass("is-invalid")) {
+                    a = a + 1
+                    $("#submit_eess").prop("disabled", true)
+                  }
+                });
+                if (a == 0 && errorc == 0) {
+                  $("#submit_eess").prop("disabled", false)
+
+                  if (typeof objeto.items[tr.row] !== "undefined") {
+                    objeto.items[tr.row].producto = cant;
+                  }
+
+                }
+              }
+
+            })
+
+
+
+            $("td").on("click", ".btn-add", function (e) {
+              let error = 0
+              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
+              let producto = $("td:eq(0)", tabla_producto.row(tr.row).node()).children()
+              let precio = $("td:eq(1)", tabla_producto.row(tr.row).node()).children()
+
+              data_producto.descripcion=producto.find("option:selected").text()
+              data_producto.id=0
+
+              data_producto.producto = producto.val()
+              data_producto.precio = precio.val()
+              function valid(that, name, mensaje = "Revise los campos") {
+                let ele = $(that).parent().parent().find(name)
+                if (ele.val() == "0" || ele.val() == "") {
+                  error = 1
+                  ele.addClass("is-invalid")
+                  ele.on("change input", function () {
+                    ele.removeClass("is-invalid")
+                  })
+                  alerta(1500, "error", mensaje)
+                  $(this).prop("disabled", false)
+
+                }
+              }
+
+              valid(this, "[name='precio']")
+              valid(this, "[name='producto']")
+
+              if (error == 0) {
+                data_producto.eliminado =0
+                $(this).prop("disabled", false)
+                objeto.items.push(data_producto)
+                data_producto = {
+                  eliminado: 0,
+                  descripcion:"",
+                  producto: "",
+                  precio: 0.00,
+                  id:0,
+
+                }
+                $(this).children().remove()
+                $(this).append('<i class="fas fa-check"></i>')
+                $(this).removeClass("btn-primary").addClass("btn-success")
+                $(this).removeClass("btn-add").addClass("btn-remove")
+                $(this).hover(function () {
+
+                    $(this).children().remove()
+                    $(this).append('<i class="fas fa-times"></i>').css("width",
+                      "42px")
+                    $(this).removeClass("btn-success").addClass("btn-danger");
+                  }, function () {
+                    $(this).children().remove()
+                    $(this).append('<i class="fas fa-check"></i>')
+                    $(this).removeClass("btn-danger").addClass("btn-success");
+                  }
+
+                )
+                objeto.list()
+              }
+              console.log(objeto.items)
+            })
+          })
+        }
+      });
+      tabla_producto.row.add(data_producto).draw()
+
+    }
+  }
+  
+  $(".btn-add-estacion").on("click", function (e) {
+    let error = 0
+
+    function validar(input) {
+      if ($(input).val() == "" || $(input).val() == "0") {
+        $(input).addClass("is-invalid")
+        error = 1
+        $(input).on("input change", function () {
+          $(input).removeClass("is-invalid")
+        })
+      }
+    }
+    if(objeto.items.length==0){
+      error=1
+      notificacion(1500, "Error!", "error", "Ingrese al menos un producto para esa estación.")
+
+    }
+    validar($("#codigo"))
+    validar($("#descripcion"))
+    validar($("#ruta_estacion"))
+    validar($("#red"))
+    validar($("#ubicacion"))
+    let form = document.getElementById("form_estacion")
+    let data = new FormData(form)
+    data.append("producto", JSON.stringify(objeto.items))
+    if (error == 0) {
+      {% if obj %}
+                        modal_estacion_edit.showLoading();
+                     {%else %}
+                     modal_estacion_create.showLoading();
+                    {% endif %}
+      fetch($("#form_estacion").attr("action"), {
+        method: "POST",
+        headers: {
+          'X-CSRFToken': csrftoken
+        },
+        body: data
+
+      }).then(data => data.json()).then(response => {
+        {% if obj %}
+                        modal_estacion_edit.hideLoading();
+                     {%else %}
+                     modal_estacion_create.hideLoading();
+                    {% endif %}
+        if (response.status == 200) {
+          window.localStorage.clear()
+          objeto.items = []
+          lista_estaciones.ajax.reload()
+ 
+          {% if obj %}
+                        modal_estacion_edit.close();
+                         notificacion(2000, "Éxito!", "success", "Estación actualizada!", "top-end")
+                     {%else %}
+                     modal_estacion_create.close();
+                     notificacion(2000, "Éxito!", "success", "Estación registrada!", "top-end")
+                    {% endif %}     
+ 
+        } else {
+          notificacion(1500, "Error!", "error", "Ha ocurrido un error.Revise los campos.")
+          if (response.form.codigo) {
+            $("#codigo").addClass("is-invalid").on("input", function () {
+              $(this).removeClass("is-invalid")
+            })
+            $("#codigo").next().text(response.form.codigo[0])
+          }
+          if (response.form.descripcion) {
+            $("#descripcion").addClass("is-invalid").on("input", function () {
+              $(this).removeClass("is-invalid")
+            })
+            $("#descripcion").next().text(response.form.descripcion[0])
+          }
+        }
+
+      })
+    }
+
+  })
+
+    objeto.items={{ data|safe }}
+      objeto.list()
+
+</script>

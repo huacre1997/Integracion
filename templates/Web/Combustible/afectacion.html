@@ -18,7 +18,17 @@
             <div class="form-row">
                 <div class="form-group col-lg-12">
                 <input type="hidden" name="action" value="add">
-                    <label>% Carga</label>
+                    <label>Placa</label>
+                  <select name="placa" id="id_placa" class="form-select">
+                   <option value="0">Seleccione...</option>
+                  {% for i in placa  %}
+                  {% if  i.activo and not i.eliminado %}
+                   <option value="{{i.id}}" {% if obj.placa.id == i.id %}selected{% endif %}>{{i.placa}}</option>
+                  {% endif %}
+                   
+                  {% endfor %}
+                  </select>
+                   <label>% Carga</label>
                   <input type="number" name="per_carga" value="{{ obj.per_carga }}" class="form-control" id="id_per_carga">
                   <div class="invalid-feedback" id="invalid_per_carga"></div>
                   <label>Afectación Por Consumo</label>

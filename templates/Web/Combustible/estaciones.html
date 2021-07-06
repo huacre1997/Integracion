@@ -12,10 +12,10 @@
         <button class="nav-link active" id="estaciones-tab" data-toggle="tab" data-target="#estaciones" type="button"
           role="tab" aria-controls="estaciones" aria-selected="true">Estaciones de Servicio</button>
       </li>
-      <li class="nav-item" role="presentation">
+      <!-- <li class="nav-item" role="presentation">
         <button class="nav-link" id="estacionesxprod-tab" data-toggle="tab" data-target="#estacionesxprod" type="button"
           role="tab" aria-controls="estacionesxprod" aria-selected="false">Asignar productos</button>
-      </li>
+      </li> -->
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="productos-tab" data-toggle="tab" data-target="#productos" type="button" role="tab"
           aria-controls="productos" aria-selected="false">Productos</button>
@@ -26,129 +26,26 @@
         <div class="card">
 
           <div class="card-body">
-            <p class="card-text">
-              <form class="row g-3 needs-validation" id="form_eess" novalidate>
-                <div class="col-md-2">
-                  <label class="form-label">Código EESS</label>
-                  <input type="text" name="codigo" id="codigo" class="form-control">
-                  <div class="invalid-feedback">
-                    Este campo es requerido
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <label class="form-label">Nombre EESS</label>
-                  <input type="text" name="descripcion" id="descripcion" class="form-control">
-                  <div class="invalid-feedback">
-                    Este campo es requerido
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Red</label>
-                  <input type="text" class="form-control" id="red" name="red">
-                  <div class="invalid-feedback">
-                    Este campo es requerido
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Ubicación</label>
-                    <select class="form-select" name="departamento" id="departamento">
-                      <option value="0">Seleccione...</option>
-                      {% for i in departamento  %}
-                      <option value="{{ i.id }}">{{ i.descripcion }}</option>
-                      {% endfor %}
-  
-                    </select>
-            
-                    <div class="invalid-feedback">
-                      Este campo es requerido.
-                    </div>
-                </div>    
-                <div class="col-md-4">
-                  <label class="form-label">Provincia</label>
-                    <select class="form-select" name="provincia" id="provincia">
-                      <option value="0">Seleccione...</option>
-            
-                    </select>
-            
-                    <div class="invalid-feedback">
-                      Este campo es requerido.
-                    </div>
-                </div>   
-                <div class="col-md-4">
-                  <label class="form-label">Distrito</label>
-                    <select class="form-select" name="ubicacion" id="ubicacion">
-                      <option value="0">Seleccione...</option>
-            
-                    </select>
-            
-                    <div class="invalid-feedback">
-                      Este campo es requerido.
-                    </div>
-                </div>
-                <div class="col-md-8">
-                  <label class="form-label">Dirección</label>
-                  <input type="text" class="form-control" id="direccion" name="direccion">
-                  <div class="invalid-feedback">
-                    Este campo es requerido
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Contacto</label>
-                  <input type="text" class="form-control" id="contacto" name="contacto">
-                  <div class="invalid-feedback">
-                    Este campo es requerido
-                  </div>
-                </div>
-          
-              </form>
-              <div class="table-responsive">
-                <table class="table  table-hover table-bordered" id="tabla_productos" style="width: 100%;">
+            <div class="row mb-3">
+              <div class="col-lg-10"></div>
+              <div class="col-lg-2"> <button id="btn-add-estacion" class="btn btn-primary">Nueva Estación</button></div>
+            </div>
+                <table class="table  table-hover table-bordered" id="tabla_lista_estaciones" style="width: 100%;">
                   <thead>
-                    <th style="width: 70%;">Producto</th>
-                    <th style="width: 25%;"> Precio</th>
-                    <th style="width: 5%;"></th>
+                    <th style="width: 50%;">Codigo</th>
+                    <th style="width: 25%;"> Nombre</th>
+                    <th style="width: 10%;"> Estado</th>
+                    <th style="width: 15%;"></th>
                   </thead>
                 </table>
-              </div>
-              <div class="col-12">
-                <button type="button" class="btn btn-primary" id="submit_eess">Guardar</button>
-              </div>
-            </p>
-          </div>
+  
+  
+            </div>
         </div>
 
 
       </div>
-      <div class="tab-pane fade" id="estacionesxprod" role="tabpanel" aria-labelledby="estacionesxprod-tab">
-        <div class="card">
 
-          <div class="card-body">
-            <label for="">Estación de Servicio</label>
-            <select name="prod_eess" class="form-select" id="prod_eess">
-              <option value="0">Seleccione...</option>
-              {% for i in eess  %}
-              <option value="{{ i.id }}">{{i.descripcion }}</option>
-              {% endfor %}
-
-            </select>
-            <br>
-            <div class="table-responsive">
-              <table class="table  table-hover table-bordered" id="tabla_productos_eess" style="width: 100%;">
-                <thead>
-                  <th style="display:none;">id</th>
-                  <th style="width: 70%;">Producto</th>
-                  <th style="width: 25%;"> Precio</th>
-                  <th style="width: 5%;"></th>
-                </thead>
-              </table>
-            </div>
-            <div class="col-12">
-              <button type="button" disabled class="btn btn-primary" id="update_products">Guardar</button>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="tab-pane fade" id="productos" role="tabpanel" aria-labelledby="productos-tab">
         <div class="card">
 
@@ -182,432 +79,11 @@
   function clean_fields(input) {
     $(input).val('');
   }
-  selectDepart = document.getElementById("departamento")
-    selectProvince = document.getElementById("provincia")
-    selectDistrict = document.getElementById("ubicacion")
-    
 
 
-    selectDepart.addEventListener("change", function (e) {
-
-      selectProvince.setAttribute("disabled",true)
-      selectDistrict.setAttribute("disabled",true)
-      selectDistrict.length=0
-      selectProvince.length=0
-      let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
-      if (id != "") {
-       
-      fetch("{% url 'Web:Provincia' %}", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken
-          },
-          body: JSON.stringify(id)
-        }).then(data => data.json()).then(response => {
-          selectProvince.innerHTML = ""
-          selectProvince.disabled = false
-          let selectfirst = document.createElement("option")
-          selectfirst.value=0
-          selectfirst.innerText = "Seleccione provincia..."
-          selectProvince.appendChild(selectfirst)
-
-          for (let index = 0; index < response.length; index++) {
-            let option = document.createElement("option")
-            option.innerText = response[index].fields.descripcion
-            option.setAttribute("value", response[index].pk)
-            selectProvince.appendChild(option)
-          }
-        })
-      } else {
-
-        selectProvince.innerHTML = ""
-        let selectfirst = document.createElement("option")
-        selectfirst.value=0
-        selectfirst.innerText = "Seleccione provincia..."
-        selectProvince.appendChild(selectfirst)
-        selectProvince.disabled=true
-        
-        selectDistrict.innerHTML = ""
-        let selectfirstd = document.createElement("option")
-        selectfirstd.value=0
-
-        selectfirstd.innerText = "Seleccione distrito..."
-        selectDistrict.appendChild(selectfirstd)
-        selectDistrict.disabled = true
-      }
-
-    })
-
-
-
-
-    selectProvince.addEventListener("change", function (e) {
-      let id = e.target.options[e.target.options.selectedIndex].attributes[0].value
-      if(id!=0){
-   
-      fetch("{% url 'Web:Distrito' %}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken
-        },
-        body: JSON.stringify(id)
-      }).then(data => data.json()).then(response => {
-        selectDistrict.innerHTML = ""
-        selectDistrict.disabled = false
-        let selectfirst = document.createElement("option")
-        selectfirst.value=0
-        selectfirst.innerText = "Seleccione ditrito..."
-        selectDistrict.appendChild(selectfirst)
-
-        for (let index = 0; index < response.length; index++) {
-          let option = document.createElement("option")
-          option.innerText = response[index].fields.descripcion
-          option.setAttribute("value", response[index].pk)
-          selectDistrict.appendChild(option)
-        }
-      })
-    }
-    else{
-      selectDistrict.innerHTML = ""
-      let selectfirst = document.createElement("option")
-      selectfirst.value=0
-      selectfirst.innerText = "Seleccione ditrito..."
-      selectDistrict.appendChild(selectfirst)
-      selectDistrict.disabled=true
-    }
-    })
-
-
-  document.getElementById("submit_eess").addEventListener("click", function () {
-    let error = 0
-
-    function validar(input) {
-      if ($(input).val() == "" || $(input).val() == "0") {
-        $(input).addClass("is-invalid")
-        error = 1
-        $(input).on("input change", function () {
-          $(input).removeClass("is-invalid")
-        })
-      }
-    }
-    if(objeto.items.length==0){
-      error=1
-      notificacion(1500, "Error!", "error", "Ingrese al menos un producto para esa estación.")
-
-    }
-    validar($("#codigo"))
-    validar($("#descripcion"))
-    validar($("#ruta_estacion"))
-    validar($("#red"))
-    validar($("#ubicacion"))
-    let form = document.getElementById("form_eess")
-    let data = new FormData(form)
-    data.append("producto", JSON.stringify(objeto.items))
-    if (error == 0) {
-      $("#loadingCharge").css("visibility", "visible")
-      $("#spinner").css("visibility", "visible")
-      fetch(window.location.href, {
-        method: "POST",
-        headers: {
-          'X-CSRFToken': csrftoken
-        },
-        body: data
-
-      }).then(data => data.json()).then(response => {
-        $("#loadingCharge").css("visibility", "hidden")
-          $("#spinner").css("visibility", "hidden")
-        if (response.status == 200) {
-          window.localStorage.clear()
-          objeto.items = []
-          objeto.list()
-          let option=document.createElement("option")
-          option.value=response.id
-          option.textContent=response.descripcion
-          $("#prod_eess").append(option)
-        
-          notificacion(1500, "Genial!", "success", "Estación agregada!")
-          $.each($("input"), function (indexInArray, valueOfElement) {
-            clean_fields($(valueOfElement))
-          });
-          $("#departamento").val(0)
-          $("#provincia").empty().append($("<option>", {value: "0",text: "Seleccione..."}));   
-          $("#ubicacion").empty().append($("<option>", {value: "0",text: "Seleccione..."}));   
-          $("#ruta_estacion").val(0)
-        } else {
-          notificacion(1500, "Error!", "error", "Ha ocurrido un error.Revise los campos.")
-          if (response.form.codigo) {
-            $("#codigo").addClass("is-invalid").on("input", function () {
-              $(this).removeClass("is-invalid")
-            })
-            $("#codigo").next().text(response.form.codigo[0])
-          }
-          if (response.form.descripcion) {
-            $("#descripcion").addClass("is-invalid").on("input", function () {
-              $(this).removeClass("is-invalid")
-            })
-            $("#descripcion").next().text(response.form.descripcion[0])
-          }
-        }
-
-      })
-    }
-
-  })
   let tabla_producto
-  let data = {
-    producto: "",
-    precio: 0.00,
-
-  }
-  let objeto = {
-    items: [],
-    list: function () {
-      tabla_producto = $("#tabla_productos").DataTable({
-        searching: false,
-        ordering: false,
-        paging: false,
-        info: false,
-        data: this.items,
-        destroy: true,
-        language: {
-        "url": "{% static 'language.json' %}"
-      },
-        columns: [
-
-
-          {
-            "data": 'producto',
-            className: "middle"
-          },
-
-
-          {
-            "data": "precio",
-            className: "middle"
-
-          },
-
-          {
-            "data": null,
-            className: "middle"
-          },
-        ],
-
-        columnDefs: [{
-            targets: [0],
-            render: function (data, type, row) {
-              console.log(row)
-
-                let $select = $('<select name="producto"  class="form select-producto form-select "><option value="0">Seleccione...</option></select>');
-
-          
-                $select.find('option[value="' + row.producto + '"]').attr('selected', 'selected');
-                return $select[0].outerHTML
-
-          
-            
-
-            }
-          },
-          {
-            targets: [1],
-            render: function (data, type, row) {
-              return `<input type="number" name="precio" step="0.01" min="0.00" class="form form-control" value="${data}">`;
-
-            }
-          },
-          {
-            targets: [2],
-            render: function (data, type, row) {
-              if (data.producto != "") {
-                return `<button class="btn btn-success btn-remove"><i class="fas fa-check"></i></button>`;
-
-              } else {
-                return `<button class="btn btn-primary btn-add"><i class="fas fa-plus"></i></button>`;
-              }
-            }
-          },
-        ],
-
-        initComplete: function (settings, json) {
-          $(function () {
-            $(".select-producto").each(function (index, element) {
-              fetch("../get-all-products/").then(data =>data.json()).then(res=>{
-
-                for (let i = 0; i < res.data.length; i++) {
-                  console.log("aea")
-                  let option = document.createElement("option")
-                  option.value =res.data[i].id
-                  option.textContent =res.data[i].descripcion
-                  $(this).append(option)
-                }
-                $(element).find('option[value="' + settings.aoData[
-                      index]._aData.producto + '"]').attr('selected', 'selected');
-                })
-              
-            });
-          
-
-            $(".btn-remove").on("click", function () {
-              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
-
-              let a = confirmar(function () {
-                objeto.items.splice(tr.row, 1)
-                objeto.list()
-
-              }, "¿Desea eliminar este producto de la lista?", function () {
-
-              })
-
-
-            })
-            $(".btn-remove").hover(function () {
-
-                $(this).children().remove()
-                $(this).append('<i class="fas fa-times"></i>').css("width", "42px")
-                $(this).removeClass("btn-success").addClass("btn-danger");
-              }, function () {
-                $(this).children().remove()
-                $(this).append('<i class="fas fa-check"></i>')
-                $(this).removeClass("btn-danger").addClass("btn-success");
-              }
-
-            )
-
-            $("input[name='precio']").on("change keyup", function (e) {
-              e.preventDefault()
-              var cant = $(this).val();
-              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
-              if ($(this).val() == "") {
-                $("#submit_eess").prop("disabled", true)
-                $(this).addClass("is-invalid")
-              } else {
-                $("#submit_eess").prop("disabled", false)
-                $(this).removeClass("is-invalid")
-                let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#submit_eess").prop("disabled", true)
-                  }
-                });
-                if (a == 0) {
-                  if (typeof objeto.items[tr.row] !== "undefined") {
-                    objeto.items[tr.row].precio = cant;
-                  }
-                  $("#submit_eess").prop("disabled", false)
-
-                }
-              }
-            })
-            $("select[name='producto']").on("change", function (e) {
-              e.preventDefault()
-              $(this).removeClass("is-invalid")
-              var cant = $(this).val();
-              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
-              if ($(this).val() == "0") {
-                $("#submit_eess").prop("disabled", true)
-                $(this).addClass("is-invalid")
-              } else {
-                let errorc = 0
-                for (let i = 0; i < settings.aoData.length - 1; i++) {
-                  if (settings.aoData[i]._aData.producto == cant && i != tr.row) {
-                    alerta(1500, "error", "Ese producto ya se encuentra en la tabla")
-                    $(this).addClass("is-invalid")
-                    errorc = 1
-                    break
-                  }
-                }
-
-                let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#submit_eess").prop("disabled", true)
-                  }
-                });
-                if (a == 0 && errorc == 0) {
-                  $("#submit_eess").prop("disabled", false)
-
-                  if (typeof objeto.items[tr.row] !== "undefined") {
-                    objeto.items[tr.row].producto = cant;
-                  }
-
-                }
-              }
-
-            })
-
-
-
-            $("td").on("click", ".btn-add", function (e) {
-              let error = 0
-              var tr = tabla_producto.cell($(this).closest("td", "li")).index()
-              let producto = $("td:eq(0)", tabla_producto.row(tr.row).node()).children()
-              let precio = $("td:eq(1)", tabla_producto.row(tr.row).node()).children()
-
-
-              data.producto = producto.val()
-              data.precio = precio.val()
-
-
-
-              function valid(that, name, mensaje = "Revise los campos") {
-                let ele = $(that).parent().parent().find(name)
-                if (ele.val() == "0" || ele.val() == "") {
-                  error = 1
-                  ele.addClass("is-invalid")
-                  ele.on("change input", function () {
-                    ele.removeClass("is-invalid")
-                  })
-                  alerta(1500, "error", mensaje)
-                  $(this).prop("disabled", false)
-
-                }
-              }
-
-              valid(this, "[name='precio']")
-              valid(this, "[name='producto']")
-
-              if (error == 0) {
-                $(this).prop("disabled", false)
-                objeto.items.push(data)
-                data = {
-                  producto: "",
-                  precio: 0.00,
-
-                }
-                $(this).children().remove()
-                $(this).append('<i class="fas fa-check"></i>')
-                $(this).removeClass("btn-primary").addClass("btn-success")
-                $(this).removeClass("btn-add").addClass("btn-remove")
-                $(this).hover(function () {
-
-                    $(this).children().remove()
-                    $(this).append('<i class="fas fa-times"></i>').css("width",
-                      "42px")
-                    $(this).removeClass("btn-success").addClass("btn-danger");
-                  }, function () {
-                    $(this).children().remove()
-                    $(this).append('<i class="fas fa-check"></i>')
-                    $(this).removeClass("btn-danger").addClass("btn-success");
-                  }
-
-                )
-                objeto.list()
-              }
-              console.log(objeto.items)
-            })
-          })
-        }
-      });
-      tabla_producto.row.add(data).draw()
-
-    }
-  }
-  
+  let objeto
+  let data_producto
   let data2 = {
     id: "",
     producto: {
@@ -617,272 +93,272 @@
     },
     precio: 0.00
   }
-  let tabla_producto_eess
-  let objeto2 = {
-    items: [],
-    list: function () {
-      tabla_producto_eess = $("#tabla_productos_eess").DataTable({
-        searching: false,
-        ordering: false,
-        paging: false,
-        info: false,
-        data: this.items,
-        destroy: true,
-        language: {
-        "url": "{% static 'language.json' %}"
-      },
-        columns: [{
-            "data": 'id',
-            className: null
-          },
-          {
-            "data": 'producto.id',
-            className: "middle"
-          },
+  // let tabla_producto_eess
+  // let objeto2 = {
+  //   items: [],
+  //   list: function () {
+  //     tabla_producto_eess = $("#tabla_productos_eess").DataTable({
+  //       searching: false,
+  //       ordering: false,
+  //       paging: false,
+  //       info: false,
+  //       data: this.items,
+  //       destroy: true,
+  //       language: {
+  //       "url": "{% static 'language.json' %}"
+  //     },
+  //       columns: [{
+  //           "data": 'id',
+  //           className: null
+  //         },
+  //         {
+  //           "data": 'producto.id',
+  //           className: "middle"
+  //         },
 
-          {
-            "data": "precio",
-            className: "middle"
+  //         {
+  //           "data": "precio",
+  //           className: "middle"
 
-          },
+  //         },
 
-          {
-            "data": null,
-            className: "middle"
-          },
-        ],
-        columnDefs: [{
-            "targets": [0],
-            "visible": false,
-          },
-          {
-            targets: [1],
-            render: function (data, type, row) {
-              let $select = $('<select name="producto"  class="form form-select ">' +
-                ' <option value="0">Seleccione...</option>' +
-                '{% for i in producto  %}' +
-                '<option value="{{i.id}}">{{i.descripcion}}</option>' +
-                '{% endfor %}' +
-                '</select>');
-              $select.find('option[value="' + data + '"]').attr('selected', 'selected');
-              return $select[0].outerHTML
-            }
-          },
-          {
-            targets: [2],
-            render: function (data, type, row) {
-              return `<input type="number" name="precio" step="0.01" min="0.00" class="form form-control" value="${data}">`;
-            }
-          },
-          {
-            targets: [3],
-            render: function (data, type, row) {
+  //         {
+  //           "data": null,
+  //           className: "middle"
+  //         },
+  //       ],
+  //       columnDefs: [{
+  //           "targets": [0],
+  //           "visible": false,
+  //         },
+  //         {
+  //           targets: [1],
+  //           render: function (data, type, row) {
+  //             let $select = $('<select name="producto"  class="form form-select ">' +
+  //               ' <option value="0">Seleccione...</option>' +
+  //               '{% for i in producto  %}' +
+  //               '<option value="{{i.id}}">{{i.descripcion}}</option>' +
+  //               '{% endfor %}' +
+  //               '</select>');
+  //             $select.find('option[value="' + data + '"]').attr('selected', 'selected');
+  //             return $select[0].outerHTML
+  //           }
+  //         },
+  //         {
+  //           targets: [2],
+  //           render: function (data, type, row) {
+  //             return `<input type="number" name="precio" step="0.01" min="0.00" class="form form-control" value="${data}">`;
+  //           }
+  //         },
+  //         {
+  //           targets: [3],
+  //           render: function (data, type, row) {
 
-              if (data.producto.id != "") {
-                return `<button class="btn btn-success btn-remove"><i class="fas fa-check"></i></button>`;
+  //             if (data.producto.id != "") {
+  //               return `<button class="btn btn-success btn-remove"><i class="fas fa-check"></i></button>`;
 
-              } else {
-                return `<button class="btn btn-primary btn-add"><i class="fas fa-plus"></i></button>`;
-              }
-            }
-          },
-        ],
+  //             } else {
+  //               return `<button class="btn btn-primary btn-add"><i class="fas fa-plus"></i></button>`;
+  //             }
+  //           }
+  //         },
+  //       ],
 
-        initComplete: function (settings, json) {
-          $(function () {
-            $(".btn-remove").on("click", function () {
-              var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
+  //       initComplete: function (settings, json) {
+  //         $(function () {
+  //           $(".btn-remove").on("click", function () {
+  //             var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
 
-              let a = confirmar(function () {
-                objeto2.items.splice(tr.row, 1)
-                objeto2.list()
+  //             let a = confirmar(function () {
+  //               objeto2.items.splice(tr.row, 1)
+  //               objeto2.list()
 
-              }, "¿Desea eliminar este producto de la lista?", function () {
+  //             }, "¿Desea eliminar este producto de la lista?", function () {
 
-              })
+  //             })
 
 
-            })
-            $(".btn-remove").hover(function () {
+  //           })
+  //           $(".btn-remove").hover(function () {
 
-                $(this).children().remove()
-                $(this).append('<i class="fas fa-times"></i>').css("width", "42px")
-                $(this).removeClass("btn-success").addClass("btn-danger");
-              }, function () {
-                $(this).children().remove()
-                $(this).append('<i class="fas fa-check"></i>')
-                $(this).removeClass("btn-danger").addClass("btn-success");
-              }
+  //               $(this).children().remove()
+  //               $(this).append('<i class="fas fa-times"></i>').css("width", "42px")
+  //               $(this).removeClass("btn-success").addClass("btn-danger");
+  //             }, function () {
+  //               $(this).children().remove()
+  //               $(this).append('<i class="fas fa-check"></i>')
+  //               $(this).removeClass("btn-danger").addClass("btn-success");
+  //             }
 
-            )
+  //           )
 
-            $("input[name='precio']").on("change keyup", function (e) {
-              e.preventDefault()
-              var cant = $(this).val();
-              var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
-              if ($(this).val() == "") {
-                $("#update_products").prop("disabled", true)
-                $(this).addClass("is-invalid")
-              } else {
-                $("#update_products").prop("disabled", false)
-                $(this).removeClass("is-invalid")
-                let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#update_products").prop("disabled", true)
-                  }
-                });
-                if (a == 0) {
-                  if (typeof objeto2.items[tr.row] !== "undefined") {
-                    objeto2.items[tr.row].precio = cant;
-                  }
-                  $("#update_products").prop("disabled", false)
+  //           $("input[name='precio']").on("change keyup", function (e) {
+  //             e.preventDefault()
+  //             var cant = $(this).val();
+  //             var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
+  //             if ($(this).val() == "") {
+  //               $("#update_products").prop("disabled", true)
+  //               $(this).addClass("is-invalid")
+  //             } else {
+  //               $("#update_products").prop("disabled", false)
+  //               $(this).removeClass("is-invalid")
+  //               let a = 0
+  //               $.each($(".form"), function (index, value) {
+  //                 if ($(value).hasClass("is-invalid")) {
+  //                   a = a + 1
+  //                   $("#update_products").prop("disabled", true)
+  //                 }
+  //               });
+  //               if (a == 0) {
+  //                 if (typeof objeto2.items[tr.row] !== "undefined") {
+  //                   objeto2.items[tr.row].precio = cant;
+  //                 }
+  //                 $("#update_products").prop("disabled", false)
 
-                }
-              }
-            })
-            $("select[name='producto']").on("change", function (e) {
-              e.preventDefault()
-              console.log("aea")
-              $(this).removeClass("is-invalid")
-              var cant = $(this).val();
-              var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
-              if ($(this).val() == "0") {
-                $("#update_products").prop("disabled", true)
-                $(this).addClass("is-invalid")
-              } else {
-                let errorc = 0
-                for (let i = 0; i < settings.aoData.length - 1; i++) {
-                  console.log(settings.aoData[i])
-                  if (settings.aoData[i]._aData.producto.id == cant && i != tr.row) {
-                    alerta(1500, "error", "Ese producto ya se encuentra en la tabla")
-                    $(this).addClass("is-invalid")
-                    errorc = 1
-                    break
-                  }
-                }
+  //               }
+  //             }
+  //           })
+  //           $("select[name='producto']").on("change", function (e) {
+  //             e.preventDefault()
+  //             console.log("aea")
+  //             $(this).removeClass("is-invalid")
+  //             var cant = $(this).val();
+  //             var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
+  //             if ($(this).val() == "0") {
+  //               $("#update_products").prop("disabled", true)
+  //               $(this).addClass("is-invalid")
+  //             } else {
+  //               let errorc = 0
+  //               for (let i = 0; i < settings.aoData.length - 1; i++) {
+  //                 console.log(settings.aoData[i])
+  //                 if (settings.aoData[i]._aData.producto.id == cant && i != tr.row) {
+  //                   alerta(1500, "error", "Ese producto ya se encuentra en la tabla")
+  //                   $(this).addClass("is-invalid")
+  //                   errorc = 1
+  //                   break
+  //                 }
+  //               }
 
-                let a = 0
-                $.each($(".form"), function (index, value) {
-                  if ($(value).hasClass("is-invalid")) {
-                    a = a + 1
-                    $("#update_products").prop("disabled", true)
-                  }
-                });
-                if (a == 0 && errorc == 0) {
-                  $("#update_products").prop("disabled", false)
+  //               let a = 0
+  //               $.each($(".form"), function (index, value) {
+  //                 if ($(value).hasClass("is-invalid")) {
+  //                   a = a + 1
+  //                   $("#update_products").prop("disabled", true)
+  //                 }
+  //               });
+  //               if (a == 0 && errorc == 0) {
+  //                 $("#update_products").prop("disabled", false)
 
-                  if (typeof objeto2.items[tr.row] !== "undefined") {
-                    objeto2.items[tr.row].producto.id = cant;
-                  }
+  //                 if (typeof objeto2.items[tr.row] !== "undefined") {
+  //                   objeto2.items[tr.row].producto.id = cant;
+  //                 }
 
-                }
-              }
+  //               }
+  //             }
 
-            })
-            $("td").on("click", ".btn-add", function (e) {
-              let error = 0
-              var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
-              let producto = $("td:eq(0)", tabla_producto_eess.row(tr.row).node()).children()
-              console.log(producto)
-              let precio = $("td:eq(1)", tabla_producto_eess.row(tr.row).node()).children()
-              data2.producto.id = producto.val()
-              data2.precio = precio.val()
-              data2.id = ""
+  //           })
+  //           $("td").on("click", ".btn-add", function (e) {
+  //             let error = 0
+  //             var tr = tabla_producto_eess.cell($(this).closest("td", "li")).index()
+  //             let producto = $("td:eq(0)", tabla_producto_eess.row(tr.row).node()).children()
+  //             console.log(producto)
+  //             let precio = $("td:eq(1)", tabla_producto_eess.row(tr.row).node()).children()
+  //             data2.producto.id = producto.val()
+  //             data2.precio = precio.val()
+  //             data2.id = ""
 
-              function valid(that, name, mensaje = "Revise los campos") {
-                let ele = $(that).parent().parent().find(name)
-                if (ele.val() == "0" || ele.val() == "") {
-                  error = 1
-                  ele.addClass("is-invalid")
-                  ele.on("change input", function () {
-                    ele.removeClass("is-invalid")
-                  })
-                  alerta(1500, "error", mensaje)
-                  $(this).prop("disabled", false)
+  //             function valid(that, name, mensaje = "Revise los campos") {
+  //               let ele = $(that).parent().parent().find(name)
+  //               if (ele.val() == "0" || ele.val() == "") {
+  //                 error = 1
+  //                 ele.addClass("is-invalid")
+  //                 ele.on("change input", function () {
+  //                   ele.removeClass("is-invalid")
+  //                 })
+  //                 alerta(1500, "error", mensaje)
+  //                 $(this).prop("disabled", false)
 
-                }
-              }
+  //               }
+  //             }
 
-              valid(this, "[name='precio']")
-              valid(this, "[name='producto']")
+  //             valid(this, "[name='precio']")
+  //             valid(this, "[name='producto']")
 
-              if (error == 0) {
-                $(this).prop("disabled", false)
-                objeto2.items.push(data2)
-                data2 = {
-                  id: "",
-                  producto: {
-                    id: "",
-                    descripcion: ""
-                  },
-                  precio: 0.00,
+  //             if (error == 0) {
+  //               $(this).prop("disabled", false)
+  //               objeto2.items.push(data2)
+  //               data2 = {
+  //                 id: "",
+  //                 producto: {
+  //                   id: "",
+  //                   descripcion: ""
+  //                 },
+  //                 precio: 0.00,
 
-                }
-                $(this).children().remove()
-                $(this).append('<i class="fas fa-check"></i>')
-                $(this).removeClass("btn-primary").addClass("btn-success")
-                $(this).removeClass("btn-add").addClass("btn-remove")
-                $(this).hover(function () {
+  //               }
+  //               $(this).children().remove()
+  //               $(this).append('<i class="fas fa-check"></i>')
+  //               $(this).removeClass("btn-primary").addClass("btn-success")
+  //               $(this).removeClass("btn-add").addClass("btn-remove")
+  //               $(this).hover(function () {
 
-                    $(this).children().remove()
-                    $(this).append('<i class="fas fa-times"></i>').css("width",
-                      "42px")
-                    $(this).removeClass("btn-success").addClass("btn-danger");
-                  }, function () {
-                    $(this).children().remove()
-                    $(this).append('<i class="fas fa-check"></i>')
-                    $(this).removeClass("btn-danger").addClass("btn-success");
-                  }
+  //                   $(this).children().remove()
+  //                   $(this).append('<i class="fas fa-times"></i>').css("width",
+  //                     "42px")
+  //                   $(this).removeClass("btn-success").addClass("btn-danger");
+  //                 }, function () {
+  //                   $(this).children().remove()
+  //                   $(this).append('<i class="fas fa-check"></i>')
+  //                   $(this).removeClass("btn-danger").addClass("btn-success");
+  //                 }
 
-                )
-                objeto2.list()
-                console.log(objeto2)
-              }
-            })
-          })
-        }
-      });
-      tabla_producto_eess.row.add(data2).draw()
+  //               )
+  //               objeto2.list()
+  //               console.log(objeto2)
+  //             }
+  //           })
+  //         })
+  //       }
+  //     });
+  //     tabla_producto_eess.row.add(data2).draw()
 
-    }
-  }
+  //   }
+  // }
 
-  $("#prod_eess").on("change", function () {
-    if($(this).val()!=0){
-      fetch("../../combustible/get-products/" + $(this).val() + "/").then(data => data.json()).then(res => {
-      console.log(res)
-      objeto2.items = res.data
-      objeto2.list()
-      $("#update_products").prop("disabled",false)
+  // $("#prod_eess").on("change", function () {
+  //   if($(this).val()!=0){
+  //     fetch("../../combustible/get-products/" + $(this).val() + "/").then(data => data.json()).then(res => {
+  //     console.log(res)
+  //     objeto2.items = res.data
+  //     objeto2.list()
+  //     $("#update_products").prop("disabled",false)
 
-    })
+  //   })
 
-    }else{
-      tabla_producto_eess.clear().draw()
-      $("#update_products").prop("disabled",true)
-    }
-  })
-  $("#update_products").on("click", function () {
-    $("#loadingCharge").css("visibility", "visible")
-    $("#spinner").css("visibility", "visible")
-    fetch("../get-products/" + $("#prod_eess").val() + "/", {
-      method: "POST",
-      headers: {
-        'X-CSRFToken': csrftoken
-      },
-      body: JSON.stringify(objeto2.items)
-    }).then(data => data.json()).then(res => {
-      if (res.status == 200) {
-        $("#loadingCharge").css("visibility", "hidden")
-        $("#spinner").css("visibility", "hidden")
-        notificacion(1500, "Genial!", "success", "Estación actualizada!")
-        $("#prod_eess").trigger("change")
-      }
-    })
+  //   }else{
+  //     tabla_producto_eess.clear().draw()
+  //     $("#update_products").prop("disabled",true)
+  //   }
+  // })
+  // $("#update_products").on("click", function () {
+  //   $("#loadingCharge").css("visibility", "visible")
+  //   $("#spinner").css("visibility", "visible")
+  //   fetch("../get-products/" + $("#prod_eess").val() + "/", {
+  //     method: "POST",
+  //     headers: {
+  //       'X-CSRFToken': csrftoken
+  //     },
+  //     body: JSON.stringify(objeto2.items)
+  //   }).then(data => data.json()).then(res => {
+  //     if (res.status == 200) {
+  //       $("#loadingCharge").css("visibility", "hidden")
+  //       $("#spinner").css("visibility", "hidden")
+  //       notificacion(1500, "Genial!", "success", "Estación actualizada!")
+  //       $("#prod_eess").trigger("change")
+  //     }
+  //   })
 
-  })
+  // })
 
   $("#btn-add-departamento").on("click", function () {
     jc = $.confirm({
@@ -911,8 +387,175 @@
 
     })
   })
+  let lista_estaciones = $("#tabla_lista_estaciones").DataTable({
+    ordering:false,
+         processing: "true",
+
+    ajax: {
+      url: "{% url 'Web:estaciones' %}",
+      type: "POST",
+      data: {
+        "action": "searchData"
+      },
+      dataSrc: ""
+    },
+    "lengthMenu": [
+      [5, 10, 25, 50, -1],
+      [5, 10, 25, 50, "All"]
+    ],
+    language: {
+      "url": "{% static 'language.json' %}",
+    },
+    columns: [
+
+      {
+        "data": 'codigo',
+        className: "middle text-center"
+      },     
+      {
+        "data": 'descripcion',
+        className: "middle text-center"
+      },
+     
+      {
+          "data": 'estado',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        },     
+   {
+        "data": null,
+        className: "middle text-center",
+   
+      },      
+
+    ],
+    columnDefs:[
+    {
+               
+               targets: [-1],
+        render: function (row, data, index) {
+                 var buttons ='<button class="btn btn-warning btn-sm btn-edit-estacion"><i class="fa fa-edit"></i>Editar</button>'+
+                   '<button class="btn btn-danger btn-sm btn-delete-estacion"><i class="fa fa-ban"></i></button>';
+     
+                 return buttons;
+     
+               },
+              
+           },
+    ]
+  })
+  let modal_estacion_create
+  let modal_estacion_edit
+  document.getElementById('btn-add-estacion').addEventListener("click", function (e) {
+      e.preventDefault()
+      let url = "{% url 'Web:estacion-create' %}";
+     modal_estacion_create= $.confirm({
+        title: "Nueva Estación",
+        content: "URL:{% url 'Web:estacion-create' %}",
+        columnClass: 'col-xl-10 col-lg-10 col-md-12 col-sm-10',
+        icon: "fa fa-plus-circle",
+        type: "dark",
+        theme: "material",
+        animateFromElement: true,
+        buttons: {
+          guardar: {
+            btnClass: 'btn-success',
+            keys: ['enter', 'shift'],
+            action: function () {
+              this.$content.find(".btn-add-estacion").trigger("click")
+              return false;
+            }
+          },
+          cancel: function () {}
+        },
+
+        onContentReady: function () {
+          // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+          });;
+        },
+      });
+    });
+    $(document).on("click", '.btn-edit-estacion', function (e) {
+
+      e.preventDefault()
+      var tr = lista_estaciones.cell($(this).closest("td")).index();
+      var data = lista_estaciones.row(tr.row).data();
+      modal_estacion_edit = $.confirm({
+        title: "Editar Estación",
+        content: "URL:../estacion/update/" + data.id+"/",
+        columnClass: 'col-xl-10 col-lg-10 col-md-12 col-sm-10',
+        icon: "fa fa-edit",
+        type: "orange",
+        scrollToPreviousElement: true,
+        scrollToPreviousElementAnimate: true,
+
+        buttons: {
+          Confirm: {
+            text: 'Guardar cambios',
+            btnClass: 'btn-orange',
+
+            action: function url(e) {
+              this.$content[0].ownerDocument.getElementById("btn_edit_estacion").click()
+              return false;
+            }
+          },
+
+          cancel: function () {
+
+          },
+        },
+        onContentReady: function () {
+          // when content is fetched & rendered in DOM
+          this.$content.find('form').on('submit', function (e) {
+            e.preventDefault();
+          });;
+        },
+
+
+      });
+
+
+    });
+        $(document).on("click", '.btn-delete-estacion', function (e) {
+
+      e.preventDefault()
+      var tr = lista_estaciones.cell($(this).closest("td")).index();
+      var data = lista_estaciones.row(tr.row).data();
+
+        confirmar(function(){
+          $("#loadingCharge").css("visibility", "visible")
+      $("#spinner").css("visibility", "visible")
+          fetch("../estacion/delete/" + data.id+"/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                }}).then(data=>data.json()).then(response=>{
+                  
+      $("#loadingCharge").css("visibility", "hidden")
+      $("#spinner").css("visibility", "hidden")
+                  if(response.status==200){
+
+                    lista_estaciones.ajax.reload()
+                    notificacion(1500, "Genial!","success", "Estacion eliminada!")
+
+                  }
+
+                })
+        },"¿Desea eliminar esta Estación?",function () {})
+
+      });
   let lista_productos = $("#tabla_lista_productos").DataTable({
     ordering:false,
+         processing: "true",
+
     ajax: {
       url: "{% url 'Web:productos' %}",
       type: "POST",
@@ -1069,7 +712,6 @@
 
                     lista_productos.ajax.reload()
                     notificacion(1500, "Genial!","success", "Producto eliminado!")
-                    objeto.list()
 
                   }
 
@@ -1077,7 +719,6 @@
         },"¿Desea eliminar esta Producto?",function () {})
 
       });
-  objeto.list()
   $("#create_producto").on("click", function () {
     let error = 0
     if ($("#descripcion_producto").val() == "") {

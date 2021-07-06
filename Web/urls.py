@@ -159,21 +159,29 @@ urlpatterns = [
     path("combustible/abastecimiento/",views.AbastecimientoView.as_view(),name="abastecimiento"),
     path("combustible/rendimiento/",views.RendimientoView.as_view(),name="rendimiento"),
     path("combustible/rendimiento/<int:pk>/",views.RendimientoEditView.as_view(),name="edit-rendimiento"),
+    path("combustible/rendimiento/delete/<int:pk>/",views.RendimientoDeleteView.as_view(),name="rendimiento-delete"),
     path("combustible/rendimientos/",views.RendimientoListView.as_view(),name="rendimientos"),
 
     path("combustible/flota/",views.FlotaView.as_view(),name="flota"),
     path("combustible/flota/<int:pk>/",views.FlotaEditView.as_view(),name="edit-flota"),
+    path("combustible/flota/delete/<int:pk>/",views.FlotaDeleteView.as_view(),name="flota-delete"),
     path("combustible/flotas/",views.FlotaListView.as_view(),name="flotas"),
     
     path("combustible/ruta/",views.RutaView.as_view(),name="ruta"),
     path("combustible/ruta/<int:pk>/",views.RutaEditView.as_view(),name="edit-ruta"),
+    path("combustible/ruta/delete/<int:pk>/",views.RutaDeleteView.as_view(),name="ruta-delete"),
     path("combustible/rutas/",views.RutasListView.as_view(),name="rutas"),
     
     path("combustible/conductor/",views.ConductoresView.as_view(),name="create-conductor"),
     path("combustible/conductor/<int:pk>/",views.ConductorEditView.as_view(),name="edit-conductor"),
+    path("combustible/conductor/delete/<int:pk>/",views.ConductorDeleteView.as_view(),name="conductor-delete"),
     path("combustible/conductores/",views.ConductorListView.as_view(),name="conductores"),
     
-    path("combustible/estaciones/",views.EstacionesView.as_view(),name="estaciones"),
+    path("combustible/estaciones/",views.EstacionesListView.as_view(),name="estaciones"),
+    path("combustible/estacion/create",views.EstacionesView.as_view(),name="estacion-create"),
+    path("combustible/estacion/update/<int:pk>/",views.EstacionesUpdateView.as_view(),name="estacion-update"),
+    path("combustible/estacion/delete/<int:pk>/",views.EstacionesDeleteView.as_view(),name="estacion-delete"),
+
     path("combustible/productos/",views.ProductosListView.as_view(),name="productos"),
     path("combustible/producto/update/<int:pk>/",views.ProductosUpdateView.as_view(),name="producto-update"),
     path("combustible/producto/delete/<int:pk>/",views.ProductosDeleteView.as_view(),name="producto-delete"),
@@ -184,7 +192,7 @@ urlpatterns = [
     path('combustible/afectaciones-por-carga/', views.AfectacionListView.as_view(), name='afectaciones'),
     path('combustible/afectacion-por-carga/', views.AfectacionCreateView.as_view(), name='afectacion'),
     path('combustible/afectacion-por-carga/<int:pk>/', views.AfectacionUpdateView.as_view(), name='afectacion'),
-    path('combustible/afectacion-por-carga/<int:pk>/delete/', views.AfectacionDeleteView.as_view(), name='afectacion-delete'),
+    path('combustible/afectacion-por-carga/delete/<int:pk>/', views.AfectacionDeleteView.as_view(), name='afectacion-delete'),
 
 
     path("combustible/empresa/",views.EmpresaCreateView.as_view(),name="empresa"),
@@ -198,6 +206,7 @@ urlpatterns = [
     path("combustible/get-estaciones/<str:tramo>/",views.getEstaciones),
     path("combustible/get-tramos/<int:id>/",views.getTramos),
     path("combustible/get-rutas/",views.getRutas),
+    path("combustible/get-afectaciones/<int:placa>/",views.getAfectaciones),
     path("combustible/get-vehiculos-ruta/<int:id>/",views.getVehiculosRuta),
 
 

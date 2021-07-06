@@ -4,6 +4,7 @@
 {% block rendimiento %}collapse-item active{% endblock  %}
 {% load static %}
 {% block content %}
+{% now "c" as current_year %}
 
 <div id="wrapper">
     <div class="container-fluid">
@@ -27,7 +28,7 @@
                             <form class="row g-3 needs-validation" id="form_rendimiento">
                                 <div class="col-md-4">
                                     <label class="form-label">Fecha y Hora</label>
-                                    <input type="datetime-local" id="fecha" name="fech_hora" class="form-control">
+                                    <input type="datetime-local" id="fecha" name="fech_hora" class="form-control" value="{{ current_year }}">
                                     <div class="invalid-feedback">
                                         Este campo es requerido.
                                     </div>
@@ -76,6 +77,7 @@
                                         Este campo es requerido.
                                     </div>
                                 </div>
+         	
                             </form>
 
                                 <table id="tabla_rendimiento" class="table table-bordered">
@@ -102,12 +104,13 @@
                         <table id="tabla_rendimientos" class="table table-bordered" style="width: 100%">
                             <thead>
                                 <th style="width: 0;">ID</th>
-                                <th style="width: 20;">Marca</th>
-                                <th style="width: 20;">Modelo</th>
+                                <th style="width: 15;">Marca</th>
+                                <th style="width: 15;">Modelo</th>
                                 <th style="width: 20%;">Tramo</th>
                                 <th style="width: 10%;">Recorrido</th>
                                 <th style="width: 10%;">Galones Abast.</th>
-                                <th style="width: 10%;">Rend.Objetivo</th>
+                                <th style="width: 10%;">Rend.Obj.</th>
+                                <th style="width: 10%;">Estado</th>
                                 <th style="width: 10%;"></th>
                             </thead>
                             <tbody></tbody>
@@ -490,7 +493,6 @@
         let error = 0
 
         validar($("#ruta"))
-        validar($("#fecha"))
         validar($("#id_marca"))
         validar($("#id_modelo_vehiculo"))
         if (error == 0) {
@@ -616,6 +618,7 @@
     tabla_rendimientos = $("#tabla_rendimientos").DataTable({
         responsive: true,
         processing:"true",
+        ordering: false,
         ajax: {
             url: "{% url 'Web:rendimientos' %}",
             type: "POST",
@@ -661,6 +664,17 @@
                 className: "middle text-center",
 
             },
+                  {
+          "data": 'estado',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        }, 
             {
                 "data": null,
                 className: "middle text-center",
@@ -676,8 +690,8 @@
                 targets: [-1],
                 render: function (row, data, index) {
                     var buttons =
-                        '<button class="btn btn-warning btn-sm btn-rendimiento-editar"><i class="fa fa-edit"></i>Editar</a>' +
-                        '</a>';
+                        '<button class="btn btn-warning btn-sm btn-rendimiento-editar"><i class="fa fa-edit"></i>Editar</button>' +
+                        '<button class="btn btn-danger btn-sm btn-rendimiento-delete"><i class="fa fa-ban"></button>';
 
                     return buttons;
                 }
@@ -702,7 +716,7 @@
             theme: "material",
             scrollToPreviousElement: true,
             scrollToPreviousElementAnimate: true,
-
+    containerFluid: false,
             buttons: {
                 Confirm: {
                     text: 'Guardar cambios',
@@ -731,6 +745,35 @@
 
 
     });
+        $(document).on("click", '.btn-rendimiento-delete', function (e) {
+
+      e.preventDefault()
+      var tr = tabla_rendimientos.cell($(this).closest("td")).index();
+      var data = tabla_rendimientos.row(tr.row).data();
+
+        confirmar(function(){
+          $("#loadingCharge").css("visibility", "visible")
+      $("#spinner").css("visibility", "visible")
+          fetch("../rendimiento/delete/" + data.id+"/", {
+                method: "POST",
+                headers: {
+                  'X-CSRFToken': csrftoken
+                }}).then(data=>data.json()).then(response=>{
+                  
+      $("#loadingCharge").css("visibility", "hidden")
+      $("#spinner").css("visibility", "hidden")
+                  if(response.status==200){
+                                        tabla_rendimientos.ajax.reload()
+
+                    notificacion(1500, "Genial!","success", "Rendimiento eliminado!")
+
+
+                  }
+
+                })
+        },"¿Desea eliminar este Rendimiento?",function () {})
+
+      });
     $("#rendimiento-tab").on("click", function () {
     window.localStorage.setItem("tab_rend", 1)
   })

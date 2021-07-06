@@ -739,7 +739,7 @@ class InspeccionForm(forms.ModelForm):
 class EstacionesForm(forms.ModelForm):
     class Meta:  
         model=Estaciones
-        exclude=["changed_by","estado","ruta"]   
+        exclude=["changed_by","ruta"]   
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['contacto'].required = False 
@@ -772,7 +772,7 @@ class ConductoresForm(forms.ModelForm):
 class Rutaform(forms.ModelForm):
     class Meta:  
         model=Ruta
-        exclude=["changed_by","estado","ruta"]  
+        exclude=["changed_by","ruta"]  
     def clean_ruta(self):
         data=self.cleaned_data["ruta"]
         
@@ -795,7 +795,7 @@ class EmpresaForm(forms.ModelForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model=Producto
-        exclude=["changed_by","estado"]  
+        exclude=["changed_by"]  
     def clean_descripcion(self):
         data=self.cleaned_data["descripcion"]
         
@@ -806,14 +806,19 @@ class ProductoForm(forms.ModelForm):
 class RendimientoForm(forms.ModelForm):
     class Meta:
         model=Rendimiento
-        exclude=["changed_by","estado","rend_vacio"] 
+        exclude=["changed_by","rend_vacio"] 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+       
+        self.fields['fech_hora'].required = False
     def clean(self):
         tramo = self.cleaned_data.get('tramo')
         modelo = self.cleaned_data.get('modelo')
         print(self.instance)
         if self.instance.tramo!=tramo or self.instance.modelo!=modelo :
 
-            rend=Rendimiento.objects.filter(tramo=tramo,modelo=modelo)
+            rend=Rendimiento.objects.filter(tramo=tramo,modelo=modelo,eliminado=False)
             
             if rend.exists():
                 self.add_error("tramo",f"Ya existe un rendimiento asociado a este tramo y modelo de vehículo!")

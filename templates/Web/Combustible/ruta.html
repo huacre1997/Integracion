@@ -49,6 +49,7 @@
                                 <thead>
                                     <th></th>
                                     <th>Ruta</th>
+                                    <th>Estado</th>
                                     <th></th>
 
                                 </thead>
@@ -183,6 +184,17 @@
                 className: "middle text-center"
             },
             {
+          "data": 'estado',
+          className: "estado middle  text-center",
+          render: function (data, type, row) {
+            if (data) {
+              return '<i class="fa fa-check-circle text-success" aria-hidden="true"></i>';
+            } else {
+              return '<i class="fas fa-times-circle text-danger"></i>';
+            }
+          }
+        },    
+            {
                 "data": null,
                 className: "middle text-center",
 
@@ -194,21 +206,51 @@
             },
 
             {
-                targets: [2],
+                targets: [-1],
                 render: function (row, data, index) {
                     var buttons = '<a href="../ruta/' + index.id +
                         '/" class="btn btn-warning btn-sm btn-edit-ruta"><i class="fa fa-edit"></i>Editar</a>' +
-                        '</a>';
+                        '</a><button class="btn btn-danger btn-sm btn-delete-ruta"><i class="fa fa-ban"></i></button>';
 
                     return buttons;
                 }
             },
         ],
         initComplete: function (settings, json) {
-
-
+            $(".btn-edit-ruta").on("click", function () {
+                            window.localStorage.setItem("volver","editar")
+                        })
+            
         }
     })
+    $(document).on("click", '.btn-delete-ruta', function (e) {
+
+e.preventDefault()
+var tr = tabla_rutas.cell($(this).closest("td")).index();
+var data = tabla_rutas.row(tr.row).data();
+
+  confirmar(function(){
+    $("#loadingCharge").css("visibility", "visible")
+$("#spinner").css("visibility", "visible")
+    fetch("../ruta/delete/" + data.id+"/", {
+          method: "POST",
+          headers: {
+            'X-CSRFToken': csrftoken
+          }}).then(data=>data.json()).then(response=>{
+            
+$("#loadingCharge").css("visibility", "hidden")
+$("#spinner").css("visibility", "hidden")
+            if(response.status==200){
+
+                tabla_rutas.ajax.reload()
+              notificacion(1500, "Genial!","success", "Estacion eliminada!")
+
+            }
+
+          })
+  },"¿Desea eliminar esta Ruta?",function () {})
+
+});
     let id = 0
     let objeto2 = {
         items: [],
@@ -381,9 +423,7 @@
 
 
                         })
-                        $("btn-edit-ruta").on("click", function () {
-                            window.localStorage.setItem("volver","editar")
-                        })
+                   
                         $(".btn-remove").hover(function () {
 
                                 $(this).children().remove()
