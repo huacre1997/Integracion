@@ -1204,7 +1204,7 @@
           console.log(res)
           for (let i = 0; i < res.data.length; i++) {
             let option = document.createElement("option")
-            if(res.data[i].producto.estado && !res.data[i].producto.eliminado)
+            if(res.data[i].estado && !res.data[i].eliminado)
             {
               option.textContent = res.data[i].producto.descripcion
             option.value = res.data[i].producto.id
