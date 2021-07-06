@@ -23,7 +23,9 @@
                         Este campo es requerido.
                     </div>
                 </div>
-                    <div class="form-check col-md-4">
+                    
+                    {% if obj %}
+                      <div class="form-check col-md-4">
                                         <label class="w-100 form-label invisible">Marca</label>
 
               {{form.estado}}
@@ -31,6 +33,8 @@
     Estado
   </label>
 </div>
+                    {% endif %}
+                      
                 <div class="col-md-6">
                     <label class="form-label">Marca</label>
                     <select name="marca_vehiculo" id="id_marca_vehiculo" class="form-select" >

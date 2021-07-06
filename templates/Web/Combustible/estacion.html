@@ -82,13 +82,17 @@
                     Este campo es requerido
                   </div>
                 </div>
-              <div class="form-check col-md-2">
+                
+                {% if obj %}
+                  <div class="form-check col-md-2">
               <label for="" class="form-label w-100 invisible">w</label> 
                     {{form.estado}}
         <label class="form-check-label" for="flexCheckChecked">
           Activo
         </label>
               </div>
+                {% endif %}
+                  
               </form>
               <div class="table-responsive">
                 <table class="table  table-hover table-bordered" id="tabla_estacion_productos" style="width: 100%;">
