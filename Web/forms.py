@@ -761,7 +761,7 @@ class EstacionesForm(forms.ModelForm):
 class ConductoresForm(forms.ModelForm):
     class Meta:  
         model=Conductor
-        exclude=["changed_by","estado"]  
+        exclude=["changed_by"]  
     def clean_doc(self):
         data=self.cleaned_data["doc"]
         
@@ -885,12 +885,13 @@ class AfectacionConsumoForm(forms.ModelForm):
             "estado":forms.CheckboxInput(attrs={"class":"form-check-input","checked":"true"})
 
         } 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-    def clean_per_carga(self):
-        data=self.cleaned_data["per_carga"]
-        
+    
+    def clean(self):
+        data = self.cleaned_data.get('per_carga')
+        data2 = self.cleaned_data.get('placa')
+        print(data2)    
         if self.instance.per_carga!=data:
-            if AfectacionConsumo.objects.filter(per_carga=data).exists():
-                self.add_error("per_carga",f" : EL porcentaje de carga {data}% ya se encuentra registrado.")
-        return data     
+            if AfectacionConsumo.objects.filter(per_carga=data,placa=data2,eliminado=False).exists():
+                self.add_error("per_carga",f" : EL porcentaje de carga {data}% ya se encuentra registrado para la placa {data2}.")
+       
+        return self.cleaned_data

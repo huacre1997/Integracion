@@ -3309,7 +3309,7 @@ class RutasListView(LoginRequiredMixin,TemplateView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Ruta.objects.filter(eliminado=False):
+                for i in Ruta.objects.filter(eliminado=False).order_by("-id"):
                     data.append(i.toJSON())
             else:
                 data["error"]="Ha ocurrido un error"
@@ -3957,7 +3957,7 @@ class ConductorListView(LoginRequiredMixin,TemplateView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in Conductor.objects.filter(eliminado=False):
+                for i in Conductor.objects.filter(eliminado=False).order_by("-id"):
                     data.append(i.toJSON())
             else:
                 data["error"]="Ha ocurrido un error"
@@ -4159,6 +4159,7 @@ class RendimientoViajeView(LoginRequiredMixin,TemplateView):
                  annotate(monto_total=Sum("total")).
                  annotate(tramo=RawSQL("""select string_agg(a.tramo,'/' ORDER BY d.abast_id) from "Web_detalleabastecimiento" as d inner join "Web_abastecimiento" as a on d.abast_id=a.id where a.viaje_id = "Web_abastecimiento".viaje_id""",())).
                 # annotate(count=Count("abast"), tramo=GroupConcat('abast__tramo', ordering="abast_id",separator=' / ')).
+                exclude(recorrido_total=None).
                  order_by("-abast__viaje","-abast__viaje__fecha_fin"))
             print(qs.query)
             # annotate(km_total=Sum("abastecimiento__detalleabastecimiento__km")).      
@@ -4346,8 +4347,7 @@ class RendimientoAbastecimientoView(LoginRequiredMixin,TemplateView):
                     annotate(total_relleno=Case(
                         When(previous_tipo=2,then=Subquery(relleno.values('total')[:1])
                     ))).exclude(previous_km=None).
-                    order_by("-abast__viaje","placa","-abast__fecha",))
-            print(qs.query)
+                    order_by("-abast__viaje","placa","-abast__fecha"))
             if start_date and end_date and placa and ruta and empresa:
                 if start_date==end_date:     
                     qs=qs.filter(abast__fecha__contains=start_date,placa=placa,abast__tramo=tramo,placa__empresa=empresa)
@@ -4443,7 +4443,7 @@ class AfectacionListView(LoginRequiredMixin,ListView):
             action=request.POST["action"]
             if action=="searchData":
                 data=[]
-                for i in AfectacionConsumo.objects.filter(eliminado=False):
+                for i in AfectacionConsumo.objects.filter(eliminado=False).order_by("-id"):
                     data.append(i.toJSON())
 
             else:
@@ -4457,17 +4457,19 @@ class AfectacionListView(LoginRequiredMixin,ListView):
 
 
 class AfectacionCreateView(LoginRequiredMixin,CreateView):
-    form_class = AfectacionConsumoForm
     template_name = 'Web/Combustible/afectacion.html'
     login_url=reverse_lazy("Web:login")
+    form_class = AfectacionConsumoForm
+
     def get(self,*args, **kwargs):
-        form=self.get_form()
+        form=self.form_class()
         placa = Vehiculo.objects.values("id","placa","activo","eliminado")
         return render(self.request,self.template_name,{"form":form,"placa":placa})
     def post(self, request,*args, **kwargs):      
         try:
-            form = self.get_form()
+            print(self.request.POST)
 
+            form = self.form_class(data=self.request.POST)
             if form.is_valid():
 
                 instance=form.save(commit=False)

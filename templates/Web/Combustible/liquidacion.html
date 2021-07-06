@@ -268,7 +268,7 @@
       initComplete: function (settings, json) {
         let sum = 0
         for (let i = 0; i < settings.aoData.length; i++) {
-          sum += parseFloat(settings.aoData[i].anCells[13].textContent)
+          sum += parseFloat(settings.aoData[i].anCells[14].textContent)
         }
         $("#total").html(sum.toFixed(2))
         tabla_liquidacion.buttons().container()

@@ -16,7 +16,7 @@
             {% endif %}
             {% csrf_token %}
             <div class="row g-3">
-                     <div class="col-md-3">
+                     <div class="col-md-6">
                                 <label class="form-label">Tipo de Documento</label>
                                 <select name="tip_doc" id="tip_doc_editar" class="form-select">
                                     {% for i in  tip_doc %}
@@ -30,14 +30,14 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="form-label">N° de Documento</label>
                                 <input type="text" name="doc" id="doc_editar" class="form-control" value="{{ obj.doc }}">
                                 <div class="invalid-feedback">
                                     Este campo es requerido
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-10">
                                 <label class="form-label">Apellidos y Nombres</label>
                                 <input type="text" class="form-control" id="nombres_edit" name="nombres" value="{{ obj.nombres }}">
                                 <div class="invalid-feedback">
@@ -45,7 +45,17 @@
                                 </div>
                             </div>
               
-             
+                    
+                    {% if obj %}
+                            <div class="form-check col-md-2">
+                            <label for="" class="w-100 invisible">ww</label>
+                    {{form.estado}}
+        <label class="form-check-label" for="id_estado">
+          Activo
+        </label>
+              </div
+                    {% endif %}
+                        
 
             </div>
 
